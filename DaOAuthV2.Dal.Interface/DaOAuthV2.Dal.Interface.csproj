@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DaOAuthV2.Domain.Interface\DaOAuthV2.Domain.Interface.csproj" />
+    <ProjectReference Include="..\DaOAuthV2.Domain\DaOAuthV2.Domain.csproj" />
+  </ItemGroup>
+
+</Project>
