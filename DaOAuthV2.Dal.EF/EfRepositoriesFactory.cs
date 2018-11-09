@@ -39,22 +39,34 @@ namespace DaOAuthV2.Dal.EF
 
         public IRessourceServerRepository GetRessourceServerRepository(IContext context)
         {
-            throw new System.NotImplementedException();
+            return new RessourceServerRepository()
+            {
+                Context = (DaOAuthContext)context,
+            };
         }
 
         public IScopeRepository GetScopeRepository(IContext context)
         {
-            throw new System.NotImplementedException();
+            return new ScopeRepository()
+            {
+                Context = (DaOAuthContext)context,
+            };
         }
 
         public IUserClientRepository GetUserClientRepository(IContext context)
         {
-            throw new System.NotImplementedException();
+            return new UserClientRepository()
+            {
+                Context = (DaOAuthContext)context,
+            };
         }
 
         public IUserRepository GetUserRepository(IContext context)
         {
-            throw new System.NotImplementedException();
+            return new UserRepository()
+            {
+                Context = (DaOAuthContext)context,
+            };
         }
     }
 }

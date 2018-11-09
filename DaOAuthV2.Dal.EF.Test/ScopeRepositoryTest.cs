@@ -3,16 +3,15 @@ using DaOAuthV2.Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace DaOAuthV2.Dal.EF.Test
 {
     [TestClass]
-    public class ClientRepositoryTest
+    public class ScopeRepositoryTest
     {
         private IRepositoriesFactory _repoFactory = new EfRepositoriesFactory();
-        private const string _dbName = "testClientRepo";
+        private const string _dbName = "testScopeRepo";
 
         [TestInitialize]
         public void Init()
@@ -84,37 +83,7 @@ namespace DaOAuthV2.Dal.EF.Test
                     ScopeId = 100
                 });
 
-                context.Users.Add(new User()
-                {
-                    BirthDate = DateTime.Now.AddYears(-40),
-                    CreationDate = DateTime.Now,
-                    FullName = "Sammy Le Crabe",
-                    Id = 100,
-                    IsValid = true,
-                    Password = new byte[] { 0, 1 },
-                    UserName = "testeur"
-                });
-
-                context.UsersClients.Add(new UserClient()
-                {
-                    ClientId = 100,
-                    CreationDate = DateTime.Now,
-                    Id = 100,
-                    IsValid = true,
-                    UserId = 100,
-                    UserPublicId = Guid.NewGuid()
-                });
-                context.UsersClients.Add(new UserClient()
-                {
-                    ClientId = 101,
-                    CreationDate = DateTime.Now,
-                    Id = 101,
-                    IsValid = true,
-                    UserId = 100,
-                    UserPublicId = Guid.NewGuid()
-                });
-
-                context.Commit();
+                context.SaveChanges();
             }
         }
 
@@ -132,29 +101,7 @@ namespace DaOAuthV2.Dal.EF.Test
         }
 
         [TestMethod]
-        public void GetAllByUserNameTest()
-        {
-            var options = new DbContextOptionsBuilder<DaOAuthContext>()
-                      .UseInMemoryDatabase(databaseName: _dbName)
-                      .Options;
-
-            IEnumerable<Client> cs = null;
-
-            using (var context = new DaOAuthContext(options))
-            {
-                var clientRepo = _repoFactory.GetClientRepository(context);
-                cs = clientRepo.GetAllByUserName("testeur");
-
-                Assert.IsNotNull(cs);
-                Assert.AreEqual(2, cs.Count());
-                Assert.IsNotNull(cs.First().ClientsScopes);
-                Assert.IsTrue(cs.First().ClientsScopes.Count() > 0);
-                Assert.IsNotNull(cs.First().ClientsScopes.First().Scope);
-            }
-        }
-
-        [TestMethod]
-        public void GetByPublicIdTest()
+        public void GetByClientPublicIdTest()
         {
             var options = new DbContextOptionsBuilder<DaOAuthContext>()
                      .UseInMemoryDatabase(databaseName: _dbName)
@@ -162,10 +109,22 @@ namespace DaOAuthV2.Dal.EF.Test
 
             using (var context = new DaOAuthContext(options))
             {
-                var clientRepo = _repoFactory.GetClientRepository(context);
-                var c = clientRepo.GetByPublicId("CT1_id");
+                var repo = _repoFactory.GetScopeRepository(context);
 
-                Assert.IsNotNull(c);
+                var scopes = repo.GetByClientPublicId("CT2_id");
+
+                Assert.IsNotNull(scopes);
+                Assert.AreEqual(2, scopes.Count());
+            }
+
+            using (var context = new DaOAuthContext(options))
+            {
+                var repo = _repoFactory.GetScopeRepository(context);
+
+                var scopes = repo.GetByClientPublicId("absent");
+
+                Assert.IsNotNull(scopes);
+                Assert.AreEqual(0, scopes.Count());
             }
         }
     }

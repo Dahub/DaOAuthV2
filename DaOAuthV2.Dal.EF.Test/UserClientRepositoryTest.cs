@@ -3,16 +3,15 @@ using DaOAuthV2.Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace DaOAuthV2.Dal.EF.Test
 {
     [TestClass]
-    public class ClientRepositoryTest
+    public class UserClientRepositoryTest
     {
         private IRepositoriesFactory _repoFactory = new EfRepositoriesFactory();
-        private const string _dbName = "testClientRepo";
+        private const string _dbName = "testUserClientRepo";
 
         [TestInitialize]
         public void Init()
@@ -135,37 +134,48 @@ namespace DaOAuthV2.Dal.EF.Test
         public void GetAllByUserNameTest()
         {
             var options = new DbContextOptionsBuilder<DaOAuthContext>()
-                      .UseInMemoryDatabase(databaseName: _dbName)
-                      .Options;
-
-            IEnumerable<Client> cs = null;
+                        .UseInMemoryDatabase(databaseName: _dbName)
+                        .Options;
 
             using (var context = new DaOAuthContext(options))
             {
-                var clientRepo = _repoFactory.GetClientRepository(context);
-                cs = clientRepo.GetAllByUserName("testeur");
+                var repo = _repoFactory.GetUserClientRepository(context);
 
-                Assert.IsNotNull(cs);
-                Assert.AreEqual(2, cs.Count());
-                Assert.IsNotNull(cs.First().ClientsScopes);
-                Assert.IsTrue(cs.First().ClientsScopes.Count() > 0);
-                Assert.IsNotNull(cs.First().ClientsScopes.First().Scope);
+                var uc = repo.GetAllByUserName("testeur");
+
+                Assert.IsNotNull(uc);
+                Assert.AreEqual(2, uc.Count());
+                Assert.IsNotNull(uc.First().Client);
+                Assert.IsNotNull(uc.First().Client.ClientsScopes);
+                Assert.AreEqual(1, uc.First().Client.ClientsScopes.Count());
+                Assert.IsNotNull(uc.First().Client.ClientsScopes.First().Scope);
+            }
+
+            using (var context = new DaOAuthContext(options))
+            {
+                var repo = _repoFactory.GetUserClientRepository(context);
+
+                var uc = repo.GetAllByUserName("missing user");
+
+                Assert.IsNotNull(uc);
+                Assert.AreEqual(0, uc.Count());
             }
         }
 
         [TestMethod]
-        public void GetByPublicIdTest()
+        public void GetUserClientByUserNameAndClientPublicId()
         {
             var options = new DbContextOptionsBuilder<DaOAuthContext>()
-                     .UseInMemoryDatabase(databaseName: _dbName)
-                     .Options;
+                       .UseInMemoryDatabase(databaseName: _dbName)
+                       .Options;
 
             using (var context = new DaOAuthContext(options))
             {
-                var clientRepo = _repoFactory.GetClientRepository(context);
-                var c = clientRepo.GetByPublicId("CT1_id");
+                var repo = _repoFactory.GetUserClientRepository(context);
 
-                Assert.IsNotNull(c);
+                var uc = repo.GetUserClientByUserNameAndClientPublicId("CT2_id", "testeur");
+
+                Assert.IsNotNull(uc);
             }
         }
     }
