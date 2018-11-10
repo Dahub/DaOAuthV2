@@ -42,6 +42,7 @@ namespace DaOAuthV2.Dal.EF
             modelBuilder.Entity<User>().HasKey(c => c.Id);
             modelBuilder.Entity<User>().Property(p => p.Id).HasColumnName("Id").HasColumnType("int").IsRequired();
             modelBuilder.Entity<User>().Property(p => p.BirthDate).HasColumnName("BirthDate").HasColumnType("datetime");
+            modelBuilder.Entity<User>().Property(p => p.EMail).HasColumnName("Email").HasColumnType("nvarchar(320)").IsRequired();
             modelBuilder.Entity<User>().Property(p => p.CreationDate).HasColumnName("CreationDate").HasColumnType("datetime").IsRequired();
             modelBuilder.Entity<User>().Property(p => p.FullName).HasColumnName("FullName").HasColumnType("nvarchar(256)").HasMaxLength(256);
             modelBuilder.Entity<User>().Property(p => p.IsValid).HasColumnName("IsValid").HasColumnType("bit").IsRequired();

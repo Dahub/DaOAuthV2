@@ -27,6 +27,7 @@ namespace DaOAuthV2.Dal.EF.Test
                     BirthDate = DateTime.Now.AddYears(-40),
                     CreationDate = DateTime.Now,
                     FullName = "Sammy Le Crabe",
+                    EMail = "sam@rab.com",
                     Id = 100,
                     IsValid = true,
                     Password = new byte[] { 0, 1 },
@@ -71,6 +72,32 @@ namespace DaOAuthV2.Dal.EF.Test
                 var repo = _repoFactory.GetUserRepository(context);
 
                 var u = repo.GetByUserName("missing");
+
+                Assert.IsNull(u);
+            }
+        }
+
+        [TestMethod]
+        public void GetByEmailTest()
+        {
+            var options = new DbContextOptionsBuilder<DaOAuthContext>()
+                       .UseInMemoryDatabase(databaseName: _dbName)
+                       .Options;
+
+            using (var context = new DaOAuthContext(options))
+            {
+                var repo = _repoFactory.GetUserRepository(context);
+
+                var u = repo.GetByEmail("sam@rab.com");
+
+                Assert.IsNotNull(u);
+            }
+
+            using (var context = new DaOAuthContext(options))
+            {
+                var repo = _repoFactory.GetUserRepository(context);
+
+                var u = repo.GetByUserName("sam_missing@rab.com");
 
                 Assert.IsNull(u);
             }

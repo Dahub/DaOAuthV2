@@ -4,8 +4,4 @@
     <TargetFramework>netcoreapp2.1</TargetFramework>
   </PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\DaOAuthV2.Service.DTO\DaOAuthV2.Service.DTO.csproj" />
-  </ItemGroup>
-
 </Project>

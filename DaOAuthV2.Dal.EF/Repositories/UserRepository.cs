@@ -6,6 +6,12 @@ namespace DaOAuthV2.Dal.EF
 {
     internal class UserRepository : RepositoryBase<User>, IUserRepository
     {
+        public User GetByEmail(string email)
+        {
+            return Context.Users.
+              Where(c => c.EMail.Equals(email, System.StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
+        }
+
         public User GetByUserName(string userName)
         {
             return Context.Users.

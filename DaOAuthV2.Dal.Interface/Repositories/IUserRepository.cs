@@ -5,5 +5,6 @@ namespace DaOAuthV2.Dal.Interface
     public interface IUserRepository : IRepository<User>
     {
         User GetByUserName(string userName);
+        User GetByEmail(string email);
     }
 }

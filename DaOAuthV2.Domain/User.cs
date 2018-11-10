@@ -8,6 +8,7 @@ namespace DaOAuthV2.Domain
     {
         public int Id { get; set; }
         public string UserName { get; set; }
+        public string EMail { get; set; }
         public byte[] Password { get; set; }
         public string FullName { get; set; }
         public DateTime? BirthDate { get; set; }

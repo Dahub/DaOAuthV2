@@ -12,4 +12,13 @@
     <PackageReference Include="MSTest.TestFramework" Version="1.3.2" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\DaOAuthV2.Dal.Interface\DaOAuthV2.Dal.Interface.csproj" />
+    <ProjectReference Include="..\DaOAuthV2.Domain.Interface\DaOAuthV2.Domain.Interface.csproj" />
+    <ProjectReference Include="..\DaOAuthV2.Domain\DaOAuthV2.Domain.csproj" />
+    <ProjectReference Include="..\DaOAuthV2.Service.DTO\DaOAuthV2.Service.DTO.csproj" />
+    <ProjectReference Include="..\DaOAuthV2.Service.Interface\DaOAuthV2.Service.Interface.csproj" />
+    <ProjectReference Include="..\DaOAuthV2.Service\DaOAuthV2.Service.csproj" />
+  </ItemGroup>
+
 </Project>
