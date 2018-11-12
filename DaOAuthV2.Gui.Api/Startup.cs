@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Swashbuckle.AspNetCore.Swagger;
+using System.IO;
 
 namespace DaOAuthV2.Gui.Api
 {
@@ -36,6 +37,7 @@ namespace DaOAuthV2.Gui.Api
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new Info { Title = "DaOAuth Gui API", Version = "v1" });
+                c.IncludeXmlComments(GetXmlCommentsPath());
             });
         }
 
@@ -59,6 +61,11 @@ namespace DaOAuthV2.Gui.Api
 
             app.UseHttpsRedirection();
             app.UseMvc();
+        }
+
+        private string GetXmlCommentsPath()
+        {
+            return Path.ChangeExtension(typeof(Startup).Assembly.Location, ".xml");
         }
     }
 }

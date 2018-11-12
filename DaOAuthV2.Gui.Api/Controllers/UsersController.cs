@@ -16,11 +16,23 @@ namespace DaOAuthV2.Gui.Api.Controllers
             _service = service;
         }
 
+        /// <summary>
+        /// Try to find user with login and password
+        /// </summary>
+        /// <param name="model">Json model</param>
+        /// <response code="401">Invalids credentials</response>
+        /// <response code="200">Valids credentials</response>
+        /// <returns>If correct, a User json object</returns>
         [HttpPost]
-        [Route("find")]
-        public UserDto FindUser(FindUserModel model)
+        [Route("find")]        
+        public IActionResult FindUser(FindUserModel model)
         {
-            return _service.GetUser(model.Login, model.Password);
+            var user = _service.GetUser(model.Login, model.Password);
+
+            if (user == null)
+                return StatusCode(401);
+
+            return Ok(user);
         }
     }
 }

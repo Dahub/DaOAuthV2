@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>DaOAuthV2.Gui.Api</name>
+    </assembly>
+    <members>
+        <member name="M:DaOAuthV2.Gui.Api.Controllers.UsersController.FindUser(DaOAuthV2.Gui.Api.Models.FindUserModel)">
+            <summary>
+            Try to find user with login and password
+            </summary>
+            <param name="model">Json model</param>
+            <response code="401">Invalids credentials</response>
+            <response code="200">Valids credentials</response>
+            <returns>If correct, a User json object</returns>
+        </member>
+        <member name="P:DaOAuthV2.Gui.Api.Models.FindUserModel.Login">
+            <summary>
+            User login
+            </summary>
+        </member>
+        <member name="P:DaOAuthV2.Gui.Api.Models.FindUserModel.Password">
+            <summary>
+            User password
+            </summary>
+        </member>
+    </members>
+</doc>
