@@ -3,12 +3,12 @@
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
     "iis": {
-      "applicationUrl": "http://localhost/OAUTH",
+      "applicationUrl": "http://localhost/WEBAPI",
       "sslPort": 0
     },
     "iisExpress": {
-      "applicationUrl": "http://localhost:64740",
-      "sslPort": 44390
+      "applicationUrl": "http://localhost:58605",
+      "sslPort": 44331
     }
   },
   "$schema": "http://json.schemastore.org/launchsettings.json",
@@ -21,10 +21,10 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-    "DaOAuthV2.API": {
+    "DaOAuthV2.Gui.Api": {
       "commandName": "IIS",
       "launchBrowser": true,
-      "launchUrl": "api/values",
+      "launchUrl": "swagger",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },

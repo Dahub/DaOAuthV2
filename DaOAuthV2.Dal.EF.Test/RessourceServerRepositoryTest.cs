@@ -69,7 +69,7 @@ namespace DaOAuthV2.Dal.EF.Test
         }
 
         [TestMethod]
-        public void GetAllActives()
+        public void Get_All_Actives_Should_Return_2_Actives_Ressouce_Server()
         {
             var options = new DbContextOptionsBuilder<DaOAuthContext>()
                         .UseInMemoryDatabase(databaseName: _dbName)
@@ -82,11 +82,12 @@ namespace DaOAuthV2.Dal.EF.Test
                 var rs = repo.GetAllActives();
 
                 Assert.AreEqual(2, rs.Count());
+                Assert.AreEqual(0, rs.Where(x => x.IsValid.Equals(false)).Count());
             }
         }
 
         [TestMethod]
-        public void GetByLogin()
+        public void Get_By_Existing_Login_Should_Return_Ressource_Server()
         {
             var options = new DbContextOptionsBuilder<DaOAuthContext>()
                       .UseInMemoryDatabase(databaseName: _dbName)
@@ -100,6 +101,13 @@ namespace DaOAuthV2.Dal.EF.Test
 
                 Assert.IsNotNull(rs);
             }
+        }
+        [TestMethod]
+        public void Get_By_Non_Existing_Login_Should_Return_Null()
+        {
+            var options = new DbContextOptionsBuilder<DaOAuthContext>()
+                      .UseInMemoryDatabase(databaseName: _dbName)
+                      .Options;
 
             using (var context = new DaOAuthContext(options))
             {

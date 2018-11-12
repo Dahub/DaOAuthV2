@@ -52,7 +52,7 @@ namespace DaOAuthV2.Dal.EF.Test
         }
 
         [TestMethod]
-        public void GetByUserNameTest()
+        public void Get_By_Existing_UserName_Should_Return_User()
         {
             var options = new DbContextOptionsBuilder<DaOAuthContext>()
                        .UseInMemoryDatabase(databaseName: _dbName)
@@ -66,6 +66,15 @@ namespace DaOAuthV2.Dal.EF.Test
 
                 Assert.IsNotNull(u);
             }
+        }
+
+        [TestMethod]
+        public void Get_By_Non_Existing_UserName_Should_Return_Null()
+        {
+            var options = new DbContextOptionsBuilder<DaOAuthContext>()
+                       .UseInMemoryDatabase(databaseName: _dbName)
+                       .Options;
+
 
             using (var context = new DaOAuthContext(options))
             {
@@ -78,7 +87,7 @@ namespace DaOAuthV2.Dal.EF.Test
         }
 
         [TestMethod]
-        public void GetByEmailTest()
+        public void Get_By_Existing_Email_Should_Return_User()
         {
             var options = new DbContextOptionsBuilder<DaOAuthContext>()
                        .UseInMemoryDatabase(databaseName: _dbName)
@@ -87,11 +96,19 @@ namespace DaOAuthV2.Dal.EF.Test
             using (var context = new DaOAuthContext(options))
             {
                 var repo = _repoFactory.GetUserRepository(context);
-
+                
                 var u = repo.GetByEmail("sam@rab.com");
 
                 Assert.IsNotNull(u);
             }
+        }
+
+        [TestMethod]
+        public void Get_By_Non_Existing_Email_Should_Return_Null()
+        {
+            var options = new DbContextOptionsBuilder<DaOAuthContext>()
+                       .UseInMemoryDatabase(databaseName: _dbName)
+                       .Options;
 
             using (var context = new DaOAuthContext(options))
             {

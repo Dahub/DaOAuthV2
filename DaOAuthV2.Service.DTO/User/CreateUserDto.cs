@@ -16,7 +16,7 @@ namespace DaOAuthV2.Service.DTO
         public string EMail { get; set; }
 
         [Required(ErrorMessage = "Password is required")]
-        [MinLength(7, ErrorMessage = "Password should have 7 characters minimum")]
+        [MinLength(7, ErrorMessage = "Password should have at least 7 characters")]
         public string Password { get; set; }
         public string RepeatPassword { get; set; }
         public DateTime? BirthDate { get; set; }

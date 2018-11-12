@@ -131,17 +131,18 @@ namespace DaOAuthV2.Dal.EF.Test
         }
 
         [TestMethod]
-        public void GetAllByUserNameTest()
+        public void Get_All_By_Existing_UserName_Should_Return_2_User_Client()
         {
             var options = new DbContextOptionsBuilder<DaOAuthContext>()
                         .UseInMemoryDatabase(databaseName: _dbName)
                         .Options;
 
+            string userName = "testeur";
+
             using (var context = new DaOAuthContext(options))
             {
                 var repo = _repoFactory.GetUserClientRepository(context);
-
-                var uc = repo.GetAllByUserName("testeur");
+                var uc = repo.GetAllByUserName(userName);
 
                 Assert.IsNotNull(uc);
                 Assert.AreEqual(2, uc.Count());
@@ -150,12 +151,22 @@ namespace DaOAuthV2.Dal.EF.Test
                 Assert.AreEqual(1, uc.First().Client.ClientsScopes.Count());
                 Assert.IsNotNull(uc.First().Client.ClientsScopes.First().Scope);
             }
+        }
+
+        [TestMethod]
+        public void Get_All_By_Non_Existing_UserName_Should_Return_2_User_Client()
+        {
+            var options = new DbContextOptionsBuilder<DaOAuthContext>()
+                        .UseInMemoryDatabase(databaseName: _dbName)
+                        .Options;
+
+            string userName = "missing user";
 
             using (var context = new DaOAuthContext(options))
             {
                 var repo = _repoFactory.GetUserClientRepository(context);
 
-                var uc = repo.GetAllByUserName("missing user");
+                var uc = repo.GetAllByUserName(userName);
 
                 Assert.IsNotNull(uc);
                 Assert.AreEqual(0, uc.Count());
@@ -163,7 +174,7 @@ namespace DaOAuthV2.Dal.EF.Test
         }
 
         [TestMethod]
-        public void GetUserClientByUserNameAndClientPublicId()
+        public void Get_User_Client_By_Corrects_UserName_And_Client_Public_Id_Should_Return_User_Client()
         {
             var options = new DbContextOptionsBuilder<DaOAuthContext>()
                        .UseInMemoryDatabase(databaseName: _dbName)
@@ -176,6 +187,23 @@ namespace DaOAuthV2.Dal.EF.Test
                 var uc = repo.GetUserClientByUserNameAndClientPublicId("CT2_id", "testeur");
 
                 Assert.IsNotNull(uc);
+            }
+        }
+
+        [TestMethod]
+        public void Get_User_Client_By_Incorrects_UserName_And_Client_Public_Id_Should_Return_Null()
+        {
+            var options = new DbContextOptionsBuilder<DaOAuthContext>()
+                       .UseInMemoryDatabase(databaseName: _dbName)
+                       .Options;
+
+            using (var context = new DaOAuthContext(options))
+            {
+                var repo = _repoFactory.GetUserClientRepository(context);
+
+                var uc = repo.GetUserClientByUserNameAndClientPublicId("CT2_ideee", "ffftesteur");
+
+                Assert.IsNull(uc);
             }
         }
     }

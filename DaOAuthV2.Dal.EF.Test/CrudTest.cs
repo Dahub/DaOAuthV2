@@ -51,13 +51,14 @@ namespace DaOAuthV2.Dal.EF.Test
         }
 
         [TestMethod]
-        public void GetByIdShouldReturnAnEntity()
+        public void Get_By_Existing_Id_Should_Return_An_Entity()
         {
             var options = new DbContextOptionsBuilder<DaOAuthContext>()
                         .UseInMemoryDatabase(databaseName: _dbName)
                         .Options;
 
             Client c = null;
+            int correctId = 100;
 
             using (var context = new DaOAuthContext(options))
             {
@@ -66,11 +67,30 @@ namespace DaOAuthV2.Dal.EF.Test
             }
 
             Assert.IsNotNull(c);
-            Assert.AreEqual(100, c.Id);
+            Assert.AreEqual(correctId, c.Id);
         }
 
         [TestMethod]
-        public void AddShouldAddEntity()
+        public void Get_By_Non_Existing_Id_Should_Return_Null()
+        {
+            var options = new DbContextOptionsBuilder<DaOAuthContext>()
+                        .UseInMemoryDatabase(databaseName: _dbName)
+                        .Options;
+
+            Client c = null;
+            int wrongId = 1546;
+
+            using (var context = new DaOAuthContext(options))
+            {
+                var clientRepo = _repoFactory.GetClientRepository(context);
+                c = clientRepo.GetById(wrongId);
+            }
+
+            Assert.IsNull(c);
+        }
+
+        [TestMethod]
+        public void Add_Should_Add_Entity()
         {
             var options = new DbContextOptionsBuilder<DaOAuthContext>()
                           .UseInMemoryDatabase(databaseName: _dbName)
@@ -101,7 +121,7 @@ namespace DaOAuthV2.Dal.EF.Test
         }
 
         [TestMethod]
-        public void UpdateShouldUpdateEntity()
+        public void Update_Should_Update_Entity()
         {
             var options = new DbContextOptionsBuilder<DaOAuthContext>()
             .UseInMemoryDatabase(databaseName: _dbName)
@@ -129,7 +149,7 @@ namespace DaOAuthV2.Dal.EF.Test
         }
 
         [TestMethod]
-        public void DeleteShouldDeleteEntity()
+        public void Delete_Should_Delete_Entity()
         {
             var options = new DbContextOptionsBuilder<DaOAuthContext>()
            .UseInMemoryDatabase(databaseName: _dbName)

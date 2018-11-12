@@ -7,8 +7,8 @@
       "sslPort": 0
     },
     "iisExpress": {
-      "applicationUrl": "http://localhost:64740",
-      "sslPort": 44390
+      "applicationUrl": "http://localhost:58646",
+      "sslPort": 44354
     }
   },
   "$schema": "http://json.schemastore.org/launchsettings.json",
@@ -21,7 +21,7 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-    "DaOAuthV2.API": {
+    "DaOAuthV2.OAuth.Api": {
       "commandName": "IIS",
       "launchBrowser": true,
       "launchUrl": "api/values",

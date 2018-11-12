@@ -52,7 +52,7 @@ namespace DaOAuthV2.Service
                 var repo = Factory.GetUserRepository(c);
                 var user = repo.GetByUserName(userName);
 
-                if (user == null)
+                if (user == null || !user.IsValid)
                     throw new DaOAuthServiceException("No user found");
 
                 user.IsValid = false;
@@ -90,13 +90,12 @@ namespace DaOAuthV2.Service
                 var repo = Factory.GetUserRepository(c);
                 var user = repo.GetByUserName(toUpdate.UserName);
 
-                if (user == null)
+                if (user == null ||!user.IsValid)
                     throw new DaOAuthServiceException("No user found");
 
                 user.BirthDate = toUpdate.BirthDate;
                 user.EMail = toUpdate.EMail;
                 user.FullName = toUpdate.FullName;
-
 
                 repo.Update(user);
 

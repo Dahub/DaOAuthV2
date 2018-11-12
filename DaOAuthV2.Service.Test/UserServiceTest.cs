@@ -35,35 +35,42 @@ namespace DaOAuthV2.Service.Test
         }
 
         [TestMethod]
-        public void ShouldGetUserByLoginAndPassword()
+        public void Get_User_By_Login_And_Password_Should_Return_User()
         {
             var u = _service.GetUser("Sammy", "test");
             Assert.IsNotNull(u);
         }
 
         [TestMethod]
-        public void ShouldGetUserByLoginAndPasswordWithInsensitiveCasse()
+        public void Get_User_By_Login_And_Password_With_Insensitive_Case_Should_Return_User()
         {
             var u = _service.GetUser("SamMY", "test");
             Assert.IsNotNull(u);
         }
 
         [TestMethod]
-        public void ShouldntGetUserByLoginAndWrongPassword()
+        public void Get_User_By_Login_And_Wrong_Password_Should_Return_Null()
         {
             var u = _service.GetUser("Sammy", "test__");
             Assert.IsNull(u);
         }
 
         [TestMethod]
-        public void ShouldntGetDesactivateUser()
+        public void Get_User_By_Wrong_Login_And_Wrong_Password_Should_Return_Null()
+        {
+            var u = _service.GetUser("vSammy", "test__");
+            Assert.IsNull(u);
+        }
+
+        [TestMethod]
+        public void Get_Desactivate_User_should_return_null()
         {
             var u = _service.GetUser("Johnny", "test");
             Assert.IsNull(u);
         }
 
         [TestMethod]
-        public void ShouldCreateNewUser()
+        public void Create_New_User_Should_Return_Int()
         {
             int id = _service.CreateUser(new DTO.CreateUserDto()
             {
@@ -85,8 +92,26 @@ namespace DaOAuthV2.Service.Test
         }
 
         [TestMethod]
+        public void Create_New_User_Should_Create_User()
+        {           
+            var user = _repo.GetById(_service.CreateUser(new DTO.CreateUserDto()
+            {
+                BirthDate = new DateTime(1978, 09, 16),
+                EMail = "test@test.com",
+                FullName = "testeur createur",
+                UserName = "testCreate",
+                Password = "test#1254",
+                RepeatPassword = "test#1254"
+            }));
+
+            Assert.IsNotNull(user);
+            Assert.IsTrue(user.CreationDate.HasValue);
+            Assert.IsTrue((DateTime.Now - user.CreationDate.Value).TotalSeconds < 10);
+        }
+
+        [TestMethod]
         [ExpectedException(typeof(DaOAuthServiceException))]
-        public void ShouldThrowExceptionWhenEmailExist()
+        public void Create_User_With_In_Use_Email_Should_Throw_Exception()
         {
             _service.CreateUser(new DTO.CreateUserDto()
             {
@@ -101,7 +126,7 @@ namespace DaOAuthV2.Service.Test
 
         [TestMethod]
         [ExpectedException(typeof(DaOAuthServiceException))]
-        public void ShouldThrowExceptionWhenEmailIncorrect()
+        public void Create_User_With_Incorrect_Email_Should_Throw_Exception()
         {
             _service.CreateUser(new DTO.CreateUserDto()
             {
@@ -116,7 +141,7 @@ namespace DaOAuthV2.Service.Test
 
         [TestMethod]
         [ExpectedException(typeof(DaOAuthServiceException))]
-        public void ShouldThrowExceptionWhenUserNameExist()
+        public void Create_User_With_In_Use_UserName_Should_Throw_Exception()
         {
             _service.CreateUser(new DTO.CreateUserDto()
             {
@@ -131,7 +156,7 @@ namespace DaOAuthV2.Service.Test
 
         [TestMethod]
         [ExpectedException(typeof(DaOAuthServiceException))]
-        public void ShouldThrowExceptionWhenUserNameCasseInsensitiveExist()
+        public void Create_User_With_In_Use_UserName_Case_Insensitive_Should_Throw_Exception()
         {
             _service.CreateUser(new DTO.CreateUserDto()
             {
@@ -146,7 +171,7 @@ namespace DaOAuthV2.Service.Test
 
         [TestMethod]
         [ExpectedException(typeof(DaOAuthServiceException))]
-        public void ShouldThrowExceptionWhenUserNameEmpty()
+        public void Create_User_With_Empty_UserName_Should_Throw_Exception()
         {
             _service.CreateUser(new DTO.CreateUserDto()
             {
@@ -161,7 +186,22 @@ namespace DaOAuthV2.Service.Test
 
         [TestMethod]
         [ExpectedException(typeof(DaOAuthServiceException))]
-        public void ShouldThrowExceptionWhenEmailEmpty()
+        public void Create_User_With_White_Spaces_UserName_Should_Throw_Exception()
+        {
+            _service.CreateUser(new DTO.CreateUserDto()
+            {
+                BirthDate = new DateTime(1978, 09, 16),
+                EMail = "test@test.com",
+                FullName = "testeur createur",
+                UserName = "     ",
+                Password = "test#1254",
+                RepeatPassword = "test#1254"
+            });
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(DaOAuthServiceException))]
+        public void Create_User_With_Empty_Email_Should_Throw_Exception()
         {
             _service.CreateUser(new DTO.CreateUserDto()
             {
@@ -176,7 +216,22 @@ namespace DaOAuthV2.Service.Test
 
         [TestMethod]
         [ExpectedException(typeof(DaOAuthServiceException))]
-        public void ShouldThrowExceptionWhenFullNameEmpty()
+        public void Create_User_With_White_Spaces_Email_Should_Throw_Exception()
+        {
+            _service.CreateUser(new DTO.CreateUserDto()
+            {
+                BirthDate = new DateTime(1978, 09, 16),
+                EMail = "    ",
+                FullName = "testeur createur",
+                UserName = "testCreate",
+                Password = "test#1254",
+                RepeatPassword = "test#1254"
+            });
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(DaOAuthServiceException))]
+        public void Create_User_With_Empty_FullName_Should_Throw_Exception()
         {
             _service.CreateUser(new DTO.CreateUserDto()
             {
@@ -191,7 +246,22 @@ namespace DaOAuthV2.Service.Test
 
         [TestMethod]
         [ExpectedException(typeof(DaOAuthServiceException))]
-        public void ShouldThrowExceptionWhenPasswordEmpty()
+        public void Create_User_With_White_Space_FullName_Should_Throw_Exception()
+        {
+            _service.CreateUser(new DTO.CreateUserDto()
+            {
+                BirthDate = new DateTime(1978, 09, 16),
+                EMail = "test@test.com",
+                FullName = "    ",
+                UserName = "testCreate",
+                Password = "test#1254",
+                RepeatPassword = "test#1254"
+            });
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(DaOAuthServiceException))]
+        public void Create_User_With_Empty_Password_Should_Throw_Exception()
         {
             _service.CreateUser(new DTO.CreateUserDto()
             {
@@ -206,7 +276,22 @@ namespace DaOAuthV2.Service.Test
 
         [TestMethod]
         [ExpectedException(typeof(DaOAuthServiceException))]
-        public void ShouldThrowExceptionWhenPasswordToShort()
+        public void Create_User_With_White_Spaces_Password_Should_Throw_Exception()
+        {
+            _service.CreateUser(new DTO.CreateUserDto()
+            {
+                BirthDate = new DateTime(1978, 09, 16),
+                EMail = "test@test.com",
+                FullName = "testeur test",
+                UserName = "testCreate",
+                Password = "        ",
+                RepeatPassword = String.Empty,
+            });
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(DaOAuthServiceException))]
+        public void Create_User_With_Short_Password_Should_Throw_Exception()
         {
             _service.CreateUser(new DTO.CreateUserDto()
             {
@@ -221,7 +306,7 @@ namespace DaOAuthV2.Service.Test
 
         [TestMethod]
         [ExpectedException(typeof(DaOAuthServiceException))]
-        public void ShouldThrowExceptionIfPasswordAndRepeatPasswordAreDifferents()
+        public void Create_User_With_Differences_Between_Password_And_Repeat_Password_Should_Throw_Exception()
         {
             _service.CreateUser(new DTO.CreateUserDto()
             {
@@ -236,13 +321,20 @@ namespace DaOAuthV2.Service.Test
 
         [TestMethod]
         [ExpectedException(typeof(DaOAuthServiceException))]
-        public void ShouldThrowExceptionWhenDeleteNonExistingUser()
+        public void Delete_Non_Existing_User_Should_Throw_Exception()
         {
             _service.DeleteUser("john");
         }
 
         [TestMethod]
-        public void ShouldDeleteUser()
+        [ExpectedException(typeof(DaOAuthServiceException))]
+        public void Delete_Desactivate_User_Should_Throw_Exception()
+        {
+            _service.DeleteUser("Johnny");
+        }
+
+        [TestMethod]
+        public void Delete_User_Shoud_Logicaly_Delete_User()
         {
             _service.DeleteUser("Sammy");
 
@@ -252,7 +344,7 @@ namespace DaOAuthV2.Service.Test
         }
 
         [TestMethod]
-        public void ShouldUpdateUser()
+        public void Update_User_Should_Update_User()
         {
             _service.UpdateUser(new DTO.UpdateUserDto()
             {
@@ -271,7 +363,7 @@ namespace DaOAuthV2.Service.Test
 
         [TestMethod]
         [ExpectedException(typeof(DaOAuthServiceException))]
-        public void ShouldThrowExceptionWhenUpdateNonExistingUser()
+        public void Update_Non_Existing_User_Should_Throw_Exception()
         {
             _service.UpdateUser(new DTO.UpdateUserDto()
             {
@@ -284,7 +376,7 @@ namespace DaOAuthV2.Service.Test
 
         [TestMethod]
         [ExpectedException(typeof(DaOAuthServiceException))]
-        public void ShouldThrowExceptionWhenUpdateWithEmptyEmail()
+        public void When_Update_With_Empty_Email_Should_Throw_Exception()
         {
             _service.UpdateUser(new DTO.UpdateUserDto()
             {
@@ -297,7 +389,7 @@ namespace DaOAuthV2.Service.Test
 
         [TestMethod]
         [ExpectedException(typeof(DaOAuthServiceException))]
-        public void ShouldThrowExceptionWhenUpdateWithInvalidEmail()
+        public void Update_With_Invalid_Email_Should_Throw_Exception()
         {
             _service.UpdateUser(new DTO.UpdateUserDto()
             {
@@ -310,7 +402,7 @@ namespace DaOAuthV2.Service.Test
 
         [TestMethod]
         [ExpectedException(typeof(DaOAuthServiceException))]
-        public void ShouldThrowExceptionWhenUpdateWithEmptyFullName()
+        public void Update_With_Empty_FullName_Should_Throw_Exception()
         {
             _service.UpdateUser(new DTO.UpdateUserDto()
             {
@@ -318,6 +410,19 @@ namespace DaOAuthV2.Service.Test
                 BirthDate = new DateTime(1918, 11, 11),
                 FullName = String.Empty,
                 EMail = "newSam@corp.org"
+            });
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(DaOAuthServiceException))]
+        public void Update_Desactivate_User_Should_Throw_Exception()
+        {
+            _service.UpdateUser(new DTO.UpdateUserDto()
+            {
+                UserName = "Johnny",
+                BirthDate = new DateTime(1918, 11, 11),
+                FullName = "john john",
+                EMail = "newJohn@corp.org"
             });
         }
     }

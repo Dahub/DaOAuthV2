@@ -77,7 +77,7 @@ namespace DaOAuthV2.Dal.EF.Test
         }
 
         [TestMethod]
-        public void GetAllByClientIdTest()
+        public void Get_All_By_Client_Id_Should_Return_2_Codes()
         {
             var options = new DbContextOptionsBuilder<DaOAuthContext>()
                      .UseInMemoryDatabase(databaseName: _dbName)

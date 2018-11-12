@@ -1,24 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using DaOAuthV2.Dal.EF;
+﻿using DaOAuthV2.Dal.EF;
 using DaOAuthV2.Service;
 using DaOAuthV2.Service.Interface;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Swashbuckle.AspNetCore.Swagger;
 
-namespace DaOAuthV2.GUI
+namespace DaOAuthV2.Gui.Api
 {
     public class Startup
     {
         public Startup(IConfiguration configuration)
-        {
+        {           
             Configuration = configuration;
         }
 
@@ -29,7 +24,7 @@ namespace DaOAuthV2.GUI
         {
             services.Configure<AppConfiguration>(Configuration.GetSection("AppConfiguration"));
 
-            services.AddTransient<IUserService>(s => new UserService()
+            services.AddTransient<IUserService>(u => new UserService()
             {
                 Configuration = Configuration.GetSection("AppConfiguration").Get<AppConfiguration>(),
                 Factory = new EfRepositoriesFactory(),
@@ -37,6 +32,11 @@ namespace DaOAuthV2.GUI
             });
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new Info { Title = "DaOAuth Gui API", Version = "v1" });
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -48,19 +48,17 @@ namespace DaOAuthV2.GUI
             }
             else
             {
-                app.UseExceptionHandler("/Home/Error");
                 app.UseHsts();
             }
 
-            app.UseHttpsRedirection();
-            app.UseStaticFiles();
-
-            app.UseMvc(routes =>
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
             {
-                routes.MapRoute(
-                    name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
+                c.SwaggerEndpoint("../swagger/v1/swagger.json", "DaOAuth Gui API");
             });
+
+            app.UseHttpsRedirection();
+            app.UseMvc();
         }
     }
 }

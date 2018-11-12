@@ -101,27 +101,39 @@ namespace DaOAuthV2.Dal.EF.Test
         }
 
         [TestMethod]
-        public void GetByClientPublicIdTest()
+        public void Get_By_Existing_Client_Public_Id_Should_Return_2_Scopes()
         {
             var options = new DbContextOptionsBuilder<DaOAuthContext>()
                      .UseInMemoryDatabase(databaseName: _dbName)
                      .Options;
 
+            string clientPublicId = "CT2_id";
+
             using (var context = new DaOAuthContext(options))
             {
                 var repo = _repoFactory.GetScopeRepository(context);
 
-                var scopes = repo.GetByClientPublicId("CT2_id");
+                var scopes = repo.GetByClientPublicId(clientPublicId);
 
                 Assert.IsNotNull(scopes);
                 Assert.AreEqual(2, scopes.Count());
             }
+        }
+
+        [TestMethod]
+        public void Get_By_Non_Existing_Client_Public_Id_Should_Return_Empty_List()
+        {
+            var options = new DbContextOptionsBuilder<DaOAuthContext>()
+                     .UseInMemoryDatabase(databaseName: _dbName)
+                     .Options;
+
+            string missingClientPublicId = "absent";
 
             using (var context = new DaOAuthContext(options))
             {
                 var repo = _repoFactory.GetScopeRepository(context);
 
-                var scopes = repo.GetByClientPublicId("absent");
+                var scopes = repo.GetByClientPublicId(missingClientPublicId);
 
                 Assert.IsNotNull(scopes);
                 Assert.AreEqual(0, scopes.Count());

@@ -132,7 +132,7 @@ namespace DaOAuthV2.Dal.EF.Test
         }
 
         [TestMethod]
-        public void GetAllByUserNameTest()
+        public void Get_All_By_UserName_Should_Return_2_Clients_With_Scopes()
         {
             var options = new DbContextOptionsBuilder<DaOAuthContext>()
                       .UseInMemoryDatabase(databaseName: _dbName)
@@ -154,7 +154,7 @@ namespace DaOAuthV2.Dal.EF.Test
         }
 
         [TestMethod]
-        public void GetByPublicIdTest()
+        public void Get_By_Public_Id_Should_Return_Client()
         {
             var options = new DbContextOptionsBuilder<DaOAuthContext>()
                      .UseInMemoryDatabase(databaseName: _dbName)
