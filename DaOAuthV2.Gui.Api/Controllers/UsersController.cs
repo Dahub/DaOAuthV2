@@ -1,5 +1,4 @@
-﻿using DaOAuthV2.Gui.Api.Models;
-using DaOAuthV2.Service.DTO;
+﻿using DaOAuthV2.Service.DTO;
 using DaOAuthV2.Service.Interface;
 using Microsoft.AspNetCore.Mvc;
 
@@ -17,22 +16,32 @@ namespace DaOAuthV2.Gui.Api.Controllers
         }
 
         /// <summary>
+        /// <summary>
         /// Try to find user with login and password
         /// </summary>
-        /// <param name="model">Json model</param>
+        /// <param name="login">User login</param>
+        /// <param name="password">User password</param>
         /// <response code="401">Invalids credentials</response>
         /// <response code="200">Valids credentials</response>
         /// <returns>If correct, a User json object</returns>
         [HttpPost]
-        [Route("find")]        
-        public IActionResult FindUser(FindUserModel model)
+        [Route("find")]
+        public IActionResult FindUser(string login, string password)
         {
-            var user = _service.GetUser(model.Login, model.Password);
+            var user = _service.GetUser(login, password);
 
             if (user == null)
                 return StatusCode(401);
 
             return Ok(user);
+        }
+
+        [HttpPost]
+        [Route("")]
+        public IActionResult Post(CreateUserDto model)
+        {
+            _service.CreateUser(model);
+            return Ok();
         }
     }
 }
