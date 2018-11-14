@@ -7,6 +7,6 @@ namespace DaOAuthV2.Service.Interface
         int CreateUser(CreateUserDto toCreate);
         void UpdateUser(UpdateUserDto toUpdate);
         void DeleteUser(string userName);
-        UserDto GetUser(string login, string password);
+        UserDto GetUser(string userName, string password);
     }
 }

@@ -4,6 +4,22 @@
         <name>DaOAuthV2.Gui.Api</name>
     </assembly>
     <members>
-        <!-- Commentaire XML incorrect pour le membre "M:DaOAuthV2.Gui.Api.Controllers.UsersController.FindUser(System.String,System.String)" -->
+        <member name="M:DaOAuthV2.Gui.Api.Controllers.UsersController.FindUser(System.String,System.String)">
+            <summary>
+            Try to find user with login and password
+            </summary>
+            <param name="userName">User name</param>
+            <param name="password">User password</param>
+            <response code="401">Invalids credentials</response>
+            <response code="200">Valids credentials</response>
+            <returns>If correct, a User json object</returns>
+        </member>
+        <member name="M:DaOAuthV2.Gui.Api.Controllers.UsersController.Post(DaOAuthV2.Service.DTO.CreateUserDto)">
+            <summary>
+            Create an user
+            </summary>
+            <param name="model">JSon model</param>
+            <returns>A 200 http code, with empty response</returns>
+        </member>
     </members>
 </doc>

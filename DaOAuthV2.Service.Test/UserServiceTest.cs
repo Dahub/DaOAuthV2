@@ -87,8 +87,7 @@ namespace DaOAuthV2.Service.Test
             var user = _repo.GetById(id);
 
             Assert.IsNotNull(user);
-            Assert.IsTrue(user.CreationDate.HasValue);
-            Assert.IsTrue((DateTime.Now - user.CreationDate.Value).TotalSeconds < 10);
+            Assert.IsTrue((DateTime.Now - user.CreationDate).TotalSeconds < 10);
         }
 
         [TestMethod]
@@ -105,8 +104,7 @@ namespace DaOAuthV2.Service.Test
             }));
 
             Assert.IsNotNull(user);
-            Assert.IsTrue(user.CreationDate.HasValue);
-            Assert.IsTrue((DateTime.Now - user.CreationDate.Value).TotalSeconds < 10);
+            Assert.IsTrue((DateTime.Now - user.CreationDate).TotalSeconds < 10);
         }
 
         [TestMethod]

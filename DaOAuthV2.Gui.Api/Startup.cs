@@ -35,6 +35,14 @@ namespace DaOAuthV2.Gui.Api
                 ConnexionString = Configuration.GetConnectionString("DaOAuthConnexionString")
             });
 
+            services.AddTransient<IJwtService>(u => new JwtService()
+            {
+                Configuration = Configuration.GetSection("AppConfiguration").Get<AppConfiguration>(),
+                Factory = new EfRepositoriesFactory(),
+                ConnexionString = Configuration.GetConnectionString("DaOAuthConnexionString")
+            });
+
+
             services.AddMvc(options => 
                 options.Filters.Add(new DaOAuthExceptionFilter(CurrentEnvironment)))
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);

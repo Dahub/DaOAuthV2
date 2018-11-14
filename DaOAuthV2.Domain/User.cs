@@ -12,7 +12,7 @@ namespace DaOAuthV2.Domain
         public byte[] Password { get; set; }
         public string FullName { get; set; }
         public DateTime? BirthDate { get; set; }
-        public DateTime? CreationDate { get; set; }
+        public DateTime CreationDate { get; set; }
         public bool IsValid { get; set; }
         public ICollection<UserClient> UsersClients { get; set; }
     }

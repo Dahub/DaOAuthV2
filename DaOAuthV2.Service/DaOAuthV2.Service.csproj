@@ -5,6 +5,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="5.3.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DaOAuthV2.Constants\DaOAuthV2.Constants.csproj" />
     <ProjectReference Include="..\DaOAuthV2.Dal.Interface\DaOAuthV2.Dal.Interface.csproj" />
     <ProjectReference Include="..\DaOAuthV2.Domain.Interface\DaOAuthV2.Domain.Interface.csproj" />
     <ProjectReference Include="..\DaOAuthV2.Domain\DaOAuthV2.Domain.csproj" />

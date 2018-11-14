@@ -16,19 +16,18 @@ namespace DaOAuthV2.Gui.Api.Controllers
         }
 
         /// <summary>
-        /// <summary>
         /// Try to find user with login and password
         /// </summary>
-        /// <param name="login">User login</param>
+        /// <param name="userName">User name</param>
         /// <param name="password">User password</param>
         /// <response code="401">Invalids credentials</response>
         /// <response code="200">Valids credentials</response>
         /// <returns>If correct, a User json object</returns>
         [HttpPost]
         [Route("find")]
-        public IActionResult FindUser(string login, string password)
+        public IActionResult FindUser(string userName, string password)
         {
-            var user = _service.GetUser(login, password);
+            var user = _service.GetUser(userName, password);
 
             if (user == null)
                 return StatusCode(401);
@@ -36,6 +35,11 @@ namespace DaOAuthV2.Gui.Api.Controllers
             return Ok(user);
         }
 
+        /// <summary>
+        /// Create an user
+        /// </summary>
+        /// <param name="model">JSon model</param>
+        /// <returns>A 200 http code, with empty response</returns>
         [HttpPost]
         [Route("")]
         public IActionResult Post(CreateUserDto model)

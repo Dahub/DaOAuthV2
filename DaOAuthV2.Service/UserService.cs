@@ -15,7 +15,7 @@ namespace DaOAuthV2.Service
             Validate(toCreate);
 
             if (!toCreate.Password.Equals(toCreate.RepeatPassword, StringComparison.Ordinal))
-                throw new DaOAuthServiceException("Password don't match repeat passord");
+                throw new DaOAuthServiceException("Password don't match repeat password");
 
             User u = new User()
             {
@@ -24,7 +24,7 @@ namespace DaOAuthV2.Service
                 EMail = toCreate.EMail,
                 FullName = toCreate.FullName,
                 IsValid = true,
-                Password = Sha256Hash(String.Concat(Configuration.PasswordSalt, toCreate.Password)),
+                Password = Sha256Hash(string.Concat(Configuration.PasswordSalt, toCreate.Password)),
                 UserName = toCreate.UserName
             };
 
@@ -36,10 +36,13 @@ namespace DaOAuthV2.Service
                     throw new DaOAuthServiceException($"User name {toCreate.UserName} already in use");
 
                 if (repo.GetByEmail(toCreate.EMail) != null)
-                    throw new DaOAuthServiceException($"Email adress {toCreate.EMail} already in use");
+                    throw new DaOAuthServiceException($"Email address {toCreate.EMail} already in use");
 
-                idCreated = repo.Add(u);
+                repo.Add(u);
+
                 c.Commit();
+
+                idCreated = u.Id;
             }
 
             return idCreated;
