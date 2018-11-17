@@ -5,12 +5,14 @@ using DaOAuthV2.Service;
 using DaOAuthV2.Service.Interface;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
+using NLog.Extensions.Logging;
+using NLog.Web;
 using Swashbuckle.AspNetCore.Swagger;
 using System.Collections.Generic;
 using System.Globalization;
@@ -38,6 +40,7 @@ namespace DaOAuthV2.Gui.Api
             // Build the intermediate service provider
             var sp = services.BuildServiceProvider();
             var localizationServiceFactory = sp.GetService<IStringLocalizerFactory>();
+            var loggerServiceFactory = sp.GetService<ILoggerFactory>();
 
             services.Configure<ApiBehaviorOptions>(options =>
             {
@@ -49,7 +52,8 @@ namespace DaOAuthV2.Gui.Api
                 Configuration = Configuration.GetSection("AppConfiguration").Get<AppConfiguration>(),
                 RepositoriesFactory = new EfRepositoriesFactory(),
                 ConnexionString = Configuration.GetConnectionString("DaOAuthConnexionString"),
-                StringLocalizerFactory = localizationServiceFactory
+                StringLocalizerFactory = localizationServiceFactory,
+                Logger = loggerServiceFactory.CreateLogger<UserService>()
             });
 
             services.AddTransient<IJwtService>(u => new JwtService()
@@ -57,7 +61,8 @@ namespace DaOAuthV2.Gui.Api
                 Configuration = Configuration.GetSection("AppConfiguration").Get<AppConfiguration>(),
                 RepositoriesFactory = new EfRepositoriesFactory(),
                 ConnexionString = Configuration.GetConnectionString("DaOAuthConnexionString"),
-                StringLocalizerFactory = localizationServiceFactory
+                StringLocalizerFactory = localizationServiceFactory,
+                Logger = loggerServiceFactory.CreateLogger<JwtService>()
             });
 
             services.AddMvc(options => 
@@ -72,7 +77,7 @@ namespace DaOAuthV2.Gui.Api
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, IStringLocalizerFactory stringLocalizerFactory)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, IStringLocalizerFactory stringLocalizerFactory, ILoggerFactory loggerFactory)
         {
             if (env.IsDevelopment())
             {
@@ -82,6 +87,9 @@ namespace DaOAuthV2.Gui.Api
             {
                 app.UseHsts();
             }
+
+            loggerFactory.AddNLog();
+            NLog.LogManager.LoadConfiguration("nlog.config");
 
             var supportedCultures = new List<CultureInfo>
             {

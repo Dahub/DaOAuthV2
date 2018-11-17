@@ -1,7 +1,6 @@
 ﻿using DaOAuthV2.Service.DTO;
 using DaOAuthV2.Service.Interface;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Localization;
 
 namespace DaOAuthV2.Gui.Api.Controllers
 {
@@ -40,13 +39,17 @@ namespace DaOAuthV2.Gui.Api.Controllers
         /// Create an user
         /// </summary>
         /// <param name="model">JSon model</param>
-        /// <returns>A 200 http code, with empty response</returns>
+        /// <response code="400">Invalid datas</response>
+        /// <response code="201">User created</response>
+        /// <returns>A 201 http code, with empty response
+        /// Since this is not a REST API, there is not location header as
+        /// users/id route don't exists</returns>
         [HttpPost]
         [Route("")]
         public IActionResult Post(CreateUserDto model)
         {
             _service.CreateUser(model);
-            return Ok();
+            return StatusCode(201);
         }
     }
 }

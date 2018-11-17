@@ -25,7 +25,8 @@ namespace DaOAuthV2.Service.Test
                 Configuration = FakeConfigurationHelper.GetFakeConf(),
                 ConnexionString = string.Empty,
                 RepositoriesFactory = new FakeRepositoriesFactory(),
-                StringLocalizerFactory = new FakeStringLocalizerFactory()
+                StringLocalizerFactory = new FakeStringLocalizerFactory(),
+                Logger = new FakeLogger()
             };
         }
 

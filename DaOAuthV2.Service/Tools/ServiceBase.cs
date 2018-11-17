@@ -7,6 +7,8 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
+using Microsoft.Extensions.Logging;
+
 
 namespace DaOAuthV2.Service
 {
@@ -15,8 +17,9 @@ namespace DaOAuthV2.Service
         public AppConfiguration Configuration { get; set; }
         public IRepositoriesFactory RepositoriesFactory { get; set; }
         public IStringLocalizerFactory StringLocalizerFactory { get; set; }
+        public ILogger Logger { get; set; }
         public string ConnexionString { get; set; }
-
+        
         protected static bool AreEqualsSha256(string toCompare, byte[] hash)
         {
             bool toReturn = false;

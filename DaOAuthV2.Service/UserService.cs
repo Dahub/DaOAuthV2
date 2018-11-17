@@ -5,6 +5,7 @@ using System;
 using DaOAuthV2.Service.ExtensionsMethods;
 using System.ComponentModel.DataAnnotations;
 using System.Collections.Generic;
+using Microsoft.Extensions.Logging;
 
 namespace DaOAuthV2.Service
 {
@@ -12,6 +13,8 @@ namespace DaOAuthV2.Service
     {
         public int CreateUser(CreateUserDto toCreate)
         {
+            Logger.LogInformation("Try to create user");
+
             IList<ValidationResult> ExtendValidation(CreateUserDto toValidate)
             {
                 var resource = this.GetErrorStringLocalizer();

@@ -25,7 +25,7 @@ namespace DaOAuthV2.Gui.Api.Filters
             {
                 Message = context.Exception.Message,
                 Details = _hostingEnvironment.IsDevelopment()?context.Exception.ToString():null
-            });
+            });                      
         }
 
         private class ApiResult
