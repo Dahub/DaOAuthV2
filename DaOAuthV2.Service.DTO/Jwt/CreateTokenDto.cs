@@ -7,11 +7,11 @@ namespace DaOAuthV2.Service.DTO
     {        
         public int MinutesLifeTime { get; set; }
 
-        [Required(ErrorMessage = "Token name is required")]
+        [Required(ErrorMessage = "CreateTokenDtoTokenNameRequired")]
         public string TokenName { get; set; }
         public string UserName { get; set; }
 
-        [Required(ErrorMessage = "Client Id is required")]
+        [Required(ErrorMessage = "CreateTokenDtoClientIdRequired")]
         public string ClientId { get; set; }
         public string Scope { get; set; }
         public Guid? UserPublicId { get; set; }

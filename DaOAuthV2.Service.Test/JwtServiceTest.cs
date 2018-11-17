@@ -31,7 +31,8 @@ namespace DaOAuthV2.Service.Test
             {
                 Configuration = conf,
                 ConnexionString = String.Empty,
-                Factory = new FakeRepositoriesFactory()
+                RepositoriesFactory = new FakeRepositoriesFactory(),
+                StringLocalizerFactory = new FakeStringLocalizerFactory()
             };
         }
 
@@ -49,6 +50,36 @@ namespace DaOAuthV2.Service.Test
             });
             Assert.IsTrue(!String.IsNullOrWhiteSpace(t.Token));
             Assert.IsTrue(t.IsValid);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(DaOAuthServiceException))]
+        public void Generate_Token_With_Empty_Token_Name_Should_Throw_Exception()
+        {
+            var t = _service.GenerateToken(new DTO.CreateTokenDto()
+            {
+                ClientId = "clientId",
+                MinutesLifeTime = 60,
+                Scope = "scope",
+                TokenName = String.Empty,
+                UserName = "userName",
+                UserPublicId = Guid.NewGuid()
+            });
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(DaOAuthServiceException))]
+        public void Generate_Token_With_Empty_Client_Id_Should_Throw_Exception()
+        {
+            var t = _service.GenerateToken(new DTO.CreateTokenDto()
+            {
+                ClientId = String.Empty,
+                MinutesLifeTime = 60,
+                Scope = "scope",
+                TokenName = _tokenName,
+                UserName = "userName",
+                UserPublicId = Guid.NewGuid()
+            });
         }
 
         [TestMethod]

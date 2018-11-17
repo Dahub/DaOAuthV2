@@ -37,7 +37,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DaOAuthV2.OAuth.Api", "DaOA
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shared", "Shared", "{49FD9947-4E6D-43F1-87C3-A429233EF803}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DaOAuthV2.Constants", "DaOAuthV2.Constants\DaOAuthV2.Constants.csproj", "{6C25C931-5F6B-45ED-8C1E-E88C513EF81E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DaOAuthV2.Constants", "DaOAuthV2.Constants\DaOAuthV2.Constants.csproj", "{6C25C931-5F6B-45ED-8C1E-E88C513EF81E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

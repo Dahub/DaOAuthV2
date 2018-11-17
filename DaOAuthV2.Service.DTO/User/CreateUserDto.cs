@@ -5,18 +5,18 @@ namespace DaOAuthV2.Service.DTO
 {
     public class CreateUserDto
     {
-        [Required(ErrorMessage = "User name is required")]
+        [Required(ErrorMessage = "CreateUserDtoUserNameRequired")]
         public string UserName { get; set; }
 
-        [Required(ErrorMessage = "Full name is required")]
+        [Required(ErrorMessage = "CreateUserDtoFullNameRequired")]
         public string FullName { get; set; }
 
-        [Required(ErrorMessage = "EMail adress is required")]
-        [EmailAddress(ErrorMessage = "Incorrect format for EMail adress")]
+        [Required(ErrorMessage = "CreateUserDtoEMailAdressRequired")]
+        [EmailAddress(ErrorMessage = "CreateUserDtoIncorrectEmailFormatRequired")]
         public string EMail { get; set; }
 
-        [Required(ErrorMessage = "Password is required")]
-        [MinLength(7, ErrorMessage = "Password should have at least 7 characters")]
+        [Required(ErrorMessage = "CreateUserDtoPasswordRequired")]
+        [MinLength(7, ErrorMessage = "CreateUserDtoPasswordPolicyFailed")]
         public string Password { get; set; }
         public string RepeatPassword { get; set; }
         public DateTime? BirthDate { get; set; }

@@ -1,13 +1,19 @@
-﻿using DaOAuthV2.Dal.EF;
+﻿using DaOAuthV2.Constants;
+using DaOAuthV2.Dal.EF;
 using DaOAuthV2.Gui.Api.Filters;
 using DaOAuthV2.Service;
 using DaOAuthV2.Service.Interface;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Localization;
 using Swashbuckle.AspNetCore.Swagger;
+using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 
 namespace DaOAuthV2.Gui.Api
@@ -26,22 +32,33 @@ namespace DaOAuthV2.Gui.Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddLocalization(options => options.ResourcesPath = ResourceConstant.ResourceFolder);
             services.Configure<AppConfiguration>(Configuration.GetSection("AppConfiguration"));
+
+            // Build the intermediate service provider
+            var sp = services.BuildServiceProvider();
+            var localizationServiceFactory = sp.GetService<IStringLocalizerFactory>();
+
+            services.Configure<ApiBehaviorOptions>(options =>
+            {
+                options.SuppressModelStateInvalidFilter = true;
+            });
 
             services.AddTransient<IUserService>(u => new UserService()
             {
                 Configuration = Configuration.GetSection("AppConfiguration").Get<AppConfiguration>(),
-                Factory = new EfRepositoriesFactory(),
-                ConnexionString = Configuration.GetConnectionString("DaOAuthConnexionString")
+                RepositoriesFactory = new EfRepositoriesFactory(),
+                ConnexionString = Configuration.GetConnectionString("DaOAuthConnexionString"),
+                StringLocalizerFactory = localizationServiceFactory
             });
 
             services.AddTransient<IJwtService>(u => new JwtService()
             {
                 Configuration = Configuration.GetSection("AppConfiguration").Get<AppConfiguration>(),
-                Factory = new EfRepositoriesFactory(),
-                ConnexionString = Configuration.GetConnectionString("DaOAuthConnexionString")
+                RepositoriesFactory = new EfRepositoriesFactory(),
+                ConnexionString = Configuration.GetConnectionString("DaOAuthConnexionString"),
+                StringLocalizerFactory = localizationServiceFactory
             });
-
 
             services.AddMvc(options => 
                 options.Filters.Add(new DaOAuthExceptionFilter(CurrentEnvironment)))
@@ -55,7 +72,7 @@ namespace DaOAuthV2.Gui.Api
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, IStringLocalizerFactory stringLocalizerFactory)
         {
             if (env.IsDevelopment())
             {
@@ -65,7 +82,22 @@ namespace DaOAuthV2.Gui.Api
             {
                 app.UseHsts();
             }
-            
+
+            var supportedCultures = new List<CultureInfo>
+            {
+                new CultureInfo("fr-FR"),
+                new CultureInfo("en-US")
+            };
+
+            var options = new RequestLocalizationOptions
+            {
+                DefaultRequestCulture = new RequestCulture("fr-FR"),
+                SupportedCultures = supportedCultures,
+                SupportedUICultures = supportedCultures
+            };
+
+            app.UseRequestLocalization(options);
+
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {

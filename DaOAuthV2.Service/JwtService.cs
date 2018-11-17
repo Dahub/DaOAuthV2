@@ -16,6 +16,8 @@ namespace DaOAuthV2.Service
     {
         public JwtTokenDto GenerateToken(CreateTokenDto value)
         {
+            Validate(value);
+
             var utcNow = DateTimeOffset.UtcNow;
 
             IList<Claim> claims = new List<Claim>();
@@ -52,6 +54,8 @@ namespace DaOAuthV2.Service
 
         public JwtTokenDto ExtractToken(ExtractTokenDto tokenInfo)
         {
+            Validate(tokenInfo);
+
             JwtTokenDto toReturn = new JwtTokenDto()
             {
                 Token = tokenInfo.Token,

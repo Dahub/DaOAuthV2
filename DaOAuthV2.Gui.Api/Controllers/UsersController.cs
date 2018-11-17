@@ -1,6 +1,7 @@
 ﻿using DaOAuthV2.Service.DTO;
 using DaOAuthV2.Service.Interface;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Localization;
 
 namespace DaOAuthV2.Gui.Api.Controllers
 {
