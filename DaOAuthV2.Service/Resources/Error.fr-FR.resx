@@ -121,7 +121,7 @@
     <value>L'adresse email {0} existe déjà</value>
   </data>
   <data name="CreateUserPasswordDontMatch" xml:space="preserve">
-    <value>Les deux mots ne passe fournis ne correspondent pas</value>
+    <value>Les deux mots de passe fournis ne correspondent pas</value>
   </data>
   <data name="CreateUserUserNameExists" xml:space="preserve">
     <value>Le nom d'utilisateur {0} existe déjà</value>

@@ -66,7 +66,7 @@ namespace DaOAuthV2.Gui.Api
             });
 
             services.AddMvc(options => 
-                options.Filters.Add(new DaOAuthExceptionFilter(CurrentEnvironment)))
+                options.Filters.Add(new DaOAuthExceptionFilter(CurrentEnvironment, loggerServiceFactory)))
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
             services.AddSwaggerGen(c =>
