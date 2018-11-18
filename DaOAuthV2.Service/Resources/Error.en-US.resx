@@ -129,6 +129,9 @@
   <data name="DeleteUserNoUserFound" xml:space="preserve">
     <value>User don't exist</value>
   </data>
+  <data name="ModelNull" xml:space="preserve">
+    <value>Cannot validate a null object</value>
+  </data>
   <data name="UpdateUserNoUserFound" xml:space="preserve">
     <value>User don't exist or ban</value>
   </data>

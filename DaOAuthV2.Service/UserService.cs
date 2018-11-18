@@ -13,8 +13,6 @@ namespace DaOAuthV2.Service
     {
         public int CreateUser(CreateUserDto toCreate)
         {
-            Logger.LogInformation("Try to create user");
-
             IList<ValidationResult> ExtendValidation(CreateUserDto toValidate)
             {
                 var resource = this.GetErrorStringLocalizer();
@@ -36,6 +34,8 @@ namespace DaOAuthV2.Service
 
                 return result;
             }
+
+            Logger.LogInformation(String.Format("Try to create user {0}", toCreate != null ? toCreate.UserName : String.Empty));
 
             Validate(toCreate, ExtendValidation);
 
@@ -65,6 +65,8 @@ namespace DaOAuthV2.Service
 
         public void DeleteUser(string userName)
         {
+            Logger.LogInformation($"Try to delete user {userName}");
+
             using (var c = RepositoriesFactory.CreateContext(ConnexionString))
             {
                 var repo = RepositoriesFactory.GetUserRepository(c);
@@ -83,6 +85,8 @@ namespace DaOAuthV2.Service
 
         public UserDto GetUser(string userName, string password)
         {
+            Logger.LogInformation($"Try to get user {userName}");
+
             UserDto result = null;
 
             using (var c = RepositoriesFactory.CreateContext(ConnexionString))
@@ -118,6 +122,8 @@ namespace DaOAuthV2.Service
 
                 return result;
             }
+
+            Logger.LogInformation(String.Format("Try to update user {0}", toUpdate != null ? toUpdate.UserName : String.Empty));
 
             Validate(toUpdate, ExtendValidation);
 

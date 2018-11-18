@@ -43,9 +43,16 @@ namespace DaOAuthV2.Service
 
         protected void Validate<T>(T toValidate, Func<T, IList<ValidationResult>> extendValidate)
         {
-            var results = extendValidate(toValidate);
-            var context = new ValidationContext(toValidate, null, null);
             var local = this.GetDtoStringLocalizer();
+
+            if (toValidate == null)
+                throw new DaOAuthServiceException(local["ModelNull"]);
+
+            var results = extendValidate(toValidate);
+            if (results == null)
+                results = new List<ValidationResult>();
+
+            var context = new ValidationContext(toValidate, null, null);           
 
             if (!Validator.TryValidateObject(toValidate, context, results, true) || results.Count > 0)
             {

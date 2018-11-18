@@ -9,6 +9,7 @@ using System.Globalization;
 using DaOAuthV2.Service.Interface;
 using DaOAuthV2.Service.DTO;
 using DaOAuthV2.Constants;
+using Microsoft.Extensions.Logging;
 
 namespace DaOAuthV2.Service
 {
@@ -16,6 +17,8 @@ namespace DaOAuthV2.Service
     {
         public JwtTokenDto GenerateToken(CreateTokenDto value)
         {
+            Logger.LogInformation("Try to generate token");
+
             Validate(value);
 
             var utcNow = DateTimeOffset.UtcNow;
@@ -54,6 +57,8 @@ namespace DaOAuthV2.Service
 
         public JwtTokenDto ExtractToken(ExtractTokenDto tokenInfo)
         {
+            Logger.LogInformation("Try to extract token");
+
             Validate(tokenInfo);
 
             JwtTokenDto toReturn = new JwtTokenDto()
