@@ -1,6 +1,9 @@
 ﻿using DaOAuthV2.Service.DTO;
 using DaOAuthV2.Service.Interface;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Security.Claims;
 
 namespace DaOAuthV2.Gui.Api.Controllers
 {
@@ -32,6 +35,8 @@ namespace DaOAuthV2.Gui.Api.Controllers
             if (user == null)
                 return StatusCode(401);
 
+            LogUser(user);
+
             return Ok(user);
         }
 
@@ -50,6 +55,21 @@ namespace DaOAuthV2.Gui.Api.Controllers
         {
             _service.CreateUser(model);
             return StatusCode(201);
+        }
+
+        private void LogUser(UserDto u)
+        {
+            var loginClaim = new Claim(ClaimTypes.NameIdentifier, u.UserName);
+            var fullNameClaim = new Claim(ClaimTypes.Name, u.FullName);
+            var birthDayClaim = new Claim(ClaimTypes.DateOfBirth, u.BirthDate.HasValue ? u.BirthDate.Value.ToShortDateString() : String.Empty);
+            var claimsIdentity = new ClaimsIdentity(new[] { loginClaim, fullNameClaim, birthDayClaim }, "cookie");
+            ClaimsPrincipal principal = new ClaimsPrincipal(claimsIdentity);
+            HttpContext.SignInAsync("DaOAuth", principal, new AuthenticationProperties()
+            {
+                ExpiresUtc = DateTime.Now.AddYears(100),
+                IsPersistent = true,
+                IssuedUtc = DateTime.Now
+            });
         }
     }
 }

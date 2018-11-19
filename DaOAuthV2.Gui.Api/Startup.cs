@@ -3,7 +3,9 @@ using DaOAuthV2.Dal.EF;
 using DaOAuthV2.Gui.Api.Filters;
 using DaOAuthV2.Service;
 using DaOAuthV2.Service.Interface;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
@@ -23,7 +25,7 @@ namespace DaOAuthV2.Gui.Api
     public class Startup
     {
         public Startup(IConfiguration configuration, IHostingEnvironment env)
-        {           
+        {
             Configuration = configuration;
             CurrentEnvironment = env;
         }
@@ -37,6 +39,16 @@ namespace DaOAuthV2.Gui.Api
             services.AddLocalization(options => options.ResourcesPath = ResourceConstant.ResourceFolder);
             services.Configure<AppConfiguration>(Configuration.GetSection("AppConfiguration"));
 
+            var conf = Configuration.GetSection("AppConfiguration").Get<AppConfiguration>();
+
+            services.AddAuthentication("DaOAuth").AddCookie("DaOAuth",
+                options =>
+                {
+                    options.DataProtectionProvider = DataProtectionProvider.Create(
+                        new DirectoryInfo(conf.DataProtectionProviderDirectory));
+                    options.Cookie.Domain = string.Concat(".", conf.AppsDomain);
+                });
+
             // Build the intermediate service provider
             var sp = services.BuildServiceProvider();
             var localizationServiceFactory = sp.GetService<IStringLocalizerFactory>();
@@ -49,7 +61,7 @@ namespace DaOAuthV2.Gui.Api
 
             services.AddTransient<IUserService>(u => new UserService()
             {
-                Configuration = Configuration.GetSection("AppConfiguration").Get<AppConfiguration>(),
+                Configuration = conf,
                 RepositoriesFactory = new EfRepositoriesFactory(),
                 ConnexionString = Configuration.GetConnectionString("DaOAuthConnexionString"),
                 StringLocalizerFactory = localizationServiceFactory,
@@ -58,14 +70,14 @@ namespace DaOAuthV2.Gui.Api
 
             services.AddTransient<IJwtService>(u => new JwtService()
             {
-                Configuration = Configuration.GetSection("AppConfiguration").Get<AppConfiguration>(),
+                Configuration = conf,
                 RepositoriesFactory = new EfRepositoriesFactory(),
                 ConnexionString = Configuration.GetConnectionString("DaOAuthConnexionString"),
                 StringLocalizerFactory = localizationServiceFactory,
                 Logger = loggerServiceFactory.CreateLogger<JwtService>()
             });
 
-            services.AddMvc(options => 
+            services.AddMvc(options =>
                 options.Filters.Add(new DaOAuthExceptionFilter(CurrentEnvironment, loggerServiceFactory)))
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
@@ -87,6 +99,8 @@ namespace DaOAuthV2.Gui.Api
             {
                 app.UseHsts();
             }
+
+            app.UseAuthentication();
 
             loggerFactory.AddNLog();
             NLog.LogManager.LoadConfiguration("nlog.config");

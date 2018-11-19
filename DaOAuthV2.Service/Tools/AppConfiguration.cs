@@ -7,5 +7,6 @@
         public string Issuer { get; set; }
         public string Audience { get; set; }
         public string AppsDomain { get; set; }
+        public string DataProtectionProviderDirectory { get; set; }
     }
 }
