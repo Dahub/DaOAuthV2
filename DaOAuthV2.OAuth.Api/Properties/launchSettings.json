@@ -3,18 +3,18 @@
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
     "iis": {
-      "applicationUrl": "http://localhost/OAUTH",
+      "applicationUrl": "http://authapi.daoauth.fr",
       "sslPort": 0
     },
     "iisExpress": {
-      "applicationUrl": "http://localhost:58646",
+      "applicationUrl": "authapi.daoauth.fr",
       "sslPort": 44354
     }
   },
   "$schema": "http://json.schemastore.org/launchsettings.json",
   "profiles": {
     "IIS Express": {
-      "commandName": "IISExpress",
+      "commandName": "IIS",
       "launchBrowser": true,
       "launchUrl": "api/values",
       "environmentVariables": {

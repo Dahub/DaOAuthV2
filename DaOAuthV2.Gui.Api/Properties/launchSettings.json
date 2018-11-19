@@ -3,7 +3,7 @@
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
     "iis": {
-      "applicationUrl": "http://localhost/WEBAPI",
+      "applicationUrl": "http://GuiApi.daOAuth.fr",
       "sslPort": 0
     },
     "iisExpress": {
