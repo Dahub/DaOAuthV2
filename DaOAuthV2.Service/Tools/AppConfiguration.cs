@@ -8,5 +8,6 @@
         public string Audience { get; set; }
         public string AppsDomain { get; set; }
         public string DataProtectionProviderDirectory { get; set; }
+        public string DefaultScheme { get; set; }
     }
 }

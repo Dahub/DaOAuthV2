@@ -3,7 +3,6 @@ using DaOAuthV2.Dal.EF;
 using DaOAuthV2.Gui.Api.Filters;
 using DaOAuthV2.Service;
 using DaOAuthV2.Service.Interface;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Hosting;
@@ -14,7 +13,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using NLog.Extensions.Logging;
-using NLog.Web;
 using Swashbuckle.AspNetCore.Swagger;
 using System.Collections.Generic;
 using System.Globalization;
@@ -41,7 +39,7 @@ namespace DaOAuthV2.Gui.Api
 
             var conf = Configuration.GetSection("AppConfiguration").Get<AppConfiguration>();
 
-            services.AddAuthentication("DaOAuth").AddCookie("DaOAuth",
+            services.AddAuthentication(conf.DefaultScheme).AddCookie(conf.DefaultScheme,
                 options =>
                 {
                     options.DataProtectionProvider = DataProtectionProvider.Create(
