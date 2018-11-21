@@ -31,7 +31,7 @@ namespace DaOAuthV2.OAuth.Api
                 options =>
                 {
                     options.DataProtectionProvider = DataProtectionProvider.Create(
-                        new DirectoryInfo(@"c:\temp\cookies"));
+                        new DirectoryInfo(@"C:\\inetpub\\wwwroot\\cookies"));
                     options.Cookie.Domain = string.Concat(".", "daoauth.fr");
                 });
 

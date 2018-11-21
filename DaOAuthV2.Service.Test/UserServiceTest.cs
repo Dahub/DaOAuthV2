@@ -39,35 +39,35 @@ namespace DaOAuthV2.Service.Test
         [TestMethod]
         public void Get_User_By_Login_And_Password_Should_Return_User()
         {
-            var u = _service.GetUser("Sammy", "test");
+            var u = _service.GetUser(new DTO.LoginUserDto() { UserName = "Sammy", Password = "test" });
             Assert.IsNotNull(u);
         }
 
         [TestMethod]
         public void Get_User_By_Login_And_Password_With_Insensitive_Case_Should_Return_User()
         {
-            var u = _service.GetUser("SamMY", "test");
+            var u = _service.GetUser(new DTO.LoginUserDto() { UserName = "SamMY", Password = "test" });
             Assert.IsNotNull(u);
         }
 
         [TestMethod]
         public void Get_User_By_Login_And_Wrong_Password_Should_Return_Null()
         {
-            var u = _service.GetUser("Sammy", "test__");
+            var u = _service.GetUser(new DTO.LoginUserDto() { UserName = "Sammy", Password = "test__" });
             Assert.IsNull(u);
         }
 
         [TestMethod]
         public void Get_User_By_Wrong_Login_And_Wrong_Password_Should_Return_Null()
         {
-            var u = _service.GetUser("vSammy", "test__");
+            var u = _service.GetUser(new DTO.LoginUserDto() { UserName = "vSammy", Password = "test__" });
             Assert.IsNull(u);
         }
 
         [TestMethod]
         public void Get_Desactivate_User_should_return_null()
         {
-            var u = _service.GetUser("Johnny", "test");
+            var u = _service.GetUser(new DTO.LoginUserDto() { UserName = "Johnny", Password = "test" });
             Assert.IsNull(u);
         }
 

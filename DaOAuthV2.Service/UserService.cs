@@ -83,19 +83,19 @@ namespace DaOAuthV2.Service
             }
         }
 
-        public UserDto GetUser(string userName, string password)
+        public UserDto GetUser(LoginUserDto credentials)
         {
-            Logger.LogInformation($"Try to get user {userName}");
+            Logger.LogInformation($"Try to get user {credentials.UserName}");
 
             UserDto result = null;
 
             using (var c = RepositoriesFactory.CreateContext(ConnexionString))
             {
                 var repo = RepositoriesFactory.GetUserRepository(c);
-                var user = repo.GetByUserName(userName);
+                var user = repo.GetByUserName(credentials.UserName);
 
                 if (user != null && user.IsValid && AreEqualsSha256(
-                    String.Concat(Configuration.PasswordSalt, password), user.Password))
+                    String.Concat(Configuration.PasswordSalt, credentials.Password), user.Password))
                 {
                     result = user.ToDto();
                 }

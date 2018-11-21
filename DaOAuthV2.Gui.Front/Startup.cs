@@ -1,30 +1,50 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using DaOAuthV2.Service;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using System.IO;
 
 namespace DaOAuthV2.Gui.Front
 {
     public class Startup
     {
-        // This method gets called by the runtime. Use this method to add services to the container.
-        // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
+        public Startup(IConfiguration configuration, IHostingEnvironment env)
+        {
+            Configuration = configuration;
+            CurrentEnvironment = env;
+        }
+
+        private IHostingEnvironment CurrentEnvironment { get; set; }
+        public IConfiguration Configuration { get; }
+
         public void ConfigureServices(IServiceCollection services)
         {
+            services.Configure<AppConfiguration>(Configuration.GetSection("AppConfiguration"));
+
+            var conf = Configuration.GetSection("AppConfiguration").Get<AppConfiguration>();
+
+            services.AddAuthentication(conf.DefaultScheme).AddCookie(conf.DefaultScheme,
+                options =>
+                {
+                    options.DataProtectionProvider = DataProtectionProvider.Create(
+                        new DirectoryInfo(conf.DataProtectionProviderDirectory));
+                    options.Cookie.Domain = string.Concat(".", conf.AppsDomain);
+                    options.LoginPath = "/Home/Login";
+                });
+
             services.AddMvc();
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            app.UseAuthentication();
 
             app.UseStaticFiles();
             app.UseMvc(routes =>

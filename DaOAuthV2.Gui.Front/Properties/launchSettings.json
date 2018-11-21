@@ -3,7 +3,7 @@
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
     "iis": {
-      "applicationUrl": "http://daoauth.fr",
+      "applicationUrl": "http://front.daoauth.fr",
       "sslPort": 0
     },
     "iisExpress": {

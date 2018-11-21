@@ -16,4 +16,9 @@
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.1.1" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\DaOAuthV2.Service.DTO\DaOAuthV2.Service.DTO.csproj" />
+    <ProjectReference Include="..\DaOAuthV2.Service\DaOAuthV2.Service.csproj" />
+  </ItemGroup>
+
 </Project>

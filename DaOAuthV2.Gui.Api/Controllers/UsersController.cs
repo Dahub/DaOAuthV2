@@ -1,9 +1,11 @@
 ﻿using DaOAuthV2.Service.DTO;
 using DaOAuthV2.Service.Interface;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace DaOAuthV2.Gui.Api.Controllers
 {
@@ -21,25 +23,22 @@ namespace DaOAuthV2.Gui.Api.Controllers
         /// <summary>
         /// Try to find user with login and password
         /// </summary>
-        /// <param name="userName">User name</param>
-        /// <param name="password">User password</param>
+        /// <param name="credentials">User credentials</param>
         /// <response code="401">Invalids credentials</response>
         /// <response code="200">Valids credentials</response>
         /// <returns>If correct, a User json object</returns>
         [HttpPost]
         [Route("find")]
-        public IActionResult FindUser(string userName, string password)
+        public IActionResult FindUser(LoginUserDto credentials)
         {
-            var user = _service.GetUser(userName, password);
+            var user = _service.GetUser(credentials);
 
             if (user == null)
                 return StatusCode(401);
 
-            LogUser(user);
-
             return Ok(user);
         }
-
+       
         /// <summary>
         /// Create an user
         /// </summary>
@@ -57,19 +56,12 @@ namespace DaOAuthV2.Gui.Api.Controllers
             return StatusCode(201);
         }
 
-        private void LogUser(UserDto u)
+        [Authorize]
+        [Route("test")]
+        [HttpGet]
+        public IActionResult Test()
         {
-            var loginClaim = new Claim(ClaimTypes.NameIdentifier, u.UserName);
-            var fullNameClaim = new Claim(ClaimTypes.Name, u.FullName);
-            var birthDayClaim = new Claim(ClaimTypes.DateOfBirth, u.BirthDate.HasValue ? u.BirthDate.Value.ToShortDateString() : String.Empty);
-            var claimsIdentity = new ClaimsIdentity(new[] { loginClaim, fullNameClaim, birthDayClaim }, "cookie");
-            ClaimsPrincipal principal = new ClaimsPrincipal(claimsIdentity);
-            HttpContext.SignInAsync("DaOAuth", principal, new AuthenticationProperties()
-            {
-                ExpiresUtc = DateTime.Now.AddYears(100),
-                IsPersistent = true,
-                IssuedUtc = DateTime.Now
-            });
+            return Ok();
         }
     }
 }

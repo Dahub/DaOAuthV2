@@ -4,12 +4,11 @@
         <name>DaOAuthV2.Gui.Api</name>
     </assembly>
     <members>
-        <member name="M:DaOAuthV2.Gui.Api.Controllers.UsersController.FindUser(System.String,System.String)">
+        <member name="M:DaOAuthV2.Gui.Api.Controllers.UsersController.FindUser(DaOAuthV2.Service.DTO.LoginUserDto)">
             <summary>
             Try to find user with login and password
             </summary>
-            <param name="userName">User name</param>
-            <param name="password">User password</param>
+            <param name="credentials">User credentials</param>
             <response code="401">Invalids credentials</response>
             <response code="200">Valids credentials</response>
             <returns>If correct, a User json object</returns>
