@@ -1,8 +1,13 @@
-﻿namespace DaOAuthV2.Service.DTO
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace DaOAuthV2.Service.DTO
 {
     public class LoginUserDto
     {
+        [Required(ErrorMessage = "LoginUserDtoUserNameRequired")]
         public string UserName { get; set; }
+
+        [Required(ErrorMessage = "LoginUserDtoPasswordRequired")]
         public string Password { get; set; }
     }
 }

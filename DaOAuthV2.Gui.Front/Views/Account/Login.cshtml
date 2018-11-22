@@ -1,4 +1,5 @@
-﻿
+﻿@model DaOAuthV2.Gui.Front.Models.LoginModel
+
 <!doctype html>
 <html lang="en">
 <head>
@@ -7,27 +8,26 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>Signin Template for Bootstrap</title>
+    <title>DaOAuth</title>
 
     <!-- Bootstrap core CSS -->
     @await Html.PartialAsync("_css")
-
 
     <link href="~/css/login.css" rel="stylesheet" />
 </head>
 
 <body class="text-center">
-    @using (Html.BeginForm("Login", "Home", FormMethod.Post, new { @class = "form-signin" }))
+    @using (Html.BeginForm("Login", "Account", FormMethod.Post, new { @class = "form-signin" }))
     {
         <img class="mb-4" src="https://getbootstrap.com/docs/4.0/assets/brand/bootstrap-solid.svg" alt="" width="72" height="72">
         <h1 class="h3 mb-3 font-weight-normal">Please sign in</h1>
         <label for="inputEmail" class="sr-only">User name</label>
-        <input type="text" name="userName" id="userName" class="form-control" placeholder="User name" required autofocus>
+        <input type="text" name="userName" id="userName" class="form-control" placeholder="User name">
         <label for="inputPassword" class="sr-only">Password</label>
-        <input type="password" name="password" id="password" class="form-control" placeholder="Password" required>
+        <input type="password" name="password" id="password" class="form-control" placeholder="Password">
         <div class="checkbox mb-3">
             <label>
-                <input type="checkbox" value="remember-me"> Remember me
+                @Html.EditorFor(m => m.RememberMe) Remember me
             </label>
         </div>
         <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>

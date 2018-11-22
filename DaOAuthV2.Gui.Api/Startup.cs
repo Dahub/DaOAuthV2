@@ -17,6 +17,7 @@ using Swashbuckle.AspNetCore.Swagger;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace DaOAuthV2.Gui.Api
 {
@@ -45,6 +46,11 @@ namespace DaOAuthV2.Gui.Api
                     options.DataProtectionProvider = DataProtectionProvider.Create(
                         new DirectoryInfo(conf.DataProtectionProviderDirectory));
                     options.Cookie.Domain = string.Concat(".", conf.AppsDomain);
+                    options.Events.OnRedirectToLogin = (context) =>
+                    {
+                        context.Response.StatusCode = 401; // don't use redirect but unauthorize
+                        return Task.CompletedTask;
+                    };
                 });
 
             // Build the intermediate service provider

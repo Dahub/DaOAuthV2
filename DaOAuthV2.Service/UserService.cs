@@ -84,8 +84,10 @@ namespace DaOAuthV2.Service
         }
 
         public UserDto GetUser(LoginUserDto credentials)
-        {
+        {            
             Logger.LogInformation($"Try to get user {credentials.UserName}");
+
+            Validate(credentials);
 
             UserDto result = null;
 

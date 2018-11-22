@@ -63,5 +63,16 @@ namespace DaOAuthV2.Gui.Api.Controllers
         {
             return Ok();
         }
+
+        /// <summary>
+        /// Redirect to login front end
+        /// </summary>
+        /// <returns>Redirect response</returns>
+        [HttpGet]
+        [Route("unauthorize")]
+        public IActionResult Unauthorized()
+        {
+            return Redirect("http://front.daoauth.fr/");
+        }
     }
 }

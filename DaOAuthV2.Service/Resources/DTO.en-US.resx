@@ -141,6 +141,12 @@
   <data name="CreateUserDtoUserNameRequired" xml:space="preserve">
     <value>User name is mandatory</value>
   </data>
+  <data name="LoginUserDtoPasswordRequired" xml:space="preserve">
+    <value>Password is mandatory</value>
+  </data>
+  <data name="LoginUserDtoUserNameRequired" xml:space="preserve">
+    <value>User name is mandatory</value>
+  </data>
   <data name="UpdateUserDtoEmailAdressRequired" xml:space="preserve">
     <value>Email adress is mandatory</value>
   </data>

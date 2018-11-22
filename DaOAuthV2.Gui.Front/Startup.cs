@@ -1,5 +1,4 @@
-﻿using DaOAuthV2.Service;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -21,9 +20,9 @@ namespace DaOAuthV2.Gui.Front
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.Configure<AppConfiguration>(Configuration.GetSection("AppConfiguration"));
+            services.Configure<FrontConfiguration>(Configuration.GetSection("FrontConfiguration"));
 
-            var conf = Configuration.GetSection("AppConfiguration").Get<AppConfiguration>();
+            var conf = Configuration.GetSection("FrontConfiguration").Get<FrontConfiguration>();
 
             services.AddAuthentication(conf.DefaultScheme).AddCookie(conf.DefaultScheme,
                 options =>
@@ -31,10 +30,11 @@ namespace DaOAuthV2.Gui.Front
                     options.DataProtectionProvider = DataProtectionProvider.Create(
                         new DirectoryInfo(conf.DataProtectionProviderDirectory));
                     options.Cookie.Domain = string.Concat(".", conf.AppsDomain);
-                    options.LoginPath = "/Home/Login";
+                    options.LoginPath = "/Account/Login";
                 });
 
             services.AddMvc();
+            services.AddSingleton<IConfiguration>(Configuration);
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)

@@ -1,4 +1,5 @@
 ﻿using DaOAuthV2.Service;
+using DaOAuthV2.Service.DTO;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -21,27 +22,27 @@ namespace DaOAuthV2.Gui.Api.Filters
         public override void OnException(ExceptionContext context)
         {
             if (context.Exception is DaOAuthServiceException)
-            {
-                context.HttpContext.Response.StatusCode = 400;
+            {               
                 _loggerFactory.CreateLogger<DaOAuthServiceException>().LogError(context.Exception, context.Exception.Message);
+                if (!context.HttpContext.Response.HasStarted)
+                {
+                    context.HttpContext.Response.StatusCode = 400;
+                }
             }
             else
             {
                 _loggerFactory.CreateLogger<Exception>().LogError(context.Exception, context.Exception.Message);
-                context.HttpContext.Response.StatusCode = 500;
+                if (!context.HttpContext.Response.HasStarted)
+                {
+                    context.HttpContext.Response.StatusCode = 500;
+                }
             }
 
-            context.Result = new JsonResult(new ApiResult()
+            context.Result = new JsonResult(new ErrorApiResultDto()
             {
                 Message = context.Exception.Message,
                 Details = _hostingEnvironment.IsDevelopment()?context.Exception.ToString():null
             });                      
-        }
-
-        private class ApiResult
-        {
-            public string Message { get; set; }
-            public string Details { get; set; }
         }
     }
 }

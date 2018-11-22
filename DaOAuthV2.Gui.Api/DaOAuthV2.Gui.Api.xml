@@ -24,5 +24,11 @@
             Since this is not a REST API, there is not location header as
             users/id route don't exists</returns>
         </member>
+        <member name="M:DaOAuthV2.Gui.Api.Controllers.UsersController.Unauthorized">
+            <summary>
+            Redirect to login front end
+            </summary>
+            <returns>Redirect response</returns>
+        </member>
     </members>
 </doc>
