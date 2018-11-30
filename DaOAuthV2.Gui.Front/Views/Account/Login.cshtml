@@ -1,38 +1,33 @@
 ﻿@model DaOAuthV2.Gui.Front.Models.LoginModel
 
-<!doctype html>
-<html lang="en">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="">
-    <meta name="author" content="">
+@{
+    Layout = "_Layout";
+}
 
-    <title>DaOAuth</title>
-
-    <!-- Bootstrap core CSS -->
-    @await Html.PartialAsync("_css")
-
+@section Css{
     <link href="~/css/login.css" rel="stylesheet" />
-</head>
+}
 
-<body class="text-center">
-    @using (Html.BeginForm("Login", "Account", FormMethod.Post, new { @class = "form-signin" }))
-    {
-        <img class="mb-4" src="https://getbootstrap.com/docs/4.0/assets/brand/bootstrap-solid.svg" alt="" width="72" height="72">
-        <h1 class="h3 mb-3 font-weight-normal">Please sign in</h1>
-        <label for="inputEmail" class="sr-only">User name</label>
-        <input type="text" name="userName" id="userName" class="form-control" placeholder="User name">
-        <label for="inputPassword" class="sr-only">Password</label>
-        <input type="password" name="password" id="password" class="form-control" placeholder="Password">
-        <div class="checkbox mb-3">
-            <label>
-                @Html.EditorFor(m => m.RememberMe) Remember me
-            </label>
-        </div>
-        <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
-        <p class="mt-5 mb-3 text-muted">&copy; 2017-2018</p>
-    }
-    @await Html.PartialAsync("_scripts")
-</body>
-</html>
+@await Html.PartialAsync("_modelErrors")
+
+<div class="row">
+    <div class="login-main text-center col-12">
+
+        @using (Html.BeginForm("Login", "Account", FormMethod.Post, new { @class = "form-signin" }))
+        {
+            <h1 class="h3 mb-3 font-weight-normal">Please sign in</h1>
+            <label for="inputEmail" class="sr-only">User name</label>
+            @Html.TextBoxFor(m => m.UserName, new { @class = "form-control", placeholder = "User name" })
+            <label for="inputPassword" class="sr-only">Password</label>
+            @Html.PasswordFor(m => m.Password, new { @class = "form-control", placeholder = "Password" })
+            <div class="checkbox mb-3">
+                <label>
+                    @Html.EditorFor(m => m.RememberMe) Remember me
+                </label>
+            </div>
+            <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+            @Html.ActionLink("Register", "Register");
+        }
+        
+    </div>
+</div>

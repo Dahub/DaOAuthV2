@@ -1,0 +1,25 @@
+﻿@model DaOAuthV2.Gui.Front.Models.AbstractModel
+
+@if (Model.HasErrors)
+{
+    <div class="row">
+        <div class="col-12">
+            <div class="alert alert-danger">
+                <strong>Some errors occured</strong><br />
+                @if (Model.Errors.Count == 1)
+                {
+                    @Model.Errors.First();
+                }
+                else
+                {
+                    <ul>
+                        @foreach (var e in Model.Errors)
+                        {
+                            <li>@e</li>
+                        }
+                    </ul>
+                }
+            </div>
+        </div>
+    </div>
+}

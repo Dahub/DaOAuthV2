@@ -1,9 +1,4 @@
-﻿html,
-body {
-    height: 100%;
-}
-
-body {
+﻿.login-main {
     display: -ms-flexbox;
     display: -webkit-box;
     display: flex;

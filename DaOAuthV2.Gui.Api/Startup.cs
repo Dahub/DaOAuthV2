@@ -48,7 +48,7 @@ namespace DaOAuthV2.Gui.Api
                     options.Cookie.Domain = string.Concat(".", conf.AppsDomain);
                     options.Events.OnRedirectToLogin = (context) =>
                     {
-                        context.Response.StatusCode = 401; // don't use redirect but unauthorize
+                        context.Response.StatusCode = 401; // API : don't use redirect but unauthorize
                         return Task.CompletedTask;
                     };
                 });

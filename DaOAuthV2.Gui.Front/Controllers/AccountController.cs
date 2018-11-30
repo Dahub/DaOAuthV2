@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
-using Newtonsoft.Json;
 using System;
 using System.Net.Http;
 using System.Security.Claims;
@@ -48,21 +47,18 @@ namespace DaOAuthV2.Gui.Front.Controllers
               {
                   UserName = model.UserName,
                   Password = model.Password
-              });            
+              });
 
-            if (response.StatusCode != System.Net.HttpStatusCode.OK)
+            if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+                model.Errors.Add("Username or password incorrects");
+
+            if (await model.ValidateAsync(response))
             {
-                ErrorApiResultDto errors = JsonConvert.DeserializeObject<ErrorApiResultDto>(await response.Content.ReadAsStringAsync());
-                
-                var tt = errors;
+                LogUser(await response.Content.ReadAsAsync<UserDto>(), model.RememberMe);
+                return RedirectToAction("Index", "Home");
             }
 
-
-            var res = response.EnsureSuccessStatusCode();
-
-            LogUser(await res.Content.ReadAsAsync<UserDto>(), model.RememberMe);
-
-            return RedirectToAction("Index", "Home");
+            return View(model);
         }
 
         private void LogUser(UserDto u, bool rememberMe)
