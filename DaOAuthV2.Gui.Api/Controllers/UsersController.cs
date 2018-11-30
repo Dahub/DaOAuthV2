@@ -1,11 +1,10 @@
-﻿using DaOAuthV2.Service.DTO;
+﻿using DaOAuthV2.Constants;
+using DaOAuthV2.Service;
+using DaOAuthV2.Service.DTO;
 using DaOAuthV2.Service.Interface;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Security.Claims;
-using System.Threading.Tasks;
+using Microsoft.Extensions.Localization;
 
 namespace DaOAuthV2.Gui.Api.Controllers
 {
@@ -29,12 +28,15 @@ namespace DaOAuthV2.Gui.Api.Controllers
         /// <returns>If correct, a User json object</returns>
         [HttpPost]
         [Route("find")]
-        public IActionResult FindUser(LoginUserDto credentials)
+        public IActionResult FindUser(LoginUserDto credentials, [FromServices] IStringLocalizerFactory localFactory)
         {
             var user = _service.GetUser(credentials);
 
             if (user == null)
-                return StatusCode(401);
+            {
+                var local = localFactory.Create(ResourceConstant.ErrorResource, typeof(Program).Assembly.FullName);
+                throw new DaOauthUnauthorizeException(local["WrongCredentials"]);
+            }
 
             return Ok(user);
         }
@@ -62,17 +64,6 @@ namespace DaOAuthV2.Gui.Api.Controllers
         public IActionResult Test()
         {
             return Ok();
-        }
-
-        /// <summary>
-        /// Redirect to login front end
-        /// </summary>
-        /// <returns>Redirect response</returns>
-        [HttpGet]
-        [Route("unauthorize")]
-        public IActionResult Unauthorized()
-        {
-            return Redirect("http://front.daoauth.fr/");
         }
     }
 }

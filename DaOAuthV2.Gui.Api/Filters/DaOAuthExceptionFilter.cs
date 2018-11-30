@@ -29,6 +29,14 @@ namespace DaOAuthV2.Gui.Api.Filters
                     context.HttpContext.Response.StatusCode = 400;
                 }
             }
+            else if (context.Exception is DaOauthUnauthorizeException)
+            {
+                _loggerFactory.CreateLogger<DaOauthUnauthorizeException>().LogError(context.Exception, context.Exception.Message);
+                if (!context.HttpContext.Response.HasStarted)
+                {
+                    context.HttpContext.Response.StatusCode = 401;
+                }
+            }
             else
             {
                 _loggerFactory.CreateLogger<Exception>().LogError(context.Exception, context.Exception.Message);

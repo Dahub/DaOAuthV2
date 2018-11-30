@@ -1,4 +1,5 @@
 ﻿using DaOAuthV2.Gui.Front.Models;
+using DaOAuthV2.Gui.Front.Tools;
 using DaOAuthV2.Service.DTO;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
@@ -12,14 +13,10 @@ using System.Threading.Tasks;
 namespace DaOAuthV2.Gui.Front.Controllers
 {
     [Authorize]
-    public class AccountController : Controller
+    public class AccountController : DaOauthFrontController
     {
-        private HttpClient _client = new HttpClient();
-        private FrontConfiguration _conf;
-
-        public AccountController(IConfiguration Configuration)
+        public AccountController(IConfiguration configuration) : base(configuration)
         {
-            _conf = Configuration.GetSection("FrontConfiguration").Get<FrontConfiguration>();
         }
 
         [AllowAnonymous]
@@ -42,12 +39,18 @@ namespace DaOAuthV2.Gui.Front.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Login(LoginModel model)
         {
-            HttpResponseMessage response = await _client.PostAsJsonAsync(
-              $"{_conf.GuiApiUrl}/users/find", new LoginUserDto
-              {
-                  UserName = model.UserName,
-                  Password = model.Password
-              });
+            //HttpResponseMessage response = await _client.PostAsJsonAsync(
+            //  $"{_conf.GuiApiUrl}/users/find", new LoginUserDto
+            //  {
+            //      UserName = model.UserName,
+            //      Password = model.Password
+            //  });
+
+            HttpResponseMessage response = await PostToApi("users/find", new LoginUserDto
+            {
+                UserName = model.UserName,
+                Password = model.Password
+            });
 
             if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
                 model.Errors.Add("Username or password incorrects");

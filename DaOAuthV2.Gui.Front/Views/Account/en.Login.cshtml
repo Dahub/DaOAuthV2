@@ -1,0 +1,33 @@
+﻿@model DaOAuthV2.Gui.Front.Models.LoginModel
+
+@{
+    Layout = "_en.layout";
+}
+
+@section Css{
+    <link href="~/css/login.css" rel="stylesheet" />
+}
+
+@await Html.PartialAsync("_en.modelErrors")
+
+<div class="row">
+    <div class="login-main text-center col-12">
+
+        @using (Html.BeginForm("Login", "Account", FormMethod.Post, new { @class = "form-signin" }))
+        {
+            <h1 class="h3 mb-3 font-weight-normal">Please sign in</h1>
+            <label for="inputEmail" class="sr-only">User name</label>
+            @Html.TextBoxFor(m => m.UserName, new { @class = "form-control", placeholder = "User name" })
+            <label for="inputPassword" class="sr-only">Password</label>
+            @Html.PasswordFor(m => m.Password, new { @class = "form-control", placeholder = "Password" })
+            <div class="checkbox mb-3">
+                <label>
+                    @Html.EditorFor(m => m.RememberMe) Remember me
+                </label>
+            </div>
+            <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+            @Html.ActionLink("Register", "Register");
+        }
+        
+    </div>
+</div>

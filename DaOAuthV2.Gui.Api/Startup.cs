@@ -117,7 +117,7 @@ namespace DaOAuthV2.Gui.Api
 
             var options = new RequestLocalizationOptions
             {
-                DefaultRequestCulture = new RequestCulture("fr-FR"),
+                DefaultRequestCulture = new RequestCulture("en-US"),
                 SupportedCultures = supportedCultures,
                 SupportedUICultures = supportedCultures
             };

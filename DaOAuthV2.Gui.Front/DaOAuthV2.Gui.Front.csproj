@@ -20,4 +20,19 @@
     <ProjectReference Include="..\DaOAuthV2.Service.DTO\DaOAuthV2.Service.DTO.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Update="Views\Account\fr.Login.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+    <Content Update="Views\Home\fr.Index.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+    <Content Update="Views\Shared\_fr.modelErrors.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+    <Content Update="Views\Shared\_fr.layout.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+  </ItemGroup>
+
 </Project>

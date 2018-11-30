@@ -1,28 +1,15 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Localization;
+﻿using DaOAuthV2.Gui.Front.Tools;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 
 namespace DaOAuthV2.Gui.Front.Controllers
 {
     [Authorize]
-    public class HomeController : Controller
+    public class HomeController : DaOauthFrontController
     {
-        private string _currentLanguage;
-        private string CurrentLanguage
+        public HomeController(IConfiguration configuration) : base(configuration)
         {
-            get
-            {
-                if (!string.IsNullOrEmpty(_currentLanguage))
-                    return _currentLanguage;
-
-                if (string.IsNullOrEmpty(_currentLanguage))
-                {
-                    var feature = HttpContext.Features.Get<IRequestCultureFeature>();
-                    _currentLanguage = feature.RequestCulture.Culture.TwoLetterISOLanguageName.ToLower();
-                }
-
-                return _currentLanguage;
-            }
         }
 
         public IActionResult Index()
