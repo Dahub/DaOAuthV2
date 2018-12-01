@@ -60,6 +60,9 @@ namespace DaOAuthV2.Gui.Front.Controllers
         [AllowAnonymous]
         public IActionResult Register()
         {
+            if (User.Identity.IsAuthenticated)
+                return RedirectToAction("Index", "Home");
+
             return View(new RegisterModel());
         }
 

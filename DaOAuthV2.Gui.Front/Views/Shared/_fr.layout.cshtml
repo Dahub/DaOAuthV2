@@ -41,5 +41,8 @@
     </main>
 
     @await Html.PartialAsync("_scripts")
+    <script type="text/javascript">
+        @RenderSection("PageScript", required: false)
+    </script>
 </body>
 </html>
