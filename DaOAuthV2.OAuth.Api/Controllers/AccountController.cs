@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using DaOAuthV2.Service;
-using Microsoft.AspNetCore.Http;
+﻿using DaOAuthV2.Service;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using System;
 
 namespace DaOAuthV2.OAuth.Api.Controllers
 {
@@ -25,6 +21,6 @@ namespace DaOAuthV2.OAuth.Api.Controllers
         {
             string url = String.Concat(_conf.LoginPageUrl.ToString(), "?ReturnUrl=", _conf.OauthApiUrl, returnUrl);
             return Redirect(url);
-        }
+        }        
     }
 }
