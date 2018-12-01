@@ -18,7 +18,9 @@ namespace DaOAuthV2.Service
                 var resource = this.GetErrorStringLocalizer();
                 IList<ValidationResult> result = new List<ValidationResult>();
 
-                if (!toCreate.Password.Equals(toCreate.RepeatPassword, StringComparison.Ordinal))
+                if (!String.IsNullOrEmpty(toCreate.Password)
+                    && !String.IsNullOrEmpty(toCreate.RepeatPassword)
+                    &&!toCreate.Password.Equals(toCreate.RepeatPassword, StringComparison.Ordinal))
                     result.Add(new ValidationResult(resource["CreateUserPasswordDontMatch"]));
 
                 using (var c = RepositoriesFactory.CreateContext(ConnexionString))
@@ -26,7 +28,7 @@ namespace DaOAuthV2.Service
                     var repo = RepositoriesFactory.GetUserRepository(c);
 
                     if (repo.GetByUserName(toCreate.UserName) != null)
-                        result.Add(new ValidationResult(String.Format(resource["CreateUserEmailExists"], toCreate.UserName)));
+                        result.Add(new ValidationResult(String.Format(resource["CreateUserUserNameExists"], toCreate.UserName)));
 
                     if (repo.GetByEmail(toCreate.EMail) != null)
                         result.Add(new ValidationResult(String.Format(resource["CreateUserEmailExists"], toCreate.EMail)));

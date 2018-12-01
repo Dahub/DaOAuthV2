@@ -1,0 +1,45 @@
+﻿@model DaOAuthV2.Gui.Front.Models.RegisterModel
+
+@{
+    Layout = "_fr.layout";
+}
+
+@await Html.PartialAsync("_fr.modelErrors")
+
+<h4>Création de votre compte</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Register" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="UserName" class="control-label">Nom d'utilisateur</label>
+                @Html.TextBoxFor(model => model.UserName, new { @class = "form-control" })
+            </div>
+            <div class="form-group">
+                <label asp-for="FullName" class="control-label">Nom complet</label>
+                @Html.TextBoxFor(model => model.FullName, new { @class = "form-control" })
+            </div>
+            <div class="form-group">
+                <label asp-for="EMail" class="control-label">Adresse EMail</label>
+                @Html.TextBoxFor(model => model.EMail, new { @class = "form-control" })
+            </div>
+            <div class="form-group">
+                <label asp-for="BirthDate" class="control-label">Date de naissance</label>
+                @Html.TextBoxFor(model => model.BirthDate, new { @class = "form-control" })
+            </div>
+            <div class="form-group">
+                <label asp-for="Password" class="control-label">Mot de passe</label>
+                @Html.PasswordFor(model => model.Password, new { @class = "form-control" })
+            </div>
+            <div class="form-group">
+                <label asp-for="RepeatPassword" class="control-label">Répéter le mot de passe</label>
+                @Html.PasswordFor(model => model.RepeatPassword, new { @class="form-control" })
+            </div>
+
+            <div class="form-group">
+                <input type="submit" value="Créer" class="btn btn-lg btn-primary btn-block" />
+            </div>
+        </form>
+    </div>
+</div>

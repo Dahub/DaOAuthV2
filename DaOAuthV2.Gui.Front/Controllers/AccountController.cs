@@ -26,26 +26,12 @@ namespace DaOAuthV2.Gui.Front.Controllers
                 return RedirectToAction("Index", "Home");
 
             return View(new LoginModel());
-        }
-
-        public async Task<IActionResult> Logout()
-        {
-            await HttpContext.SignOutAsync();
-
-            return RedirectToAction("Index", "Home");
-        }
+        }       
 
         [HttpPost]
         [AllowAnonymous]
         public async Task<IActionResult> Login(LoginModel model)
         {
-            //HttpResponseMessage response = await _client.PostAsJsonAsync(
-            //  $"{_conf.GuiApiUrl}/users/find", new LoginUserDto
-            //  {
-            //      UserName = model.UserName,
-            //      Password = model.Password
-            //  });
-
             HttpResponseMessage response = await PostToApi("users/find", new LoginUserDto
             {
                 UserName = model.UserName,
@@ -62,6 +48,53 @@ namespace DaOAuthV2.Gui.Front.Controllers
             }
 
             return View(model);
+        }
+
+        public async Task<IActionResult> Logout()
+        {
+            await HttpContext.SignOutAsync();
+
+            return RedirectToAction("Index", "Home");
+        }
+
+        [AllowAnonymous]
+        public IActionResult Register()
+        {
+            return View(new RegisterModel());
+        }
+
+        public IActionResult RegisterOk()
+        {
+            return View();
+        }
+
+        [AllowAnonymous]        
+        [HttpPost]
+        public async Task<IActionResult> Register(RegisterModel model)
+        {
+            HttpResponseMessage response = await PostToApi("users", new CreateUserDto()
+            {
+                BirthDate = model.BirthDate,
+                EMail = model.EMail,
+                FullName = model.FullName,
+                Password = model.Password,
+                RepeatPassword = model.RepeatPassword,
+                UserName = model.UserName
+            });
+
+            if (!await model.ValidateAsync(response))
+                return View(model);
+
+            LogUser(new UserDto()
+            {
+                BirthDate = model.BirthDate,
+                CreationDate = DateTime.Now,
+                EMail = model.EMail,
+                FullName = model.FullName,
+                UserName = model.UserName
+            }, false);
+
+            return RedirectToAction("RegisterOk", "Account");
         }
 
         private void LogUser(UserDto u, bool rememberMe)

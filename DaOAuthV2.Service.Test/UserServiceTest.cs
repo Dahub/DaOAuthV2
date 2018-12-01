@@ -291,6 +291,21 @@ namespace DaOAuthV2.Service.Test
 
         [TestMethod]
         [ExpectedException(typeof(DaOAuthServiceException))]
+        public void Create_User_With_Null_Password_Should_Throw_DaOAuthServiceException()
+        {
+            _service.CreateUser(new DTO.CreateUserDto()
+            {
+                BirthDate = new DateTime(1978, 09, 16),
+                EMail = "test@test.com",
+                FullName = "testeur test",
+                UserName = "testCreate",
+                Password = null,
+                RepeatPassword = null
+            });
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(DaOAuthServiceException))]
         public void Create_User_With_Short_Password_Should_Throw_Exception()
         {
             _service.CreateUser(new DTO.CreateUserDto()
