@@ -20,12 +20,20 @@ namespace DaOAuthV2.Gui.Front.Controllers
         }
 
         [AllowAnonymous]
-        public IActionResult Login()
+        public IActionResult Login(string returnUrl)
         {
             if (User.Identity.IsAuthenticated)
-                return RedirectToAction("Index", "Home");
+            {
+                if (!String.IsNullOrEmpty(returnUrl))
+                    return Redirect(returnUrl);
+                else
+                    return RedirectToAction("Index", "Home");
+            }
 
-            return View(new LoginModel());
+            return View(new LoginModel()
+            {
+                ReturnUrl = returnUrl
+            });
         }       
 
         [HttpPost]
@@ -44,7 +52,11 @@ namespace DaOAuthV2.Gui.Front.Controllers
             if (await model.ValidateAsync(response))
             {
                 LogUser(await response.Content.ReadAsAsync<UserDto>(), model.RememberMe);
-                return RedirectToAction("Index", "Home");
+
+                if (!String.IsNullOrEmpty(model.ReturnUrl))
+                    return Redirect(model.ReturnUrl);
+                else
+                    return RedirectToAction("Index", "Home");
             }
 
             return View(model);

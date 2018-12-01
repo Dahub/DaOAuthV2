@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace DaOAuthV2.OAuth.Api.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     [ApiController]
     public class TestController : ControllerBase
     {

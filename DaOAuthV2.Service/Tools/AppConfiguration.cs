@@ -1,4 +1,6 @@
-﻿namespace DaOAuthV2.Service
+﻿using System;
+
+namespace DaOAuthV2.Service
 {
     public class AppConfiguration
     {
@@ -9,5 +11,7 @@
         public string AppsDomain { get; set; }
         public string DataProtectionProviderDirectory { get; set; }
         public string DefaultScheme { get; set; }
+        public Uri OauthApiUrl { get; set; }
+        public Uri LoginPageUrl { get; set; }
     }
 }

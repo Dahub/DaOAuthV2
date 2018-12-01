@@ -15,6 +15,7 @@
 
         @using (Html.BeginForm("Login", "Account", FormMethod.Post, new { @class = "form-signin" }))
         {
+            @Html.HiddenFor(m => m.ReturnUrl)
             <h1 class="h3 mb-3 font-weight-normal">Please sign in</h1>
             <label for="inputEmail" class="sr-only">User name</label>
             @Html.TextBoxFor(m => m.UserName, new { @class = "form-control", placeholder = "User name" })

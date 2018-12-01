@@ -15,6 +15,7 @@
 
         @using (Html.BeginForm("Login", "Account", FormMethod.Post, new { @class = "form-signin" }))
         {
+            @Html.HiddenFor(m => m.ReturnUrl)
             <h1 class="h3 mb-3 font-weight-normal">Veuillez vous connecter</h1>
             <label for="inputEmail" class="sr-only">Nom d'utilisateur</label>
             @Html.TextBoxFor(m => m.UserName, new { @class = "form-control", placeholder = "User name" })
@@ -28,6 +29,6 @@
             <button class="btn btn-lg btn-primary btn-block" type="submit">Se connecter</button>
             @Html.ActionLink("Créer un compte", "Register");
         }
-        
+
     </div>
 </div>

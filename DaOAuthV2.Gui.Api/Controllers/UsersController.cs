@@ -2,7 +2,6 @@
 using DaOAuthV2.Service;
 using DaOAuthV2.Service.DTO;
 using DaOAuthV2.Service.Interface;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 
@@ -56,14 +55,6 @@ namespace DaOAuthV2.Gui.Api.Controllers
         {
             _service.CreateUser(model);
             return StatusCode(201);
-        }
-
-        [Authorize]
-        [Route("test")]
-        [HttpGet]
-        public IActionResult Test()
-        {
-            return Ok();
         }
     }
 }

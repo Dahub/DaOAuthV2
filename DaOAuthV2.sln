@@ -27,7 +27,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DaOAuthV2.Service.Interface
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DaOAuthV2.Service.DTO", "DaOAuthV2.Service.DTO\DaOAuthV2.Service.DTO.csproj", "{9E3AC986-8C5E-439E-B01B-961064EB1DC6}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GUI", "GUI", "{0EEAAB3D-72DB-46D3-8765-01627E2BA2DC}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Gui", "Gui", "{0EEAAB3D-72DB-46D3-8765-01627E2BA2DC}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "OAuth", "OAuth", "{35991290-A022-4A1E-AF28-574C8F1B7520}"
 EndProject
@@ -39,7 +39,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shared", "Shared", "{49FD99
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DaOAuthV2.Constants", "DaOAuthV2.Constants\DaOAuthV2.Constants.csproj", "{6C25C931-5F6B-45ED-8C1E-E88C513EF81E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DaOAuthV2.Gui.Front", "DaOAuthV2.Gui.Front\DaOAuthV2.Gui.Front.csproj", "{8C5F8276-12B9-43BA-8222-41AB4F82B93C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DaOAuthV2.Gui.Front", "DaOAuthV2.Gui.Front\DaOAuthV2.Gui.Front.csproj", "{8C5F8276-12B9-43BA-8222-41AB4F82B93C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
