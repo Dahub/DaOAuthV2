@@ -132,6 +132,12 @@
   <data name="ModelNull" xml:space="preserve">
     <value>Impossible de valider un objet null</value>
   </data>
+  <data name="ResponseTypeParameterMandatory" xml:space="preserve">
+    <value>Le paramètre response_type doit être renseigné</value>
+  </data>
+  <data name="UnsupportedResponseType" xml:space="preserve">
+    <value>response_type doit avoir la valeur code ou token</value>
+  </data>
   <data name="UpdateUserNoUserFound" xml:space="preserve">
     <value>L'utilisateur n'existe pas ou est bloqué</value>
   </data>

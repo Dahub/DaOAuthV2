@@ -132,6 +132,12 @@
   <data name="ModelNull" xml:space="preserve">
     <value>Cannot validate a null object</value>
   </data>
+  <data name="ResponseTypeParameterMandatory" xml:space="preserve">
+    <value>response_type is mandatory</value>
+  </data>
+  <data name="UnsupportedResponseType" xml:space="preserve">
+    <value>response_type should be code or token</value>
+  </data>
   <data name="UpdateUserNoUserFound" xml:space="preserve">
     <value>User don't exist or ban</value>
   </data>
