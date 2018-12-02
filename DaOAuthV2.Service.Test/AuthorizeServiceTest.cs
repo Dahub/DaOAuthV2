@@ -153,5 +153,59 @@ namespace DaOAuthV2.Service.Test
             Assert.IsFalse(ex.RedirectUri.AbsoluteUri.EndsWith("&state=test_state"));
             Assert.IsFalse(ex.RedirectUri.AbsoluteUri.Contains("&state"));
         }
+
+        [TestMethod]
+        [ExpectedException(typeof(DaOAuthRedirectException))]
+        public async Task Genererate_Uri_For_Autorize_Should_Throw_DaOAuthRedirectException_When_Client_Id_Is_Empty()
+        {
+            _dto.ClientId = String.Empty;
+            await _service.GenererateUriForAutorize(_dto);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(DaOAuthRedirectException))]
+        public async Task Genererate_Uri_For_Autorize_Should_Throw_DaOAuthRedirectException_When_Client_Id_Is_Null()
+        {
+            _dto.ClientId = null;
+            await _service.GenererateUriForAutorize(_dto);
+        }
+
+        [TestMethod]
+        public async Task Genererate_Uri_For_Autorize_DaOAuthRedirectException_Should_Contain_Redirect_Uri_When_Client_Id_Is_Empty()
+        {
+            DaOAuthRedirectException ex = null;
+            try
+            {
+                _dto.ClientId = null;
+                await _service.GenererateUriForAutorize(_dto);
+            }
+            catch (Exception e)
+            {
+                Assert.IsInstanceOfType(e, typeof(DaOAuthRedirectException));
+                ex = (DaOAuthRedirectException)e;
+            }
+
+            Assert.IsNotNull(ex.RedirectUri);
+            Assert.IsTrue(ex.RedirectUri.AbsoluteUri.StartsWith($"http://www.perdu.com/?error={OAuthConvention.ErrorNameInvalidRequest}&error_description="));
+            Assert.IsTrue(ex.RedirectUri.AbsoluteUri.EndsWith("&state=test_state"));
+
+            _dto.State = String.Empty;
+
+            try
+            {
+                _dto.ClientId = null;
+                await _service.GenererateUriForAutorize(_dto);
+            }
+            catch (Exception e)
+            {
+                Assert.IsInstanceOfType(e, typeof(DaOAuthRedirectException));
+                ex = (DaOAuthRedirectException)e;
+            }
+
+            Assert.IsNotNull(ex.RedirectUri);
+            Assert.IsTrue(ex.RedirectUri.AbsoluteUri.StartsWith($"http://www.perdu.com/?error={OAuthConvention.ErrorNameInvalidRequest}&error_description="));
+            Assert.IsFalse(ex.RedirectUri.AbsoluteUri.EndsWith("&state=test_state"));
+            Assert.IsFalse(ex.RedirectUri.AbsoluteUri.Contains("&state"));
+        }
     }
 }

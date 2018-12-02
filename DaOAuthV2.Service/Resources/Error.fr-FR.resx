@@ -117,6 +117,15 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="AuthorizeClientIdParameterMandatory" xml:space="preserve">
+    <value>La paramètre client_id doit être renseigné</value>
+  </data>
+  <data name="AuthorizeResponseTypeParameterMandatory" xml:space="preserve">
+    <value>Le paramètre response_type doit être renseigné</value>
+  </data>
+  <data name="AuthorizeUnsupportedResponseType" xml:space="preserve">
+    <value>response_type doit avoir la valeur code ou token</value>
+  </data>
   <data name="CreateUserEmailExists" xml:space="preserve">
     <value>L'adresse email {0} existe déjà</value>
   </data>
@@ -131,12 +140,6 @@
   </data>
   <data name="ModelNull" xml:space="preserve">
     <value>Impossible de valider un objet null</value>
-  </data>
-  <data name="ResponseTypeParameterMandatory" xml:space="preserve">
-    <value>Le paramètre response_type doit être renseigné</value>
-  </data>
-  <data name="UnsupportedResponseType" xml:space="preserve">
-    <value>response_type doit avoir la valeur code ou token</value>
   </data>
   <data name="UpdateUserNoUserFound" xml:space="preserve">
     <value>L'utilisateur n'existe pas ou est bloqué</value>

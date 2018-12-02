@@ -4,7 +4,6 @@ using DaOAuthV2.Service.Interface;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Globalization;
 using System.Threading.Tasks;
 
 namespace DaOAuthV2.Service
@@ -19,7 +18,7 @@ namespace DaOAuthV2.Service
                 IList<ValidationResult> result = new List<ValidationResult>();
 
                 if(!String.IsNullOrEmpty(toValidate.RedirectUri) && !IsUriCorrect(toValidate.RedirectUri))
-                    result.Add(new ValidationResult(resource["AuthorizeRedirectUrlIncorrect"]));
+                    result.Add(new ValidationResult(resource["AuthorizeAuthorizeRedirectUrlIncorrect"]));
 
                 return result;
             }
@@ -34,7 +33,7 @@ namespace DaOAuthV2.Service
                     RedirectUri = GenerateRedirectErrorMessage(
                         authorizeInfo.RedirectUri, 
                         OAuthConvention.ErrorNameInvalidRequest,
-                        errorLocal["ResponseTypeParameterMandatory"], 
+                        errorLocal["AuthorizeResponseTypeParameterMandatory"], 
                         authorizeInfo.State)
                 };
             if(!authorizeInfo.ResponseType.Equals(OAuthConvention.ResponseTypeCode, StringComparison.Ordinal)
@@ -44,8 +43,19 @@ namespace DaOAuthV2.Service
                     RedirectUri = GenerateRedirectErrorMessage(
                        authorizeInfo.RedirectUri,
                        OAuthConvention.ErrorNameUnsupportedResponseType,
-                       errorLocal["UnsupportedResponseType"],
+                       errorLocal["AuthorizeUnsupportedResponseType"],
                        authorizeInfo.State)
+                };
+
+            // check client Id
+            if (String.IsNullOrEmpty(authorizeInfo.ClientId))
+                throw new DaOAuthRedirectException()
+                {
+                    RedirectUri = GenerateRedirectErrorMessage(
+                        authorizeInfo.RedirectUri,
+                        OAuthConvention.ErrorNameInvalidRequest,
+                        errorLocal["AuthorizeClientIdParameterMandatory"],
+                        authorizeInfo.State)
                 };
 
             throw new NotImplementedException();
