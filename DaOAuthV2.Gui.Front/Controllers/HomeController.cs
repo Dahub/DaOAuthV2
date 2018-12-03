@@ -15,7 +15,12 @@ namespace DaOAuthV2.Gui.Front.Controllers
         {
         }
 
-        public IActionResult Index()
+        //public IActionResult Index()
+        //{
+        //    return View("Dashboard");
+        //}
+
+        public IActionResult Dashboard()
         {
             return View();
         }

@@ -6,16 +6,12 @@
 
 @Html.ActionLink("Logout", "Logout", "Account");
 
+@Html.ActionLink("vdvdvd", "Dashboard", "Home");
+
 @section PageScript{
     <script type="text/javascript">
         $(document).ready(function () {
-            //$.ajax({
-            //    url: 'Home/GetCvlientNumberAsync',
-            //    type: "get"
-            //}).done(function (data) {
-            //    console.log(data);
-            //});      
-            $.get("fr/Home/GetClientNumberAsync", function (data, status) {
+            $.get("/fr/Home/GetClientNumberAsync", function (data, status) {
                 alert("Data: " + data + "\nStatus: " + status);
             });
         });

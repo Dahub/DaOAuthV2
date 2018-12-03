@@ -30,7 +30,7 @@
     <Content Update="Views\Account\fr.Login.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
-    <Content Update="Views\Home\fr.Index.cshtml">
+    <Content Update="Views\Home\fr.Dashboard.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
     <Content Update="Views\Shared\_fr.modelErrors.cshtml">

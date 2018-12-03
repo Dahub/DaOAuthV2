@@ -27,7 +27,7 @@ namespace DaOAuthV2.Gui.Front.Controllers
                 if (!String.IsNullOrEmpty(returnUrl))
                     return Redirect(returnUrl);
                 else
-                    return RedirectToAction("Index", "Home");
+                    return RedirectToAction("Dashboard", "Home");
             }
 
             return View(new LoginModel()
@@ -56,7 +56,7 @@ namespace DaOAuthV2.Gui.Front.Controllers
                 if (!String.IsNullOrEmpty(model.ReturnUrl))
                     return Redirect(model.ReturnUrl);
                 else
-                    return RedirectToAction("Index", "Home");
+                    return RedirectToAction("Dashboard", "Home");
             }
 
             return View(model);
@@ -66,14 +66,14 @@ namespace DaOAuthV2.Gui.Front.Controllers
         {
             await HttpContext.SignOutAsync();
 
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction("Login", "Account");
         }
 
         [AllowAnonymous]
         public IActionResult Register()
         {
             if (User.Identity.IsAuthenticated)
-                return RedirectToAction("Index", "Home");
+                return RedirectToAction("Dashboard", "Home");
 
             return View(new RegisterModel());
         }

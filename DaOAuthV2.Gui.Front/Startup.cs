@@ -93,7 +93,7 @@ namespace DaOAuthV2.Gui.Front
                 routes.MapRoute(
                         name: "default",
                         template: "{*catchall}",
-                        defaults: new { controller = "Home", action = "Index", culture = "en" });
+                        defaults: new { controller = "Home", action = "Dashboard", culture = "en" });
             });
         }
     }
