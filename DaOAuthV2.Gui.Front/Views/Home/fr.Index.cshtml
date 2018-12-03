@@ -4,4 +4,20 @@
 
 <h2>Index g</h2>
 
-@Html.ActionLink("Logout", "Logout", "Account")
+@Html.ActionLink("Logout", "Logout", "Account");
+
+@section PageScript{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            //$.ajax({
+            //    url: 'Home/GetCvlientNumberAsync',
+            //    type: "get"
+            //}).done(function (data) {
+            //    console.log(data);
+            //});      
+            $.get("fr/Home/GetClientNumberAsync", function (data, status) {
+                alert("Data: " + data + "\nStatus: " + status);
+            });
+        });
+    </script>
+}

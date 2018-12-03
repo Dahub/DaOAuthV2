@@ -46,16 +46,45 @@ namespace DaOAuthV2.Gui.Front.Tools
             return $"{culture}.{viewName}";
         }
 
+        protected async Task<HttpResponseMessage> GetToApi(string route)
+        {
+            route = ApplyCultureToRoute(route);
+
+            AddAuthorizationCookieIfAuthentificated();
+
+            return await _client.GetAsync(
+                $"{_conf.GuiApiUrl}/{route}");
+        }
+
         protected async Task<HttpResponseMessage> PostToApi(string route, object data)
+        {
+            route = ApplyCultureToRoute(route);
+
+            AddAuthorizationCookieIfAuthentificated();
+
+            return await _client.PostAsJsonAsync(
+                $"{_conf.GuiApiUrl}/{route}", data);
+        }
+
+        private void AddAuthorizationCookieIfAuthentificated()
+        {
+            if (HttpContext.Request.Cookies[".AspNetCore.DaOAuth"] != null)
+            {
+                string value = HttpContext.Request.Cookies[".AspNetCore.DaOAuth"];
+                _client.DefaultRequestHeaders.Add("Cookie", $".AspNetCore.DaOAuth={value}");
+            }
+        }       
+
+        private string ApplyCultureToRoute(string route)
         {
             string culture = String.Empty;
 
             if (ControllerContext.RouteData.Values.ContainsKey("culture"))
                 culture = this.ControllerContext.RouteData.Values["culture"].ToString();
 
-            if(!String.IsNullOrWhiteSpace(culture))
+            if (!String.IsNullOrWhiteSpace(culture))
             {
-                switch(culture)
+                switch (culture)
                 {
                     case "en":
                         route = $"{route}?culture=en-US";
@@ -66,8 +95,7 @@ namespace DaOAuthV2.Gui.Front.Tools
                 }
             }
 
-            return await _client.PostAsJsonAsync(
-              $"{_conf.GuiApiUrl}/{route}", data);
+            return route;
         }
     }
 }

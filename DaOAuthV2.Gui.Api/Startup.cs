@@ -81,6 +81,15 @@ namespace DaOAuthV2.Gui.Api
                 Logger = loggerServiceFactory.CreateLogger<JwtService>()
             });
 
+            services.AddTransient<IClientService>(u => new ClientService()
+            {
+                Configuration = conf,
+                RepositoriesFactory = new EfRepositoriesFactory(),
+                ConnexionString = Configuration.GetConnectionString("DaOAuthConnexionString"),
+                StringLocalizerFactory = localizationServiceFactory,
+                Logger = loggerServiceFactory.CreateLogger<JwtService>()
+            });
+
             services.AddMvc(options =>
                 options.Filters.Add(new DaOAuthExceptionFilter(CurrentEnvironment, loggerServiceFactory)))
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
