@@ -27,34 +27,138 @@ namespace DaOAuthV2.Service.Test.Fake
 
         private FakeDataBase() { }
 
+        internal IList<ClientType> ClientTypes = new List<ClientType>()
+        {
+            new ClientType()
+            {
+                Id = 1,
+                Wording = "public"
+            },
+            new ClientType()
+            {
+                Id = 2,
+                Wording = "confidential"
+            }
+        };
+
+        internal IList<Client> Clients = new List<Client>()
+        {
+            new Client()
+            {
+                ClientSecret = new byte[] { 0, 1 },
+                ClientTypeId = 2,
+                CreationDate = DateTime.Now,
+                Description = "confidential client",
+                Id = 1,
+                IsValid = true,
+                Name = "client_1",
+                PublicId = "public_id_1"
+            },
+            new Client()
+            {
+                ClientSecret = new byte[] { 0, 1 },
+                ClientTypeId = 1,
+                CreationDate = DateTime.Now,
+                Description = "public client",
+                Id = 2,
+                IsValid = true,
+                Name = "client_2",
+                PublicId = "public_id_2"
+
+            },
+            new Client()
+            {
+                ClientSecret = new byte[] { 0, 1 },
+                ClientTypeId = 2,
+                CreationDate = DateTime.Now,
+                Description = "confidential client invalid",
+                Id = 3,
+                IsValid = false,
+                Name = "client_3",
+                PublicId = "public_id_3"
+            }
+        };
+
+        internal IList<ClientReturnUrl> ClientReturnUrls = new List<ClientReturnUrl>()
+        {
+            new ClientReturnUrl()
+            {
+                Id = 1,
+                ClientId = 1,
+                ReturnUrl = "http://www.google.fr"
+            },
+            new ClientReturnUrl()
+            {
+                Id = 2,
+                ClientId = 1,
+                ReturnUrl = "http://www.perdu.com"
+            },
+            new ClientReturnUrl()
+            {
+                Id = 3,
+                ClientId = 2,
+                ReturnUrl = "http://www.stackoverflow.com"
+            }
+        };
+
         internal IList<User> Users = new List<User>()
         {
+            new User()
             {
-                new User()
-                {
-                    BirthDate = new DateTime(1978, 09 ,16),
-                    CreationDate = DateTime.Now,
-                    EMail = "sam@crab.corp",
-                    FullName = "Sammy le Crabe",
-                    Id = 1,
-                    IsValid = true,
-                    Password = FakeDataBase.HashPassword(String.Concat(FakeConfigurationHelper.GetFakeConf().PasswordSalt, "test")),
-                    UserName = "Sammy"
-                }
+                BirthDate = new DateTime(1978, 09 ,16),
+                CreationDate = DateTime.Now,
+                EMail = "sam@crab.corp",
+                FullName = "Sammy le Crabe",
+                Id = 1,
+                IsValid = true,
+                Password = FakeDataBase.HashPassword(String.Concat(FakeConfigurationHelper.GetFakeConf().PasswordSalt, "test")),
+                UserName = "Sammy"
             },
+            new User()
             {
-                new User()
-                {
-                    BirthDate = new DateTime(1982, 12 ,28),
-                    CreationDate = DateTime.Now,
-                    EMail = "john@crab.corp",
-                    FullName = "Johnny le Crabe",
-                    Id = 2,
-                    IsValid = false,
-                    Password = FakeDataBase.HashPassword(String.Concat(FakeConfigurationHelper.GetFakeConf().PasswordSalt, "test")),
-                    UserName = "Johnny"
-                }
-           },
+                BirthDate = new DateTime(1982, 12 ,28),
+                CreationDate = DateTime.Now,
+                EMail = "john@crab.corp",
+                FullName = "Johnny le Crabe",
+                Id = 2,
+                IsValid = false,
+                Password = FakeDataBase.HashPassword(String.Concat(FakeConfigurationHelper.GetFakeConf().PasswordSalt, "test")),
+                UserName = "Johnny"
+           }
+        };
+
+        internal IList<UserClient> UsersClient = new List<UserClient>()
+        {
+            new UserClient()
+            {
+                ClientId = 1,
+                Id = 1,
+                CreationDate = DateTime.Now,
+                IsValid = true,
+                RefreshToken = String.Empty,
+                UserId = 1,
+                UserPublicId = Guid.Parse("0e4db8be-267a-48aa-ba4d-2b8f71e9a6d8")
+            },
+            new UserClient()
+            {
+                ClientId = 2,
+                Id = 2,
+                CreationDate = DateTime.Now,
+                IsValid = true,
+                RefreshToken = String.Empty,
+                UserId = 1,
+                UserPublicId = Guid.Parse("0e4db8be-267a-48aa-ba4d-2b8f71e9a6d7")
+            },
+            new UserClient()
+            {
+                ClientId = 3,
+                Id = 3,
+                CreationDate = DateTime.Now,
+                IsValid = true,
+                RefreshToken = String.Empty,
+                UserId = 1,
+                UserPublicId = Guid.Parse("0e4db8be-267a-48aa-ba4d-2b8f71e9a6d6")
+            }
         };
 
         private static byte[] HashPassword(string pwd)

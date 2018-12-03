@@ -168,5 +168,21 @@ namespace DaOAuthV2.Dal.EF.Test
                 Assert.IsNotNull(c);
             }
         }
+
+        [TestMethod]
+        public void Count_All_By_UserName_Should_Return_2()
+        {
+            var options = new DbContextOptionsBuilder<DaOAuthContext>()
+                     .UseInMemoryDatabase(databaseName: _dbName)
+                     .Options;
+
+            using (var context = new DaOAuthContext(options))
+            {
+                var clientRepo = _repoFactory.GetClientRepository(context);
+                var c = clientRepo.CountAllByUserName("testeur");
+
+                Assert.AreEqual(2, c);
+            }
+        }
     }
 }

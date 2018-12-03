@@ -1,0 +1,54 @@
+﻿using DaOAuthV2.Dal.Interface;
+using DaOAuthV2.Domain;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace DaOAuthV2.Service.Test.Fake
+{
+    public class FakeClientRepository : IClientRepository
+    {
+        public IContext Context { get; set; }
+
+        public int Add(Client toAdd)
+        {
+            toAdd.Id = FakeDataBase.Instance.Clients.Max(u => u.Id) + 1;
+            FakeDataBase.Instance.Clients.Add(toAdd);
+            return toAdd.Id;
+        }
+
+        public int CountAllByUserName(string userName)
+        {
+            int total = 0;
+            var user = FakeDataBase.Instance.Users.Where(u => u.UserName.Equals(userName, StringComparison.Ordinal)).FirstOrDefault();
+            if (user != null)
+                total = FakeDataBase.Instance.UsersClient.Where(uc => uc.UserId.Equals(user.Id)).Count();
+            return total;
+        }
+
+        public void Delete(Client toDelete)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<Client> GetAllByUserName(string userName)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Client GetById(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Client GetByPublicId(string publicId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Update(Client toUpdate)
+        {
+            throw new NotImplementedException();
+        }
+    }
+}

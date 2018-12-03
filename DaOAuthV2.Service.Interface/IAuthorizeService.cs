@@ -6,6 +6,6 @@ namespace DaOAuthV2.Service.Interface
 {
     public interface IAuthorizeService
     {
-        Task<Uri> GenererateUriForAutorize(AskAuthorizeDto authorizeInfo);
+        Task<Uri> GenererateUriForAuthorize(AskAuthorizeDto authorizeInfo);
     }
 }

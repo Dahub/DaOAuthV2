@@ -27,5 +27,12 @@ namespace DaOAuthV2.Dal.EF
                 ThenInclude(cs => cs.Scope).
                 Where(c => c.PublicId.Equals(publicId, StringComparison.Ordinal)).FirstOrDefault();
         }
+
+        public int CountAllByUserName(string userName)
+        {
+            return Context.UsersClients.
+                Where(c => c.User.UserName.Equals(userName, StringComparison.Ordinal)).
+                Select(c => c.Client).Count();
+        }
     }
 }

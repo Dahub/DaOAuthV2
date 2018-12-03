@@ -26,7 +26,7 @@ namespace DaOAuthV2.OAuth.Api.Controllers
            [FromQuery(Name = "redirect_uri")] string redirectUri,
            [FromQuery(Name = "scope")] string scope)
         {
-            var uri = await _authorizeService.GenererateUriForAutorize(new AskAuthorizeDto()
+            var uri = await _authorizeService.GenererateUriForAuthorize(new AskAuthorizeDto()
             {
                 ClientId = clientId,
                 RedirectUri = redirectUri,

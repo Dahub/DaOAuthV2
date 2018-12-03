@@ -12,7 +12,7 @@ namespace DaOAuthV2.Service.Test.Fake
 
         public IClientRepository GetClientRepository(IContext context)
         {
-            throw new NotImplementedException();
+            return new FakeClientRepository();
         }
 
         public IClientReturnUrlRepository GetClientReturnUrlRepository(IContext context)

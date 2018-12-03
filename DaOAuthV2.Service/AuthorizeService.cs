@@ -5,12 +5,13 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 
 namespace DaOAuthV2.Service
 {
     public class AuthorizeService : ServiceBase, IAuthorizeService
     {
-        public async Task<Uri> GenererateUriForAutorize(AskAuthorizeDto authorizeInfo)
+        public async Task<Uri> GenererateUriForAuthorize(AskAuthorizeDto authorizeInfo)
         {
             IList<ValidationResult> ExtendValidation(AskAuthorizeDto toValidate)
             {
@@ -22,6 +23,8 @@ namespace DaOAuthV2.Service
 
                 return result;
             }
+
+            Logger.LogInformation($"Ask for authorize, client : {authorizeInfo.ClientId} - response_type : {authorizeInfo.ResponseType}");
 
             var errorLocal = GetErrorStringLocalizer();
             Validate(authorizeInfo, ExtendValidation);
