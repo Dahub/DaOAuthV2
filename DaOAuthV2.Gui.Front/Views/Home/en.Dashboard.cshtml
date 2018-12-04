@@ -2,6 +2,17 @@
     Layout = "_en.layout";
 }
 
-<h2>Index g</h2>
+<a href="@Url.Action("List", "Client")" class="btn btn-sq-lg btn-blue">
+    Clients<br />
+    <span id="clientCount"></span>
+</a>
 
-@Html.ActionLink("Logout", "Logout", "Account")
+@section PageScript{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $.get("/en/Home/GetClientNumberAsync", function (data, status) {
+                $('#clientCount').html(data);
+            });
+        });
+    </script>
+}

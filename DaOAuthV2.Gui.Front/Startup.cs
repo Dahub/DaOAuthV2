@@ -89,7 +89,7 @@ namespace DaOAuthV2.Gui.Front
             {
                 routes.MapRoute(
                        name: "LocalizedDefault",
-                       template: "{culture:culture}/{controller=Home}/{action=Index}/{id?}");
+                       template: "{culture:culture}/{controller=Home}/{action=Dashboard}/{id?}");
                 routes.MapRoute(
                         name: "default",
                         template: "{*catchall}",
