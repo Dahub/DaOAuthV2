@@ -7,6 +7,7 @@ namespace DaOAuthV2.Dal.Interface
     {
         Client GetByPublicId(string publicId);
         IEnumerable<Client> GetAllByUserName(string userName);
+        Client GetByUserNameAndName(string userName, string name);
         int CountAllByUserName(string userName);
     }
 }

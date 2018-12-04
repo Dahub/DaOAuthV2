@@ -126,6 +126,9 @@
   <data name="CreateClientDtoDefaultReturnUrlRequired" xml:space="preserve">
     <value>Client default return url is mandatory</value>
   </data>
+  <data name="CreateClientDtoInvalidUser" xml:space="preserve">
+    <value>User {0} don't exists</value>
+  </data>
   <data name="CreateClientDtoNameAlreadyUse" xml:space="preserve">
     <value>You already used a client with this name</value>
   </data>

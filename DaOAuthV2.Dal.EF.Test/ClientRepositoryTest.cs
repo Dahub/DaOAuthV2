@@ -184,5 +184,37 @@ namespace DaOAuthV2.Dal.EF.Test
                 Assert.AreEqual(2, c);
             }
         }
+
+        [TestMethod]
+        public void Get_By_User_Name_And_Name_Should_Return_Client()
+        {
+            var options = new DbContextOptionsBuilder<DaOAuthContext>()
+                   .UseInMemoryDatabase(databaseName: _dbName)
+                   .Options;
+
+            using (var context = new DaOAuthContext(options))
+            {
+                var clientRepo = _repoFactory.GetClientRepository(context);
+                var c = clientRepo.GetByUserNameAndName("testeur", "CT1");
+
+                Assert.IsNotNull(c);
+            }
+        }
+
+        [TestMethod]
+        public void Get_By_User_Name_And_Non_Existing_Name_Should_Return_Null()
+        {
+            var options = new DbContextOptionsBuilder<DaOAuthContext>()
+                   .UseInMemoryDatabase(databaseName: _dbName)
+                   .Options;
+
+            using (var context = new DaOAuthContext(options))
+            {
+                var clientRepo = _repoFactory.GetClientRepository(context);
+                var c = clientRepo.GetByUserNameAndName("testeur", "CT1__non_exist");
+
+                Assert.IsNull(c);
+            }
+        }
     }
 }

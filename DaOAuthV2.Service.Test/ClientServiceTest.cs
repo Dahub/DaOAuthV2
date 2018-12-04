@@ -44,12 +44,16 @@ namespace DaOAuthV2.Service.Test
         [TestMethod]
         public void Create_New_Client_Should_Return_Int()
         {
+            string name = "client_test_create";
+            string description = "test";
+
             int id = _service.CreateClient(new DTO.Client.CreateClientDto()
             {
                 ClientType = ClientTypeName.Confidential,
                 DefaultReturnUrl = "http://www.perdu.com",
-                Name = "client_test_crete",
-                UserName = "Sammy"
+                Name = name,
+                UserName = "Sammy",
+                Description= description
             });
 
             Assert.IsTrue(id > 0);
@@ -57,6 +61,8 @@ namespace DaOAuthV2.Service.Test
             var client = _repo.GetById(id);
 
             Assert.IsNotNull(client);
+            Assert.AreEqual(description, client.Description);
+            Assert.AreEqual(name, client.Name);
             Assert.IsTrue((DateTime.Now - client.CreationDate).TotalSeconds < 10);
         }
 
@@ -69,6 +75,97 @@ namespace DaOAuthV2.Service.Test
                 DefaultReturnUrl = "http://www.perdu.com",
                 Name = "client_test_crete",
                 UserName = "Sammy"
+            });
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(DaOAuthServiceException))]
+        public void Create_New_Client_With_Empty_Name_Should_Throw_DaOauthServiceException()
+        {
+            int id = _service.CreateClient(new DTO.Client.CreateClientDto()
+            {
+                ClientType = ClientTypeName.Confidential,
+                DefaultReturnUrl = "http://www.perdu.com",
+                Name = String.Empty,
+                UserName = "Sammy"
+            });
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(DaOAuthServiceException))]
+        public void Create_New_Client_With_Empty_Return_Url_Should_Throw_DaOauthServiceException()
+        {
+            int id = _service.CreateClient(new DTO.Client.CreateClientDto()
+            {
+                ClientType = ClientTypeName.Confidential,
+                DefaultReturnUrl = String.Empty,
+                Name = "test",
+                UserName = "Sammy"
+            });
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(DaOAuthServiceException))]
+        public void Create_New_Client_With_Incorrect_Client_Type_Should_Throw_DaOauthServiceException()
+        {
+            int id = _service.CreateClient(new DTO.Client.CreateClientDto()
+            {
+                ClientType = "incorrect",
+                DefaultReturnUrl = "http://www.perdu.com",
+                Name =  "test",
+                UserName = "Sammy"
+            });
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(DaOAuthServiceException))]
+        public void Create_New_Client_With_Existing_Name_Should_Throw_DaOauthServiceException()
+        {
+            int id = _service.CreateClient(new DTO.Client.CreateClientDto()
+            {
+                ClientType = ClientTypeName.Confidential,
+                DefaultReturnUrl = "http://www.perdu.com",
+                Name = "client_1",
+                UserName = "Sammy"
+            });
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(DaOAuthServiceException))]
+        public void Create_New_Client_With_Incorrect_Return_Url_Should_Throw_DaOauthServiceException()
+        {
+            int id = _service.CreateClient(new DTO.Client.CreateClientDto()
+            {
+                ClientType = ClientTypeName.Confidential,
+                DefaultReturnUrl = "httpwww.perdcom",
+                Name = "test",
+                UserName = "Sammy"
+            });
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(DaOAuthServiceException))]
+        public void Create_New_Client_With_Inactive_User_Should_Throw_DaOauthServiceException()
+        {
+            int id = _service.CreateClient(new DTO.Client.CreateClientDto()
+            {
+                ClientType = ClientTypeName.Confidential,
+                DefaultReturnUrl = "http://www.perdu.com",
+                Name = "test",
+                UserName = "Johnny"
+            });
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(DaOAuthServiceException))]
+        public void Create_New_Client_With_Non_Existing_User_Should_Throw_DaOauthServiceException()
+        {
+            int id = _service.CreateClient(new DTO.Client.CreateClientDto()
+            {
+                ClientType = ClientTypeName.Confidential,
+                DefaultReturnUrl = "http://www.perdu.com",
+                Name = "test",
+                UserName = "I_dont_exist"
             });
         }
     }

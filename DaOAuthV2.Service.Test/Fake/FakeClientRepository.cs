@@ -46,6 +46,29 @@ namespace DaOAuthV2.Service.Test.Fake
             throw new NotImplementedException();
         }
 
+        public Client GetByUserNameAndName(string userName, string name)
+        {
+            var user = FakeDataBase.Instance.Users.Where(u => u.UserName.Equals(userName, StringComparison.Ordinal)).FirstOrDefault();
+
+            if (user == null)
+                return null;
+
+            var userClients = FakeDataBase.Instance.UsersClient.Where(uc => uc.UserId.Equals(user.Id));
+
+            if (userClients == null)
+                return null;
+
+            foreach(var uc in userClients)
+            {
+                var client = FakeDataBase.Instance.Clients.Where(c => c.Id.Equals(uc.ClientId)).FirstOrDefault();
+
+                if (client != null && client.Name.Equals(name, StringComparison.OrdinalIgnoreCase))
+                    return client;
+            }
+
+            return null;
+        }
+
         public void Update(Client toUpdate)
         {
             throw new NotImplementedException();

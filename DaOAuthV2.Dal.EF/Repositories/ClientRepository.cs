@@ -34,5 +34,13 @@ namespace DaOAuthV2.Dal.EF
                 Where(c => c.User.UserName.Equals(userName, StringComparison.Ordinal)).
                 Select(c => c.Client).Count();
         }
+
+        public Client GetByUserNameAndName(string userName, string name)
+        {
+            return Context.UsersClients.
+                Where(c => c.User.UserName.Equals(userName, StringComparison.Ordinal) 
+                && c.Client.Name.Equals(name, StringComparison.Ordinal)).
+                Select(c => c.Client).FirstOrDefault();
+        }
     }
 }
