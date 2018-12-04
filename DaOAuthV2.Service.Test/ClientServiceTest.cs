@@ -48,7 +48,8 @@ namespace DaOAuthV2.Service.Test
             {
                 ClientType = ClientTypeName.Confidential,
                 DefaultReturnUrl = "http://www.perdu.com",
-                Name = "client_test_crete"
+                Name = "client_test_crete",
+                UserName = "Sammy"
             });
 
             Assert.IsTrue(id > 0);
@@ -57,6 +58,18 @@ namespace DaOAuthV2.Service.Test
 
             Assert.IsNotNull(client);
             Assert.IsTrue((DateTime.Now - client.CreationDate).TotalSeconds < 10);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(DaOAuthServiceException))]
+        public void Create_New_Client_With_Empty_Client_Type_Should_Throw_DaOauthServiceException()
+        {
+            int id = _service.CreateClient(new DTO.Client.CreateClientDto()
+            {              
+                DefaultReturnUrl = "http://www.perdu.com",
+                Name = "client_test_crete",
+                UserName = "Sammy"
+            });
         }
     }
 }

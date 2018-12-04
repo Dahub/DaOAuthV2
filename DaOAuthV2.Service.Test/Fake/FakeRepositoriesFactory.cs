@@ -17,7 +17,7 @@ namespace DaOAuthV2.Service.Test.Fake
 
         public IClientReturnUrlRepository GetClientReturnUrlRepository(IContext context)
         {
-            throw new NotImplementedException();
+            return new FakeClientReturnUrlRepository();
         }
 
         public ICodeRepository GetCodeRepository(IContext context)
@@ -37,7 +37,7 @@ namespace DaOAuthV2.Service.Test.Fake
 
         public IUserClientRepository GetUserClientRepository(IContext context)
         {
-            throw new NotImplementedException();
+            return new FakeUserClientRepository();
         }
 
         public IUserRepository GetUserRepository(IContext context)

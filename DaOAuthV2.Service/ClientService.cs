@@ -1,4 +1,5 @@
-﻿using DaOAuthV2.Domain;
+﻿using DaOAuthV2.Constants;
+using DaOAuthV2.Domain;
 using DaOAuthV2.Service.DTO.Client;
 using DaOAuthV2.Service.Interface;
 using System;
@@ -24,6 +25,8 @@ namespace DaOAuthV2.Service
         {
             this.Validate(toCreate);
 
+            int idClient = 0;
+
             using (var context = RepositoriesFactory.CreateContext(this.ConnexionString))
             {
                 var returnUrlRepo = RepositoriesFactory.GetClientReturnUrlRepository(context);
@@ -35,7 +38,13 @@ namespace DaOAuthV2.Service
 
                 Client client = new Client()
                 {
-                 //   ClientSecret = 
+                    ClientSecret = RandomMaker.GenerateRandomString(16),
+                    ClientTypeId = toCreate.ClientType.Equals(ClientTypeName.Confidential, StringComparison.OrdinalIgnoreCase)?(int)EClientType.CONFIDENTIAL:(int)EClientType.PUBLIC,
+                    CreationDate = DateTime.Now,
+                    Description = toCreate.Description,
+                    IsValid = true,
+                    Name = toCreate.Name,
+                    PublicId = RandomMaker.GenerateRandomString(16)                    
                 };
 
                 clientRepo.Add(client);
@@ -61,9 +70,11 @@ namespace DaOAuthV2.Service
                 userClientRepo.Add(userClient);
 
                 context.Commit();
+
+                idClient = client.Id;
             }
 
-            throw new System.NotImplementedException();
+            return idClient;
         }
     }
 }

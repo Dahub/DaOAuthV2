@@ -15,5 +15,7 @@ namespace DaOAuthV2.Service.DTO.Client
 
         [Required(ErrorMessage = "CreateClientDtoUserNameRequired")]
         public string UserName { get; set; }
+
+        public string Description { get; set; }
     }
 }

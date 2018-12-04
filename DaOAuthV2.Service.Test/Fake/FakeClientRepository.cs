@@ -38,7 +38,7 @@ namespace DaOAuthV2.Service.Test.Fake
 
         public Client GetById(int id)
         {
-            throw new NotImplementedException();
+            return FakeDataBase.Instance.Clients.Where(c => c.Id.Equals(id)).FirstOrDefault();
         }
 
         public Client GetByPublicId(string publicId)
