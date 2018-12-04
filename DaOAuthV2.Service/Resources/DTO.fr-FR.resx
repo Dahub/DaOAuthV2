@@ -123,6 +123,27 @@
   <data name="AuthorizeRedirectUrlRequired" xml:space="preserve">
     <value>L'url de redirection est obligatoire</value>
   </data>
+  <data name="CreateClientDtoDefaultReturnUrlRequired" xml:space="preserve">
+    <value>L'url de retour par défaut est obligatoire</value>
+  </data>
+  <data name="CreateClientDtoNameAlreadyUse" xml:space="preserve">
+    <value>Vous avez déjà déclaré un client de ce nom</value>
+  </data>
+  <data name="CreateClientDtoNameRequired" xml:space="preserve">
+    <value>Le nom du client est obligatoire</value>
+  </data>
+  <data name="CreateClientDtoReturnUrlIncorrect" xml:space="preserve">
+    <value>L'url de retour par défaut n'est pas valide</value>
+  </data>
+  <data name="CreateClientDtoTypeIncorrect" xml:space="preserve">
+    <value>Le type de client {0} est inconnu</value>
+  </data>
+  <data name="CreateClientDtoTypeRequired" xml:space="preserve">
+    <value>Le type du client est obligaoire</value>
+  </data>
+  <data name="CreateClientDtoUserNameRequired" xml:space="preserve">
+    <value>Le nom d'utilisateur est obigatoire</value>
+  </data>
   <data name="CreateTokenDtoClientIdRequired" xml:space="preserve">
     <value>L'id du client est obligatoire</value>
   </data>

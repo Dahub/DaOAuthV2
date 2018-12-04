@@ -44,7 +44,7 @@ namespace DaOAuthV2.Dal.EF.Test
 
                 context.Clients.Add(new Client()
                 {
-                    ClientSecret = new byte[] { 0, 1 },
+                    ClientSecret = "0",
                     ClientTypeId = 1,
                     CreationDate = DateTime.Now,
                     Description = "Client test 1",
@@ -55,7 +55,7 @@ namespace DaOAuthV2.Dal.EF.Test
                 });
                 context.Clients.Add(new Client()
                 {
-                    ClientSecret = new byte[] { 0, 1 },
+                    ClientSecret = "1",
                     ClientTypeId = 1,
                     CreationDate = DateTime.Now,
                     Description = "Client test 2",

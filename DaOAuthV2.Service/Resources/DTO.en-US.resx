@@ -123,6 +123,27 @@
   <data name="AuthorizeRedirectUrlRequired" xml:space="preserve">
     <value>Redirect url is required</value>
   </data>
+  <data name="CreateClientDtoDefaultReturnUrlRequired" xml:space="preserve">
+    <value>Client default return url is mandatory</value>
+  </data>
+  <data name="CreateClientDtoNameAlreadyUse" xml:space="preserve">
+    <value>You already used a client with this name</value>
+  </data>
+  <data name="CreateClientDtoNameRequired" xml:space="preserve">
+    <value>Client name is mandatory</value>
+  </data>
+  <data name="CreateClientDtoReturnUrlIncorrect" xml:space="preserve">
+    <value>Incorrect default return url</value>
+  </data>
+  <data name="CreateClientDtoTypeIncorrect" xml:space="preserve">
+    <value>Unknow client type {0}</value>
+  </data>
+  <data name="CreateClientDtoTypeRequired" xml:space="preserve">
+    <value>Client type is mandatory</value>
+  </data>
+  <data name="CreateClientDtoUserNameRequired" xml:space="preserve">
+    <value>User name is mandatory</value>
+  </data>
   <data name="CreateTokenDtoClientIdRequired" xml:space="preserve">
     <value>Client Id is mandatory</value>
   </data>

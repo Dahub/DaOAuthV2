@@ -1,4 +1,5 @@
-﻿using DaOAuthV2.Domain;
+﻿using DaOAuthV2.Constants;
+using DaOAuthV2.Domain;
 using System;
 using System.Collections.Generic;
 using System.Security.Cryptography;
@@ -32,12 +33,12 @@ namespace DaOAuthV2.Service.Test.Fake
             new ClientType()
             {
                 Id = 1,
-                Wording = "public"
+                Wording = ClientTypeName.Public
             },
             new ClientType()
             {
                 Id = 2,
-                Wording = "confidential"
+                Wording = ClientTypeName.Confidential
             }
         };
 
@@ -45,7 +46,7 @@ namespace DaOAuthV2.Service.Test.Fake
         {
             new Client()
             {
-                ClientSecret = new byte[] { 0, 1 },
+                ClientSecret = "10",
                 ClientTypeId = 2,
                 CreationDate = DateTime.Now,
                 Description = "confidential client",
@@ -56,7 +57,7 @@ namespace DaOAuthV2.Service.Test.Fake
             },
             new Client()
             {
-                ClientSecret = new byte[] { 0, 1 },
+                ClientSecret = "11",
                 ClientTypeId = 1,
                 CreationDate = DateTime.Now,
                 Description = "public client",
@@ -68,7 +69,7 @@ namespace DaOAuthV2.Service.Test.Fake
             },
             new Client()
             {
-                ClientSecret = new byte[] { 0, 1 },
+                ClientSecret = "12",
                 ClientTypeId = 2,
                 CreationDate = DateTime.Now,
                 Description = "confidential client invalid",

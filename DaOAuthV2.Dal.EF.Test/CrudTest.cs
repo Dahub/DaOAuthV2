@@ -25,7 +25,7 @@ namespace DaOAuthV2.Dal.EF.Test
                 context.Clients.Add(new Client()
                 {
                     Id = 100,
-                    ClientSecret = new byte[] { 0, 1 },
+                    ClientSecret = "8",
                     ClientTypeId = 1,
                     CreationDate = DateTime.Now,
                     Description = "Test",
@@ -102,7 +102,7 @@ namespace DaOAuthV2.Dal.EF.Test
                 var clientRepo = _repoFactory.GetClientRepository(context);
                 clientRepo.Add(new Domain.Client()
                 {
-                    ClientSecret = new byte[] { 0, 1 },
+                    ClientSecret = "6",
                     ClientTypeId = 1,
                     CreationDate = DateTime.Now,
                     Description = "Test 2",

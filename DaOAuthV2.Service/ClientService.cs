@@ -1,4 +1,7 @@
-﻿using DaOAuthV2.Service.Interface;
+﻿using DaOAuthV2.Domain;
+using DaOAuthV2.Service.DTO.Client;
+using DaOAuthV2.Service.Interface;
+using System;
 
 namespace DaOAuthV2.Service
 {
@@ -15,6 +18,52 @@ namespace DaOAuthV2.Service
             }
 
             return count;
+        }
+
+        public int CreateClient(CreateClientDto toCreate)
+        {
+            this.Validate(toCreate);
+
+            using (var context = RepositoriesFactory.CreateContext(this.ConnexionString))
+            {
+                var returnUrlRepo = RepositoriesFactory.GetClientReturnUrlRepository(context);
+                var clientRepo = RepositoriesFactory.GetClientRepository(context);
+                var userClientRepo = RepositoriesFactory.GetUserClientRepository(context);
+                var userRepo = RepositoriesFactory.GetUserRepository(context);
+
+                User user = userRepo.GetByUserName(toCreate.UserName);
+
+                Client client = new Client()
+                {
+                 //   ClientSecret = 
+                };
+
+                clientRepo.Add(client);
+
+                ClientReturnUrl returnUrl = new ClientReturnUrl()
+                {
+                    ReturnUrl = toCreate.DefaultReturnUrl,
+                    ClientId = client.Id
+                };
+
+                returnUrlRepo.Add(returnUrl);
+
+                UserClient userClient = new UserClient()
+                {
+                    ClientId = client.Id,
+                    CreationDate = DateTime.Now,
+                    IsValid = true,
+                    RefreshToken = String.Empty,
+                    UserId = user.Id,
+                    UserPublicId = Guid.NewGuid()
+                };
+
+                userClientRepo.Add(userClient);
+
+                context.Commit();
+            }
+
+            throw new System.NotImplementedException();
         }
     }
 }
