@@ -171,6 +171,9 @@
   <data name="CreateUserDtoUserNameRequired" xml:space="preserve">
     <value>User name is mandatory</value>
   </data>
+  <data name="GetClientsAllByUserNameInvalidUser" xml:space="preserve">
+    <value>User {0} don't exists</value>
+  </data>
   <data name="LoginUserDtoPasswordRequired" xml:space="preserve">
     <value>Password is mandatory</value>
   </data>

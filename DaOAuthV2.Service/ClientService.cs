@@ -1,11 +1,12 @@
 ﻿using DaOAuthV2.Constants;
 using DaOAuthV2.Domain;
-using DaOAuthV2.Service.DTO.Client;
+using DaOAuthV2.Service.DTO;
+using DaOAuthV2.Service.ExtensionsMethods;
 using DaOAuthV2.Service.Interface;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using Microsoft.Extensions.Logging;
 
 namespace DaOAuthV2.Service
 {
@@ -110,18 +111,35 @@ namespace DaOAuthV2.Service
             return idClient;
         }
 
-        public IEnumerable<ClientListDto> GetAllByUserName(string userName)
+        public IEnumerable<ClientListDto> GetAllClientsByUserName(string userName)
         {
-            IEnumerable<ClientListDto> result = new List<ClientListDto>();
+            IList<ValidationResult> ExtendValidation(string u)
+            {
+                var resource = this.GetErrorStringLocalizer();
+                IList<ValidationResult> result = new List<ValidationResult>();
+
+                using (var context = RepositoriesFactory.CreateContext(ConnexionString))
+                {
+                    var userRepo = RepositoriesFactory.GetUserRepository(context);
+                    var user = userRepo.GetByUserName(u);
+                    if (user == null || !user.IsValid)
+                        result.Add(new ValidationResult(String.Format(resource["GetClientsAllByUserNameInvalidUser"], u)));
+                }
+
+                return result;
+            }
+
+            Validate(userName, ExtendValidation);
+
+            IEnumerable<ClientListDto> clients = new List<ClientListDto>();
 
             using (var context = RepositoriesFactory.CreateContext(this.ConnexionString))
             {
-                var userRepo = RepositoriesFactory.GetUserRepository(context);
                 var clientRepo = RepositoriesFactory.GetClientRepository(context);
-
+                clients = clientRepo.GetAllByUserName(userName).ToDto();
             }
 
-            return result;
+            return clients;
         }
     }
 }

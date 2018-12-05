@@ -33,7 +33,29 @@ namespace DaOAuthV2.Service.Test.Fake
 
         public IEnumerable<Client> GetAllByUserName(string userName)
         {
-            throw new NotImplementedException();
+            var user = FakeDataBase.Instance.Users.Where(u => u.UserName.Equals(userName, StringComparison.Ordinal)).FirstOrDefault();
+
+            if (user == null)
+                return null;
+
+            var userClients = FakeDataBase.Instance.UsersClient.Where(uc => uc.UserId.Equals(user.Id));
+
+            if (userClients == null)
+                return null;
+
+            IList<Client> clients = new List<Client>();
+            foreach (var uc in userClients)
+            {
+                var client = FakeDataBase.Instance.Clients.Where(c => c.Id.Equals(uc.ClientId)).FirstOrDefault();
+                if (client != null)
+                {
+                    client.ClientReturnUrls = FakeDataBase.Instance.ClientReturnUrls.Where(r => r.ClientId.Equals(client.Id)).ToList();
+                    client.ClientType = FakeDataBase.Instance.ClientTypes.Where(c => c.Id.Equals(client.ClientTypeId)).FirstOrDefault();
+                    clients.Add(client);
+                }
+            }
+
+            return clients;
         }
 
         public Client GetById(int id)
@@ -58,7 +80,7 @@ namespace DaOAuthV2.Service.Test.Fake
             if (userClients == null)
                 return null;
 
-            foreach(var uc in userClients)
+            foreach (var uc in userClients)
             {
                 var client = FakeDataBase.Instance.Clients.Where(c => c.Id.Equals(uc.ClientId)).FirstOrDefault();
 

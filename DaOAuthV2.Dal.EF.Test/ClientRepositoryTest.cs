@@ -84,6 +84,13 @@ namespace DaOAuthV2.Dal.EF.Test
                     ScopeId = 100
                 });
 
+                context.ClientReturnUrl.Add(new ClientReturnUrl()
+                {
+                    ClientId = 100,
+                    Id = 100,
+                    ReturnUrl = "http://www.perdu.com"
+                });
+
                 context.Users.Add(new User()
                 {
                     BirthDate = DateTime.Now.AddYears(-40),
@@ -150,6 +157,47 @@ namespace DaOAuthV2.Dal.EF.Test
                 Assert.IsNotNull(cs.First().ClientsScopes);
                 Assert.IsTrue(cs.First().ClientsScopes.Count() > 0);
                 Assert.IsNotNull(cs.First().ClientsScopes.First().Scope);
+            }
+        }
+
+        public void Get_All_By_UserName_Should_Return_2_Clients_With_Client_Type()
+        {
+            var options = new DbContextOptionsBuilder<DaOAuthContext>()
+                      .UseInMemoryDatabase(databaseName: _dbName)
+                      .Options;
+
+            IEnumerable<Client> cs = null;
+
+            using (var context = new DaOAuthContext(options))
+            {
+                var clientRepo = _repoFactory.GetClientRepository(context);
+                cs = clientRepo.GetAllByUserName("testeur");
+
+                Assert.IsNotNull(cs);
+                Assert.AreEqual(2, cs.Count());
+                Assert.IsNotNull(cs.First().ClientType);
+            }
+        }
+
+        [TestMethod]
+        public void Get_All_By_UserName_Should_Return_2_Clients_With_Return_Urls()
+        {
+            var options = new DbContextOptionsBuilder<DaOAuthContext>()
+                      .UseInMemoryDatabase(databaseName: _dbName)
+                      .Options;
+
+            IEnumerable<Client> cs = null;
+
+            using (var context = new DaOAuthContext(options))
+            {
+                var clientRepo = _repoFactory.GetClientRepository(context);
+                cs = clientRepo.GetAllByUserName("testeur");
+
+                Assert.IsNotNull(cs);
+                Assert.AreEqual(2, cs.Count());
+                Assert.IsNotNull(cs.First().ClientReturnUrls);
+                Assert.IsTrue(cs.First().ClientReturnUrls.Count() > 0);
+                Assert.IsNotNull(cs.First().ClientReturnUrls.FirstOrDefault());
             }
         }
 

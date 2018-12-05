@@ -113,7 +113,7 @@ namespace DaOAuthV2.Dal.EF.Test
                 context.SaveChanges();
             }
 
-            // Use a separate instance of the context to verify correct data was saved to database
+            // Use a separate instance of the context to verify correct datas were saved to database
             using (var context = new DaOAuthContext(options))
             {
                 Assert.AreEqual(2, context.Clients.Count());

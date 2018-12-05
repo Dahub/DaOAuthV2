@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace DaOAuthV2.Service.DTO.Client
+namespace DaOAuthV2.Service.DTO
 {
     public class CreateClientDto
     {

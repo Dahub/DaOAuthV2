@@ -15,8 +15,10 @@ namespace DaOAuthV2.Dal.EF
                  Include(uc => uc.Client).
                  Include(uc => uc.Client.ClientsScopes).
                  ThenInclude(cs => cs.Scope).
+                 Include(uc => uc.Client.ClientReturnUrls).
                  Where(c => c.User.UserName.Equals(userName, StringComparison.Ordinal)).
                  Select(c => c.Client).
+                 Include(c => c.ClientReturnUrls).
                  Include(c => c.ClientsScopes).ThenInclude(cs => cs.Scope);
         }
 

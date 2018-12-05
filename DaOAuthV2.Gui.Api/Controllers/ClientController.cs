@@ -22,5 +22,13 @@ namespace DaOAuthV2.Gui.Api.Controllers
         {
             return _service.CountClientByUserName(userName);
         }
+
+        [HttpGet]
+        [Route("{userName}")]
+        public IActionResult GetAll(string userName)
+        {
+            var clients = _service.GetAllClientsByUserName(userName);
+            return Ok(clients); 
+        }
     }
 }
