@@ -79,7 +79,7 @@ namespace DaOAuthV2.Service.Test
         }
 
         [TestMethod]
-        public async Task Genererate_Uri_For_Authorize_DaOAuthRedirectException_Should_Contain_Redirect_Uri_When_Response_Type_Is_Empty()
+        public async Task Genererate_Uri_For_Authorize_Should_Contain_Redirect_Uri_When_Response_Type_Is_Empty()
         {
             DaOAuthRedirectException ex = null;
             try
@@ -117,7 +117,7 @@ namespace DaOAuthV2.Service.Test
         }
 
         [TestMethod]
-        public async Task Genererate_Uri_For_Authorize_DaOAuthRedirectException_Should_Contain_Redirect_Uri_When_Response_Type_Is_Unsupported()
+        public async Task Genererate_Uri_For_Authorize_Should_Contain_Redirect_Uri_When_Response_Type_Is_Unsupported()
         {
             DaOAuthRedirectException ex = null;
             try
@@ -171,7 +171,7 @@ namespace DaOAuthV2.Service.Test
         }
 
         [TestMethod]
-        public async Task Genererate_Uri_For_Authorize_DaOAuthRedirectException_Should_Contain_Redirect_Uri_When_Client_Id_Is_Empty()
+        public async Task Genererate_Uri_For_Authorize_Should_Contain_Redirect_Uri_When_Client_Id_Is_Empty()
         {
             DaOAuthRedirectException ex = null;
             try

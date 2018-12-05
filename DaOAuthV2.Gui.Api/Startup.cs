@@ -63,6 +63,8 @@ namespace DaOAuthV2.Gui.Api
                 options.SuppressModelStateInvalidFilter = true;
             });
 
+            services.AddTransient<IRandomService>(u => new RandomService());
+
             services.AddTransient<IUserService>(u => new UserService()
             {
                 Configuration = conf,
@@ -87,7 +89,8 @@ namespace DaOAuthV2.Gui.Api
                 RepositoriesFactory = new EfRepositoriesFactory(),
                 ConnexionString = Configuration.GetConnectionString("DaOAuthConnexionString"),
                 StringLocalizerFactory = localizationServiceFactory,
-                Logger = loggerServiceFactory.CreateLogger<JwtService>()
+                Logger = loggerServiceFactory.CreateLogger<JwtService>(),
+                RandomService = new RandomService()
             });
 
             services.AddMvc(options =>

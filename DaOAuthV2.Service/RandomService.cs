@@ -1,20 +1,21 @@
-﻿using System;
+﻿using DaOAuthV2.Service.Interface;
+using System;
 using System.Globalization;
 using System.Security.Cryptography;
 
 namespace DaOAuthV2.Service
 {
-    internal static class RandomMaker
+    public class RandomService : IRandomService
     {
-        const string valid = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
-        const string validInt = "0123456789";
+        private const string valid = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
+        private const string validInt = "0123456789";
 
-        internal static int GenerateRandomInt(int digits)
+        public int GenerateRandomInt(int digits)
         {
             return Int32.Parse(GenerateRandom(digits, validInt), NumberFormatInfo.InvariantInfo);
         }
 
-        internal static string GenerateRandomString(int stringLenght)
+        public string GenerateRandomString(int stringLenght)
         {
             return GenerateRandom(stringLenght, valid);
         }

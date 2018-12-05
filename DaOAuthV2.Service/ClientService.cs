@@ -11,6 +11,8 @@ namespace DaOAuthV2.Service
 {
     public class ClientService : ServiceBase, IClientService
     {
+        public IRandomService RandomService { get; set; }
+
         public int CountClientByUserName(string userName)
         {
             int count = 0;
@@ -41,12 +43,12 @@ namespace DaOAuthV2.Service
                 {
                     var userRepo = RepositoriesFactory.GetUserRepository(context);
                     var user = userRepo.GetByUserName(toValidate.UserName);
-                    if(user == null || !user.IsValid)
+                    if (user == null || !user.IsValid)
                         result.Add(new ValidationResult(String.Format(resource["CreateClientDtoInvalidUser"], toCreate.UserName)));
 
                     var clientRepo = RepositoriesFactory.GetClientRepository(context);
-                    if(clientRepo.GetByUserNameAndName(toValidate.UserName, toValidate.Name) != null)
-                        result.Add(new ValidationResult(resource["CreateClientDtoNameAlreadyUse"]));      
+                    if (clientRepo.GetByUserNameAndName(toValidate.UserName, toValidate.Name) != null)
+                        result.Add(new ValidationResult(resource["CreateClientDtoNameAlreadyUse"]));
                 }
 
                 return result;
@@ -69,13 +71,13 @@ namespace DaOAuthV2.Service
 
                 Client client = new Client()
                 {
-                    ClientSecret = RandomMaker.GenerateRandomString(16),
-                    ClientTypeId = toCreate.ClientType.Equals(ClientTypeName.Confidential, StringComparison.OrdinalIgnoreCase)?(int)EClientType.CONFIDENTIAL:(int)EClientType.PUBLIC,
+                    ClientSecret = RandomService.GenerateRandomString(16),
+                    ClientTypeId = toCreate.ClientType.Equals(ClientTypeName.Confidential, StringComparison.OrdinalIgnoreCase) ? (int)EClientType.CONFIDENTIAL : (int)EClientType.PUBLIC,
                     CreationDate = DateTime.Now,
                     Description = toCreate.Description,
                     IsValid = true,
                     Name = toCreate.Name,
-                    PublicId = RandomMaker.GenerateRandomString(16)                    
+                    PublicId = RandomService.GenerateRandomString(16)
                 };
 
                 clientRepo.Add(client);
@@ -106,6 +108,20 @@ namespace DaOAuthV2.Service
             }
 
             return idClient;
+        }
+
+        public IEnumerable<ClientListDto> GetAllByUserName(string userName)
+        {
+            IEnumerable<ClientListDto> result = new List<ClientListDto>();
+
+            using (var context = RepositoriesFactory.CreateContext(this.ConnexionString))
+            {
+                var userRepo = RepositoriesFactory.GetUserRepository(context);
+                var clientRepo = RepositoriesFactory.GetClientRepository(context);
+
+            }
+
+            return result;
         }
     }
 }

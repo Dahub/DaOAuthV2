@@ -22,7 +22,8 @@ namespace DaOAuthV2.Service.Test
                 ConnexionString = string.Empty,
                 RepositoriesFactory = new FakeRepositoriesFactory(),
                 StringLocalizerFactory = new FakeStringLocalizerFactory(),
-                Logger = new FakeLogger()
+                Logger = new FakeLogger(),
+                RandomService = new FakeRandomService()
             };
 
             _repo = new FakeClientRepository();
@@ -64,6 +65,29 @@ namespace DaOAuthV2.Service.Test
             Assert.AreEqual(description, client.Description);
             Assert.AreEqual(name, client.Name);
             Assert.IsTrue((DateTime.Now - client.CreationDate).TotalSeconds < 10);
+        }
+
+        [TestMethod]
+        public void Create_New_Client_Should_Return_Client_With_Generated_Secret()
+        {
+            string name = "client_test_create";
+            string description = "test";
+
+            int id = _service.CreateClient(new DTO.Client.CreateClientDto()
+            {
+                ClientType = ClientTypeName.Confidential,
+                DefaultReturnUrl = "http://www.perdu.com",
+                Name = name,
+                UserName = "Sammy",
+                Description = description
+            });
+
+            Assert.IsTrue(id > 0);
+
+            var client = _repo.GetById(id);
+
+            Assert.IsNotNull(client);
+            Assert.AreEqual("azerty", client.ClientSecret);
         }
 
         [TestMethod]
