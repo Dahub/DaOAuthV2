@@ -7,20 +7,29 @@ namespace DaOAuthV2.Gui.Api.Controllers
     [Route("[controller]")]
     [ApiController]
     [Authorize]
-    public class ClientController : ControllerBase
+    public class ClientsController : ControllerBase
     {
         private IClientService _service;
 
-        public ClientController([FromServices] IClientService service)
+        public ClientsController([FromServices] IClientService service)
         {
             _service = service;
         }
 
-        [HttpGet]
-        [Route("Count/{userName}")]
-        public int GetClientNumber(string userName)
+        [HttpHead]
+        [Route("{userName}")]
+        public IActionResult GetClientNumber(string userName)
         {
-            return _service.CountClientByUserName(userName);
+            int total = _service.CountClientByUserName(userName);
+
+            var result = new ObjectResult(null)
+            {
+                StatusCode = 204 // no content
+            };
+
+            Request.HttpContext.Response.Headers.Add("X-Total-Count", total.ToString());
+
+            return result;
         }
 
         [HttpGet]

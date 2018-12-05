@@ -40,7 +40,7 @@ namespace DaOAuthV2.Gui.Front.Tools
         {
             var culture = "en";
 
-            if(ControllerContext.RouteData.Values.ContainsKey("culture"))
+            if (ControllerContext.RouteData.Values.ContainsKey("culture"))
                 culture = this.ControllerContext.RouteData.Values["culture"].ToString();
 
             return $"{culture}.{viewName}";
@@ -66,6 +66,22 @@ namespace DaOAuthV2.Gui.Front.Tools
                 $"{_conf.GuiApiUrl}/{route}", data);
         }
 
+        protected async Task<HttpResponseMessage> HeadToApi(string route)
+        {
+            route = ApplyCultureToRoute(route);
+
+            AddAuthorizationCookieIfAuthentificated();
+
+            Uri.TryCreate($"{_conf.GuiApiUrl}/{route}", UriKind.Absolute, out Uri myUri);
+
+            return await _client.SendAsync(new HttpRequestMessage()
+            {
+                Method = HttpMethod.Head,
+                RequestUri = myUri
+            });
+        }
+
+
         private void AddAuthorizationCookieIfAuthentificated()
         {
             if (HttpContext.Request.Cookies[".AspNetCore.DaOAuth"] != null)
@@ -73,7 +89,7 @@ namespace DaOAuthV2.Gui.Front.Tools
                 string value = HttpContext.Request.Cookies[".AspNetCore.DaOAuth"];
                 _client.DefaultRequestHeaders.Add("Cookie", $".AspNetCore.DaOAuth={value}");
             }
-        }       
+        }
 
         private string ApplyCultureToRoute(string route)
         {
