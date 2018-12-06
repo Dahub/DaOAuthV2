@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using System;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Net.Http;
 using System.Security.Claims;
@@ -31,7 +32,9 @@ namespace DaOAuthV2.Gui.Front.Controllers
         public async Task<int> GetClientNumberAsync()
         {
             var userName = ((ClaimsIdentity)User.Identity).FindFirst(c => c.Type.Equals(ClaimTypes.NameIdentifier)).Value;
-            HttpResponseMessage response = await HeadToApi($"Clients/{userName}");
+            NameValueCollection nvc = new NameValueCollection();
+            nvc.Add("userName", userName);
+            HttpResponseMessage response = await HeadToApi($"Clients", nvc);
 
             return Int32.Parse(response.Headers.GetValues("X-Total-Count").First());
         }

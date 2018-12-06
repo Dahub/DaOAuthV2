@@ -47,7 +47,7 @@ namespace DaOAuthV2.Gui.Api.Controllers
         /// <response code="400">Invalid datas</response>
         /// <response code="201">User created</response>
         /// <returns>A 201 http code, with empty response
-        /// Since this is not a REST API, there is not location header as
+        /// Since for users endpoint, this is not a REST API, there is not location header as
         /// users/id route don't exists</returns>
         [HttpPost]
         [Route("")]

@@ -16,7 +16,7 @@ namespace DaOAuthV2.Service.Test
 
         [TestInitialize]
         public void Init()
-        {       
+        {
             _service = new ClientService()
             {
                 Configuration = FakeConfigurationHelper.GetFakeConf(),
@@ -37,9 +37,13 @@ namespace DaOAuthV2.Service.Test
         }
 
         [TestMethod]
-        public void Count_Client_By_User_Name_Should_Count_All_Clients()
+        public void Search_Count_Should_Count_All_Clients_For_User_Name()
         {
-            int total = _service.CountClientByUserName("Sammy");
+            int total = _service.SearchCount(
+                new DTO.ClientSearchDto()
+                {
+                    UserName = "Sammy"
+                });
             Assert.AreEqual(3, total);
         }
 
@@ -55,7 +59,7 @@ namespace DaOAuthV2.Service.Test
                 DefaultReturnUrl = "http://www.perdu.com",
                 Name = name,
                 UserName = "Sammy",
-                Description= description
+                Description = description
             });
 
             Assert.IsTrue(id > 0);
@@ -96,7 +100,7 @@ namespace DaOAuthV2.Service.Test
         public void Create_New_Client_With_Empty_Client_Type_Should_Throw_DaOauthServiceException()
         {
             int id = _service.CreateClient(new DTO.CreateClientDto()
-            {              
+            {
                 DefaultReturnUrl = "http://www.perdu.com",
                 Name = "client_test_crete",
                 UserName = "Sammy"
@@ -137,7 +141,7 @@ namespace DaOAuthV2.Service.Test
             {
                 ClientType = "incorrect",
                 DefaultReturnUrl = "http://www.perdu.com",
-                Name =  "test",
+                Name = "test",
                 UserName = "Sammy"
             });
         }
@@ -195,18 +199,22 @@ namespace DaOAuthV2.Service.Test
         }
 
         [TestMethod]
-        public void Get_All_Clients_By_User_Name_Should_Return_Clients()
+        public void Search_Should_Return_Clients_For_User_Name()
         {
-            var clients = _service.GetAllClientsByUserName("Sammy");
+            var clients = _service.Search(
+                new DTO.ClientSearchDto()
+                {
+                   UserName = "Sammy"
+                });
             Assert.IsNotNull(clients);
             Assert.AreEqual(3, clients.Count());
         }
 
-        [TestMethod]
-        [ExpectedException(typeof(DaOAuthServiceException))]
-        public void Get_All_Clients_By_Invalid_User_Name_Should_Throw_DaOauthServiceException()
-        {
-            var clients = _service.GetAllClientsByUserName("unknow");
-        }
+        //[TestMethod]
+        //[ExpectedException(typeof(DaOAuthServiceException))]
+        //public void Get_All_Clients_By_Invalid_User_Name_Should_Throw_DaOauthServiceException()
+        //{
+        //    var clients = _service.GetAllClientsByUserName("unknow");
+        //}
     }
 }

@@ -9,19 +9,6 @@ namespace DaOAuthV2.Dal.EF
 {
     internal class ClientRepository : RepositoryBase<Client>,  IClientRepository
     {
-        public IEnumerable<Client> GetAllByUserName(string userName)
-        {
-            return Context.UsersClients.
-                 Include(uc => uc.Client).
-                 Include(uc => uc.Client.ClientsScopes).
-                 ThenInclude(cs => cs.Scope).
-                 Include(uc => uc.Client.ClientReturnUrls).
-                 Where(c => c.User.UserName.Equals(userName, StringComparison.Ordinal)).
-                 Select(c => c.Client).
-                 Include(c => c.ClientReturnUrls).
-                 Include(c => c.ClientsScopes).ThenInclude(cs => cs.Scope);
-        }
-
         public Client GetByPublicId(string publicId)
         {
             return Context.Clients.
@@ -30,19 +17,36 @@ namespace DaOAuthV2.Dal.EF
                 Where(c => c.PublicId.Equals(publicId, StringComparison.Ordinal)).FirstOrDefault();
         }
 
-        public int CountAllByUserName(string userName)
+        public IEnumerable<Client> GetAllByCriterias(string userName, string name, bool? isValid, int? clientTypeId, int skip, int take)
         {
-            return Context.UsersClients.
-                Where(c => c.User.UserName.Equals(userName, StringComparison.Ordinal)).
-                Select(c => c.Client).Count();
+            return (Context.UsersClients.
+                Include(uc => uc.Client).
+                Include(uc => uc.Client.ClientType).
+                Include(uc => uc.Client.ClientsScopes).
+                ThenInclude(cs => cs.Scope).
+                Include(uc => uc.Client.ClientReturnUrls).
+                Where(c =>
+                    (String.IsNullOrEmpty(userName) || c.User.UserName.Equals(userName, StringComparison.Ordinal))
+                    && (String.IsNullOrEmpty(name) || c.Client.Name.Equals(name, StringComparison.Ordinal))
+                    && (!isValid.HasValue || c.Client.IsValid.Equals(isValid.Value))
+                    && (!clientTypeId.HasValue || c.Client.ClientTypeId.Equals(clientTypeId.Value))
+                    ).
+                Select(c => c.Client).
+                Include(c => c.ClientType).
+                Include(c => c.ClientReturnUrls).
+                Include(c => c.ClientsScopes).ThenInclude(cs => cs.Scope)).Skip(skip).Take(take);
         }
 
-        public Client GetByUserNameAndName(string userName, string name)
+        public int GetAllByCriteriasCount(string userName, string name, bool? isValid, int? clientTypeId)
         {
             return Context.UsersClients.
-                Where(c => c.User.UserName.Equals(userName, StringComparison.Ordinal) 
-                && c.Client.Name.Equals(name, StringComparison.Ordinal)).
-                Select(c => c.Client).FirstOrDefault();
+                Where(c => 
+                    (String.IsNullOrEmpty(userName) || c.User.UserName.Equals(userName, StringComparison.Ordinal))
+                    && (String.IsNullOrEmpty(name) || c.Client.Name.Equals(name, StringComparison.Ordinal))
+                    && (!isValid.HasValue || c.Client.IsValid.Equals(isValid.Value))
+                    && (!clientTypeId.HasValue || c.Client.ClientTypeId.Equals(clientTypeId.Value))
+                    ).
+                Select(c => c.Client).Count();
         }
     }
 }

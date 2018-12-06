@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using System;
+using System.Collections.Specialized;
+using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 
@@ -68,7 +70,20 @@ namespace DaOAuthV2.Gui.Front.Tools
 
         protected async Task<HttpResponseMessage> HeadToApi(string route)
         {
+            return await HeadToApi(route, null);
+        }
+
+        protected async Task<HttpResponseMessage> HeadToApi(string route, NameValueCollection queryParams)
+        {
             route = ApplyCultureToRoute(route);
+
+            if(queryParams != null)
+            {
+                foreach(var k in queryParams.AllKeys)
+                {
+                    route = String.Concat(route, $"&{k}={queryParams.GetValues(k).FirstOrDefault()}");
+                }
+            }
 
             AddAuthorizationCookieIfAuthentificated();
 

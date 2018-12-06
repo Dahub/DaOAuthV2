@@ -171,9 +171,6 @@
   <data name="CreateUserDtoUserNameRequired" xml:space="preserve">
     <value>Le nom d'utilisateur est obligatoire</value>
   </data>
-  <data name="GetClientsAllByUserNameInvalidUser" xml:space="preserve">
-    <value>L'utilisateur {0} n'existe pas</value>
-  </data>
   <data name="LoginUserDtoPasswordRequired" xml:space="preserve">
     <value>Le mot de passe est obligatoire</value>
   </data>

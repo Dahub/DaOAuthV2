@@ -23,6 +23,20 @@ namespace DaOAuthV2.Dal.EF.Test
 
             using (var context = new DaOAuthContext(options))
             {
+                ClientType confidential = new ClientType()
+                {
+                    Id = 1,
+                    Wording = "Confidential"
+                };
+                ClientType pub = new ClientType()
+                {
+                    Id = 2,
+                    Wording = "Public"
+                };
+
+                context.ClientsTypes.Add(confidential);
+                context.ClientsTypes.Add(pub);
+
                 context.Scopes.Add(new Scope()
                 {
                     Id = 100,
@@ -139,7 +153,7 @@ namespace DaOAuthV2.Dal.EF.Test
         }
 
         [TestMethod]
-        public void Get_All_By_UserName_Should_Return_2_Clients_With_Scopes()
+        public void Get_All_By_Criterias_Should_Return_2_Clients_With_Scopes()
         {
             var options = new DbContextOptionsBuilder<DaOAuthContext>()
                       .UseInMemoryDatabase(databaseName: _dbName)
@@ -150,7 +164,7 @@ namespace DaOAuthV2.Dal.EF.Test
             using (var context = new DaOAuthContext(options))
             {
                 var clientRepo = _repoFactory.GetClientRepository(context);
-                cs = clientRepo.GetAllByUserName("testeur");
+                cs = clientRepo.GetAllByCriterias("testeur", null, null, null, 0, 50);
 
                 Assert.IsNotNull(cs);
                 Assert.AreEqual(2, cs.Count());
@@ -160,7 +174,7 @@ namespace DaOAuthV2.Dal.EF.Test
             }
         }
 
-        public void Get_All_By_UserName_Should_Return_2_Clients_With_Client_Type()
+        public void Get_All_By_Criterias_Should_Return_2_Clients_With_Client_Type()
         {
             var options = new DbContextOptionsBuilder<DaOAuthContext>()
                       .UseInMemoryDatabase(databaseName: _dbName)
@@ -171,7 +185,7 @@ namespace DaOAuthV2.Dal.EF.Test
             using (var context = new DaOAuthContext(options))
             {
                 var clientRepo = _repoFactory.GetClientRepository(context);
-                cs = clientRepo.GetAllByUserName("testeur");
+                cs = clientRepo.GetAllByCriterias("testeur", null, null, null, 0, 50);
 
                 Assert.IsNotNull(cs);
                 Assert.AreEqual(2, cs.Count());
@@ -180,7 +194,7 @@ namespace DaOAuthV2.Dal.EF.Test
         }
 
         [TestMethod]
-        public void Get_All_By_UserName_Should_Return_2_Clients_With_Return_Urls()
+        public void Get_All_By_Criterias_Should_Return_2_Clients_With_Return_Urls()
         {
             var options = new DbContextOptionsBuilder<DaOAuthContext>()
                       .UseInMemoryDatabase(databaseName: _dbName)
@@ -191,13 +205,92 @@ namespace DaOAuthV2.Dal.EF.Test
             using (var context = new DaOAuthContext(options))
             {
                 var clientRepo = _repoFactory.GetClientRepository(context);
-                cs = clientRepo.GetAllByUserName("testeur");
+                cs = clientRepo.GetAllByCriterias("testeur", null, null, null, 0, 50);
 
                 Assert.IsNotNull(cs);
                 Assert.AreEqual(2, cs.Count());
                 Assert.IsNotNull(cs.First().ClientReturnUrls);
                 Assert.IsTrue(cs.First().ClientReturnUrls.Count() > 0);
                 Assert.IsNotNull(cs.First().ClientReturnUrls.FirstOrDefault());
+            }
+        }
+
+
+        [TestMethod]
+        public void Get_All_By_Criterias_Should_Return_1_For_Second_Page()
+        {
+            var options = new DbContextOptionsBuilder<DaOAuthContext>()
+                      .UseInMemoryDatabase(databaseName: _dbName)
+                      .Options;
+
+            IEnumerable<Client> cs = null;
+
+            using (var context = new DaOAuthContext(options))
+            {
+                var clientRepo = _repoFactory.GetClientRepository(context);
+                cs = clientRepo.GetAllByCriterias("testeur", null, null, null, 1, 1);
+
+                Assert.IsNotNull(cs);
+                Assert.AreEqual(1, cs.Count());
+            }
+        }
+
+        [TestMethod]
+        public void Get_All_By_Criterias_Should_Return_1_With_Client_Name()
+        {
+            var options = new DbContextOptionsBuilder<DaOAuthContext>()
+                      .UseInMemoryDatabase(databaseName: _dbName)
+                      .Options;
+
+            IEnumerable<Client> cs = null;
+
+            using (var context = new DaOAuthContext(options))
+            {
+                var clientRepo = _repoFactory.GetClientRepository(context);
+                cs = clientRepo.GetAllByCriterias("testeur", "CT1", null, null, 0, 50);
+
+                Assert.IsNotNull(cs);
+                Assert.AreEqual(1, cs.Count());
+                Assert.AreEqual("CT1", cs.First().Name);
+            }
+        }
+
+        [TestMethod]
+        public void Get_All_By_Criterias_Should_Return_2_With_Is_Valid()
+        {
+            var options = new DbContextOptionsBuilder<DaOAuthContext>()
+                      .UseInMemoryDatabase(databaseName: _dbName)
+                      .Options;
+
+            IEnumerable<Client> cs = null;
+
+            using (var context = new DaOAuthContext(options))
+            {
+                var clientRepo = _repoFactory.GetClientRepository(context);
+                cs = clientRepo.GetAllByCriterias("testeur", null, true, null, 0, 50);
+
+                Assert.IsNotNull(cs);
+                Assert.AreEqual(2, cs.Count());
+            }
+        }
+
+        [TestMethod]
+        public void Get_All_By_Criterias_Should_Return_2_With_Client_Type()
+        {
+            var options = new DbContextOptionsBuilder<DaOAuthContext>()
+                      .UseInMemoryDatabase(databaseName: _dbName)
+                      .Options;
+
+            IEnumerable<Client> cs = null;
+
+            using (var context = new DaOAuthContext(options))
+            {
+                var clientRepo = _repoFactory.GetClientRepository(context);
+                cs = clientRepo.GetAllByCriterias("testeur", null, null, 1, 0, 50);
+
+                Assert.IsNotNull(cs);
+                Assert.AreEqual(2, cs.Count());
+                Assert.IsNotNull(cs.First().ClientType);
             }
         }
 
@@ -218,50 +311,50 @@ namespace DaOAuthV2.Dal.EF.Test
         }
 
         [TestMethod]
-        public void Count_All_By_UserName_Should_Return_2()
+        public void Get_All_By_Criterias_Count_Should_Return_1_With_Client_Name()
         {
             var options = new DbContextOptionsBuilder<DaOAuthContext>()
-                     .UseInMemoryDatabase(databaseName: _dbName)
-                     .Options;
+                      .UseInMemoryDatabase(databaseName: _dbName)
+                      .Options;
 
             using (var context = new DaOAuthContext(options))
             {
                 var clientRepo = _repoFactory.GetClientRepository(context);
-                var c = clientRepo.CountAllByUserName("testeur");
+                int result = clientRepo.GetAllByCriteriasCount("testeur", "CT1", null, null);
 
-                Assert.AreEqual(2, c);
+                Assert.AreEqual(1, result);
             }
         }
 
         [TestMethod]
-        public void Get_By_User_Name_And_Name_Should_Return_Client()
+        public void Get_All_By_Criterias_Count_Should_Return_2_With_Is_Valid()
         {
             var options = new DbContextOptionsBuilder<DaOAuthContext>()
-                   .UseInMemoryDatabase(databaseName: _dbName)
-                   .Options;
+                      .UseInMemoryDatabase(databaseName: _dbName)
+                      .Options;
 
             using (var context = new DaOAuthContext(options))
             {
                 var clientRepo = _repoFactory.GetClientRepository(context);
-                var c = clientRepo.GetByUserNameAndName("testeur", "CT1");
+                int result = clientRepo.GetAllByCriteriasCount("testeur", null, true, null);
 
-                Assert.IsNotNull(c);
+                Assert.AreEqual(2, result);
             }
         }
 
         [TestMethod]
-        public void Get_By_User_Name_And_Non_Existing_Name_Should_Return_Null()
+        public void Get_All_By_Criterias_Count_Should_Return_2_With_Client_Type()
         {
             var options = new DbContextOptionsBuilder<DaOAuthContext>()
-                   .UseInMemoryDatabase(databaseName: _dbName)
-                   .Options;
+                      .UseInMemoryDatabase(databaseName: _dbName)
+                      .Options;
 
             using (var context = new DaOAuthContext(options))
             {
                 var clientRepo = _repoFactory.GetClientRepository(context);
-                var c = clientRepo.GetByUserNameAndName("testeur", "CT1__non_exist");
+                int result = clientRepo.GetAllByCriteriasCount("testeur", null, null, 1);
 
-                Assert.IsNull(c);
+                Assert.AreEqual(2, result);
             }
         }
     }

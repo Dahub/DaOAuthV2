@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 
 namespace DaOAuthV2.Service
 {
@@ -14,14 +15,16 @@ namespace DaOAuthV2.Service
     {
         public IRandomService RandomService { get; set; }
 
-        public int CountClientByUserName(string userName)
+        public int SearchCount(ClientSearchDto criterias)
         {
+            Validate(criterias, ExtendValidationSearchCriterias);
+
             int count = 0;
 
             using (var c = RepositoriesFactory.CreateContext(ConnexionString))
             {
                 var clientRepo = RepositoriesFactory.GetClientRepository(c);
-                count = clientRepo.CountAllByUserName(userName);
+                count = clientRepo.GetAllByCriteriasCount(criterias.UserName, criterias.Name, criterias.IsValid, GetClientTypeId(criterias.ClientType));
             }
 
             return count;
@@ -48,7 +51,7 @@ namespace DaOAuthV2.Service
                         result.Add(new ValidationResult(String.Format(resource["CreateClientDtoInvalidUser"], toCreate.UserName)));
 
                     var clientRepo = RepositoriesFactory.GetClientRepository(context);
-                    if (clientRepo.GetByUserNameAndName(toValidate.UserName, toValidate.Name) != null)
+                    if (clientRepo.GetAllByCriteriasCount(toValidate.UserName, toValidate.Name, null, null) > 0)
                         result.Add(new ValidationResult(resource["CreateClientDtoNameAlreadyUse"]));
                 }
 
@@ -111,35 +114,60 @@ namespace DaOAuthV2.Service
             return idClient;
         }
 
-        public IEnumerable<ClientListDto> GetAllClientsByUserName(string userName)
-        {
-            IList<ValidationResult> ExtendValidation(string u)
-            {
-                var resource = this.GetErrorStringLocalizer();
-                IList<ValidationResult> result = new List<ValidationResult>();
+        public IEnumerable<ClientListDto> Search(ClientSearchDto criterias)
+        {    
+            Validate(criterias, ExtendValidationSearchCriterias);
 
-                using (var context = RepositoriesFactory.CreateContext(ConnexionString))
-                {
-                    var userRepo = RepositoriesFactory.GetUserRepository(context);
-                    var user = userRepo.GetByUserName(u);
-                    if (user == null || !user.IsValid)
-                        result.Add(new ValidationResult(String.Format(resource["GetClientsAllByUserNameInvalidUser"], u)));
-                }
+            IList<Client> clients = null;
 
-                return result;
-            }
+            int? clientTypeId = GetClientTypeId(criterias.ClientType);
 
-            Validate(userName, ExtendValidation);
-
-            IEnumerable<ClientListDto> clients = new List<ClientListDto>();
+            if (!criterias.Skip.HasValue)
+                criterias.Skip = 0;
+            if (!criterias.Limit.HasValue)
+                criterias.Limit = 50;
 
             using (var context = RepositoriesFactory.CreateContext(this.ConnexionString))
             {
                 var clientRepo = RepositoriesFactory.GetClientRepository(context);
-                clients = clientRepo.GetAllByUserName(userName).ToDto();
+
+                clients = clientRepo.GetAllByCriterias(criterias.UserName, criterias.Name,
+                    criterias.IsValid, clientTypeId, criterias.Skip.Value, criterias.Limit.Value).ToList();
             }
 
-            return clients;
+            if(clients != null)
+                return clients.ToDto();
+            return new List<ClientListDto>();
+        }
+
+        private static int? GetClientTypeId(string clientType)
+        {
+            int? clientTypeId = null;
+            if (!String.IsNullOrEmpty(clientType))
+            {
+                if (clientType.Equals(ClientTypeName.Confidential, StringComparison.OrdinalIgnoreCase))
+                    clientTypeId = (int)EClientType.CONFIDENTIAL;
+                else if (clientType.Equals(ClientTypeName.Public, StringComparison.OrdinalIgnoreCase))
+                    clientTypeId = (int)EClientType.PUBLIC;
+            }
+
+            return clientTypeId;
+        }
+
+        IList<ValidationResult> ExtendValidationSearchCriterias(ClientSearchDto c)
+        {
+            var resource = this.GetErrorStringLocalizer();
+            IList<ValidationResult> result = new List<ValidationResult>();
+
+            //using (var context = RepositoriesFactory.CreateContext(ConnexionString))
+            //{
+            //    var userRepo = RepositoriesFactory.GetUserRepository(context);
+            //    var user = userRepo.GetByUserName(c.UserName);
+            //    if (user == null || !user.IsValid)
+            //        result.Add(new ValidationResult(String.Format(resource["GetClientsAllByUserNameInvalidUser"], c)));
+            //}
+
+            return result;
         }
     }
 }

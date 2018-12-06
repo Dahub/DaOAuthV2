@@ -6,8 +6,8 @@ namespace DaOAuthV2.Service.Interface
     public interface IClientService
     {
         IRandomService RandomService { get; set; }
-        int CountClientByUserName(string userName);
+        int SearchCount(ClientSearchDto criterias);
         int CreateClient(CreateClientDto toCreate);
-        IEnumerable<ClientListDto> GetAllClientsByUserName(string userName);
+        IEnumerable<ClientListDto> Search(ClientSearchDto criterias);
     }
 }
