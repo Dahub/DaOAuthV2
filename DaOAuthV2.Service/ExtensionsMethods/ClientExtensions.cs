@@ -15,7 +15,7 @@ namespace DaOAuthV2.Service.ExtensionsMethods
                 ClientName = value.Name,
                 ClientType = value.ClientType.Wording,
                 DefaultReturnUri = value.ClientReturnUrls.Select(u => u.ReturnUrl).FirstOrDefault(),
-                IsActif = value.UsersClients.Where(uc => uc.User.UserName.Equals(userName)).First().IsValid
+                IsActif = value.UsersClients.Where(uc => uc.User.UserName.Equals(userName)).First().IsActif
             };
         }
 

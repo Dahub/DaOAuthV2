@@ -24,7 +24,7 @@ namespace DaOAuthV2.Service
             using (var c = RepositoriesFactory.CreateContext(ConnexionString))
             {
                 var clientRepo = RepositoriesFactory.GetClientRepository(c);
-                count = clientRepo.GetAllByCriteriasCount(criterias.UserName, criterias.Name, criterias.IsValid, GetClientTypeId(criterias.ClientType));
+                count = clientRepo.GetAllByCriteriasCount(criterias.UserName, criterias.Name, true, GetClientTypeId(criterias.ClientType));
             }
 
             return count;
@@ -98,7 +98,7 @@ namespace DaOAuthV2.Service
                 {
                     ClientId = client.Id,
                     CreationDate = DateTime.Now,
-                    IsValid = true,
+                    IsActif = true,
                     RefreshToken = String.Empty,
                     UserId = user.Id,
                     UserPublicId = Guid.NewGuid()
@@ -127,7 +127,7 @@ namespace DaOAuthV2.Service
                 var clientRepo = RepositoriesFactory.GetClientRepository(context);
 
                 clients = clientRepo.GetAllByCriterias(criterias.UserName, criterias.Name,
-                    criterias.IsValid, clientTypeId, criterias.Skip, criterias.Limit).ToList();
+                    true, clientTypeId, criterias.Skip, criterias.Limit).ToList();
             }
 
             if(clients != null)

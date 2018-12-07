@@ -121,7 +121,7 @@ namespace DaOAuthV2.Dal.EF.Test
                     ClientId = 100,
                     CreationDate = DateTime.Now,
                     Id = 100,
-                    IsValid = true,
+                    IsActif = true,
                     UserId = 100,
                     UserPublicId = Guid.NewGuid()
                 });
@@ -130,7 +130,7 @@ namespace DaOAuthV2.Dal.EF.Test
                     ClientId = 101,
                     CreationDate = DateTime.Now,
                     Id = 101,
-                    IsValid = true,
+                    IsActif = true,
                     UserId = 100,
                     UserPublicId = Guid.NewGuid()
                 });

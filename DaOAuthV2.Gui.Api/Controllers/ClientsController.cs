@@ -29,7 +29,6 @@ namespace DaOAuthV2.Gui.Api.Controllers
             {
                 UserName = User.Identity.Name,
                 Name = name,
-                IsValid = true,
                 ClientType = clientType,
                 Skip = skip,
                 Limit = limit

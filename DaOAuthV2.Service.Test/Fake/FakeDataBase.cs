@@ -135,7 +135,7 @@ namespace DaOAuthV2.Service.Test.Fake
                 ClientId = 1,
                 Id = 1,
                 CreationDate = DateTime.Now,
-                IsValid = true,
+                IsActif = true,
                 RefreshToken = String.Empty,
                 UserId = 1,
                 UserPublicId = Guid.Parse("0e4db8be-267a-48aa-ba4d-2b8f71e9a6d8")
@@ -145,7 +145,7 @@ namespace DaOAuthV2.Service.Test.Fake
                 ClientId = 2,
                 Id = 2,
                 CreationDate = DateTime.Now,
-                IsValid = true,
+                IsActif = true,
                 RefreshToken = String.Empty,
                 UserId = 1,
                 UserPublicId = Guid.Parse("0e4db8be-267a-48aa-ba4d-2b8f71e9a6d7")
@@ -155,7 +155,7 @@ namespace DaOAuthV2.Service.Test.Fake
                 ClientId = 3,
                 Id = 3,
                 CreationDate = DateTime.Now,
-                IsValid = true,
+                IsActif = true,
                 RefreshToken = String.Empty,
                 UserId = 1,
                 UserPublicId = Guid.Parse("0e4db8be-267a-48aa-ba4d-2b8f71e9a6d6")

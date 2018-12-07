@@ -4,14 +4,16 @@ using DaOAuthV2.Dal.EF;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace DaOAuthV2.Gui.Api.Migrations
 {
     [DbContext(typeof(DaOAuthContext))]
-    partial class DaOAuthContextModelSnapshot : ModelSnapshot
+    [Migration("20181207215807_change_user_client_is_valid_to_is_actif")]
+    partial class change_user_client_is_valid_to_is_actif
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

@@ -97,7 +97,7 @@ namespace DaOAuthV2.Dal.EF
             modelBuilder.Entity<UserClient>().Property(p => p.UserPublicId).HasColumnName("UserPublicId").HasColumnType("uniqueidentifier").IsRequired();
             modelBuilder.Entity<UserClient>().HasOne<User>(c => c.User).WithMany(g => g.UsersClients).HasForeignKey(c => c.UserId);
             modelBuilder.Entity<UserClient>().Property(p => p.CreationDate).HasColumnName("CreationDate").HasColumnType("datetime").IsRequired();
-            modelBuilder.Entity<UserClient>().Property(p => p.IsValid).HasColumnName("IsValid").HasColumnType("bit").IsRequired();
+            modelBuilder.Entity<UserClient>().Property(p => p.IsActif).HasColumnName("IsActif").HasColumnType("bit").IsRequired();
             modelBuilder.Entity<UserClient>().Property(p => p.RefreshToken).HasColumnName("RefreshToken").HasColumnType("nvarchar(max)").HasMaxLength(Int32.MaxValue);
 
             modelBuilder.Entity<ClientScope>().ToTable("ClientScope");

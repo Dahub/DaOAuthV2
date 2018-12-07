@@ -13,6 +13,6 @@ namespace DaOAuthV2.Domain
         public DateTime CreationDate { get; set; }
         public Guid UserPublicId { get; set; }
         public string RefreshToken { get; set; }
-        public bool IsValid { get; set; }
+        public bool IsActif { get; set; }
     }
 }
