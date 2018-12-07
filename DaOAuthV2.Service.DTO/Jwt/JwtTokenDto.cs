@@ -1,6 +1,8 @@
-﻿namespace DaOAuthV2.Service.DTO
+﻿using DaOAuthV2.ApiTools;
+
+namespace DaOAuthV2.Service.DTO
 {
-    public class JwtTokenDto
+    public class JwtTokenDto : IDto
     {
         public string Token { get; set; }
         public bool IsValid { get; set; }

@@ -120,23 +120,18 @@ namespace DaOAuthV2.Service
 
             IList<Client> clients = null;
 
-            int? clientTypeId = GetClientTypeId(criterias.ClientType);
-
-            if (!criterias.Skip.HasValue)
-                criterias.Skip = 0;
-            if (!criterias.Limit.HasValue)
-                criterias.Limit = 50;
+            int? clientTypeId = GetClientTypeId(criterias.ClientType);         
 
             using (var context = RepositoriesFactory.CreateContext(this.ConnexionString))
             {
                 var clientRepo = RepositoriesFactory.GetClientRepository(context);
 
                 clients = clientRepo.GetAllByCriterias(criterias.UserName, criterias.Name,
-                    criterias.IsValid, clientTypeId, criterias.Skip.Value, criterias.Limit.Value).ToList();
+                    criterias.IsValid, clientTypeId, criterias.Skip, criterias.Limit).ToList();
             }
 
             if(clients != null)
-                return clients.ToDto();
+                return clients.ToDto(criterias.UserName);
             return new List<ClientListDto>();
         }
 
@@ -159,13 +154,16 @@ namespace DaOAuthV2.Service
             var resource = this.GetErrorStringLocalizer();
             IList<ValidationResult> result = new List<ValidationResult>();
 
-            //using (var context = RepositoriesFactory.CreateContext(ConnexionString))
-            //{
-            //    var userRepo = RepositoriesFactory.GetUserRepository(context);
-            //    var user = userRepo.GetByUserName(c.UserName);
-            //    if (user == null || !user.IsValid)
-            //        result.Add(new ValidationResult(String.Format(resource["GetClientsAllByUserNameInvalidUser"], c)));
-            //}
+            using (var context = RepositoriesFactory.CreateContext(ConnexionString))
+            {
+                var userRepo = RepositoriesFactory.GetUserRepository(context);
+                var user = userRepo.GetByUserName(c.UserName);
+                if (user == null || !user.IsValid)
+                    result.Add(new ValidationResult(String.Format(resource["SearchClientInvalidUser"], c)));
+            }
+
+            if (c.Limit - c.Skip > 50)
+                result.Add(new ValidationResult(String.Format(resource["SearchClientAskTooMuch"], c)));
 
             return result;
         }

@@ -1,7 +1,10 @@
-﻿using DaOAuthV2.Service.DTO;
+﻿using DaOAuthV2.ApiTools;
+using DaOAuthV2.Service.DTO;
 using DaOAuthV2.Service.Interface;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
+using System;
 
 namespace DaOAuthV2.Gui.Api.Controllers
 {
@@ -17,44 +20,33 @@ namespace DaOAuthV2.Gui.Api.Controllers
             _service = service;
         }
 
+        [HttpGet]
         [HttpHead]
         [Route("")]
-        public IActionResult GetAllCount(string userName, string name, bool? isValid, string clientType)
-        {            
-            ClientSearchDto criterias = new ClientSearchDto()
-            {
-                UserName = userName,
-                Name = name,
-                IsValid = isValid,
-                ClientType = clientType
-            };
-
-            int total = _service.SearchCount(criterias);
-
-            var result = new ObjectResult(null)
-            {
-                StatusCode = 204 // no content
-            };
-
-            Request.HttpContext.Response.Headers.Add("X-Total-Count", total.ToString());
-
-            return result;
-        }
-
-        [HttpGet]
-        [Route("")]
-        public IActionResult GetAll(string userName, string name, bool? isValid, string clientType, int? skip, int? limit)
+        public IActionResult GetAll(string name, string clientType, uint skip, uint limit)
         {
-            var clients = _service.Search(new ClientSearchDto()
+            var criterias = new ClientSearchDto()
             {
-                UserName = userName,
+                UserName = User.Identity.Name,
                 Name = name,
-                IsValid = isValid,
+                IsValid = true,
                 ClientType = clientType,
                 Skip = skip,
                 Limit = limit
-            });
-            return Ok(clients); 
+            };
+           
+            var count = _service.SearchCount(criterias);
+            Request.HttpContext.Response.Headers.Add("X-Total-Count", count.ToString());
+            if (Request.Method.Equals("head", StringComparison.OrdinalIgnoreCase))
+            {        
+                return Ok();
+            }
+            else
+            {
+                var clients = _service.Search(criterias);
+                var currentUrl = UriHelper.GetDisplayUrl(Request);
+                return Ok(clients.ToSearchResult(currentUrl, count, criterias));
+            }
         }
     }
 }

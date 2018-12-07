@@ -22,7 +22,7 @@ namespace DaOAuthV2.Service.Test.Fake
             throw new NotImplementedException();
         }
 
-        public IEnumerable<Client> GetAllByCriterias(string userName, string name, bool? isValid, int? clientTypeId, int skip, int take)
+        public IEnumerable<Client> GetAllByCriterias(string userName, string name, bool? isValid, int? clientTypeId, uint skip, uint take)
         {
             var user = FakeDataBase.Instance.Users.Where(u => u.UserName.Equals(userName, StringComparison.Ordinal)).FirstOrDefault();
 
@@ -46,11 +46,16 @@ namespace DaOAuthV2.Service.Test.Fake
                 {
                     client.ClientReturnUrls = FakeDataBase.Instance.ClientReturnUrls.Where(r => r.ClientId.Equals(client.Id)).ToList();
                     client.ClientType = FakeDataBase.Instance.ClientTypes.Where(c => c.Id.Equals(client.ClientTypeId)).FirstOrDefault();
+                    client.UsersClients = FakeDataBase.Instance.UsersClient.Where(c => c.ClientId.Equals(client.Id)).ToList();
+                    foreach(var usc in client.UsersClients)
+                    {
+                        usc.User = FakeDataBase.Instance.Users.Where(u => u.Id.Equals(usc.UserId)).FirstOrDefault();
+                    }
                     clients.Add(client);
                 }
             }
 
-            return clients.Skip(skip).Take(take);
+            return clients.Skip((int)skip).Take((int)take);
         }
 
         public int GetAllByCriteriasCount(string userName, string name, bool? isValid, int? clientTypeId)

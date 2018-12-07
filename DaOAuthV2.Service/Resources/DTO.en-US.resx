@@ -123,6 +123,9 @@
   <data name="AuthorizeRedirectUrlRequired" xml:space="preserve">
     <value>Redirect url is required</value>
   </data>
+  <data name="ClientSearchDtoUserNameRequired" xml:space="preserve">
+    <value>User name is mandatory</value>
+  </data>
   <data name="CreateClientDtoDefaultReturnUrlRequired" xml:space="preserve">
     <value>Client default return url is mandatory</value>
   </data>

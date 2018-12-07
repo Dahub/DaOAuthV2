@@ -17,7 +17,7 @@ namespace DaOAuthV2.Dal.EF
                 Where(c => c.PublicId.Equals(publicId, StringComparison.Ordinal)).FirstOrDefault();
         }
 
-        public IEnumerable<Client> GetAllByCriterias(string userName, string name, bool? isValid, int? clientTypeId, int skip, int take)
+        public IEnumerable<Client> GetAllByCriterias(string userName, string name, bool? isValid, int? clientTypeId, uint skip, uint take)
         {
             return (Context.UsersClients.
                 Include(uc => uc.Client).
@@ -34,7 +34,8 @@ namespace DaOAuthV2.Dal.EF
                 Select(c => c.Client).
                 Include(c => c.ClientType).
                 Include(c => c.ClientReturnUrls).
-                Include(c => c.ClientsScopes).ThenInclude(cs => cs.Scope)).Skip(skip).Take(take);
+                Include(c => c.ClientsScopes).ThenInclude(cs => cs.Scope)).
+                Include(c => c.UsersClients).ThenInclude(cuc => cuc.User).Skip((int)skip).Take((int)take);
         }
 
         public int GetAllByCriteriasCount(string userName, string name, bool? isValid, int? clientTypeId)

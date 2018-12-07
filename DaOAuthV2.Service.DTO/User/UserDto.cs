@@ -1,8 +1,9 @@
-﻿using System;
+﻿using DaOAuthV2.ApiTools;
+using System;
 
 namespace DaOAuthV2.Service.DTO
 {
-    public class UserDto
+    public class UserDto : IDto
     {
         /// <summary>
         /// User name : used to log

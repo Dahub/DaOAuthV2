@@ -1,9 +1,10 @@
-﻿using System;
+﻿using DaOAuthV2.ApiTools;
+using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace DaOAuthV2.Service.DTO
 {
-    public class CreateTokenDto
+    public class CreateTokenDto : IDto
     {        
         public int MinutesLifeTime { get; set; }
 

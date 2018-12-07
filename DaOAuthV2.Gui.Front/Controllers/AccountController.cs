@@ -114,8 +114,8 @@ namespace DaOAuthV2.Gui.Front.Controllers
 
         private void LogUser(UserDto u, bool rememberMe)
         {
-            var loginClaim = new Claim(ClaimTypes.NameIdentifier, u.UserName);
-            var fullNameClaim = new Claim(ClaimTypes.Name, u.FullName);
+            var loginClaim = new Claim(ClaimTypes.Name, u.UserName);
+            var fullNameClaim = new Claim(ClaimTypes.GivenName, u.FullName);
             var birthDayClaim = new Claim(ClaimTypes.DateOfBirth, u.BirthDate.HasValue ? u.BirthDate.Value.ToShortDateString() : String.Empty);
             var claimsIdentity = new ClaimsIdentity(new[] { loginClaim, fullNameClaim, birthDayClaim }, "cookie");
             ClaimsPrincipal principal = new ClaimsPrincipal(claimsIdentity);
@@ -123,7 +123,7 @@ namespace DaOAuthV2.Gui.Front.Controllers
             {
                 ExpiresUtc = rememberMe ? DateTime.Now.AddYears(100) : DateTime.Now.AddMinutes(20),
                 IsPersistent = true,
-                IssuedUtc = DateTime.Now
+                IssuedUtc = DateTime.Now                
             });
         }
     }

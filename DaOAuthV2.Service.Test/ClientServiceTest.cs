@@ -204,17 +204,52 @@ namespace DaOAuthV2.Service.Test
             var clients = _service.Search(
                 new DTO.ClientSearchDto()
                 {
-                   UserName = "Sammy"
+                    UserName = "Sammy",
+                    Skip = 0,
+                    Limit = 50
                 });
             Assert.IsNotNull(clients);
             Assert.AreEqual(3, clients.Count());
         }
 
-        //[TestMethod]
-        //[ExpectedException(typeof(DaOAuthServiceException))]
-        //public void Get_All_Clients_By_Invalid_User_Name_Should_Throw_DaOauthServiceException()
-        //{
-        //    var clients = _service.GetAllClientsByUserName("unknow");
-        //}
+        [TestMethod]
+        [ExpectedException(typeof(DaOAuthServiceException))]
+        public void Search_Without_User_Name_Should_Throw_DaOAuthServiceException()
+        {
+            var clients = _service.Search(
+              new DTO.ClientSearchDto()
+              {
+                  Skip = 0,
+                  Limit = 50
+              });
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(DaOAuthServiceException))]
+        public void Search_With_Invalid_User_Name_Should_Throw_DaOAuthServiceException()
+        {
+            var clients = _service.Search(
+              new DTO.ClientSearchDto()
+              {
+                  UserName = "Johnny",
+                  Skip = 0,
+                  Limit = 50
+              });
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(DaOAuthServiceException))]
+        public void Search_With_More_Than_50_Limit_Should_Throw_DaOAuthServiceException()
+        {
+            var clients = _service.Search(
+                new DTO.ClientSearchDto()
+                {
+                    UserName = "Sammy",
+                    Skip = 0,
+                    Limit = 51
+                });
+            Assert.IsNotNull(clients);
+            Assert.AreEqual(3, clients.Count());
+        }
     }
 }

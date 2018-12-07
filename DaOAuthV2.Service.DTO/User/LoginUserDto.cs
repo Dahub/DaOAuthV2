@@ -1,8 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using DaOAuthV2.ApiTools;
+using System.ComponentModel.DataAnnotations;
 
 namespace DaOAuthV2.Service.DTO
 {
-    public class LoginUserDto
+    public class LoginUserDto : IDto
     {
         [Required(ErrorMessage = "LoginUserDtoUserNameRequired")]
         public string UserName { get; set; }

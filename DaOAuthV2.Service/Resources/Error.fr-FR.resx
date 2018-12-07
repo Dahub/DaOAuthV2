@@ -141,6 +141,12 @@
   <data name="ModelNull" xml:space="preserve">
     <value>Impossible de valider un objet null</value>
   </data>
+  <data name="SearchClientAskTooMuch" xml:space="preserve">
+    <value>Vous ne pouvez demander plus de 50 résultats</value>
+  </data>
+  <data name="SearchClientInvalidUser" xml:space="preserve">
+    <value>L'utilisateur n'existe pas ou est bloqué</value>
+  </data>
   <data name="UpdateUserNoUserFound" xml:space="preserve">
     <value>L'utilisateur n'existe pas ou est bloqué</value>
   </data>

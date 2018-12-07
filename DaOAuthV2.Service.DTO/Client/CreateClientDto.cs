@@ -1,8 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using DaOAuthV2.ApiTools;
+using System.ComponentModel.DataAnnotations;
 
 namespace DaOAuthV2.Service.DTO
 {
-    public class CreateClientDto
+    public class CreateClientDto : IDto
     {
         [Required(ErrorMessage = "CreateClientDtoTypeRequired")]
         public string ClientType { get; set; }

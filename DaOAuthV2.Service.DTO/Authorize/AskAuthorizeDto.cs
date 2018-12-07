@@ -1,9 +1,10 @@
-﻿using System;
+﻿using DaOAuthV2.ApiTools;
+using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace DaOAuthV2.Service.DTO
 {
-    public class AskAuthorizeDto
+    public class AskAuthorizeDto : IDto
     {        
         public string ResponseType { get; set; }
         public string ClientId { get; set; }

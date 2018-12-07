@@ -1,6 +1,8 @@
-﻿namespace DaOAuthV2.Service.DTO
+﻿using DaOAuthV2.ApiTools;
+
+namespace DaOAuthV2.Service.DTO
 {
-    public class ClientListDto
+    public class ClientListDto : IDto
     {
         public int ClientId { get; set; }
 
@@ -10,6 +12,6 @@
 
         public string DefaultReturnUri { get; set; }
 
-        public bool IsValid { get; set; }
+        public bool IsActif { get; set; }
     }
 }

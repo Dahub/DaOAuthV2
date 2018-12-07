@@ -31,10 +31,7 @@ namespace DaOAuthV2.Gui.Front.Controllers
         [HttpGet]
         public async Task<int> GetClientNumberAsync()
         {
-            var userName = ((ClaimsIdentity)User.Identity).FindFirst(c => c.Type.Equals(ClaimTypes.NameIdentifier)).Value;
-            NameValueCollection nvc = new NameValueCollection();
-            nvc.Add("userName", userName);
-            HttpResponseMessage response = await HeadToApi($"Clients", nvc);
+            HttpResponseMessage response = await HeadToApi($"Clients");
 
             return Int32.Parse(response.Headers.GetValues("X-Total-Count").First());
         }

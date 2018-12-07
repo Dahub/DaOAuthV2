@@ -17,9 +17,13 @@ namespace DaOAuthV2.Service.Test
         [TestMethod]
         public void Generate_Random_Int_Should_Generate_Number()
         {
-            int result = _service.GenerateRandomInt(5);
-            Assert.IsTrue(result >= 10000);
-            Assert.IsTrue(result <= 99999);
+            for (int i = 0; i < 100; i++)
+            {
+                int result = _service.GenerateRandomInt(5);
+                Assert.AreEqual(5, result.ToString().Length);
+                Assert.IsTrue(result >= 10000);
+                Assert.IsTrue(result <= 99999);
+            }
         }
 
         [TestMethod]

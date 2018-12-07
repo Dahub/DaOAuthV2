@@ -32,7 +32,8 @@ namespace DaOAuthV2.Service
                     char character = (char)oneByte[0];
                     if (valids.Contains(character.ToString(CultureInfo.CurrentCulture)))
                     {
-                        s += character;
+                        if(s.Length != 0 || character != '0') // don't add 0 for first character
+                            s += character;
                     }
                 }
             }

@@ -25,6 +25,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\DaOAuthV2.ApiTools\DaOAuthV2.ApiTools.csproj" />
     <ProjectReference Include="..\DaOAuthV2.Dal.EF\DaOAuthV2.Dal.EF.csproj" />
     <ProjectReference Include="..\DaOAuthV2.Dal.Interface\DaOAuthV2.Dal.Interface.csproj" />
     <ProjectReference Include="..\DaOAuthV2.Domain.Interface\DaOAuthV2.Domain.Interface.csproj" />

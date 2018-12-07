@@ -215,6 +215,47 @@ namespace DaOAuthV2.Dal.EF.Test
             }
         }
 
+        [TestMethod]
+        public void Get_All_By_Criterias_Should_Return_2_Clients_User_Client()
+        {
+            var options = new DbContextOptionsBuilder<DaOAuthContext>()
+                      .UseInMemoryDatabase(databaseName: _dbName)
+                      .Options;
+
+            IEnumerable<Client> cs = null;
+
+            using (var context = new DaOAuthContext(options))
+            {
+                var clientRepo = _repoFactory.GetClientRepository(context);
+                cs = clientRepo.GetAllByCriterias("testeur", null, null, null, 0, 50);
+
+                Assert.IsNotNull(cs);
+                Assert.AreEqual(2, cs.Count());
+                Assert.IsNotNull(cs.First().UsersClients);
+            }
+        }
+
+        [TestMethod]
+        public void Get_All_By_Criterias_Should_Return_2_Clients_User_Client_And_User()
+        {
+            var options = new DbContextOptionsBuilder<DaOAuthContext>()
+                      .UseInMemoryDatabase(databaseName: _dbName)
+                      .Options;
+
+            IEnumerable<Client> cs = null;
+
+            using (var context = new DaOAuthContext(options))
+            {
+                var clientRepo = _repoFactory.GetClientRepository(context);
+                cs = clientRepo.GetAllByCriterias("testeur", null, null, null, 0, 50);
+
+                Assert.IsNotNull(cs);
+                Assert.AreEqual(2, cs.Count());
+                Assert.IsNotNull(cs.First().UsersClients);
+                Assert.IsNotNull(cs.First().UsersClients.First().User);
+            }
+        }
+
 
         [TestMethod]
         public void Get_All_By_Criterias_Should_Return_1_For_Second_Page()
