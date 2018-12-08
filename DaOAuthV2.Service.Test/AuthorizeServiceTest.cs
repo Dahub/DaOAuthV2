@@ -30,11 +30,12 @@ namespace DaOAuthV2.Service.Test
 
             _dto = new AskAuthorizeDto()
             {
-                ClientId = "client_id_test",
+                ClientPublicId = "client_id_test",
                 RedirectUri = "http://www.perdu.com",
                 ResponseType = "code",
                 Scope = "scope_un scope_deux scope_trois",
-                State = "test_state"
+                State = "test_state",
+                UserName = "Sammy"
             };
         }
 
@@ -158,7 +159,7 @@ namespace DaOAuthV2.Service.Test
         [ExpectedException(typeof(DaOAuthRedirectException))]
         public async Task Genererate_Uri_For_Authorize_Should_Throw_DaOAuthRedirectException_When_Client_Id_Is_Empty()
         {
-            _dto.ClientId = String.Empty;
+            _dto.ClientPublicId = String.Empty;
             await _service.GenererateUriForAuthorize(_dto);
         }
 
@@ -166,7 +167,7 @@ namespace DaOAuthV2.Service.Test
         [ExpectedException(typeof(DaOAuthRedirectException))]
         public async Task Genererate_Uri_For_Authorize_Should_Throw_DaOAuthRedirectException_When_Client_Id_Is_Null()
         {
-            _dto.ClientId = null;
+            _dto.ClientPublicId = null;
             await _service.GenererateUriForAuthorize(_dto);
         }
 
@@ -176,7 +177,7 @@ namespace DaOAuthV2.Service.Test
             DaOAuthRedirectException ex = null;
             try
             {
-                _dto.ClientId = null;
+                _dto.ClientPublicId = null;
                 await _service.GenererateUriForAuthorize(_dto);
             }
             catch (Exception e)
@@ -193,7 +194,7 @@ namespace DaOAuthV2.Service.Test
 
             try
             {
-                _dto.ClientId = null;
+                _dto.ClientPublicId = null;
                 await _service.GenererateUriForAuthorize(_dto);
             }
             catch (Exception e)
@@ -206,6 +207,36 @@ namespace DaOAuthV2.Service.Test
             Assert.IsTrue(ex.RedirectUri.AbsoluteUri.StartsWith($"http://www.perdu.com/?error={OAuthConvention.ErrorNameInvalidRequest}&error_description="));
             Assert.IsFalse(ex.RedirectUri.AbsoluteUri.EndsWith("&state=test_state"));
             Assert.IsFalse(ex.RedirectUri.AbsoluteUri.Contains("&state"));
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(DaOAuthRedirectException))]
+        public async Task Genererate_Uri_For_Authorize_Should_Throw_DaOAuthRedirectException_When_Client_Id_Is_With_From_Return_Url()
+        {
+            _dto.ClientPublicId = "public_id_4";
+            _dto.RedirectUri = "http://www.wrong.com";
+            
+            await _service.GenererateUriForAuthorize(_dto);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(DaOAuthRedirectException))]
+        public async Task Genererate_Uri_For_Authorize_Should_Throw_DaOAuthRedirectException_When_Client_Id_Is_With_From_Response_Type()
+        {
+            _dto.ClientPublicId = "public_id_4";
+            _dto.ResponseType = "token";
+
+            await _service.GenererateUriForAuthorize(_dto);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(DaOAuthRedirectException))]
+        public async Task Genererate_Uri_For_Authorize_Should_Throw_DaOAuthRedirectException_When_Client_Id_Is_With_Unauthorize_Scope()
+        {
+            _dto.ClientPublicId = "public_id_4";
+            _dto.Scope = "unauthorize";
+
+            await _service.GenererateUriForAuthorize(_dto);
         }
     }
 }

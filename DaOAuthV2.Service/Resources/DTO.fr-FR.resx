@@ -142,7 +142,7 @@
     <value>L'url de retour par défaut n'est pas valide</value>
   </data>
   <data name="CreateClientDtoTypeIncorrect" xml:space="preserve">
-    <value>Le type de client {0} est inconnu</value>
+    <value>Le type de client est inconnu</value>
   </data>
   <data name="CreateClientDtoTypeRequired" xml:space="preserve">
     <value>Le type du client est obligaoire</value>

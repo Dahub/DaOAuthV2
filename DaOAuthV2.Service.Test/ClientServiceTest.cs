@@ -251,5 +251,44 @@ namespace DaOAuthV2.Service.Test
             Assert.IsNotNull(clients);
             Assert.AreEqual(3, clients.Count());
         }
+
+        //[TestMethod]
+        //public void Get_By_Id_Should_Return_Client_For_Valid_Id()
+        //{
+        //    var c = _service.GetById(1, "Sammy");
+        //    Assert.IsNotNull(c);
+        //    Assert.AreEqual(1, c.ClientId);
+        //    Assert.IsTrue(c.IsActif);
+        //    Assert.AreEqual("public_id_1", c.PublicId);
+        //    Assert.IsTrue(c.CreationDate < DateTime.Now);
+        //    Assert.AreEqual("confidential client", c.Description);
+        //    Assert.IsNotNull(c.ReturnsUrls);
+        //    Assert.IsNotNull(c.Scopes);
+        //    Assert.AreEqual(ClientTypeName.Confidential, c.ClientType);
+        //    Assert.AreEqual(2, c.ReturnsUrls.Count());
+        //    Assert.IsTrue(c.ReturnsUrls.Contains("http://www.perdu.com"));
+        //    Assert.IsTrue(c.ReturnsUrls.Contains("http://www.google.fr"));
+        //}
+
+        //[TestMethod]
+        //public void Get_By_Id_Should_Return_Null_For_Non_Existing_Client()
+        //{
+        //    var c = _service.GetById(85, "Sammy");
+        //    Assert.IsNull(c);
+        //}
+
+        //[TestMethod]
+        //public void Get_By_Id_Should_Return_Null_For_Desactivate_Client()
+        //{
+        //    var c = _service.GetById(5, "Sammy");
+        //    Assert.IsNull(c);
+        //}
+
+        //[TestMethod]
+        //[ExpectedException(typeof(DaOauthUnauthorizeException))]
+        //public void Get_By_Id_Should_Throw_DaOAuthUnauthorizeExcpetion_When_Get_Another_User_Client()
+        //{
+        //    var c = _service.GetById(4, "Sammy");
+        //}
     }
 }

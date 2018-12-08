@@ -28,11 +28,12 @@ namespace DaOAuthV2.OAuth.Api.Controllers
         {
             var uri = await _authorizeService.GenererateUriForAuthorize(new AskAuthorizeDto()
             {
-                ClientId = clientId,
+                ClientPublicId = clientId,
                 RedirectUri = redirectUri,
                 ResponseType = responseType,
                 Scope = scope,
-                State = state
+                State = state,
+                UserName = User.Identity.Name
             });
             return Redirect(uri.AbsoluteUri);
         }

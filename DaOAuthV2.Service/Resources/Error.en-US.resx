@@ -147,6 +147,12 @@
   <data name="SearchClientInvalidUser" xml:space="preserve">
     <value>User don't exist or ban</value>
   </data>
+  <data name="UnauthorizedClient" xml:space="preserve">
+    <value>Client isn't authorized</value>
+  </data>
+  <data name="UnauthorizedScope" xml:space="preserve">
+    <value>Unauthorized scope</value>
+  </data>
   <data name="UpdateUserNoUserFound" xml:space="preserve">
     <value>User don't exist or ban</value>
   </data>

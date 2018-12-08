@@ -147,6 +147,12 @@
   <data name="SearchClientInvalidUser" xml:space="preserve">
     <value>L'utilisateur n'existe pas ou est bloqué</value>
   </data>
+  <data name="UnauthorizedClient" xml:space="preserve">
+    <value>Le client ne possède pas l'authorisation</value>
+  </data>
+  <data name="UnauthorizedScope" xml:space="preserve">
+    <value>Scope non authorisés</value>
+  </data>
   <data name="UpdateUserNoUserFound" xml:space="preserve">
     <value>L'utilisateur n'existe pas ou est bloqué</value>
   </data>

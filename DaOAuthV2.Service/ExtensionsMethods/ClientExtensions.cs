@@ -23,5 +23,19 @@ namespace DaOAuthV2.Service.ExtensionsMethods
         {
             return values.Select(v => v.ToDto(userName));
         }
+
+        //internal static ClientDto ToDto(this Client value)
+        //{
+        //    ClientDto toReturn = new ClientDto()
+        //    {
+        //        ClientId = value.Id,
+        //        ClientType = value.ClientType.Wording,
+        //        CreationDate = value.CreationDate,
+        //        Description = value.Description,
+        //        IsActif = value.UsersClients.First().
+        //    };
+
+        //    return toReturn;
+        //}
     }
 }

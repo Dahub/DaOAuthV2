@@ -1,5 +1,6 @@
 ﻿using DaOAuthV2.Constants;
 using DaOAuthV2.Dal.EF;
+using DaOAuthV2.OAuth.Api.Filters;
 using DaOAuthV2.Service;
 using DaOAuthV2.Service.Interface;
 using Microsoft.AspNetCore.Builder;
@@ -10,18 +11,21 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using Swashbuckle.AspNetCore.Swagger;
 using System.IO;
 
 namespace DaOAuthV2.OAuth.Api
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        public Startup(IConfiguration configuration, IHostingEnvironment env)
         {
             Configuration = configuration;
+            CurrentEnvironment = env;
         }
 
         public IConfiguration Configuration { get; }
+        private IHostingEnvironment CurrentEnvironment { get; set; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -53,7 +57,14 @@ namespace DaOAuthV2.OAuth.Api
                 Logger = loggerServiceFactory.CreateLogger<UserService>()
             });
 
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.AddMvc(options =>
+                options.Filters.Add(new DaOAuthExceptionFilter(CurrentEnvironment, loggerServiceFactory))).SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new Info { Title = "DaOAuth OAuth API", Version = "v1" });
+                c.IncludeXmlComments(GetXmlCommentsPath());
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -70,8 +81,19 @@ namespace DaOAuthV2.OAuth.Api
 
             app.UseAuthentication();
 
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("../swagger/v1/swagger.json", "DaOAuth OAuth API");
+            });
+
             app.UseHttpsRedirection();
             app.UseMvc();
+        }
+
+        private string GetXmlCommentsPath()
+        {
+            return Path.ChangeExtension(typeof(Startup).Assembly.Location, ".xml");
         }
     }
 }

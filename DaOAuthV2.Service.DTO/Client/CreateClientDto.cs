@@ -1,5 +1,6 @@
 ﻿using DaOAuthV2.ApiTools;
 using System.ComponentModel.DataAnnotations;
+using System.Runtime.Serialization;
 
 namespace DaOAuthV2.Service.DTO
 {
@@ -14,6 +15,7 @@ namespace DaOAuthV2.Service.DTO
         [Required(ErrorMessage = "CreateClientDtoDefaultReturnUrlRequired")]
         public string DefaultReturnUrl { get; set; }
 
+        [IgnoreDataMember]
         [Required(ErrorMessage = "CreateClientDtoUserNameRequired")]
         public string UserName { get; set; }
 

@@ -37,7 +37,7 @@ namespace DaOAuthV2.Dal.EF
                 Include(c => c.ClientsScopes).ThenInclude(cs => cs.Scope)).
                 Include(c => c.UsersClients).ThenInclude(cuc => cuc.User).Skip((int)skip).Take((int)take);
         }
-
+      
         public int GetAllByCriteriasCount(string userName, string name, bool? isValid, int? clientTypeId)
         {
             return Context.UsersClients.

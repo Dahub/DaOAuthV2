@@ -96,7 +96,7 @@ namespace DaOAuthV2.Service.Test.Fake
 
         public Client GetByPublicId(string publicId)
         {
-            throw new NotImplementedException();
+            return FakeDataBase.Instance.Clients.Where(c => c.PublicId.Equals(publicId)).FirstOrDefault();
         }
 
         public void Update(Client toUpdate)

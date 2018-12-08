@@ -32,7 +32,7 @@ namespace DaOAuthV2.Service.Test.Fake
 
         public IScopeRepository GetScopeRepository(IContext context)
         {
-            throw new NotImplementedException();
+            return new FakeScopeRepository();
         }
 
         public IUserClientRepository GetUserClientRepository(IContext context)

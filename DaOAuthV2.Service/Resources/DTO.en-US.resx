@@ -142,7 +142,7 @@
     <value>Incorrect default return url</value>
   </data>
   <data name="CreateClientDtoTypeIncorrect" xml:space="preserve">
-    <value>Unknow client type {0}</value>
+    <value>Unknow client type</value>
   </data>
   <data name="CreateClientDtoTypeRequired" xml:space="preserve">
     <value>Client type is mandatory</value>

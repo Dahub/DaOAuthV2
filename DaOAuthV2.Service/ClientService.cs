@@ -115,12 +115,12 @@ namespace DaOAuthV2.Service
         }
 
         public IEnumerable<ClientListDto> Search(ClientSearchDto criterias)
-        {    
+        {
             Validate(criterias, ExtendValidationSearchCriterias);
 
             IList<Client> clients = null;
 
-            int? clientTypeId = GetClientTypeId(criterias.ClientType);         
+            int? clientTypeId = GetClientTypeId(criterias.ClientType);
 
             using (var context = RepositoriesFactory.CreateContext(this.ConnexionString))
             {
@@ -130,26 +130,28 @@ namespace DaOAuthV2.Service
                     true, clientTypeId, criterias.Skip, criterias.Limit).ToList();
             }
 
-            if(clients != null)
+            if (clients != null)
                 return clients.ToDto(criterias.UserName);
             return new List<ClientListDto>();
         }
 
-        private static int? GetClientTypeId(string clientType)
-        {
-            int? clientTypeId = null;
-            if (!String.IsNullOrEmpty(clientType))
-            {
-                if (clientType.Equals(ClientTypeName.Confidential, StringComparison.OrdinalIgnoreCase))
-                    clientTypeId = (int)EClientType.CONFIDENTIAL;
-                else if (clientType.Equals(ClientTypeName.Public, StringComparison.OrdinalIgnoreCase))
-                    clientTypeId = (int)EClientType.PUBLIC;
-            }
+        //public ClientDto GetById(int id, string userName)
+        //{
+        //    ClientDto result = null;
 
-            return clientTypeId;
-        }
+        //    using (var context = RepositoriesFactory.CreateContext(this.ConnexionString))
+        //    {
+        //        var clientRepo = RepositoriesFactory.GetClientRepository(context);
+        //        //var client = clientRepo.GetByUserNameAndId(userName, id);
 
-        IList<ValidationResult> ExtendValidationSearchCriterias(ClientSearchDto c)
+        //        //if (client != null && client.IsValid)
+        //        //    result = client.ToDto();
+        //    }
+
+        //    return result;
+        //}
+
+        private IList<ValidationResult> ExtendValidationSearchCriterias(ClientSearchDto c)
         {
             var resource = this.GetErrorStringLocalizer();
             IList<ValidationResult> result = new List<ValidationResult>();
@@ -166,6 +168,20 @@ namespace DaOAuthV2.Service
                 result.Add(new ValidationResult(String.Format(resource["SearchClientAskTooMuch"], c)));
 
             return result;
+        }
+
+        private static int? GetClientTypeId(string clientType)
+        {
+            int? clientTypeId = null;
+            if (!String.IsNullOrEmpty(clientType))
+            {
+                if (clientType.Equals(ClientTypeName.Confidential, StringComparison.OrdinalIgnoreCase))
+                    clientTypeId = (int)EClientType.CONFIDENTIAL;
+                else if (clientType.Equals(ClientTypeName.Public, StringComparison.OrdinalIgnoreCase))
+                    clientTypeId = (int)EClientType.PUBLIC;
+            }
+
+            return clientTypeId;
         }
     }
 }

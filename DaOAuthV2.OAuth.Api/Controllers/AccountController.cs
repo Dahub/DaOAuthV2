@@ -16,6 +16,7 @@ namespace DaOAuthV2.OAuth.Api.Controllers
             _conf = configuration.GetSection("AppConfiguration").Get<AppConfiguration>(); ;
         }
 
+        [HttpGet]
         [Route("RedirectToLogin")]
         public IActionResult RedirectToLogin(string returnUrl)
         {

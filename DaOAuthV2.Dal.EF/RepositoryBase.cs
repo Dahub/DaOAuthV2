@@ -10,25 +10,25 @@ namespace DaOAuthV2.Dal.EF
         IContext IRepository<T>.Context { get; set; }
         public DaOAuthContext Context { get; set; }
 
-        public int Add(T toAdd)
+        public virtual int Add(T toAdd)
         {
             ((DbContext)Context).Set<T>().Add(toAdd);
             return toAdd.Id;
         }
 
-        public void Delete(T toDelete)
+        public virtual void Delete(T toDelete)
         {
             ((DbContext)Context).Set<T>().Remove(toDelete);
             ((DbContext)Context).Entry(toDelete).State = EntityState.Deleted;
         }
 
-        public T GetById(int id)
+        public virtual T GetById(int id)
         {
             return ((DaOAuthContext)Context).Set<T>().
                Where(c => c.Id.Equals(id)).FirstOrDefault();
         }
 
-        public void Update(T toUpdate)
+        public virtual void Update(T toUpdate)
         {
             ((DbContext)Context).Set<T>().Attach(toUpdate);
             ((DbContext)Context).Entry(toUpdate).State = EntityState.Modified;

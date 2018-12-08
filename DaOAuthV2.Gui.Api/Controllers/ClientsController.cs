@@ -47,5 +47,15 @@ namespace DaOAuthV2.Gui.Api.Controllers
                 return Ok(clients.ToSearchResult<ClientListDto>(currentUrl, count, criterias));
             }
         }
+
+        [HttpPost]
+        [Route("")]
+        public IActionResult Post(CreateClientDto infos)
+        {
+            infos.UserName = User.Identity.Name;
+            int createdId = _service.CreateClient(infos);
+            var currentUrl = UriHelper.GetDisplayUrl(Request);
+            return Created($"{currentUrl}/{createdId}", null);
+        }
     }
 }
