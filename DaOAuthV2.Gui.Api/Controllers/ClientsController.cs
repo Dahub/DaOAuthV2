@@ -44,7 +44,7 @@ namespace DaOAuthV2.Gui.Api.Controllers
             {
                 var clients = _service.Search(criterias);
                 var currentUrl = UriHelper.GetDisplayUrl(Request);
-                return Ok(clients.ToSearchResult(currentUrl, count, criterias));
+                return Ok(clients.ToSearchResult<ClientListDto>(currentUrl, count, criterias));
             }
         }
     }

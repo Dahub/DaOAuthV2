@@ -1,18 +1,30 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using DaOAuthV2.ApiTools;
+using DaOAuthV2.Gui.Front.Tools;
+using DaOAuthV2.Service.DTO;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
+using System.Collections.Specialized;
+using System.Threading.Tasks;
 
 namespace DaOAuthV2.Gui.Front.Controllers
 {
     [Authorize]
-    public class ClientController : Controller
+    public class ClientController : DaOauthFrontController
     {
-        public IActionResult List()
+        public ClientController(IConfiguration configuration) : base(configuration)
         {
-            return View();
+        }
+
+        public async Task<IActionResult> List()
+        {
+            NameValueCollection nv = new NameValueCollection();
+            nv.Add("skip", "0");
+            nv.Add("limit", "50");
+            var response = await GetToApi($"Clients", nv);
+            var clients = JsonConvert.DeserializeObject<SearchResult<ClientListDto>>(await response.Content.ReadAsStringAsync());
+            return View(clients.Datas);
         }
     }
 }

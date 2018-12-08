@@ -44,7 +44,7 @@ namespace DaOAuthV2.Service.Test
                 {
                     UserName = "Sammy"
                 });
-            Assert.AreEqual(3, total);
+            Assert.AreEqual(2, total);
         }
 
         [TestMethod]
@@ -209,7 +209,7 @@ namespace DaOAuthV2.Service.Test
                     Limit = 50
                 });
             Assert.IsNotNull(clients);
-            Assert.AreEqual(3, clients.Count());
+            Assert.AreEqual(2, clients.Count());
         }
 
         [TestMethod]

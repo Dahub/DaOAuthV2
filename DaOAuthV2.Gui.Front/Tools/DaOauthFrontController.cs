@@ -50,9 +50,12 @@ namespace DaOAuthV2.Gui.Front.Tools
 
         protected async Task<HttpResponseMessage> GetToApi(string route)
         {
-            route = ApplyCultureToRoute(route);
+            return await GetToApi(route, null);
+        }
 
-            AddAuthorizationCookieIfAuthentificated();
+        protected async Task<HttpResponseMessage> GetToApi(string route, NameValueCollection queryParams)
+        {
+            Uri myUri = BuildRouteWithParams(ref route, queryParams);
 
             return await _client.GetAsync(
                 $"{_conf.GuiApiUrl}/{route}");
@@ -75,19 +78,7 @@ namespace DaOAuthV2.Gui.Front.Tools
 
         protected async Task<HttpResponseMessage> HeadToApi(string route, NameValueCollection queryParams)
         {
-            route = ApplyCultureToRoute(route);
-
-            if(queryParams != null)
-            {
-                foreach(var k in queryParams.AllKeys)
-                {
-                    route = String.Concat(route, $"&{k}={queryParams.GetValues(k).FirstOrDefault()}");
-                }
-            }
-
-            AddAuthorizationCookieIfAuthentificated();
-
-            Uri.TryCreate($"{_conf.GuiApiUrl}/{route}", UriKind.Absolute, out Uri myUri);
+            Uri myUri = BuildRouteWithParams(ref route, queryParams);
 
             return await _client.SendAsync(new HttpRequestMessage()
             {
@@ -95,8 +86,7 @@ namespace DaOAuthV2.Gui.Front.Tools
                 RequestUri = myUri
             });
         }
-
-
+  
         private void AddAuthorizationCookieIfAuthentificated()
         {
             if (HttpContext.Request.Cookies[".AspNetCore.DaOAuth"] != null)
@@ -128,5 +118,24 @@ namespace DaOAuthV2.Gui.Front.Tools
 
             return route;
         }
+
+        private Uri BuildRouteWithParams(ref string route, NameValueCollection queryParams)
+        {
+            route = ApplyCultureToRoute(route);
+
+            if (queryParams != null)
+            {
+                foreach (var k in queryParams.AllKeys)
+                {
+                    route = String.Concat(route, $"&{k}={queryParams.GetValues(k).FirstOrDefault()}");
+                }
+            }
+
+            AddAuthorizationCookieIfAuthentificated();
+
+            Uri.TryCreate($"{_conf.GuiApiUrl}/{route}", UriKind.Absolute, out Uri myUri);
+            return myUri;
+        }
+
     }
 }

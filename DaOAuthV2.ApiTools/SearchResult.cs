@@ -2,7 +2,7 @@
 
 namespace DaOAuthV2.ApiTools
 {
-    public class SearchResult
+    public class SearchResult<T> where T:IDto
     {
         public SearchResult()
         {
@@ -13,7 +13,7 @@ namespace DaOAuthV2.ApiTools
         public uint Skip { get; set; }
         public uint Limit { get; set; }
         public Links Links { get; set; }
-        public IEnumerable<IDto> Datas { get; set; }
+        public IEnumerable<T> Datas { get; set; }
     }
 
     public class Links
