@@ -22,8 +22,8 @@ namespace DaOAuthV2.Gui.Front.Controllers
             NameValueCollection nv = new NameValueCollection();
             nv.Add("skip", "0");
             nv.Add("limit", "50");
-            var response = await GetToApi($"Clients", nv);
-            var clients = JsonConvert.DeserializeObject<SearchResult<ClientListDto>>(await response.Content.ReadAsStringAsync());
+            var response = await GetToApi($"UsersClients", nv);
+            var clients = JsonConvert.DeserializeObject<SearchResult<UserClientListDto>>(await response.Content.ReadAsStringAsync());
             return View(clients.Datas);
         }
     }

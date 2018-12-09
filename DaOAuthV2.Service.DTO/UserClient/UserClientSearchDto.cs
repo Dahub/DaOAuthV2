@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace DaOAuthV2.Service.DTO
 {
-    public class ClientSearchDto : ISearchCriteriasDto
+    public class UserClientSearchDto : ISearchCriteriasDto
     {
         [Required(ErrorMessage = "ClientSearchDtoUserNameRequired")]
         public string UserName { get; set; }

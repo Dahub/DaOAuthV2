@@ -13,11 +13,17 @@ namespace DaOAuthV2.Service.Test
     {
         private IAuthorizeService _service;
         private AskAuthorizeDto _dto;
+        private AppConfiguration _conf;
 
         [TestInitialize]
         public void Init()
         {
-            AppConfiguration conf = new AppConfiguration();
+            AppConfiguration conf = new AppConfiguration()
+            {
+                AuthorizeClientPageUrl = new Uri("http://www.perdu.com")
+            };
+
+            _conf = conf;
 
             _service = new AuthorizeService()
             {
@@ -237,6 +243,40 @@ namespace DaOAuthV2.Service.Test
             _dto.Scope = "unauthorize";
 
             await _service.GenererateUriForAuthorize(_dto);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(DaOAuthRedirectException))]
+        public async Task Genererate_Uri_For_Authorize_Should_Throw_DaOAuthRedirectException_When_User_Has_Not_Authorized_Client_To_Ask()
+        {
+            _dto.ClientPublicId = "public_id_4";
+            _dto.Scope = "scope_un";
+            _dto.ResponseType = "code";
+
+            await _service.GenererateUriForAuthorize(_dto);
+        }
+
+        [TestMethod]
+        public async Task Genererate_Uri_For_Authorize_Should_Contains_Correct_Reidrect_Url_When_User_Has_Not_Authorized_Client_To_Ask()
+        {
+            try
+            {
+                _dto.ClientPublicId = "public_id_4";
+                _dto.Scope = "scope_un";
+                _dto.ResponseType = "code";
+
+                await _service.GenererateUriForAuthorize(_dto);
+            }
+            catch(DaOAuthRedirectException ex)
+            {
+                var exepctedUri = new Uri($"{_conf.AuthorizeClientPageUrl}?" +
+                                   $"response_type={_dto.ResponseType}&" +
+                                   $"client_id={_dto.ClientPublicId}&" +
+                                   $"state={_dto.State}&" +
+                                   $"redirect_uri={_dto.RedirectUri}&" +
+                                   $"scope={_dto.Scope}");
+                Assert.AreEqual(exepctedUri.AbsolutePath, ex.RedirectUri.AbsolutePath);
+            }
         }
     }
 }

@@ -11,11 +11,11 @@ namespace DaOAuthV2.Gui.Api.Controllers
     [Route("[controller]")]
     [ApiController]
     [Authorize]
-    public class ClientsController : ControllerBase
+    public class UsersClientsController : ControllerBase
     {
-        private IClientService _service;
+        private IUserClientService _service;
 
-        public ClientsController([FromServices] IClientService service)
+        public UsersClientsController([FromServices] IUserClientService service)
         {
             _service = service;
         }
@@ -25,7 +25,7 @@ namespace DaOAuthV2.Gui.Api.Controllers
         [Route("")]
         public IActionResult GetAll(string name, string clientType, uint skip, uint limit)
         {
-            var criterias = new ClientSearchDto()
+            var criterias = new UserClientSearchDto()
             {
                 UserName = User.Identity.Name,
                 Name = name,
@@ -44,18 +44,8 @@ namespace DaOAuthV2.Gui.Api.Controllers
             {
                 var clients = _service.Search(criterias);
                 var currentUrl = UriHelper.GetDisplayUrl(Request);
-                return Ok(clients.ToSearchResult<ClientListDto>(currentUrl, count, criterias));
+                return Ok(clients.ToSearchResult<UserClientListDto>(currentUrl, count, criterias));
             }
-        }
-
-        [HttpPost]
-        [Route("")]
-        public IActionResult Post(CreateClientDto infos)
-        {
-            infos.UserName = User.Identity.Name;
-            int createdId = _service.CreateClient(infos);
-            var currentUrl = UriHelper.GetDisplayUrl(Request);
-            return Created($"{currentUrl}/{createdId}", null);
         }
     }
 }

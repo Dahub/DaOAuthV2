@@ -42,7 +42,7 @@ namespace DaOAuthV2.OAuth.Api.Filters
                 _loggerFactory.CreateLogger<DaOAuthRedirectException>().LogError(context.Exception, context.Exception.Message);
                 if (!context.HttpContext.Response.HasStarted)
                 {
-                    context.HttpContext.Response.StatusCode = 301;
+                    context.HttpContext.Response.StatusCode = 302;
                     var url = ((DaOAuthRedirectException)context.Exception).RedirectUri;
                     context.HttpContext.Response.Redirect(url.AbsoluteUri);
                 }

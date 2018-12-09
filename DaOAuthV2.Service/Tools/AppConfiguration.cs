@@ -13,5 +13,6 @@ namespace DaOAuthV2.Service
         public string DefaultScheme { get; set; }
         public Uri OauthApiUrl { get; set; }
         public Uri LoginPageUrl { get; set; }
+        public Uri AuthorizeClientPageUrl { get; set; }
     }
 }

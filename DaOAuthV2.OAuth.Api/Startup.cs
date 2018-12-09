@@ -13,6 +13,7 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Swashbuckle.AspNetCore.Swagger;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace DaOAuthV2.OAuth.Api
 {
@@ -41,7 +42,11 @@ namespace DaOAuthV2.OAuth.Api
                     options.DataProtectionProvider = DataProtectionProvider.Create(
                         new DirectoryInfo(conf.DataProtectionProviderDirectory));
                     options.Cookie.Domain = string.Concat(".", conf.AppsDomain);
-                    options.LoginPath = "/Account/RedirectToLogin";
+                    options.Events.OnRedirectToLogin = (context) =>
+                    {
+                        context.Response.Redirect($"{conf.LoginPageUrl.AbsoluteUri}?returnUrl={conf.OauthApiUrl}{context.RedirectUri.Split("ReturnUrl=")[1]}");                        
+                        return Task.CompletedTask;
+                    };
                 });
 
             var sp = services.BuildServiceProvider();

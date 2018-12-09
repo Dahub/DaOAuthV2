@@ -2,8 +2,10 @@
 
 namespace DaOAuthV2.Service.DTO
 {
-    public class ClientListDto : IDto
+    public class UserClientListDto : IDto
     {
+        public int Id { get; set; }
+
         public int ClientId { get; set; }
 
         public string ClientName { get; set; }

@@ -39,7 +39,7 @@ namespace DaOAuthV2.Gui.Api.Controllers
 
             return Ok(user);
         }
-       
+
         /// <summary>
         /// Create an user
         /// </summary>

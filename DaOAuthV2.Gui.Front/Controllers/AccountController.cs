@@ -112,6 +112,26 @@ namespace DaOAuthV2.Gui.Front.Controllers
             return RedirectToAction("RegisterOk", "Account");
         }
 
+        [Authorize]
+        [HttpGet]
+        public ActionResult AuthorizeClient([FromQuery(Name = "response_type")] string responseType,
+           [FromQuery(Name = "client_id")] string clientId,
+           [FromQuery(Name = "state")] string state,
+           [FromQuery(Name = "redirect_uri")] Uri redirectUri,
+           [FromQuery(Name = "scope")] string scope)
+        {
+            // récupérer le client
+
+
+            // vérifier qu'il est bien valide
+
+            // lancer l'affichage de la demande, avec la liste des scopes proposés
+
+            // récup le oui ou non
+
+            throw new NotImplementedException();
+        }
+
         private void LogUser(UserDto u, bool rememberMe)
         {
             var loginClaim = new Claim(ClaimTypes.Name, u.UserName);

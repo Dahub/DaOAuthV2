@@ -85,6 +85,17 @@ namespace DaOAuthV2.Service
                         authorizeInfo.State)
                 };
 
+            if (!CheckIfUserHasAuthorizeOrDeniedClientAccess(authorizeInfo.ClientPublicId, authorizeInfo.UserName))
+                throw new DaOAuthRedirectException()
+                {
+                    RedirectUri = new Uri($"{Configuration.AuthorizeClientPageUrl}?" +
+                                    $"response_type={authorizeInfo.ResponseType}&" +
+                                    $"client_id={authorizeInfo.ClientPublicId}&" +
+                                    $"state={authorizeInfo.State}&" +
+                                    $"redirect_uri={authorizeInfo.RedirectUri}&" +
+                                    $"scope={authorizeInfo.Scope}")
+                };
+
             throw new NotImplementedException();
         }
 
@@ -168,8 +179,7 @@ namespace DaOAuthV2.Service
             using (var context = RepositoriesFactory.CreateContext(ConnexionString))
             {
                 var clientUserRepo = RepositoriesFactory.GetUserClientRepository(context);
-                var uc = clientUserRepo.GetUserClientByUserNameAndClientPublicId(clientPublicId, userName);
-                return uc != null && uc.IsActif;
+                return clientUserRepo.GetUserClientByUserNameAndClientPublicId(clientPublicId, userName) != null;
             }
         }
     }
