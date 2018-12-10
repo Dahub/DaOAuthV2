@@ -208,6 +208,7 @@ namespace DaOAuthV2.Dal.EF.Test
             }
         }
 
+        [TestMethod]
         public void Get_All_By_Criterias_Should_Return_2_UsersClients_With_Client_Type()
         {
             var options = new DbContextOptionsBuilder<DaOAuthContext>()
@@ -287,7 +288,6 @@ namespace DaOAuthV2.Dal.EF.Test
                 Assert.IsNotNull(cs.First().User);
             }
         }
-
 
         [TestMethod]
         public void Get_All_By_Criterias_Should_Return_1_For_Second_Page()

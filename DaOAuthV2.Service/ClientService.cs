@@ -1,11 +1,13 @@
 ﻿using DaOAuthV2.Constants;
 using DaOAuthV2.Domain;
 using DaOAuthV2.Service.DTO;
+using DaOAuthV2.Service.ExtensionsMethods;
 using DaOAuthV2.Service.Interface;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 
 namespace DaOAuthV2.Service
 {
@@ -97,5 +99,51 @@ namespace DaOAuthV2.Service
             return idClient;
         }
 
+        public IEnumerable<ClientDto> Search(ClientSearchDto criterias)
+        {
+            Validate(criterias, ExtendValidationSearchCriterias);
+
+            IList<Client> clients = null;
+
+            int? clientTypeId = GetClientTypeId(criterias.ClientType);
+
+            using (var context = RepositoriesFactory.CreateContext(this.ConnexionString))
+            {
+                var clientRepo = RepositoriesFactory.GetClientRepository(context);
+
+                clients = clientRepo.GetAllByCriterias(criterias.Name, criterias.PublicId,
+                    true, clientTypeId, criterias.Skip, criterias.Limit).ToList();
+            }
+
+            if (clients != null)
+                return clients.ToDto();
+            return new List<ClientDto>();
+        }
+
+        public int SearchCount(ClientSearchDto criterias)
+        {
+            Validate(criterias, ExtendValidationSearchCriterias);
+
+            int count = 0;
+
+            using (var c = RepositoriesFactory.CreateContext(ConnexionString))
+            {
+                var userClientRepo = RepositoriesFactory.GetClientRepository(c);
+                count = userClientRepo.GetAllByCriteriasCount(criterias.Name, criterias.PublicId, true, GetClientTypeId(criterias.ClientType));
+            }
+
+            return count;
+        }
+
+        private IList<ValidationResult> ExtendValidationSearchCriterias(ClientSearchDto c)
+        {
+            var resource = this.GetErrorStringLocalizer();
+            IList<ValidationResult> result = new List<ValidationResult>();
+
+            if (c.Limit - c.Skip > 50)
+                result.Add(new ValidationResult(String.Format(resource["SearchClientAskTooMuch"], c)));
+
+            return result;
+        }
     }
 }

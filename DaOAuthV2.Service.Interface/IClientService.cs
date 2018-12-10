@@ -1,4 +1,5 @@
 ﻿using DaOAuthV2.Service.DTO;
+using System.Collections.Generic;
 
 namespace DaOAuthV2.Service.Interface
 {
@@ -7,5 +8,7 @@ namespace DaOAuthV2.Service.Interface
         IRandomService RandomService { get; set; }
 
         int CreateClient(CreateClientDto toCreate);
+        int SearchCount(ClientSearchDto criterias);
+        IEnumerable<ClientDto> Search(ClientSearchDto criterias);
     }
 }

@@ -65,20 +65,6 @@ namespace DaOAuthV2.Service
                 result.Add(new ValidationResult(String.Format(resource["SearchClientAskTooMuch"], c)));
 
             return result;
-        }
-
-        private static int? GetClientTypeId(string clientType)
-        {
-            int? clientTypeId = null;
-            if (!String.IsNullOrEmpty(clientType))
-            {
-                if (clientType.Equals(ClientTypeName.Confidential, StringComparison.OrdinalIgnoreCase))
-                    clientTypeId = (int)EClientType.CONFIDENTIAL;
-                else if (clientType.Equals(ClientTypeName.Public, StringComparison.OrdinalIgnoreCase))
-                    clientTypeId = (int)EClientType.PUBLIC;
-            }
-
-            return clientTypeId;
-        }
+        }       
     }
 }

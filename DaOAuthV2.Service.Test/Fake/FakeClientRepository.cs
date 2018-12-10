@@ -22,6 +22,41 @@ namespace DaOAuthV2.Service.Test.Fake
             throw new NotImplementedException();
         }
 
+        public IEnumerable<Client> GetAllByCriterias(string name, string publicId, bool? isValid, int? clientTypeId, uint skip, uint take)
+        {
+            var clients = FakeDataBase.Instance.Clients.Where(c =>
+                (String.IsNullOrEmpty(name) || c.Name.Equals(name))
+                && (String.IsNullOrEmpty(publicId) || c.PublicId.Equals(publicId))
+                && (!isValid.HasValue || c.IsValid.Equals(isValid.Value))
+                && (!clientTypeId.HasValue || c.ClientTypeId.Equals(clientTypeId.Value))
+                ).Skip((int)skip).Take((int)take);
+            foreach(var c in clients)
+            {
+                c.ClientType = FakeDataBase.Instance.ClientTypes.Where(ct => ct.Id.Equals(c.ClientTypeId)).FirstOrDefault();
+                c.ClientReturnUrls = FakeDataBase.Instance.ClientReturnUrls.Where(cru => cru.ClientId.Equals(c.Id)).ToList();
+                c.ClientsScopes = FakeDataBase.Instance.ClientsScopes.Where(cs => cs.ClientId.Equals(c.Id)).ToList();
+                if (c.ClientsScopes != null)
+                {
+                    foreach (var cs in c.ClientsScopes)
+                    {
+                        cs.Scope = FakeDataBase.Instance.Scopes.FirstOrDefault(s => s.Id.Equals(cs.ScopeId));
+                    }
+                }
+            }
+
+            return clients;
+        }
+
+        public int GetAllByCriteriasCount(string name, string publicId, bool? isValid, int? clientTypeId)
+        {
+            return FakeDataBase.Instance.Clients.Where(c =>
+                (String.IsNullOrEmpty(name) || c.Name.Equals(name))
+                && (String.IsNullOrEmpty(publicId) || c.PublicId.Equals(publicId))
+                && (!isValid.HasValue || c.IsValid.Equals(isValid.Value))
+                && (!clientTypeId.HasValue || c.ClientTypeId.Equals(clientTypeId.Value))
+                ).Count();
+        }
+
         public Client GetById(int id)
         {
             return FakeDataBase.Instance.Clients.Where(c => c.Id.Equals(id)).FirstOrDefault();
