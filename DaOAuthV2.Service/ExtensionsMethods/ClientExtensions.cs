@@ -9,7 +9,7 @@ namespace DaOAuthV2.Service.ExtensionsMethods
     {
         internal static ClientDto ToDto(this Client value)
         {
-            return new ClientDto()
+            var c = new ClientDto()
             {
                 Id = value.Id,               
                 Name = value.Name,
@@ -18,6 +18,10 @@ namespace DaOAuthV2.Service.ExtensionsMethods
                 Description = value.Description,
                 PublicId = value.PublicId
             };
+            c.ReturnUrls = value.ClientReturnUrls.Select(r => r.ReturnUrl).ToList();
+            c.Scopes = value.ClientsScopes.Select(s => new KeyValuePair<string, string>(s.Scope.Wording, s.Scope.NiceWording)).ToList();
+
+            return c;
         }
 
         internal static IEnumerable<ClientDto> ToDto(this IEnumerable<Client> values)

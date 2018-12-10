@@ -1,11 +1,15 @@
-﻿using DaOAuthV2.Gui.Front.Models;
+﻿using DaOAuthV2.ApiTools;
+using DaOAuthV2.Gui.Front.Models;
 using DaOAuthV2.Gui.Front.Tools;
 using DaOAuthV2.Service.DTO;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 using System;
+using System.Collections.Specialized;
+using System.Linq;
 using System.Net.Http;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -114,20 +118,60 @@ namespace DaOAuthV2.Gui.Front.Controllers
 
         [Authorize]
         [HttpGet]
-        public ActionResult AuthorizeClient([FromQuery(Name = "response_type")] string responseType,
+        public async Task<ActionResult> AuthorizeClient([FromQuery(Name = "response_type")] string responseType,
            [FromQuery(Name = "client_id")] string clientId,
            [FromQuery(Name = "state")] string state,
            [FromQuery(Name = "redirect_uri")] Uri redirectUri,
            [FromQuery(Name = "scope")] string scope)
         {
             // récupérer le client
-
+            NameValueCollection nv = new NameValueCollection();
+            nv.Add("skip", "0");
+            nv.Add("limit", "50");
+            nv.Add("publicId", clientId);
+            var response = await GetToApi($"Clients", nv);
+            var clients = JsonConvert.DeserializeObject<SearchResult<ClientDto>>(await response.Content.ReadAsStringAsync());
 
             // vérifier qu'il est bien valide
+            var myClient = clients.Datas.FirstOrDefault();
+            if (myClient == null)
+                throw new Exception("TODO exception si client null");
 
-            // lancer l'affichage de la demande, avec la liste des scopes proposés
+            var clientRef = ClientAuthorizationStack.Add(new ClientRedirectInfo(responseType, redirectUri, scope, state, clientId));
 
-            // récup le oui ou non
+            AuthorizeClientModel model = new AuthorizeClientModel()
+            {
+                ClientName = myClient.Name,
+                ClientRef = clientRef.ToString()
+            };
+
+            if(myClient.Scopes != null && !String.IsNullOrEmpty(scope))
+            {
+                model.NiceWordingScopes = myClient.Scopes.
+                    Where(s => scope.Split(' ', StringSplitOptions.RemoveEmptyEntries).Contains(s.Key)).
+                    Select(s => s.Value).ToList();
+            }
+
+            return View(model);
+        }
+
+        [Route("{culture}/Account/AcceptClient/{clientRef}")]
+        public IActionResult AcceptClient(string clientRef)
+        {
+            Guid r = Guid.Parse(clientRef);
+            ClientRedirectInfo client = ClientAuthorizationStack.Get(r);
+
+
+
+            throw new NotImplementedException();
+        }
+
+        [Route("{culture}/Account/RefuseClient/{clientRef}")]
+        public IActionResult RefuseClient(string clientRef)
+        {
+            Guid r = Guid.Parse(clientRef);
+
+            ClientAuthorizationStack.Delete(r);
 
             throw new NotImplementedException();
         }

@@ -1,0 +1,35 @@
+﻿@model DaOAuthV2.Gui.Front.Models.AuthorizeClientModel
+
+@{
+    Layout = "_fr.layout";
+}
+
+<!DOCTYPE html>
+
+<h4>Le client <em>@Model.ClientName</em> demande l'authorisation de se connecter</h4>
+<hr />
+@if (Model.NiceWordingScopes != null && Model.NiceWordingScopes.Count() > 0)
+{
+    <br /><br />
+    <div class="row justify-content-md-center">
+        <div class="col-8">
+            <h5>En acceptant, vous donner à @Model.ClientName l'accès aux informations suivantes :</h5>
+            <ul class="list-group">
+                @foreach (var s in Model.NiceWordingScopes)
+                {
+                    <li class="list-group-item">@s</li>
+                }
+            </ul>
+        </div>
+    </div>
+    <br /><br />
+}
+<div class="row">
+    <div class="col-6">
+        <a href="AcceptClient/@Model.ClientRef" class="btn btn-lg btn-primary btn-block" />Accepter</a>
+    </div>
+    <div class="col-6">
+        <a href="DenyClient/@Model.ClientRef" class="btn btn-lg btn-secondary btn-block" />Refuser</a>
+    </div>
+</div>
+

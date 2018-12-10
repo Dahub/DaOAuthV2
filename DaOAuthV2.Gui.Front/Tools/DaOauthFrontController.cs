@@ -86,7 +86,7 @@ namespace DaOAuthV2.Gui.Front.Tools
                 RequestUri = myUri
             });
         }
-  
+
         private void AddAuthorizationCookieIfAuthentificated()
         {
             if (HttpContext.Request.Cookies[".AspNetCore.DaOAuth"] != null)
@@ -102,6 +102,8 @@ namespace DaOAuthV2.Gui.Front.Tools
 
             if (ControllerContext.RouteData.Values.ContainsKey("culture"))
                 culture = this.ControllerContext.RouteData.Values["culture"].ToString();
+            else
+                culture = "en";
 
             if (!String.IsNullOrWhiteSpace(culture))
             {
@@ -136,6 +138,5 @@ namespace DaOAuthV2.Gui.Front.Tools
             Uri.TryCreate($"{_conf.GuiApiUrl}/{route}", UriKind.Absolute, out Uri myUri);
             return myUri;
         }
-
     }
 }

@@ -21,6 +21,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Update="Views\Account\fr.AuthorizeClient.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
     <Content Update="Views\Account\en.Register.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
