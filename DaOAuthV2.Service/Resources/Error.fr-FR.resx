@@ -117,6 +117,9 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="AccessDenied" xml:space="preserve">
+    <value>L'utilisateur a refusé l'accès au client</value>
+  </data>
   <data name="AuthorizeClientIdParameterMandatory" xml:space="preserve">
     <value>La paramètre client_id doit être renseigné</value>
   </data>

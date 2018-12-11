@@ -96,6 +96,16 @@ namespace DaOAuthV2.Service
                                     $"scope={authorizeInfo.Scope}")
                 };
 
+            if(!CheckIfUserHasAuthorizeClient(authorizeInfo.ClientPublicId, authorizeInfo.UserName))
+                throw new DaOAuthRedirectException()
+                {
+                    RedirectUri = GenerateRedirectErrorMessage(
+                            authorizeInfo.RedirectUri,
+                            OAuthConvention.ErrorNameAccessDenied,
+                            errorLocal["AccessDenied"],
+                            authorizeInfo.State)
+                };
+
             throw new NotImplementedException();
         }
 
@@ -180,6 +190,16 @@ namespace DaOAuthV2.Service
             {
                 var clientUserRepo = RepositoriesFactory.GetUserClientRepository(context);
                 return clientUserRepo.GetUserClientByUserNameAndClientPublicId(clientPublicId, userName) != null;
+            }
+        }
+
+        private bool CheckIfUserHasAuthorizeClient(string clientPublicId, string userName)
+        {
+            using (var context = RepositoriesFactory.CreateContext(ConnexionString))
+            {
+                var clientUserRepo = RepositoriesFactory.GetUserClientRepository(context);
+                var uc = clientUserRepo.GetUserClientByUserNameAndClientPublicId(clientPublicId, userName);
+                return uc != null && uc.IsActif;
             }
         }
     }
