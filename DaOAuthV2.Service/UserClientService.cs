@@ -2,6 +2,7 @@
 using DaOAuthV2.Service.DTO;
 using DaOAuthV2.Service.ExtensionsMethods;
 using DaOAuthV2.Service.Interface;
+using Microsoft.Extensions.Localization;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -47,6 +48,47 @@ namespace DaOAuthV2.Service
             return new List<UserClientListDto>();
         }
 
+        public int CreateUserClient(CreateUserClientDto toCreate)
+        {
+            Validate(toCreate);
+
+            int id = 0;
+
+            IStringLocalizer local = GetErrorStringLocalizer();
+
+            using (var context = RepositoriesFactory.CreateContext(ConnexionString))
+            {
+                var userClientRepo = RepositoriesFactory.GetUserClientRepository(context);
+                var clientRepo = RepositoriesFactory.GetClientRepository(context);
+                var userRepo = RepositoriesFactory.GetUserRepository(context);
+
+                var user = userRepo.GetByUserName(toCreate.UserName);
+                if (user == null || !user.IsValid)
+                    throw new DaOAuthServiceException(local["CreateUserClientInvalidUserName"]);
+
+                var client = clientRepo.GetByPublicId(toCreate.ClientPublicId);
+                if (client == null || !client.IsValid)
+                    throw new DaOAuthServiceException(local["CreateUserClientInvalidClientPublicId"]);
+
+                var uc = userClientRepo.GetUserClientByUserNameAndClientPublicId(toCreate.ClientPublicId, toCreate.UserName);
+                if(uc != null)
+                    throw new DaOAuthServiceException(local["CreateUserClientClientAlreadyRegister"]);
+
+                id = userClientRepo.Add(new UserClient()
+                {
+                    ClientId = client.Id,
+                    CreationDate = DateTime.Now,
+                    IsActif = toCreate.IsActif,
+                    UserId = user.Id,
+                    UserPublicId = Guid.NewGuid()
+                });
+
+                context.Commit();
+            }
+
+            return id;
+        }
+
         private IList<ValidationResult> ExtendValidationSearchCriterias(UserClientSearchDto c)
         {
             var resource = this.GetErrorStringLocalizer();
@@ -64,6 +106,6 @@ namespace DaOAuthV2.Service
                 result.Add(new ValidationResult(String.Format(resource["SearchClientAskTooMuch"], c)));
 
             return result;
-        }       
+        }
     }
 }

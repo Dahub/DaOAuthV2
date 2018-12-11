@@ -126,6 +126,15 @@
   <data name="AuthorizeUnsupportedResponseType" xml:space="preserve">
     <value>response_type should be code or token</value>
   </data>
+  <data name="CreateUserClientClientAlreadyRegister" xml:space="preserve">
+    <value>Client already register</value>
+  </data>
+  <data name="CreateUserClientInvalidClientPublicId" xml:space="preserve">
+    <value>Client don't exist or ban</value>
+  </data>
+  <data name="CreateUserClientInvalidUserName" xml:space="preserve">
+    <value>User don't exist or ban</value>
+  </data>
   <data name="CreateUserEmailExists" xml:space="preserve">
     <value>Email address {0} already in use</value>
   </data>

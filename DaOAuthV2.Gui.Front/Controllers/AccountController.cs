@@ -38,7 +38,7 @@ namespace DaOAuthV2.Gui.Front.Controllers
             {
                 ReturnUrl = returnUrl
             });
-        }       
+        }
 
         [HttpPost]
         [AllowAnonymous]
@@ -87,7 +87,7 @@ namespace DaOAuthV2.Gui.Front.Controllers
             return View();
         }
 
-        [AllowAnonymous]        
+        [AllowAnonymous]
         [HttpPost]
         public async Task<IActionResult> Register(RegisterModel model)
         {
@@ -145,7 +145,7 @@ namespace DaOAuthV2.Gui.Front.Controllers
                 ClientRef = clientRef.ToString()
             };
 
-            if(myClient.Scopes != null && !String.IsNullOrEmpty(scope))
+            if (myClient.Scopes != null && !String.IsNullOrEmpty(scope))
             {
                 model.NiceWordingScopes = myClient.Scopes.
                     Where(s => scope.Split(' ', StringSplitOptions.RemoveEmptyEntries).Contains(s.Key)).
@@ -156,24 +156,51 @@ namespace DaOAuthV2.Gui.Front.Controllers
         }
 
         [Route("{culture}/Account/AcceptClient/{clientRef}")]
-        public IActionResult AcceptClient(string clientRef)
+        public async Task<IActionResult> AcceptClient(string clientRef)
         {
             Guid r = Guid.Parse(clientRef);
             ClientRedirectInfo client = ClientAuthorizationStack.Get(r);
 
+            var response = await PostToApi("UsersClients", new CreateUserClientDto()
+            {
+                ClientPublicId = client.ClientPublicId,
+                IsActif = true
+            });
 
+            string url = $"{_conf.OAuthApiUrl.AbsoluteUri}authorize?response_type={client.ResponseType}" +
+                $"&client_id={client.ClientPublicId}" +
+                $"&state={client.State}" +
+                $"&scope={client.Scope}" +
+                $"&redirect_uri={client.RedirectUri}";
 
-            throw new NotImplementedException();
+            if (((int)response.StatusCode) < 300)
+                return Redirect(url);
+
+            throw new Exception("TODO mécanisme excpetion");
         }
 
-        [Route("{culture}/Account/RefuseClient/{clientRef}")]
-        public IActionResult RefuseClient(string clientRef)
+        [Route("{culture}/Account/DenyClient/{clientRef}")]
+        public async Task<IActionResult> DenyClient(string clientRef)
         {
             Guid r = Guid.Parse(clientRef);
+            ClientRedirectInfo client = ClientAuthorizationStack.Get(r);
 
-            ClientAuthorizationStack.Delete(r);
+            var response = await PostToApi("UsersClients", new CreateUserClientDto()
+            {
+                ClientPublicId = client.ClientPublicId,
+                IsActif = false
+            });
 
-            throw new NotImplementedException();
+            string url = $"{_conf.OAuthApiUrl.AbsoluteUri}authorize?response_type={client.ResponseType}" +
+             $"&client_id={client.ClientPublicId}" +
+             $"&state={client.State}" +
+             $"&scope={client.Scope}" +
+             $"&redirect_uri={client.RedirectUri}";
+
+            if (((int)response.StatusCode) < 300)
+                return Redirect(url);
+
+            throw new Exception("TODO mécanisme excpetion");
         }
 
         private void LogUser(UserDto u, bool rememberMe)
@@ -187,7 +214,7 @@ namespace DaOAuthV2.Gui.Front.Controllers
             {
                 ExpiresUtc = rememberMe ? DateTime.Now.AddYears(100) : DateTime.Now.AddMinutes(20),
                 IsPersistent = true,
-                IssuedUtc = DateTime.Now                
+                IssuedUtc = DateTime.Now
             });
         }
     }

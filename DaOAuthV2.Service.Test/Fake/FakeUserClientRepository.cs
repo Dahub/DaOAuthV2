@@ -100,7 +100,7 @@ namespace DaOAuthV2.Service.Test.Fake
 
         public UserClient GetById(int id)
         {
-            throw new NotImplementedException();
+            return FakeDataBase.Instance.UsersClient.Where(uc => uc.Id.Equals(id)).FirstOrDefault();
         }
 
         public UserClient GetUserClientByUserNameAndClientPublicId(string clientPublicId, string userName)

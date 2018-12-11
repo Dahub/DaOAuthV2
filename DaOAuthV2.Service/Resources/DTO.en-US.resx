@@ -156,6 +156,12 @@
   <data name="CreateTokenDtoTokenNameRequired" xml:space="preserve">
     <value>Token name is mandatory</value>
   </data>
+  <data name="CreateUserClientDtoClientPublicIdRequired" xml:space="preserve">
+    <value>Client public Id is mandatory</value>
+  </data>
+  <data name="CreateUserClientDtoUserNameRequired" xml:space="preserve">
+    <value>User name is mandatory</value>
+  </data>
   <data name="CreateUserDtoEMailAdressRequired" xml:space="preserve">
     <value>Email adress is mandatory</value>
   </data>

@@ -18,6 +18,7 @@
             Create an user
             </summary>
             <param name="model">JSon model</param>
+            <response code="500">Server error</response>
             <response code="400">Invalid datas</response>
             <response code="201">User created</response>
             <returns>A 201 http code, with empty response

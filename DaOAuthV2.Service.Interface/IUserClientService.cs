@@ -6,6 +6,7 @@ namespace DaOAuthV2.Service.Interface
     public interface IUserClientService
     {
         int SearchCount(UserClientSearchDto criterias);
-        IEnumerable<UserClientListDto> Search(UserClientSearchDto criterias);        
+        IEnumerable<UserClientListDto> Search(UserClientSearchDto criterias);
+        int CreateUserClient(CreateUserClientDto toCreate);
     }
 }
