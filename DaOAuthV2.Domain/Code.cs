@@ -9,10 +9,8 @@ namespace DaOAuthV2.Domain
         public string CodeValue { get; set; }
         public long ExpirationTimeStamp { get; set; } 
         public bool IsValid { get; set; }
-        public string Scope { get; set; }
-        public string UserName { get; set; }
-        public Guid UserPublicId { get; set; }
-        public int ClientId { get; set; }
-        public Client Client { get; set; }
+        public string Scope { get; set; }    
+        public int UserClientId { get; set; }
+        public UserClient UserClient { get; set; }
     }
 }

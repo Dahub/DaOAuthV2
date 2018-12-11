@@ -62,8 +62,7 @@ namespace DaOAuthV2.Dal.EF
             modelBuilder.Entity<Client>().Property(p => p.IsValid).HasColumnName("IsValid").HasColumnType("bit").IsRequired();
             modelBuilder.Entity<Client>().Property(p => p.Name).HasColumnName("Name").HasColumnType("nvarchar(256)").HasMaxLength(256).IsRequired();
             modelBuilder.Entity<Client>().Property(p => p.PublicId).HasColumnName("PublicId").HasColumnType("nvarchar(256)").HasMaxLength(256).IsRequired();
-            modelBuilder.Entity<Client>().Property(p => p.ClientSecret).HasColumnName("ClientSecret").HasColumnType("nvarchar(256)").HasMaxLength(256);
-            modelBuilder.Entity<Client>().HasMany<Code>(c => c.Codes).WithOne(c => c.Client).OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<Client>().Property(p => p.ClientSecret).HasColumnName("ClientSecret").HasColumnType("nvarchar(256)").HasMaxLength(256);           
             modelBuilder.Entity<Client>().HasMany<ClientScope>(c => c.ClientsScopes).WithOne(c => c.Client).OnDelete(DeleteBehavior.Cascade);
             modelBuilder.Entity<Client>().Property(p => p.ClientTypeId).HasColumnName("FK_ClientType").HasColumnType("int").IsRequired();
             modelBuilder.Entity<Client>().HasOne<ClientType>(c => c.ClientType).WithMany(ct => ct.Clients).HasForeignKey(ct => ct.ClientTypeId);
@@ -82,11 +81,9 @@ namespace DaOAuthV2.Dal.EF
             modelBuilder.Entity<Code>().Property(p => p.CodeValue).HasColumnName("CodeValue").HasColumnType("nvarchar(256)").HasMaxLength(256).IsRequired();
             modelBuilder.Entity<Code>().Property(p => p.ExpirationTimeStamp).HasColumnName("ExpirationTimeStamp").HasColumnType("bigint").IsRequired();
             modelBuilder.Entity<Code>().Property(p => p.IsValid).HasColumnName("IsValid").HasColumnType("bit").IsRequired();
-            modelBuilder.Entity<Code>().Property(p => p.Scope).HasColumnName("Scope").HasColumnType("nvarchar(max)").HasMaxLength(Int32.MaxValue);
-            modelBuilder.Entity<Code>().Property(p => p.UserName).HasColumnName("UserName").HasColumnType("nvarchar(32)").HasMaxLength(32).IsRequired();
-            modelBuilder.Entity<Code>().Property(p => p.UserPublicId).HasColumnName("UserPublicId").HasColumnType("uniqueidentifier").IsRequired();
-            modelBuilder.Entity<Code>().Property(p => p.ClientId).HasColumnName("FK_Client").HasColumnType("int").IsRequired();
-            modelBuilder.Entity<Code>().HasOne<Client>(c => c.Client).WithMany(g => g.Codes).HasForeignKey(c => c.ClientId);
+            modelBuilder.Entity<Code>().Property(p => p.Scope).HasColumnName("Scope").HasColumnType("nvarchar(max)").HasMaxLength(Int32.MaxValue);            
+            modelBuilder.Entity<Code>().Property(p => p.UserClientId).HasColumnName("FK_UserClient").HasColumnType("int").IsRequired();
+            modelBuilder.Entity<Code>().HasOne<UserClient>(c => c.UserClient).WithMany(g => g.Codes).HasForeignKey(c => c.UserClientId);
 
             modelBuilder.Entity<UserClient>().ToTable("UserClient");
             modelBuilder.Entity<UserClient>().HasKey(c => c.Id);
@@ -99,6 +96,7 @@ namespace DaOAuthV2.Dal.EF
             modelBuilder.Entity<UserClient>().Property(p => p.CreationDate).HasColumnName("CreationDate").HasColumnType("datetime").IsRequired();
             modelBuilder.Entity<UserClient>().Property(p => p.IsActif).HasColumnName("IsActif").HasColumnType("bit").IsRequired();
             modelBuilder.Entity<UserClient>().Property(p => p.RefreshToken).HasColumnName("RefreshToken").HasColumnType("nvarchar(max)").HasMaxLength(Int32.MaxValue);
+            modelBuilder.Entity<UserClient>().HasMany<Code>(c => c.Codes).WithOne(c => c.UserClient).OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<ClientScope>().ToTable("ClientScope");
             modelBuilder.Entity<ClientScope>().HasKey(c => c.Id);

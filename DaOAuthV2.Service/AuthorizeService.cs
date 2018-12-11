@@ -31,7 +31,6 @@ namespace DaOAuthV2.Service
             var errorLocal = GetErrorStringLocalizer();
             Validate(authorizeInfo, ExtendValidation);
 
-            // check for response_type
             if (String.IsNullOrEmpty(authorizeInfo.ResponseType))
                 throw new DaOAuthRedirectException()
                 {
@@ -41,6 +40,7 @@ namespace DaOAuthV2.Service
                         errorLocal["AuthorizeResponseTypeParameterMandatory"],
                         authorizeInfo.State)
                 };
+
             if (!authorizeInfo.ResponseType.Equals(OAuthConvention.ResponseTypeCode, StringComparison.Ordinal)
                 && !authorizeInfo.ResponseType.Equals(OAuthConvention.ResponseTypeToken, StringComparison.Ordinal))
                 throw new DaOAuthRedirectException()
@@ -52,7 +52,6 @@ namespace DaOAuthV2.Service
                        authorizeInfo.State)
                 };
 
-            // check client Id
             if (String.IsNullOrEmpty(authorizeInfo.ClientPublicId))
                 throw new DaOAuthRedirectException()
                 {
@@ -63,7 +62,6 @@ namespace DaOAuthV2.Service
                         authorizeInfo.State)
                 };
 
-            // is client valid for authorization
             if (!CheckIfClientIsValid(authorizeInfo.ClientPublicId, new Uri(authorizeInfo.RedirectUri),
                 authorizeInfo.ResponseType.Equals(OAuthConvention.ResponseTypeCode, StringComparison.Ordinal) ? EClientType.CONFIDENTIAL : EClientType.PUBLIC))
                 throw new DaOAuthRedirectException()

@@ -13,7 +13,6 @@ namespace DaOAuthV2.Domain
         public string Description { get; set; }
         public DateTime CreationDate { get; set; }
         public bool IsValid { get; set; }
-        public ICollection<Code> Codes { get; set; }
         public int ClientTypeId { get; set; }
         public ClientType ClientType { get; set; }
         public ICollection<UserClient> UsersClients { get; set; }

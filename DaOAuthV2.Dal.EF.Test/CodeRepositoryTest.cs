@@ -35,28 +35,44 @@ namespace DaOAuthV2.Dal.EF.Test
                     PublicId = "CT1_id"
                 });
 
-                context.Codes.Add(new Code()
+                context.Users.Add(new User()
+                {
+                    CreationDate = DateTime.Now,
+                    EMail = "test@test.com",
+                    UserName = "testeur",
+                    FullName = "test test",
+                    Id = 650,
+                    IsValid = true,
+                    Password = new byte[] {0}
+                });
+
+                context.UsersClients.Add(new UserClient()
                 {
                     ClientId = 100,
-                    Id = 100,
-                    CodeValue = "1234",
-                    ExpirationTimeStamp = 1,
-                    IsValid = true,
-                    Scope = "scope",
-                    UserName = "user test",
-                    UserPublicId = Guid.Parse("7a1165cd-09f8-4a56-9af2-488dca510f6e")
+                    Id = 250,
+                    CreationDate = DateTime.Now,
+                    IsActif = true,
+                    UserId = 650
                 });
 
                 context.Codes.Add(new Code()
                 {
-                    ClientId = 100,
+                    UserClientId = 250,
+                    Id = 100,
+                    CodeValue = "1234",
+                    ExpirationTimeStamp = 1,
+                    IsValid = true,
+                    Scope = "scope"
+                });
+
+                context.Codes.Add(new Code()
+                {
+                    UserClientId = 250,
                     Id = 101,
                     CodeValue = "5678",
                     ExpirationTimeStamp = 1,
                     IsValid = true,
-                    Scope = "scope",
-                    UserName = "user test",
-                    UserPublicId = Guid.Parse("8a1165cd-09f8-4a56-9af2-488dca510f6e")
+                    Scope = "scope"
                 });
 
                 context.SaveChanges();

@@ -11,7 +11,7 @@ namespace DaOAuthV2.Dal.EF
         public IEnumerable<Code> GetAllByClientId(string clientPublicId)
         {
             return ((DaOAuthContext)Context).Codes.
-                Where(c => c.Client.PublicId.Equals(clientPublicId, StringComparison.Ordinal));
+                Where(c => c.UserClient.Client.PublicId.Equals(clientPublicId, StringComparison.Ordinal));
         }
     }
 }
