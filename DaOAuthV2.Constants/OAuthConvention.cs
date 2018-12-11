@@ -2,13 +2,16 @@
 {
     public static class OAuthConvention
     {
-        public static string ErrorNameInvalidRequest = "invalid_request";
-        public static string ErrorNameUnsupportedResponseType = "unsupported_response_type";
-        public static string ErrorNameUnauthorizedClient = "unauthorized_client";
-        public static string ErrorNameInvalidScope = "invalid_scope";
-        public static string ErrorNameAccessDenied = "access_denied";
+        public const string ErrorNameInvalidRequest = "invalid_request";
+        public const string ErrorNameUnsupportedResponseType = "unsupported_response_type";
+        public const string ErrorNameUnauthorizedClient = "unauthorized_client";
+        public const string ErrorNameInvalidScope = "invalid_scope";
+        public const string ErrorNameAccessDenied = "access_denied";
 
-        public static string ResponseTypeCode = "code";
-        public static string ResponseTypeToken = "token";
+        public const string ResponseTypeCode = "code";
+        public const string ResponseTypeToken = "token";
+
+        public const string AccessToken = "access_token";
+        public const string RefreshToken = "refresh_token";
     }
 }

@@ -269,13 +269,13 @@ namespace DaOAuthV2.Service.Test
             }
             catch(DaOAuthRedirectException ex)
             {
-                var exepctedUri = new Uri($"{_conf.AuthorizeClientPageUrl}?" +
+                var exepectedUri = new Uri($"{_conf.AuthorizeClientPageUrl}?" +
                                    $"response_type={_dto.ResponseType}&" +
                                    $"client_id={_dto.ClientPublicId}&" +
                                    $"state={_dto.State}&" +
                                    $"redirect_uri={_dto.RedirectUri}&" +
                                    $"scope={_dto.Scope}");
-                Assert.AreEqual(exepctedUri.AbsolutePath, ex.RedirectUri.AbsolutePath);
+                Assert.AreEqual(exepectedUri.AbsolutePath, ex.RedirectUri.AbsolutePath);
             }
         }
     }

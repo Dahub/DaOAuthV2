@@ -13,6 +13,11 @@ namespace DaOAuthV2.Service
 {
     public class AuthorizeService : ServiceBase, IAuthorizeService
     {
+        private const int CodeLenght = 16;
+
+        public IRandomService RandomService { get; set; }
+        public IJwtService JwtService { get; set; }
+
         public async Task<Uri> GenererateUriForAuthorize(AskAuthorizeDto authorizeInfo)
         {
             IList<ValidationResult> ExtendValidation(AskAuthorizeDto toValidate)
@@ -25,6 +30,8 @@ namespace DaOAuthV2.Service
 
                 return result;
             }
+
+            Uri toReturn = null;
 
             Logger.LogInformation($"Ask for authorize, client : {authorizeInfo.ClientPublicId} - response_type : {authorizeInfo.ResponseType}");
 
@@ -104,7 +111,32 @@ namespace DaOAuthV2.Service
                             authorizeInfo.State)
                 };
 
-            throw new NotImplementedException();
+            switch(authorizeInfo.ResponseType)
+            {
+                case OAuthConvention.ResponseTypeCode:
+                    var myCode = GenerateAndSaveCode(authorizeInfo.ClientPublicId, authorizeInfo.UserName, authorizeInfo.Scope);
+                    string codeLocation = String.Concat(authorizeInfo.RedirectUri, "?code=", myCode);
+                    if (!String.IsNullOrEmpty(authorizeInfo.State))
+                        codeLocation = String.Concat(codeLocation, "&state=", authorizeInfo.State);
+                    toReturn = new Uri(codeLocation);
+                    break;
+                default: // response_type token 
+                    var myToken = JwtService.GenerateToken(new CreateTokenDto()
+                    {
+                        SecondsLifeTime = Configuration.AccesTokenLifeTimeInSeconds,
+                        ClientPublicId = authorizeInfo.ClientPublicId,
+                        Scope = authorizeInfo.Scope,
+                        TokenName = OAuthConvention.AccessToken,
+                        UserName = authorizeInfo.UserName
+                    });
+                    string tokenLocation = String.Concat(authorizeInfo.RedirectUri, "?token=", myToken, "?token_type=bearer?expires_in", Configuration.AccesTokenLifeTimeInSeconds);
+                    if (!String.IsNullOrEmpty(authorizeInfo.State))
+                        tokenLocation = String.Concat(tokenLocation, "&state=", authorizeInfo.State);
+                    toReturn = new Uri(tokenLocation);
+                    break;
+            }
+
+            return toReturn;
         }
 
         private static bool IsUriCorrect(string uri)
@@ -199,6 +231,32 @@ namespace DaOAuthV2.Service
                 var uc = clientUserRepo.GetUserClientByUserNameAndClientPublicId(clientPublicId, userName);
                 return uc != null && uc.IsActif;
             }
+        }
+
+        private string GenerateAndSaveCode(string clientPublicId, string userName, string scope)
+        {
+            string codeValue = RandomService.GenerateRandomString(CodeLenght);
+
+            using (var context = RepositoriesFactory.CreateContext(ConnexionString))
+            {
+                var userClientRepo = RepositoriesFactory.GetUserClientRepository(context);
+                var codeRepo = RepositoriesFactory.GetCodeRepository(context);
+
+                var uc = userClientRepo.GetUserClientByUserNameAndClientPublicId(clientPublicId, userName);
+           
+                codeRepo.Add(new Domain.Code()
+                {
+                    CodeValue = codeValue,
+                    ExpirationTimeStamp = new DateTimeOffset(DateTime.Now.AddSeconds(Configuration.CodeDurationInSeconds)).ToUnixTimeSeconds(),
+                    IsValid = true,
+                    Scope = scope,
+                    UserClientId = uc.Id
+                });
+
+                context.Commit();
+            }
+
+            return codeValue;
         }
     }
 }

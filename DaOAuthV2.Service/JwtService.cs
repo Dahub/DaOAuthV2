@@ -24,10 +24,9 @@ namespace DaOAuthV2.Service
             var utcNow = DateTimeOffset.UtcNow;
 
             IList<Claim> claims = new List<Claim>();
-            claims.Add(new Claim(ClaimName.ClientId, value.ClientId));
+            claims.Add(new Claim(ClaimName.ClientId, value.ClientPublicId));
             claims.Add(new Claim(ClaimName.TokenName, value.TokenName));
-            claims.Add(new Claim(ClaimName.Issued, utcNow.ToUnixTimeSeconds().ToString(CultureInfo.InvariantCulture)));
-            claims.Add(new Claim(ClaimName.UserPublicId, value.UserPublicId.HasValue ? value.UserPublicId.Value.ToString() : String.Empty));
+            claims.Add(new Claim(ClaimName.Issued, utcNow.ToUnixTimeSeconds().ToString(CultureInfo.InvariantCulture)));         
             claims.Add(new Claim(ClaimName.Name, !String.IsNullOrEmpty(value.UserName) ? value.UserName : String.Empty));
             claims.Add(new Claim(ClaimName.Scope, !String.IsNullOrEmpty(value.Scope) ? value.Scope : String.Empty));
 
@@ -39,17 +38,16 @@ namespace DaOAuthV2.Service
                 audience: Configuration.Audience,
                 claims: claims,
                 signingCredentials: creds,
-                expires: utcNow.AddMinutes(value.MinutesLifeTime).DateTime);
+                expires: utcNow.AddSeconds(value.SecondsLifeTime).DateTime);
 
             JwtTokenDto toReturn = new JwtTokenDto()
             {
-                ClientId = value.ClientId,
-                Expire = utcNow.AddMinutes(value.MinutesLifeTime).ToUnixTimeSeconds(),
+                ClientId = value.ClientPublicId,
+                Expire = utcNow.AddSeconds(value.SecondsLifeTime).ToUnixTimeSeconds(),
                 IsValid = true,
                 Scope = value.Scope,
                 Token = new JwtSecurityTokenHandler().WriteToken(token),
-                UserName = value.UserName,
-                UserPublicId = value.UserPublicId.HasValue?value.UserPublicId.ToString():String.Empty
+                UserName = value.UserName
             };
 
             return toReturn;

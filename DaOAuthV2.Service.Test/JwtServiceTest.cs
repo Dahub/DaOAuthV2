@@ -42,12 +42,11 @@ namespace DaOAuthV2.Service.Test
         {
             var t = _service.GenerateToken(new DTO.CreateTokenDto()
             {
-                ClientId = "clientId",
-                MinutesLifeTime = 60,
+                ClientPublicId = "clientId",
+                SecondsLifeTime = 60,
                 Scope = "scope",
                 TokenName = _tokenName,
-                UserName = "userName",
-                UserPublicId = Guid.NewGuid()
+                UserName = "userName"
             });
             Assert.IsTrue(!String.IsNullOrWhiteSpace(t.Token));
             Assert.IsTrue(t.IsValid);
@@ -59,12 +58,11 @@ namespace DaOAuthV2.Service.Test
         {
             var t = _service.GenerateToken(new DTO.CreateTokenDto()
             {
-                ClientId = "clientId",
-                MinutesLifeTime = 60,
+                ClientPublicId = "clientId",
+                SecondsLifeTime = 60,
                 Scope = "scope",
                 TokenName = String.Empty,
-                UserName = "userName",
-                UserPublicId = Guid.NewGuid()
+                UserName = "userName"
             });
         }
 
@@ -74,12 +72,11 @@ namespace DaOAuthV2.Service.Test
         {
             var t = _service.GenerateToken(new DTO.CreateTokenDto()
             {
-                ClientId = String.Empty,
-                MinutesLifeTime = 60,
+                ClientPublicId = String.Empty,
+                SecondsLifeTime = 60,
                 Scope = "scope",
                 TokenName = _tokenName,
-                UserName = "userName",
-                UserPublicId = Guid.NewGuid()
+                UserName = "userName"
             });
         }
 
