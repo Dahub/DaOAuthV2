@@ -110,7 +110,7 @@ namespace DaOAuthV2.Dal.EF.Test
                     Name = "testeur2",
                     PublicId = "test"
                 });
-                context.SaveChanges();
+                context.Commit();
             }
 
             // Use a separate instance of the context to verify correct datas were saved to database

@@ -21,6 +21,7 @@ using System.Threading.Tasks;
 
 namespace DaOAuthV2.Gui.Api
 {
+#pragma warning disable 1591
     public class Startup
     {
         public Startup(IConfiguration configuration, IHostingEnvironment env)
@@ -160,4 +161,5 @@ namespace DaOAuthV2.Gui.Api
             return Path.ChangeExtension(typeof(Startup).Assembly.Location, ".xml");
         }
     }
+#pragma warning restore 1591
 }

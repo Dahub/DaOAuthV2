@@ -18,7 +18,7 @@ namespace DaOAuthV2.Service
         public IRandomService RandomService { get; set; }
         public IJwtService JwtService { get; set; }
 
-        public async Task<Uri> GenererateUriForAuthorize(AskAuthorizeDto authorizeInfo)
+        public Uri GenererateUriForAuthorize(AskAuthorizeDto authorizeInfo)
         {
             IList<ValidationResult> ExtendValidation(AskAuthorizeDto toValidate)
             {
@@ -101,7 +101,7 @@ namespace DaOAuthV2.Service
                                     $"scope={authorizeInfo.Scope}")
                 };
 
-            if(!CheckIfUserHasAuthorizeClient(authorizeInfo.ClientPublicId, authorizeInfo.UserName))
+            if (!CheckIfUserHasAuthorizeClient(authorizeInfo.ClientPublicId, authorizeInfo.UserName))
                 throw new DaOAuthRedirectException()
                 {
                     RedirectUri = GenerateRedirectErrorMessage(
@@ -111,7 +111,7 @@ namespace DaOAuthV2.Service
                             authorizeInfo.State)
                 };
 
-            switch(authorizeInfo.ResponseType)
+            switch (authorizeInfo.ResponseType)
             {
                 case OAuthConvention.ResponseTypeCode:
                     var myCode = GenerateAndSaveCode(authorizeInfo.ClientPublicId, authorizeInfo.UserName, authorizeInfo.Scope);
@@ -129,7 +129,7 @@ namespace DaOAuthV2.Service
                         TokenName = OAuthConvention.AccessToken,
                         UserName = authorizeInfo.UserName
                     });
-                    string tokenLocation = String.Concat(authorizeInfo.RedirectUri, "?token=", myToken, "?token_type=bearer?expires_in", Configuration.AccesTokenLifeTimeInSeconds);
+                    string tokenLocation = String.Concat(authorizeInfo.RedirectUri, "?token=", myToken.Token, "?token_type=bearer?expires_in", Configuration.AccesTokenLifeTimeInSeconds);
                     if (!String.IsNullOrEmpty(authorizeInfo.State))
                         tokenLocation = String.Concat(tokenLocation, "&state=", authorizeInfo.State);
                     toReturn = new Uri(tokenLocation);

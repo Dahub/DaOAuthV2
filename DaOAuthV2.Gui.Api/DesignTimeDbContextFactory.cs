@@ -6,8 +6,16 @@ using System.IO;
 
 namespace DaOAuthV2.Gui.Api
 {
+    /// <summary>
+    /// Used for add migrations
+    /// </summary>
     public class DesignTimeDbContextFactory : IDesignTimeDbContextFactory<DaOAuthContext>
     {
+        /// <summary>
+        /// Create DB context
+        /// </summary>
+        /// <param name="args"></param>
+        /// <returns>DB context</returns>
         public DaOAuthContext CreateDbContext(string[] args)
         {
             IConfigurationRoot configuration = new ConfigurationBuilder()

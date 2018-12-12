@@ -13,6 +13,10 @@ namespace DaOAuthV2.Gui.Api.Controllers
     {
         private IUserService _service;
 
+        /// <summary>
+        /// Contructor
+        /// </summary>
+        /// <param name="service">User service dependency injection</param>
         public UsersController([FromServices] IUserService service)
         {
             _service = service;
@@ -22,6 +26,8 @@ namespace DaOAuthV2.Gui.Api.Controllers
         /// Try to find user with login and password
         /// </summary>
         /// <param name="credentials">User credentials</param>
+        /// <param name="localFactory">Localized string factory</param>
+        /// <response code="500">Server error</response>
         /// <response code="401">Invalids credentials</response>
         /// <response code="200">Valids credentials</response>
         /// <returns>If correct, a User json object</returns>

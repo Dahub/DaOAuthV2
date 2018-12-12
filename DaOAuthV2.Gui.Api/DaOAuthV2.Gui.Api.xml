@@ -25,5 +25,17 @@
             Since for users endpoint, this is not a REST API, there is not location header as
             users/id route don't exists</returns>
         </member>
+        <member name="T:DaOAuthV2.Gui.Api.DesignTimeDbContextFactory">
+            <summary>
+            Used for add migrations
+            </summary>
+        </member>
+        <member name="M:DaOAuthV2.Gui.Api.DesignTimeDbContextFactory.CreateDbContext(System.String[])">
+            <summary>
+            Create DB context
+            </summary>
+            <param name="args"></param>
+            <returns>DB context</returns>
+        </member>
     </members>
 </doc>

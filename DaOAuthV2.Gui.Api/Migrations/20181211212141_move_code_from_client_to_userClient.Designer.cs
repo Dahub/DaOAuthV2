@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace DaOAuthV2.Gui.Api.Migrations
 {
+#pragma warning disable 1591
     [DbContext(typeof(DaOAuthContext))]
     [Migration("20181211212141_move_code_from_client_to_userClient")]
     partial class move_code_from_client_to_userClient
@@ -372,4 +373,5 @@ namespace DaOAuthV2.Gui.Api.Migrations
 #pragma warning restore 612, 618
         }
     }
+#pragma warning restore 1591
 }

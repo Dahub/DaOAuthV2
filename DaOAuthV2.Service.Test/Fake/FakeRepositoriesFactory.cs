@@ -22,7 +22,7 @@ namespace DaOAuthV2.Service.Test.Fake
 
         public ICodeRepository GetCodeRepository(IContext context)
         {
-            throw new NotImplementedException();
+            return new FakeCodeRepository();
         }
 
         public IRessourceServerRepository GetRessourceServerRepository(IContext context)

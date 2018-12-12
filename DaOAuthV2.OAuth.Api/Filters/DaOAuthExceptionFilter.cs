@@ -8,6 +8,10 @@ using System;
 
 namespace DaOAuthV2.OAuth.Api.Filters
 {
+    /// <summary>
+    /// Custom exception filter
+    /// Used to filter custom exception and return appropriate http response
+    /// </summary>
     public class DaOAuthExceptionFilter : ExceptionFilterAttribute
     {
         private readonly IHostingEnvironment _hostingEnvironment;

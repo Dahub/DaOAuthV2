@@ -20,13 +20,13 @@ namespace DaOAuthV2.OAuth.Api.Controllers
         [Authorize]
         [HttpGet]
         [Route("/authorize")]
-        public async Task<ActionResult> Authorize([FromQuery(Name = "response_type")] string responseType,
+        public ActionResult Authorize([FromQuery(Name = "response_type")] string responseType,
            [FromQuery(Name = "client_id")] string clientId,
            [FromQuery(Name = "state")] string state,
            [FromQuery(Name = "redirect_uri")] string redirectUri,
            [FromQuery(Name = "scope")] string scope)
         {
-            var uri = await _authorizeService.GenererateUriForAuthorize(new AskAuthorizeDto()
+            var uri = _authorizeService.GenererateUriForAuthorize(new AskAuthorizeDto()
             {
                 ClientPublicId = clientId,
                 RedirectUri = redirectUri,

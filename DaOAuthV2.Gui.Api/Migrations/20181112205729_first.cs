@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace DaOAuthV2.Gui.Api.Migrations
 {
+#pragma warning disable 1591
     public partial class first : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -298,4 +299,5 @@ namespace DaOAuthV2.Gui.Api.Migrations
                 schema: "auth");
         }
     }
+#pragma warning restore 1591
 }

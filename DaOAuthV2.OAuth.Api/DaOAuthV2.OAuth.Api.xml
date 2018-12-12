@@ -4,5 +4,11 @@
         <name>DaOAuthV2.OAuth.Api</name>
     </assembly>
     <members>
+        <member name="T:DaOAuthV2.OAuth.Api.Filters.DaOAuthExceptionFilter">
+            <summary>
+            Custom exception filter
+            Used to filter custom exception and return appropriate http response
+            </summary>
+        </member>
     </members>
 </doc>
