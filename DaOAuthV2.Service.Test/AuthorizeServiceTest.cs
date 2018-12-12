@@ -523,7 +523,6 @@ namespace DaOAuthV2.Service.Test
                 Scope = _validClientScope.Wording
             });
 
-
             Assert.IsNotNull(url);
             Assert.IsTrue(!String.IsNullOrEmpty(url.AbsoluteUri));
             Assert.IsTrue(url.AbsoluteUri.StartsWith("http://www.perdu.com"));

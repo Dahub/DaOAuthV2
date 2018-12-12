@@ -4,11 +4,19 @@
         <name>DaOAuthV2.Gui.Api</name>
     </assembly>
     <members>
+        <member name="M:DaOAuthV2.Gui.Api.Controllers.UsersController.#ctor(DaOAuthV2.Service.Interface.IUserService)">
+            <summary>
+            Contructor
+            </summary>
+            <param name="service">User service dependency injection</param>
+        </member>
         <member name="M:DaOAuthV2.Gui.Api.Controllers.UsersController.FindUser(DaOAuthV2.Service.DTO.LoginUserDto,Microsoft.Extensions.Localization.IStringLocalizerFactory)">
             <summary>
             Try to find user with login and password
             </summary>
             <param name="credentials">User credentials</param>
+            <param name="localFactory">Localized string factory</param>
+            <response code="500">Server error</response>
             <response code="401">Invalids credentials</response>
             <response code="200">Valids credentials</response>
             <returns>If correct, a User json object</returns>
