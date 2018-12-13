@@ -65,7 +65,7 @@ namespace DaOAuthV2.Gui.Api
             });
 
             services.AddTransient<IRandomService>(u => new RandomService());
-
+            
             services.AddTransient<IUserService>(u => new UserService()
             {
                 Configuration = conf,

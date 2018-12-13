@@ -1,6 +1,9 @@
+using DaOAuthV2.Gui.Api;
+using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
+using System.Net.Http;
 
 namespace DaOAuthV2.Gui.Front.Test
 {
@@ -8,12 +11,21 @@ namespace DaOAuthV2.Gui.Front.Test
     public class LoginTest
     {
         private IWebDriver _webDriver;
+        private ApiFactory<Startup> _factory;
+
+        [TestInitialize]
+        public void Init()
+        {
+            _factory = new ApiFactory<Startup>();
+        }
 
         [TestMethod]
         public void LoginSuccessfull()
         {
             try
             {
+                HttpClient client = _factory.CreateClient();
+
                 _webDriver = new ChromeDriver();
 
                 _webDriver.Navigate().GoToUrl(@"http://front.daoauth.fr");
@@ -33,6 +45,7 @@ namespace DaOAuthV2.Gui.Front.Test
             finally
             {
                 _webDriver.Close();
+                _webDriver.Quit();
             }
         }
     }

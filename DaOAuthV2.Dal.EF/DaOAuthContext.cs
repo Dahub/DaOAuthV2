@@ -97,6 +97,7 @@ namespace DaOAuthV2.Dal.EF
             modelBuilder.Entity<UserClient>().Property(p => p.IsActif).HasColumnName("IsActif").HasColumnType("bit").IsRequired();
             modelBuilder.Entity<UserClient>().Property(p => p.RefreshToken).HasColumnName("RefreshToken").HasColumnType("nvarchar(max)").HasMaxLength(Int32.MaxValue);
             modelBuilder.Entity<UserClient>().HasMany<Code>(c => c.Codes).WithOne(c => c.UserClient).OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<UserClient>().Property(p => p.IsCreator).HasColumnName("IsCreator").HasColumnType("bit").IsRequired().HasDefaultValue(false);
 
             modelBuilder.Entity<ClientScope>().ToTable("ClientScope");
             modelBuilder.Entity<ClientScope>().HasKey(c => c.Id);

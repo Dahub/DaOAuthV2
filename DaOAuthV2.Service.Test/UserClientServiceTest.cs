@@ -225,6 +225,21 @@ namespace DaOAuthV2.Service.Test
         }
 
         [TestMethod]
+        public void Create_New_User_Client_Should_Set_Is_Creator_To_True()
+        {
+            int id = _service.CreateUserClient(new DTO.CreateUserClientDto()
+            {
+                ClientPublicId = "pub-c-500",
+                UserName = _validUser.UserName,
+                IsActif = true
+            });
+
+            var uc = _repo.GetById(id);
+
+            Assert.AreEqual(true, uc.IsCreator);
+        }
+
+        [TestMethod]
         public void Create_New_User_Client_Should_Return_Int()
         {
             int id = _service.CreateUserClient(new DTO.CreateUserClientDto()

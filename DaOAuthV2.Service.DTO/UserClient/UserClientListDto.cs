@@ -15,5 +15,7 @@ namespace DaOAuthV2.Service.DTO
         public string DefaultReturnUri { get; set; }
 
         public bool IsActif { get; set; }
+
+        public bool IsCreator { get; set; }
     }
 }
