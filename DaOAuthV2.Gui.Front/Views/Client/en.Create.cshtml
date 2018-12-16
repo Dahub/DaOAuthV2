@@ -1,0 +1,39 @@
+﻿@model DaOAuthV2.Gui.Front.Models.CreateClientModel
+
+@{
+    Layout = "_en.layout";
+}
+
+@await Html.PartialAsync("_en.modelErrors")
+
+<h1>Create a new client</h1>
+<hr />
+<div class="row">
+    <div class="col-md-8">
+        <form asp-action="Create" method="post">
+            <div class="form-group">
+                <label asp-for="ClientType" class="control-label">Client type</label>
+                <br />
+                @Html.RadioButtonFor(m => m.ClientType, "confidential") Confidental
+                <br />
+                @Html.RadioButtonFor(m => m.ClientType, "public") Public
+            </div>
+            <div class="form-group">
+                <label asp-for="DefaultReturnUrl" class="control-label">Return url</label>
+                @Html.TextBoxFor(model => model.DefaultReturnUrl, new { @class = "form-control" })
+            </div>
+            <div class="form-group">
+                <label asp-for="Name" class="control-label">Name</label>
+                @Html.TextBoxFor(model => model.Name, new { @class = "form-control" })
+            </div>
+            <div class="form-group">
+                <label asp-for="Description" class="control-label">Description</label>
+                @Html.TextAreaFor(model => model.Description, 10, 80, new { @class = "form-control" })
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Submit" class="btn btn-lg btn-primary btn-block" />
+            </div>
+        </form>
+    </div>
+</div>
+

@@ -37,6 +37,34 @@ namespace DaOAuthV2.Service.Test
         }
 
         [TestMethod]
+        public void Create_New_Client_Should_Create_A_Creator_User_Client()
+        {
+            string name = "client_test_create";
+            string description = "test";
+
+            int id = _service.CreateClient(new DTO.CreateClientDto()
+            {
+                ClientType = ClientTypeName.Confidential,
+                DefaultReturnUrl = "http://www.perdu.com",
+                Name = name,
+                UserName = "Sammy",
+                Description = description
+            });
+
+            Assert.IsTrue(id > 0);
+
+            var client = _repo.GetById(id);
+
+            Assert.IsNotNull(client);
+
+            var ucrepo = new FakeUserClientRepository();
+            var myUc = ucrepo.GetUserClientByUserNameAndClientPublicId(client.PublicId, "Sammy");
+
+            Assert.IsNotNull(myUc);
+            Assert.IsTrue(myUc.IsCreator);
+        }
+
+        [TestMethod]
         public void Create_New_Client_Should_Return_Int()
         {
             string name = "client_test_create";

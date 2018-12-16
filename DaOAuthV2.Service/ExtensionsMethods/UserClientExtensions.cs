@@ -21,7 +21,9 @@ namespace DaOAuthV2.Service.ExtensionsMethods
             };
         }
 
-        internal static IEnumerable<UserClientListDto> ToDto(this IEnumerable<UserClient> values, string userName)
+        internal static IEnumerable<UserClientListDto> ToDto(
+            this IEnumerable<UserClient> values, 
+            string userName)
         {
             return values.Select(v => v.ToDto(userName));
         }

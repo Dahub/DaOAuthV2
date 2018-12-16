@@ -1,5 +1,4 @@
 ﻿using DaOAuthV2.Domain.Interface;
-using System;
 
 namespace DaOAuthV2.Domain
 {

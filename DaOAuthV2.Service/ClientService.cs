@@ -36,7 +36,7 @@ namespace DaOAuthV2.Service
                         result.Add(new ValidationResult(String.Format(resource["CreateClientDtoInvalidUser"], toCreate.UserName)));
 
                     var userClientRepo = RepositoriesFactory.GetUserClientRepository(context);
-                    if (userClientRepo.GetAllByCriteriasCount(toValidate.UserName, toValidate.Name, null, null) > 0)
+                    if (!String.IsNullOrEmpty(toValidate.Name) && userClientRepo.GetAllByCriteriasCount(toValidate.UserName, toValidate.Name, null, null) > 0)
                         result.Add(new ValidationResult(resource["CreateClientDtoNameAlreadyUse"]));
                 }
 
@@ -86,7 +86,8 @@ namespace DaOAuthV2.Service
                     IsActif = true,
                     RefreshToken = String.Empty,
                     UserId = user.Id,
-                    UserPublicId = Guid.NewGuid()
+                    UserPublicId = Guid.NewGuid(),
+                    IsCreator = true
                 };
 
                 userClientRepo.Add(userClient);

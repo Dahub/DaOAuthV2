@@ -18,8 +18,14 @@ namespace DaOAuthV2.Service.ExtensionsMethods
                 Description = value.Description,
                 PublicId = value.PublicId
             };
+
             c.ReturnUrls = value.ClientReturnUrls.Select(r => r.ReturnUrl).ToList();
-            c.Scopes = value.ClientsScopes.Select(s => new KeyValuePair<string, string>(s.Scope.Wording, s.Scope.NiceWording)).ToList();
+
+            c.Scopes = value.ClientsScopes.Select(s => 
+                new KeyValuePair<string, string>(
+                        s.Scope.Wording, 
+                        s.Scope.NiceWording
+                    )).ToList();
 
             return c;
         }
