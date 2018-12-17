@@ -40,5 +40,15 @@ namespace DaOAuthV2.Dal.EF
                 ThenInclude(cs => cs.Scope).
                 Where(c => c.PublicId.Equals(publicId, StringComparison.Ordinal)).FirstOrDefault();
         }
+
+        public new Client GetById(int id)
+        {
+            return Context.Clients.
+             Include(c => c.ClientsScopes).
+             ThenInclude(cs => cs.Scope).
+             Include(c => c.ClientType).
+             Include(c => c.ClientReturnUrls).
+             Where(c => c.Id.Equals(id)).FirstOrDefault();
+        }
     }
 }

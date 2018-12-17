@@ -59,7 +59,16 @@ namespace DaOAuthV2.Service.Test.Fake
 
         public Client GetById(int id)
         {
-            return FakeDataBase.Instance.Clients.Where(c => c.Id.Equals(id)).FirstOrDefault();
+            var c = FakeDataBase.Instance.Clients.Where(cl => cl.Id.Equals(id)).FirstOrDefault();
+
+            if (c == null)
+                return null;
+
+            c.ClientType = FakeDataBase.Instance.ClientTypes.Where(ct => ct.Id.Equals(c.ClientTypeId)).FirstOrDefault();
+            c.ClientReturnUrls = FakeDataBase.Instance.ClientReturnUrls.Where(cru => cru.ClientId.Equals(c.Id)).ToList();
+            c.ClientsScopes = FakeDataBase.Instance.ClientsScopes.Where(cs => cs.ClientId.Equals(c.Id)).ToList();
+
+            return c;
         }
 
         public Client GetByPublicId(string publicId)

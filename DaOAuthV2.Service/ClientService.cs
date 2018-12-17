@@ -100,6 +100,21 @@ namespace DaOAuthV2.Service
             return idClient;
         }
 
+        public ClientDto GetById(int id)
+        {
+            ClientDto toReturn = null;
+
+            using (var context = RepositoriesFactory.CreateContext(ConnexionString))
+            {
+                var clientRepo = RepositoriesFactory.GetClientRepository(context);
+                var client = clientRepo.GetById(id);
+                if (client != null)
+                    toReturn = client.ToDto();
+            }
+
+            return toReturn;
+        }
+
         public IEnumerable<ClientDto> Search(ClientSearchDto criterias)
         {
             Validate(criterias, ExtendValidationSearchCriterias);

@@ -33,6 +33,14 @@ namespace DaOAuthV2.Dal.EF.Test
                     Name = "testeur",
                     PublicId = "test"
                 });
+
+                context.Scopes.Add(new Scope()
+                {
+                    Id = 100,
+                    Wording = "test",
+                    NiceWording = "nice test"
+                });
+
                 context.Commit();
             }
         }
@@ -57,17 +65,17 @@ namespace DaOAuthV2.Dal.EF.Test
                         .UseInMemoryDatabase(databaseName: _dbName)
                         .Options;
 
-            Client c = null;
+            Scope s = null;
             int correctId = 100;
 
             using (var context = new DaOAuthContext(options))
             {
-                var clientRepo = _repoFactory.GetClientRepository(context);
-                c = clientRepo.GetById(100);
+                var scopeRepo = _repoFactory.GetScopeRepository(context);
+                s = scopeRepo.GetById(100);
             }
 
-            Assert.IsNotNull(c);
-            Assert.AreEqual(correctId, c.Id);
+            Assert.IsNotNull(s);
+            Assert.AreEqual(correctId, s.Id);
         }
 
         [TestMethod]
@@ -77,16 +85,16 @@ namespace DaOAuthV2.Dal.EF.Test
                         .UseInMemoryDatabase(databaseName: _dbName)
                         .Options;
 
-            Client c = null;
+            Scope s = null;
             int wrongId = 1546;
 
             using (var context = new DaOAuthContext(options))
             {
-                var clientRepo = _repoFactory.GetClientRepository(context);
-                c = clientRepo.GetById(wrongId);
+                var scopeRepo = _repoFactory.GetScopeRepository(context);
+                s = scopeRepo.GetById(wrongId);
             }
 
-            Assert.IsNull(c);
+            Assert.IsNull(s);
         }
 
         [TestMethod]
@@ -127,25 +135,25 @@ namespace DaOAuthV2.Dal.EF.Test
             .UseInMemoryDatabase(databaseName: _dbName)
             .Options;
 
-            Client c = null;
+            Scope s = null;
 
             using (var context = new DaOAuthContext(options))
             {
-                var clientRepo = _repoFactory.GetClientRepository(context);
-                c = clientRepo.GetById(100);
-                c.Name = "update";
-                clientRepo.Update(c);
+                var scopeRepo = _repoFactory.GetScopeRepository(context);
+                s = scopeRepo.GetById(100);
+                s.Wording = "update";
+                scopeRepo.Update(s);
                 context.Commit();
             }
 
             using (var context = new DaOAuthContext(options))
             {
-                var clientRepo = _repoFactory.GetClientRepository(context);
-                c = clientRepo.GetById(100);
+                var scopeRepo = _repoFactory.GetScopeRepository(context);
+                s = scopeRepo.GetById(100);
             }
 
-            Assert.IsNotNull(c);
-            Assert.AreEqual("update", c.Name);
+            Assert.IsNotNull(s);
+            Assert.AreEqual("update", s.Wording);
         }
 
         [TestMethod]
@@ -155,25 +163,25 @@ namespace DaOAuthV2.Dal.EF.Test
            .UseInMemoryDatabase(databaseName: _dbName)
            .Options;
 
-            Client c = null;
+            Scope s = null;
 
             using (var context = new DaOAuthContext(options))
             {
-                var clientRepo = _repoFactory.GetClientRepository(context);
-                c = clientRepo.GetById(100);
-                clientRepo.Delete(c);
+                var scopeRepo = _repoFactory.GetScopeRepository(context);
+                s = scopeRepo.GetById(100);
+                scopeRepo.Delete(s);
                 context.Commit();
             }
 
             using (var context = new DaOAuthContext(options))
             {
-                Assert.AreEqual(0, context.Clients.Count());
+                Assert.AreEqual(0, context.Scopes.Count());
 
-                var clientRepo = _repoFactory.GetClientRepository(context);
-                c = clientRepo.GetById(100);
+                var scopeRepo = _repoFactory.GetScopeRepository(context);
+                s = scopeRepo.GetById(100);
             }
 
-            Assert.IsNull(c);
+            Assert.IsNull(s);
         }
     }
 

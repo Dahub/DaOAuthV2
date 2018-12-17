@@ -169,6 +169,58 @@ namespace DaOAuthV2.Dal.EF.Test
         }
 
         [TestMethod]
+        public void Get_By_Id_Should_Return_Client_Type()
+        {
+            var options = new DbContextOptionsBuilder<DaOAuthContext>()
+                    .UseInMemoryDatabase(databaseName: _dbName)
+                    .Options;
+
+            using (var context = new DaOAuthContext(options))
+            {
+                var clientRepo = _repoFactory.GetClientRepository(context);
+                var c = clientRepo.GetById(100);
+
+                Assert.IsNotNull(c);
+                Assert.IsNotNull(c.ClientType);
+            }
+        }
+
+        [TestMethod]
+        public void Get_By_Id_Should_Return_Return_Urls()
+        {
+            var options = new DbContextOptionsBuilder<DaOAuthContext>()
+                    .UseInMemoryDatabase(databaseName: _dbName)
+                    .Options;
+
+            using (var context = new DaOAuthContext(options))
+            {
+                var clientRepo = _repoFactory.GetClientRepository(context);
+                var c = clientRepo.GetById(100);
+
+                Assert.IsNotNull(c);
+                Assert.IsNotNull(c.ClientReturnUrls);
+            }
+        }
+
+        [TestMethod]
+        public void Get_By_Id_Should_Return_Scopes()
+        {
+            var options = new DbContextOptionsBuilder<DaOAuthContext>()
+                    .UseInMemoryDatabase(databaseName: _dbName)
+                    .Options;
+
+            using (var context = new DaOAuthContext(options))
+            {
+                var clientRepo = _repoFactory.GetClientRepository(context);
+                var c = clientRepo.GetById(100);
+
+                Assert.IsNotNull(c);
+                Assert.IsNotNull(c.ClientsScopes);
+                Assert.IsNotNull(c.ClientsScopes.First().Scope);
+            }
+        }
+
+        [TestMethod]
         public void Get_All_By_Criterias_Should_Return_2_Clients_With_Scopes()
         {
             var options = new DbContextOptionsBuilder<DaOAuthContext>()

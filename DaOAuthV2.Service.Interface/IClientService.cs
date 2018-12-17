@@ -10,5 +10,6 @@ namespace DaOAuthV2.Service.Interface
         int CreateClient(CreateClientDto toCreate);
         int SearchCount(ClientSearchDto criterias);
         IEnumerable<ClientDto> Search(ClientSearchDto criterias);
+        ClientDto GetById(int id);
     }
 }

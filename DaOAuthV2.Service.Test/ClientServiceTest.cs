@@ -361,5 +361,19 @@ namespace DaOAuthV2.Service.Test
             Assert.AreEqual(valid, clients.Count());
             Assert.IsTrue(clients.Where(c => c.ClientType.Equals(ClientTypeName.Public)).Count() == 0);
         }
+
+        [TestMethod]
+        public void Get_By_Id_Should_Return_Client_For_Existing_Id()
+        {
+            var c = _service.GetById(1);
+            Assert.IsNotNull(c);
+        }
+
+        [TestMethod]
+        public void Get_By_Id_Should_Return_Null_For_Non_Existing_Id()
+        {
+            var c = _service.GetById(85674);
+            Assert.IsNull(c);
+        }
     }
 }
