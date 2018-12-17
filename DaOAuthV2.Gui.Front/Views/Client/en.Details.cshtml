@@ -1,0 +1,51 @@
+﻿@model DaOAuthV2.Service.DTO.ClientDto
+
+@{
+    Layout = "_en.layout";
+}
+
+
+<h1>Details for client <em>@Model.Name</em></h1>
+<hr />
+
+<div class="row justify-content-md-center">
+    <div class="col-8">
+        <h4>Informations</h4>
+        <strong>Name : </strong>@Model.Name<br />
+        <strong>Type : </strong>@Model.ClientType<br />
+        <strong>Creation date : </strong>@Model.CreationDate.ToShortDateString()<br />
+        <strong>Public Id : </strong>@Model.PublicId<br />
+        <strong>Description : </strong>@Model.Description
+        @if (Model.ReturnUrls != null && Model.ReturnUrls.Count > 0)
+        {
+            <hr />
+            <h4>Return Urls</h4>
+            <ul class="list-group">
+                @foreach (var s in Model.ReturnUrls)
+                {
+                    <li class="list-group-item">@s</li>
+                }
+            </ul>
+        }
+
+        @if (Model.Scopes != null && Model.Scopes.Count > 0)
+        {
+            <hr />
+            <h4>Scopes</h4>
+            <ul class="list-group">
+                @foreach (var s in Model.Scopes)
+                {
+                    <li class="list-group-item">@s</li>
+                }
+            </ul>
+        }
+
+    </div>
+</div>
+<br /><br />
+<div class="row">   
+    <div class="col-12">
+        <a href="@Url.Action("List", "Client")" class="btn btn-lg btn-secondary btn-block">Back</a>
+    </div>
+</div>
+

@@ -37,6 +37,14 @@ namespace DaOAuthV2.Gui.Api.Filters
                     context.HttpContext.Response.StatusCode = 401;
                 }
             }
+            else if(context.Exception is DaOAuthNotFoundException)
+            {
+                _loggerFactory.CreateLogger<DaOauthUnauthorizeException>().LogError(context.Exception, context.Exception.Message);
+                if (!context.HttpContext.Response.HasStarted)
+                {
+                    context.HttpContext.Response.StatusCode = 404;
+                }
+            }
             else
             {
                 _loggerFactory.CreateLogger<Exception>().LogError(context.Exception, context.Exception.Message);

@@ -81,5 +81,15 @@ namespace DaOAuthV2.Gui.Front.Controllers
 
             return RedirectToAction("List");
         }
+
+        [HttpGet]
+        public async Task<IActionResult> Details(int id)
+        {
+            HttpResponseMessage response = await GetToApi(string.Concat("clients/", id));
+
+            var client = JsonConvert.DeserializeObject<ClientDto>(await response.Content.ReadAsStringAsync());
+
+            return View(client);
+        }
     }
 }

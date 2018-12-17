@@ -42,7 +42,7 @@
                     @Html.DisplayFor(modelItem => item.IsActif)
                 </td>
                 <td>
-                    <a href="@Url.Action("Details", "Client", new { id = @item.ClientPublicId })"><i class="fas fa-2x fa-search"></i></a>
+                    <a href="@Url.Action("Details", "Client", new { id = @item.ClientId })"><i class="fas fa-2x fa-search"></i></a>
                     @if (item.IsCreator)
                     {
                         <a href="@Url.Action("Edit", "Client", new { id = @item.ClientPublicId })"><i class="fas fa-2x fa-edit"></i></a>

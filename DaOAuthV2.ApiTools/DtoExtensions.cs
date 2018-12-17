@@ -16,10 +16,10 @@ namespace DaOAuthV2.ApiTools
             };
             result.Links.This = currentUri;
 
-            string pattern = $"&skip={criterias.Skip}&limit={criterias.Limit}";
+            string pattern = $"skip={criterias.Skip}&limit={criterias.Limit}";
             if (count > criterias.Skip + criterias.Limit)
             {
-                string t = $"&skip={criterias.Skip + criterias.Limit}&limit={criterias.Limit}";
+                string t = $"skip={criterias.Skip + criterias.Limit}&limit={criterias.Limit}";
                 result.Links.Next = currentUri.Replace(pattern, t);
             }
 
@@ -29,7 +29,7 @@ namespace DaOAuthV2.ApiTools
                 if (val < 0)
                     val = 0;
 
-                string t = $"&skip={val}&limit={criterias.Limit}";
+                string t = $"skip={val}&limit={criterias.Limit}";
                 result.Links.Prev = currentUri.Replace(pattern, t);
             }
 

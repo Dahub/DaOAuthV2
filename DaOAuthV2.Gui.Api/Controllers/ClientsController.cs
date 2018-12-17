@@ -31,6 +31,13 @@ namespace DaOAuthV2.Gui.Api.Controllers
         }
 
         [HttpGet]
+        [Route("{id}")]
+        public IActionResult Get(int id)
+        {
+            return Ok(_service.GetById(id));
+        }
+
+        [HttpGet]
         [HttpHead]
         [Route("")]
         public IActionResult GetAll(string name, string publicId, string clientType, uint skip, uint limit)
