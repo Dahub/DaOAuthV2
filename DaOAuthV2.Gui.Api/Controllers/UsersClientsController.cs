@@ -57,5 +57,14 @@ namespace DaOAuthV2.Gui.Api.Controllers
             var currentUrl = UriHelper.GetDisplayUrl(Request);
             return Created($"{currentUrl}/{createdId}", null);
         }
+
+        [HttpPut]
+        [Route("")]
+        public IActionResult Put(UpdateUserClientDto toUpdate)
+        {
+            toUpdate.UserName = User.Identity.Name;
+            _service.UpdateUserClient(toUpdate);
+            return StatusCode(204);
+        }
     }
 }

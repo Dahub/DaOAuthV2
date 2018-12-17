@@ -61,6 +61,16 @@ namespace DaOAuthV2.Gui.Front.Tools
                 $"{_conf.GuiApiUrl}/{route}");
         }
 
+        protected async Task<HttpResponseMessage> PutToApi(string route, object data)
+        {
+            route = ApplyCultureToRoute(route);
+
+            AddAuthorizationCookieIfAuthentificated();
+
+            return await _client.PutAsJsonAsync(
+                $"{_conf.GuiApiUrl}/{route}", data);
+        }
+
         protected async Task<HttpResponseMessage> PostToApi(string route, object data)
         {
             route = ApplyCultureToRoute(route);

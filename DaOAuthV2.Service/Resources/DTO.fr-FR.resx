@@ -189,6 +189,12 @@
   <data name="LoginUserDtoUserNameRequired" xml:space="preserve">
     <value>Le nom d'utilisateur est obligatoire</value>
   </data>
+  <data name="UpdateUserClientDtoClientPublicIdRequired" xml:space="preserve">
+    <value>L'id du client est obligatoire</value>
+  </data>
+  <data name="UpdateUserClientDtoUserNameRequired" xml:space="preserve">
+    <value>Le nom d'utilisateur est obligatoire</value>
+  </data>
   <data name="UpdateUserDtoEmailAdressRequired" xml:space="preserve">
     <value>L'adresse email est obligatoire</value>
   </data>

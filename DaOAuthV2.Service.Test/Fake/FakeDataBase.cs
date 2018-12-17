@@ -220,6 +220,16 @@ namespace DaOAuthV2.Service.Test.Fake
                 RefreshToken = String.Empty,
                 UserId = 1,
                 UserPublicId = Guid.Parse("0e4db7ce-268a-48aa-ba4d-2c8f71e9a6d7")
+            },
+            new UserClient()
+            {
+                ClientId = 4,
+                Id = 6,
+                CreationDate = DateTime.Now,
+                IsActif = true,
+                RefreshToken = String.Empty,
+                UserId = 2,
+                UserPublicId = Guid.Parse("0a4db7ce-268a-48aa-ba4d-2c8f71e9a6d7")
             }
         };
 

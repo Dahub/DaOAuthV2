@@ -13,7 +13,10 @@ namespace DaOAuthV2.Dal.EF
         {
             return Context.UsersClients.Where(
                 uc => uc.Client.PublicId.Equals(clientPublicId, StringComparison.Ordinal)
-                && uc.User.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
+                && uc.User.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase)).
+                Include(uc => uc.Client).
+                Include(uc => uc.User).
+                FirstOrDefault();
         }
 
         public IEnumerable<UserClient> GetAllByCriterias(string userName, string name, bool? isValid, int? clientTypeId, uint skip, uint take)

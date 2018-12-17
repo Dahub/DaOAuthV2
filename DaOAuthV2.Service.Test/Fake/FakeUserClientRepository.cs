@@ -112,12 +112,26 @@ namespace DaOAuthV2.Service.Test.Fake
             if (us == null)
                 return null;
 
-            return FakeDataBase.Instance.UsersClient.Where(x => x.ClientId.Equals(cl.Id) && x.UserId.Equals(us.Id)).FirstOrDefault();
+            var toReturn = FakeDataBase.Instance.UsersClient.Where(x => x.ClientId.Equals(cl.Id) && x.UserId.Equals(us.Id)).FirstOrDefault();
+
+            if (toReturn == null)
+                return null;
+
+            toReturn.Client = cl;
+            toReturn.User = us;
+            
+            return toReturn;
         }
 
         public void Update(UserClient toUpdate)
         {
-            throw new NotImplementedException();
+            var uc = FakeDataBase.Instance.UsersClient.Where(u => u.Id.Equals(toUpdate.Id)).First();
+            uc.Id = toUpdate.Id;
+            uc.IsActif = toUpdate.IsActif;
+            uc.IsCreator = toUpdate.IsCreator;
+            uc.RefreshToken = toUpdate.RefreshToken;
+            uc.UserId = toUpdate.UserId;
+            uc.UserPublicId = toUpdate.UserPublicId;            
         }
     }
 }

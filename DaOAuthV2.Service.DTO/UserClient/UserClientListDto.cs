@@ -6,7 +6,7 @@ namespace DaOAuthV2.Service.DTO
     {
         public int Id { get; set; }
 
-        public int ClientId { get; set; }
+        public string ClientPublicId { get; set; }
 
         public string ClientName { get; set; }
 

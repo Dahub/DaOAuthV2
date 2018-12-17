@@ -22,33 +22,44 @@
                 Est actif
             </th>
             <th></th>
+            <th></th>
         </tr>
     </thead>
     <tbody>
         @foreach (var item in Model)
         {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.ClientName)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.ClientType)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.DefaultReturnUri)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.IsActif)
-                </td>
-                <td>
-                    <a href="@Url.Action("Details", "Client", new { id = @item.ClientId })"><i class="fas fa-2x fa-search"></i></a>
-                    @if (item.IsCreator)
-                    {
-                        <a href="@Url.Action("Edit", "Client", new { id = @item.ClientId })"><i class="fas fa-2x fa-edit"></i></a>
-                        <a href="@Url.Action("Delete", "Client", new { id = @item.ClientId })"><i class="fas fa-2x fa-trash-alt"></i></a>
-                    }
-                </td>
-            </tr>
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.ClientName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ClientType)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DefaultReturnUri)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.IsActif)
+            </td>
+            <td>
+                <a href="@Url.Action("Details", "Client", new { id = @item.ClientPublicId })"><i class="fas fa-2x fa-search"></i></a>
+                @if (item.IsCreator)
+                {
+                    <a href="@Url.Action("Edit", "Client", new { id = @item.ClientPublicId })"><i class="fas fa-2x fa-edit"></i></a>
+                    <a href="@Url.Action("Delete", "Client", new { id = @item.ClientPublicId })"><i class="fas fa-2x fa-trash-alt"></i></a>
+                }
+            </td>
+            <td>
+                @if (item.IsActif)
+                {
+                    <a href="@Url.Action("Revoke", "Client", new { ClientPublicId = item.ClientPublicId })" class="btn btn-lg btn-danger">Bloquer</a>
+                }
+                else
+                {
+                    <a href="@Url.Action("Accept", "Client", new { ClientPublicId = item.ClientPublicId })" class="btn btn-lg btn-success">Authoriser</a>
+                }
+            </td>
+        </tr>
         }
     </tbody>
 </table>

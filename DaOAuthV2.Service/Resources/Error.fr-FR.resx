@@ -165,6 +165,15 @@
   <data name="UnauthorizedScope" xml:space="preserve">
     <value>Scope non authorisés</value>
   </data>
+  <data name="UpdateUserClientClientNotValid" xml:space="preserve">
+    <value>Client invalide</value>
+  </data>
+  <data name="UpdateUserClientUserNotValid" xml:space="preserve">
+    <value>Utilisateur invalide</value>
+  </data>
+  <data name="UpdateUserClientUserOrClientNotFound" xml:space="preserve">
+    <value>Aucun lien entre cet utilisateur et ce client</value>
+  </data>
   <data name="UpdateUserNoUserFound" xml:space="preserve">
     <value>L'utilisateur n'existe pas ou est bloqué</value>
   </data>

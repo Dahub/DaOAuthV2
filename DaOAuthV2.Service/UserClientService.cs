@@ -11,7 +11,7 @@ using System.Linq;
 namespace DaOAuthV2.Service
 {
     public class UserClientService : ServiceBase, IUserClientService
-    {        
+    {
         public int SearchCount(UserClientSearchDto criterias)
         {
             Validate(criterias, ExtendValidationSearchCriterias);
@@ -71,7 +71,7 @@ namespace DaOAuthV2.Service
                     throw new DaOAuthServiceException(local["CreateUserClientInvalidClientPublicId"]);
 
                 var uc = userClientRepo.GetUserClientByUserNameAndClientPublicId(toCreate.ClientPublicId, toCreate.UserName);
-                if(uc != null)
+                if (uc != null)
                     throw new DaOAuthServiceException(local["CreateUserClientClientAlreadyRegister"]);
 
                 id = userClientRepo.Add(new UserClient()
@@ -88,6 +88,41 @@ namespace DaOAuthV2.Service
             }
 
             return id;
+        }
+
+        public void UpdateUserClient(UpdateUserClientDto toUpdate)
+        {
+            IList<ValidationResult> ExtendValidation(UpdateUserClientDto toValidate)
+            {
+                var resource = this.GetErrorStringLocalizer();
+                IList<ValidationResult> result = new List<ValidationResult>();
+
+                using (var context = RepositoriesFactory.CreateContext(ConnexionString))
+                {
+                    var ucRepo = RepositoriesFactory.GetUserClientRepository(context);
+                    var myUc = ucRepo.GetUserClientByUserNameAndClientPublicId(toValidate.ClientPublicId, toValidate.UserName);
+
+                    if (myUc == null)
+                        result.Add(new ValidationResult(resource["UpdateUserClientUserOrClientNotFound"]));
+                    if(myUc != null && (myUc.User == null || !myUc.User.IsValid))
+                        result.Add(new ValidationResult(resource["UpdateUserClientUserNotValid"]));
+                    if (myUc != null && (myUc.Client == null || !myUc.Client.IsValid))
+                        result.Add(new ValidationResult(resource["UpdateUserClientClientNotValid"]));  
+                }
+
+                return result;
+            }
+
+            this.Validate(toUpdate, ExtendValidation);
+
+            using (var context = RepositoriesFactory.CreateContext(ConnexionString))
+            {
+                var ucRepo = RepositoriesFactory.GetUserClientRepository(context);
+                var myUc = ucRepo.GetUserClientByUserNameAndClientPublicId(toUpdate.ClientPublicId, toUpdate.UserName);
+                myUc.IsActif = toUpdate.IsActif;
+                ucRepo.Update(myUc);
+                context.Commit();
+            }
         }
 
         private IList<ValidationResult> ExtendValidationSearchCriterias(UserClientSearchDto c)

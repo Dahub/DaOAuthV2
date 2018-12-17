@@ -91,6 +91,22 @@ namespace DaOAuthV2.Service.Test
         }
 
         [TestMethod]
+        public void Search_Should_Return_Clients_Public_Id()
+        {
+            var clients = _service.Search(
+                new DTO.UserClientSearchDto()
+                {
+                    UserName = _validUser.UserName,
+                    Name = "client_1",
+                    Skip = 0,
+                    Limit = 50
+                });
+            Assert.IsNotNull(clients);
+            Assert.AreEqual(1, clients.Count());
+            Assert.AreEqual("public_id_1", clients.First().ClientPublicId);
+        }
+
+        [TestMethod]
         [ExpectedException(typeof(DaOAuthServiceException))]
         public void Search_Without_User_Name_Should_Throw_DaOAuthServiceException()
         {
@@ -285,43 +301,116 @@ namespace DaOAuthV2.Service.Test
             Assert.IsTrue(uc.CreationDate > DateTime.Now.AddSeconds(-10));
         }
 
-        //[TestMethod]
-        //public void Get_By_Id_Should_Return_Client_For_Valid_Id()
-        //{
-        //    var c = _service.GetById(1, "Sammy");
-        //    Assert.IsNotNull(c);
-        //    Assert.AreEqual(1, c.ClientId);
-        //    Assert.IsTrue(c.IsActif);
-        //    Assert.AreEqual("public_id_1", c.PublicId);
-        //    Assert.IsTrue(c.CreationDate < DateTime.Now);
-        //    Assert.AreEqual("confidential client", c.Description);
-        //    Assert.IsNotNull(c.ReturnsUrls);
-        //    Assert.IsNotNull(c.Scopes);
-        //    Assert.AreEqual(ClientTypeName.Confidential, c.ClientType);
-        //    Assert.AreEqual(2, c.ReturnsUrls.Count());
-        //    Assert.IsTrue(c.ReturnsUrls.Contains("http://www.perdu.com"));
-        //    Assert.IsTrue(c.ReturnsUrls.Contains("http://www.google.fr"));
-        //}
+        [TestMethod]
+        [ExpectedException(typeof(DaOAuthServiceException))]
+        public void Update_User_Client_WithEmpty_User_Name_Should_Throw_DaOAuthServiceException()
+        {
+            _service.UpdateUserClient(new DTO.UpdateUserClientDto()
+            {
+                UserName = String.Empty,
+                ClientPublicId = "public_id_1",
+                IsActif = true
+            });
+        }
 
-        //[TestMethod]
-        //public void Get_By_Id_Should_Return_Null_For_Non_Existing_Client()
-        //{
-        //    var c = _service.GetById(85, "Sammy");
-        //    Assert.IsNull(c);
-        //}
+        [TestMethod]
+        [ExpectedException(typeof(DaOAuthServiceException))]
+        public void Update_User_Client_With_Empty_Client_Public_Id_Should_Throw_DaOAuthServiceException()
+        {
+            _service.UpdateUserClient(new DTO.UpdateUserClientDto()
+            {
+                UserName = "Sammy",
+                ClientPublicId = String.Empty,
+                IsActif = true
+            });
+        }
 
-        //[TestMethod]
-        //public void Get_By_Id_Should_Return_Null_For_Desactivate_Client()
-        //{
-        //    var c = _service.GetById(5, "Sammy");
-        //    Assert.IsNull(c);
-        //}
+        [TestMethod]
+        [ExpectedException(typeof(DaOAuthServiceException))]
+        public void Update_User_Client_With_Invalid_Client_Id_Should_Throw_DaOAuthServiceException()
+        {
+            _service.UpdateUserClient(new DTO.UpdateUserClientDto()
+            {
+                UserName = "Sammy",
+                ClientPublicId = "public_id_5",
+                IsActif = true
+            });
+        }
 
-        //[TestMethod]
-        //[ExpectedException(typeof(DaOauthUnauthorizeException))]
-        //public void Get_By_Id_Should_Throw_DaOAuthUnauthorizeExcpetion_When_Get_Another_User_Client()
-        //{
-        //    var c = _service.GetById(4, "Sammy");
-        //}
+        [TestMethod]
+        [ExpectedException(typeof(DaOAuthServiceException))]
+        public void Update_User_Client_With_Non_Exsting_User_Should_Throw_DaOAuthServiceException()
+        {
+            _service.UpdateUserClient(new DTO.UpdateUserClientDto()
+            {
+                UserName = "Johnny",
+                ClientPublicId = "public_id_4",
+                IsActif = true
+            });
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(DaOAuthServiceException))]
+        public void Update_User_Client_With_Nom_Existing_User_Client_Should_Trow_DaOAuthServiceException()
+        {
+            _service.UpdateUserClient(new DTO.UpdateUserClientDto()
+            {
+                UserName = "Sammy",
+                ClientPublicId = "public_id_4",
+                IsActif = true
+            });
+        }
+
+        [TestMethod]
+        public void Update_User_Client_With_Is_Actif_False_Should_Update()
+        {
+            _service.UpdateUserClient(new DTO.UpdateUserClientDto()
+            {
+                UserName = "Sammy",
+                ClientPublicId = "public_id_1",
+                IsActif = true
+            });
+
+            var myUc = _repo.GetUserClientByUserNameAndClientPublicId("public_id_1", "Sammy");
+            Assert.IsNotNull(myUc);
+            Assert.IsTrue(myUc.IsActif);
+
+            _service.UpdateUserClient(new DTO.UpdateUserClientDto()
+            {
+                UserName = "Sammy",
+                ClientPublicId = "public_id_1",
+                IsActif = false
+            });
+
+            myUc = _repo.GetUserClientByUserNameAndClientPublicId("public_id_1", "Sammy");
+            Assert.IsNotNull(myUc);
+            Assert.IsFalse(myUc.IsActif);
+        }
+
+        [TestMethod]
+        public void Update_User_Client_With_Is_Actif_True_Should_Update()
+        {
+            _service.UpdateUserClient(new DTO.UpdateUserClientDto()
+            {
+                UserName = "Sammy",
+                ClientPublicId = "public_id_1",
+                IsActif = false
+            });
+
+            var myUc = _repo.GetUserClientByUserNameAndClientPublicId("public_id_1", "Sammy");
+            Assert.IsNotNull(myUc);
+            Assert.IsFalse(myUc.IsActif);
+
+            _service.UpdateUserClient(new DTO.UpdateUserClientDto()
+            {
+                UserName = "Sammy",
+                ClientPublicId = "public_id_1",
+                IsActif = true
+            });
+
+            myUc = _repo.GetUserClientByUserNameAndClientPublicId("public_id_1", "Sammy");
+            Assert.IsNotNull(myUc);
+            Assert.IsTrue(myUc.IsActif);
+        }
     }
 }

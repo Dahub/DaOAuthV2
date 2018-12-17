@@ -8,5 +8,6 @@ namespace DaOAuthV2.Service.Interface
         int SearchCount(UserClientSearchDto criterias);
         IEnumerable<UserClientListDto> Search(UserClientSearchDto criterias);
         int CreateUserClient(CreateUserClientDto toCreate);
+        void UpdateUserClient(UpdateUserClientDto toUpdate);
     }
 }

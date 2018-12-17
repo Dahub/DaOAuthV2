@@ -1,9 +1,10 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using DaOAuthV2.ApiTools;
+using System.ComponentModel.DataAnnotations;
 using System.Runtime.Serialization;
 
 namespace DaOAuthV2.Service.DTO
 {
-    public class CreateUserClientDto
+    public class CreateUserClientDto : IDto
     {
         [Required(ErrorMessage ="CreateUserClientDtoClientPublicIdRequired")]
         public string ClientPublicId { get; set; }

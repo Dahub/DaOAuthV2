@@ -165,6 +165,15 @@
   <data name="UnauthorizedScope" xml:space="preserve">
     <value>Unauthorized scope</value>
   </data>
+  <data name="UpdateUserClientClientNotValid" xml:space="preserve">
+    <value>User not valid</value>
+  </data>
+  <data name="UpdateUserClientUserNotValid" xml:space="preserve">
+    <value>Client not valid</value>
+  </data>
+  <data name="UpdateUserClientUserOrClientNotFound" xml:space="preserve">
+    <value>There is no link between this client and this user</value>
+  </data>
   <data name="UpdateUserNoUserFound" xml:space="preserve">
     <value>User don't exist or ban</value>
   </data>

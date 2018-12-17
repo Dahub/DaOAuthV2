@@ -56,5 +56,30 @@ namespace DaOAuthV2.Gui.Front.Controllers
 
             return RedirectToAction("List");
         }
+
+        [HttpGet]
+        public async Task<IActionResult> Revoke(RevokeOrAcceptClientModel model)
+        {
+            HttpResponseMessage response = await PutToApi("usersClients", new UpdateUserClientDto()
+            {
+                ClientPublicId = model.ClientPublicId,
+                IsActif = false
+            });
+
+            return RedirectToAction("List");
+        }
+
+
+        [HttpGet]
+        public async Task<IActionResult> Accept(RevokeOrAcceptClientModel model)
+        {
+            HttpResponseMessage response = await PutToApi("usersClients", new UpdateUserClientDto()
+            {
+                ClientPublicId = model.ClientPublicId,
+                IsActif = true
+            });
+
+            return RedirectToAction("List");
+        }
     }
 }

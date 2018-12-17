@@ -170,6 +170,25 @@ namespace DaOAuthV2.Dal.EF.Test
         }
 
         [TestMethod]
+        public void Get_User_Client_Should_Return_User_Client_With_User_And_Client()
+        {
+            var options = new DbContextOptionsBuilder<DaOAuthContext>()
+                       .UseInMemoryDatabase(databaseName: _dbName)
+                       .Options;
+
+            using (var context = new DaOAuthContext(options))
+            {
+                var repo = _repoFactory.GetUserClientRepository(context);
+
+                var uc = repo.GetUserClientByUserNameAndClientPublicId("CT2_id", "testeur");
+
+                Assert.IsNotNull(uc);
+                Assert.IsNotNull(uc.User);
+                Assert.IsNotNull(uc.Client);
+            }
+        }
+
+        [TestMethod]
         public void Get_User_Client_By_Incorrects_UserName_And_Client_Public_Id_Should_Return_Null()
         {
             var options = new DbContextOptionsBuilder<DaOAuthContext>()

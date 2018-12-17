@@ -12,7 +12,7 @@ namespace DaOAuthV2.Service.ExtensionsMethods
             return new UserClientListDto()
             {
                 Id = value.Id,
-                ClientId = value.ClientId,
+                ClientPublicId = value.Client.PublicId,
                 ClientName = value.Client.Name,
                 ClientType = value.Client.ClientType.Wording,
                 DefaultReturnUri = value.Client.ClientReturnUrls.Select(u => u.ReturnUrl).FirstOrDefault(),
