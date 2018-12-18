@@ -124,7 +124,6 @@ namespace DaOAuthV2.Gui.Front.Controllers
            [FromQuery(Name = "redirect_uri")] Uri redirectUri,
            [FromQuery(Name = "scope")] string scope)
         {
-            // récupérer le client
             NameValueCollection nv = new NameValueCollection();
             nv.Add("skip", "0");
             nv.Add("limit", "50");
@@ -132,10 +131,10 @@ namespace DaOAuthV2.Gui.Front.Controllers
             var response = await GetToApi($"Clients", nv);
             var clients = JsonConvert.DeserializeObject<SearchResult<ClientDto>>(await response.Content.ReadAsStringAsync());
 
-            // vérifier qu'il est bien valide
+            // check client validity
             var myClient = clients.Datas.FirstOrDefault();
             if (myClient == null)
-                throw new Exception("TODO exception si client null");
+                throw new Exception("TODO exception si client null"); // TODO manage exceptions
 
             var clientRef = ClientAuthorizationStack.Add(new ClientRedirectInfo(responseType, redirectUri, scope, state, clientId));
 
@@ -176,7 +175,8 @@ namespace DaOAuthV2.Gui.Front.Controllers
             if (((int)response.StatusCode) < 300)
                 return Redirect(url);
 
-            throw new Exception("TODO mécanisme excpetion");
+            // TODO manage exceptions
+            throw new Exception("TODO mécanisme exception");
         }
 
         [Route("{culture}/Account/DenyClient/{clientRef}")]
@@ -200,7 +200,8 @@ namespace DaOAuthV2.Gui.Front.Controllers
             if (((int)response.StatusCode) < 300)
                 return Redirect(url);
 
-            throw new Exception("TODO mécanisme excpetion");
+            // TODO manage exceptions
+            throw new Exception("TODO mécanisme exception");
         }
 
         private void LogUser(UserDto u, bool rememberMe)

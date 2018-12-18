@@ -1,8 +1,9 @@
-﻿using DaOAuthV2.Service.DTO;
+﻿using DaOAuthV2.OAuth.Api.Models;
+using DaOAuthV2.Service.DTO;
 using DaOAuthV2.Service.Interface;
 using Microsoft.AspNetCore.Authorization;
+using System.Linq;
 using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
 
 namespace DaOAuthV2.OAuth.Api.Controllers
 {
@@ -10,16 +11,16 @@ namespace DaOAuthV2.OAuth.Api.Controllers
     [ApiController]
     public class OAuthController : ControllerBase
     {
-        private IAuthorizeService _authorizeService;
+        private IOAuthService _authorizeService;
 
-        public OAuthController([FromServices] IAuthorizeService authorizeService)
+        public OAuthController([FromServices] IOAuthService authorizeService)
         {
             _authorizeService = authorizeService;
         }
 
         [Authorize]
         [HttpGet]
-        [Route("/authorize")]
+        [Route("authorize")]
         public ActionResult Authorize([FromQuery(Name = "response_type")] string responseType,
            [FromQuery(Name = "client_id")] string clientId,
            [FromQuery(Name = "state")] string state,
@@ -36,6 +37,33 @@ namespace DaOAuthV2.OAuth.Api.Controllers
                 UserName = User.Identity.Name
             });
             return Redirect(uri.AbsoluteUri);
+        }
+
+        [HttpPost]
+        [Route("token")]
+        public JsonResult Token([FromForm] TokenModel model)
+        {
+            var result =_authorizeService.GenerateToken(new AskTokenDto()
+                {
+                    AuthorizationHeader = Request.Headers.ContainsKey("Authorization") ? Request.Headers["Authorization"].FirstOrDefault():string.Empty,
+                    ClientId = model.ClientId,
+                    Code = model.Code,
+                    GrantType = model.GrantType,
+                    Password = model.Password,
+                    RedirectUrl = model.RedirectUrl,
+                    RefreshToken = model.RefreshToken,
+                    Scope = model.Scope,
+                    Username = model.Username
+                });
+
+            return new JsonResult(new
+            {
+                access_token = result.AccessToken,
+                token_type = result.TokenType,
+                expires_in = result.ExpireIn,
+                refresh_token = result.RefreshToken,
+                scope = result.Scope
+            });
         }
     }
 }

@@ -11,7 +11,7 @@ using System.Globalization;
 
 namespace DaOAuthV2.Service
 {
-    public class AuthorizeService : ServiceBase, IAuthorizeService
+    public class OAuthService : ServiceBase, IOAuthService
     {
         private const int CodeLenght = 16;
 
@@ -137,6 +137,35 @@ namespace DaOAuthV2.Service
             }
 
             return toReturn;
+        }
+
+        public TokenInfoDto GenerateToken(AskTokenDto tokenInfo)
+        {
+            Validate(tokenInfo);
+
+            var errorLocal = GetErrorStringLocalizer();
+
+            TokenInfoDto result = null;
+
+            switch (tokenInfo.GrantType)
+            {
+                case OAuthConvention.GrantTypeAuthorizationCode:
+                    break;
+                case OAuthConvention.GrantTypeRefreshToken:
+                    break;
+                case OAuthConvention.GrantTypePassword:
+                    break;
+                case OAuthConvention.GrantTypeClientCredentials:
+                    break;
+                default:
+                    throw new DaOAuthTokenException()
+                    {
+                        Error = OAuthConvention.ErrorNameUnsupportedGrantType,
+                        Description = errorLocal["UnsupportedGrantType"]
+                    }; 
+            }
+
+            return result;
         }
 
         private static bool IsUriCorrect(string uri)

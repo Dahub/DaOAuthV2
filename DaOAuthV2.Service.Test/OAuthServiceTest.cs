@@ -6,14 +6,13 @@ using DaOAuthV2.Service.Test.Fake;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace DaOAuthV2.Service.Test
 {
     [TestClass]
-    public class AuthorizeServiceTest
+    public class OAuthServiceTest
     {
-        private IAuthorizeService _service;
+        private IOAuthService _service;
         private AskAuthorizeDto _dto;
         private AppConfiguration _conf;
         private User _validUser;
@@ -144,7 +143,7 @@ namespace DaOAuthV2.Service.Test
 
             _conf = conf;
 
-            _service = new AuthorizeService()
+            _service = new OAuthService()
             {
                 Configuration = conf,
                 ConnexionString = String.Empty,
@@ -529,6 +528,33 @@ namespace DaOAuthV2.Service.Test
             Assert.IsTrue(url.AbsoluteUri.Contains("state=test"));
             Assert.IsTrue(url.AbsoluteUri.Contains("token=abcdef"));
             Assert.IsTrue(url.AbsoluteUri.Contains("token_type=bearer"));
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(DaOAuthServiceException))]
+        public void Generate_Token_Should_Throw_DaOAuthServiceException_When_Grant_Type_Is_Empty()
+        {
+            _service.GenerateToken(new AskTokenDto()
+            {
+                GrantType = String.Empty
+            });
+        }
+
+        [TestMethod]
+        public void Generate_Token_Should_Throw_DaOAuthTokenException_With_Corret_Error_Message_When_Grant_Type_Is_Invalid()
+        {
+            try
+            {
+                _service.GenerateToken(new AskTokenDto()
+                {
+                    GrantType = "invalid"
+                });
+            }
+            catch(Exception ex)
+            {
+                Assert.IsInstanceOfType(ex, typeof(DaOAuthTokenException));
+                Assert.AreEqual(OAuthConvention.ErrorNameUnsupportedGrantType, ((DaOAuthTokenException)ex).Error);
+            }
         }
     }
 }

@@ -26,7 +26,7 @@ namespace DaOAuthV2.OAuth.Api.Filters
         public override void OnException(ExceptionContext context)
         {
             if (context.Exception is DaOAuthServiceException)
-            {               
+            {
                 _loggerFactory.CreateLogger<DaOAuthServiceException>().LogError(context.Exception, context.Exception.Message);
                 if (!context.HttpContext.Response.HasStarted)
                 {
@@ -51,6 +51,34 @@ namespace DaOAuthV2.OAuth.Api.Filters
                     context.HttpContext.Response.Redirect(url.AbsoluteUri);
                 }
             }
+            else if (context.Exception is DaOAuthTokenException)
+            {
+                _loggerFactory.CreateLogger<DaOAuthTokenException>().LogError(context.Exception, context.Exception.Message);
+                if (!context.HttpContext.Response.HasStarted)
+                {
+                    context.HttpContext.Response.StatusCode = 400;
+                    string json =  String.Empty;
+                    var ex = (DaOAuthTokenException)context.Exception;
+                    if(String.IsNullOrWhiteSpace(ex.State))
+                    {
+                        context.Result = new JsonResult(new
+                        {
+                            error = ex.Error,
+                            error_description = ex.Description
+                        });
+                    }
+                    else
+                    {
+                        context.Result = new JsonResult(new
+                        {
+                            error = ex.Error,
+                            error_description = ex.Description,
+                            state = ex.State
+                        });
+                    }
+                    return;
+                }
+            }
             else
             {
                 _loggerFactory.CreateLogger<Exception>().LogError(context.Exception, context.Exception.Message);
@@ -63,8 +91,8 @@ namespace DaOAuthV2.OAuth.Api.Filters
             context.Result = new JsonResult(new ErrorApiResultDto()
             {
                 Message = context.Exception.Message,
-                Details = _hostingEnvironment.IsDevelopment()?context.Exception.ToString():null
-            });                      
+                Details = _hostingEnvironment.IsDevelopment() ? context.Exception.ToString() : null
+            });
         }
     }
 }

@@ -370,10 +370,10 @@ namespace DaOAuthV2.Service.Test
         }
 
         [TestMethod]
-        public void Get_By_Id_Should_Return_Null_For_Non_Existing_Id()
+        [ExpectedException(typeof(DaOAuthNotFoundException))]
+        public void Get_By_Id_Should_Throw_DaOAuthNotFoundException_For_Non_Existing_Id()
         {
-            var c = _service.GetById(85674);
-            Assert.IsNull(c);
+            _service.GetById(85674);
         }
     }
 }

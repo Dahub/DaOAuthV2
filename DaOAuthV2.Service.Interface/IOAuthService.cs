@@ -3,8 +3,9 @@ using System;
 
 namespace DaOAuthV2.Service.Interface
 {
-    public interface IAuthorizeService
+    public interface IOAuthService
     {
         Uri GenererateUriForAuthorize(AskAuthorizeDto authorizeInfo);
+        TokenInfoDto GenerateToken(AskTokenDto tokenInfo);
     }
 }

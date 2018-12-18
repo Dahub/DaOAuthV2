@@ -165,6 +165,9 @@
   <data name="UnauthorizedScope" xml:space="preserve">
     <value>Unauthorized scope</value>
   </data>
+  <data name="UnsupportedGrantType" xml:space="preserve">
+    <value>Unsupported grant type</value>
+  </data>
   <data name="UpdateUserClientClientNotValid" xml:space="preserve">
     <value>User not valid</value>
   </data>

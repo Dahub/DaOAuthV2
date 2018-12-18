@@ -54,7 +54,7 @@ namespace DaOAuthV2.OAuth.Api
             var localizationServiceFactory = sp.GetService<IStringLocalizerFactory>();
             var loggerServiceFactory = sp.GetService<ILoggerFactory>();
 
-            services.AddTransient<IAuthorizeService>(u => new AuthorizeService()
+            services.AddTransient<IOAuthService>(u => new OAuthService()
             {
                 Configuration = conf,
                 RepositoriesFactory = new EfRepositoriesFactory(),
