@@ -46,7 +46,7 @@ namespace DaOAuthV2.OAuth.Api.Controllers
             var result =_authorizeService.GenerateToken(new AskTokenDto()
                 {
                     AuthorizationHeader = Request.Headers.ContainsKey("Authorization") ? Request.Headers["Authorization"].FirstOrDefault():string.Empty,
-                    ClientId = model.ClientId,
+                    ClientPublicId = model.ClientId,
                     Code = model.Code,
                     GrantType = model.GrantType,
                     Password = model.Password,

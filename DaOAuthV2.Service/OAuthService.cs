@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using System.Linq;
 using System.Globalization;
+using System.Text;
 
 namespace DaOAuthV2.Service
 {
@@ -147,6 +148,15 @@ namespace DaOAuthV2.Service
 
             TokenInfoDto result = null;
 
+            // check client credentials
+            if(!AreClientCredentialsValid(tokenInfo.AuthorizationHeader))
+                throw new DaOAuthTokenException()
+                {
+                    Error = OAuthConvention.ErrorNameUnauthorizedClient,
+                    Description = errorLocal["UnauthorizedClient"]
+                };
+
+
             switch (tokenInfo.GrantType)
             {
                 case OAuthConvention.GrantTypeAuthorizationCode:
@@ -162,7 +172,7 @@ namespace DaOAuthV2.Service
                     {
                         Error = OAuthConvention.ErrorNameUnsupportedGrantType,
                         Description = errorLocal["UnsupportedGrantType"]
-                    }; 
+                    };
             }
 
             return result;
@@ -272,7 +282,7 @@ namespace DaOAuthV2.Service
                 var codeRepo = RepositoriesFactory.GetCodeRepository(context);
 
                 var uc = userClientRepo.GetUserClientByUserNameAndClientPublicId(clientPublicId, userName);
-           
+
                 codeRepo.Add(new Domain.Code()
                 {
                     CodeValue = codeValue,
@@ -286,6 +296,39 @@ namespace DaOAuthV2.Service
             }
 
             return codeValue;
+        }
+
+        public bool AreClientCredentialsValid(string authentificationHeader)
+        {
+            if (String.IsNullOrWhiteSpace(authentificationHeader))
+                return false;
+
+            string[] authsInfos = authentificationHeader.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+
+            if (authsInfos.Length != 2)
+                return false;
+
+            if (!authsInfos[0].Equals("Basic", StringComparison.OrdinalIgnoreCase))
+                return false;
+
+            string credentials = Encoding.UTF8.GetString(Convert.FromBase64String(authsInfos[1]));
+            int separatorIndex = credentials.IndexOf(':');
+            if (separatorIndex >= 0)
+            {
+                string clientPublicId = credentials.Substring(0, separatorIndex);
+                string clientSecret = credentials.Substring(separatorIndex + 1);
+
+                using (var context = RepositoriesFactory.CreateContext(ConnexionString))
+                {
+                    var clientRepo = RepositoriesFactory.GetClientRepository(context);
+                    var client = clientRepo.GetByPublicId(clientPublicId);
+
+                    if (client != null)
+                        return clientSecret.Equals(client.ClientSecret, StringComparison.Ordinal) && client.IsValid;
+                }
+            }
+
+            return false;
         }
     }
 }

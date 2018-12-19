@@ -5,7 +5,9 @@ using DaOAuthV2.Service.Interface;
 using DaOAuthV2.Service.Test.Fake;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 namespace DaOAuthV2.Service.Test
 {
@@ -547,13 +549,34 @@ namespace DaOAuthV2.Service.Test
             {
                 _service.GenerateToken(new AskTokenDto()
                 {
-                    GrantType = "invalid"
+                    ClientPublicId = "cl-500",
+                    GrantType = "invalid",
+                    AuthorizationHeader = String.Concat("Basic ", Convert.ToBase64String(Encoding.UTF8.GetBytes("cl-500:secret500")))
                 });
             }
             catch(Exception ex)
             {
                 Assert.IsInstanceOfType(ex, typeof(DaOAuthTokenException));
                 Assert.AreEqual(OAuthConvention.ErrorNameUnsupportedGrantType, ((DaOAuthTokenException)ex).Error);
+            }
+        }
+
+        [TestMethod]
+        public void Generate_Token_Should_Throw_DaOAuthTokenException_With_Corret_Error_Message_When_Client_Credentials_Are_Invalid()
+        {
+            try
+            {
+                _service.GenerateToken(new AskTokenDto()
+                {
+                    ClientPublicId = "cl-500",
+                    GrantType = "invalid",
+                    AuthorizationHeader = String.Concat("Basic ", Convert.ToBase64String(Encoding.UTF8.GetBytes("cl-500:bad_secret500")))
+                });
+            }
+            catch (Exception ex)
+            {
+                Assert.IsInstanceOfType(ex, typeof(DaOAuthTokenException));
+                Assert.AreEqual(OAuthConvention.ErrorNameUnauthorizedClient, ((DaOAuthTokenException)ex).Error);
             }
         }
     }
