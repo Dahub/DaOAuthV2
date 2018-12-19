@@ -1,13 +1,14 @@
 ﻿using DaOAuthV2.Constants;
+using DaOAuthV2.Domain;
 using DaOAuthV2.Service.DTO;
 using DaOAuthV2.Service.Interface;
+using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
-using System.Linq;
 using System.Globalization;
+using System.Linq;
 using System.Text;
 
 namespace DaOAuthV2.Service
@@ -144,22 +145,14 @@ namespace DaOAuthV2.Service
         {
             Validate(tokenInfo);
 
-            var errorLocal = GetErrorStringLocalizer();
+            IStringLocalizer errorLocal = GetErrorStringLocalizer();
 
             TokenInfoDto result = null;
-
-            // check client credentials
-            if(!AreClientCredentialsValid(tokenInfo.AuthorizationHeader))
-                throw new DaOAuthTokenException()
-                {
-                    Error = OAuthConvention.ErrorNameUnauthorizedClient,
-                    Description = errorLocal["UnauthorizedClient"]
-                };
-
 
             switch (tokenInfo.GrantType)
             {
                 case OAuthConvention.GrantTypeAuthorizationCode:
+                    result = GenerateTokenForAuthorizationCodeGrant(tokenInfo, errorLocal);
                     break;
                 case OAuthConvention.GrantTypeRefreshToken:
                     break;
@@ -176,6 +169,71 @@ namespace DaOAuthV2.Service
             }
 
             return result;
+        }
+
+        private TokenInfoDto GenerateTokenForAuthorizationCodeGrant(AskTokenDto tokenInfo, IStringLocalizer errorLocal)
+        {
+            if (String.IsNullOrWhiteSpace(tokenInfo.ClientPublicId))
+                throw new DaOAuthTokenException()
+                {
+                    Error = OAuthConvention.ErrorNameInvalidRequest,
+                    Description = errorLocal["ClientIdParameterError"]
+                };
+
+            Client myClient = null;
+
+            using (var context = RepositoriesFactory.CreateContext(ConnexionString))
+            {
+                var clientRepo = RepositoriesFactory.GetClientRepository(context);
+                myClient = clientRepo.GetByPublicId(tokenInfo.ClientPublicId);
+            }
+
+            if (!AreClientCredentialsValid(myClient, tokenInfo.AuthorizationHeader))
+                throw new DaOAuthTokenException()
+                {
+                    Error = OAuthConvention.ErrorNameUnauthorizedClient,
+                    Description = errorLocal["UnauthorizedClient"]
+                };
+
+            if (String.IsNullOrWhiteSpace(tokenInfo.Code))
+                throw new DaOAuthTokenException()
+                {
+                    Error = OAuthConvention.ErrorNameInvalidRequest,
+                    Description = errorLocal["CodeParameterError"]
+                };
+
+            if (String.IsNullOrWhiteSpace(tokenInfo.RedirectUrl) || !Uri.TryCreate(tokenInfo.RedirectUrl, UriKind.Absolute, out Uri myUri))
+                throw new DaOAuthTokenException()
+                {
+                    Error = OAuthConvention.ErrorNameInvalidRequest,
+                    Description = errorLocal["ReturnUrlParameterError"]
+                };
+
+            if(!CheckIfClientValidForToken(myClient, tokenInfo.RedirectUrl, OAuthConvention.ResponseTypeCode))
+                throw new DaOAuthTokenException()
+                {
+                    Error = OAuthConvention.ErrorNameInvalidClient,
+                    Description = errorLocal["AskTokenInvalidClient"]
+                };
+
+            throw new NotImplementedException();
+        }
+
+        private static bool CheckIfClientValidForToken(Client client, string returnUrl, string responseType)
+        {
+            if (client == null || String.IsNullOrWhiteSpace(returnUrl) || String.IsNullOrWhiteSpace(responseType))
+                return false;
+
+            if (!client.ClientReturnUrls.Where(cru => cru.ReturnUrl.Equals(returnUrl, StringComparison.OrdinalIgnoreCase)).Any())
+                return false;
+
+            if (responseType.Equals(OAuthConvention.ResponseTypeCode, StringComparison.OrdinalIgnoreCase) && client.ClientTypeId.Equals((int)EClientType.CONFIDENTIAL))
+                return true;
+
+            if (responseType.Equals(OAuthConvention.ResponseTypeToken, StringComparison.OrdinalIgnoreCase) && client.ClientTypeId.Equals((int)EClientType.PUBLIC))
+                return true;
+
+            return false;
         }
 
         private static bool IsUriCorrect(string uri)
@@ -298,8 +356,11 @@ namespace DaOAuthV2.Service
             return codeValue;
         }
 
-        public bool AreClientCredentialsValid(string authentificationHeader)
+        public bool AreClientCredentialsValid(Client cl, string authentificationHeader)
         {
+            if (cl == null)
+                return false;
+
             if (String.IsNullOrWhiteSpace(authentificationHeader))
                 return false;
 
@@ -318,14 +379,7 @@ namespace DaOAuthV2.Service
                 string clientPublicId = credentials.Substring(0, separatorIndex);
                 string clientSecret = credentials.Substring(separatorIndex + 1);
 
-                using (var context = RepositoriesFactory.CreateContext(ConnexionString))
-                {
-                    var clientRepo = RepositoriesFactory.GetClientRepository(context);
-                    var client = clientRepo.GetByPublicId(clientPublicId);
-
-                    if (client != null)
-                        return clientSecret.Equals(client.ClientSecret, StringComparison.Ordinal) && client.IsValid;
-                }
+                return clientSecret.Equals(cl.ClientSecret, StringComparison.Ordinal) && cl.IsValid;
             }
 
             return false;

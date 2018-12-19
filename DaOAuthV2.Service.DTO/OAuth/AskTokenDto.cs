@@ -11,7 +11,8 @@ namespace DaOAuthV2.Service.DTO
         public string ClientPublicId { get; set; }
         public string RefreshToken { get; set; }
         public string Password { get; set; }
-        public string Username { get; set; }
+        public string ParameterUsername { get; set; }
+        public string LoggedUserName { get; set; }
         public string Scope { get; set; }
         public string AuthorizationHeader { get; set; }
     }

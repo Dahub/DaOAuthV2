@@ -4,6 +4,7 @@ using DaOAuthV2.Service.Interface;
 using Microsoft.AspNetCore.Authorization;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
+using System;
 
 namespace DaOAuthV2.OAuth.Api.Controllers
 {
@@ -43,18 +44,19 @@ namespace DaOAuthV2.OAuth.Api.Controllers
         [Route("token")]
         public JsonResult Token([FromForm] TokenModel model)
         {
-            var result =_authorizeService.GenerateToken(new AskTokenDto()
-                {
-                    AuthorizationHeader = Request.Headers.ContainsKey("Authorization") ? Request.Headers["Authorization"].FirstOrDefault():string.Empty,
-                    ClientPublicId = model.ClientId,
-                    Code = model.Code,
-                    GrantType = model.GrantType,
-                    Password = model.Password,
-                    RedirectUrl = model.RedirectUrl,
-                    RefreshToken = model.RefreshToken,
-                    Scope = model.Scope,
-                    Username = model.Username
-                });
+            var result = _authorizeService.GenerateToken(new AskTokenDto()
+            {
+                AuthorizationHeader = Request.Headers.ContainsKey("Authorization") ? Request.Headers["Authorization"].FirstOrDefault() : string.Empty,
+                ClientPublicId = model.ClientId,
+                Code = model.Code,
+                GrantType = model.GrantType,
+                Password = model.Password,
+                RedirectUrl = model.RedirectUrl,
+                RefreshToken = model.RefreshToken,
+                Scope = model.Scope,
+                ParameterUsername = model.Username,
+                LoggedUserName = User.Identity.IsAuthenticated?User.Identity.Name:String.Empty
+            });
 
             return new JsonResult(new
             {

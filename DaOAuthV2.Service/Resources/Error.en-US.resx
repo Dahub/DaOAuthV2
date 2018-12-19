@@ -120,6 +120,9 @@
   <data name="AccessDenied" xml:space="preserve">
     <value>User has denied access to the client</value>
   </data>
+  <data name="AskTokenInvalidClient" xml:space="preserve">
+    <value>Invalid client</value>
+  </data>
   <data name="AuthorizeClientIdParameterMandatory" xml:space="preserve">
     <value>client_id is mandatory</value>
   </data>
@@ -128,6 +131,12 @@
   </data>
   <data name="AuthorizeUnsupportedResponseType" xml:space="preserve">
     <value>response_type should be code or token</value>
+  </data>
+  <data name="ClientIdParameterError" xml:space="preserve">
+    <value>Client id parameter mandatory</value>
+  </data>
+  <data name="CodeParameterError" xml:space="preserve">
+    <value>Code parameter must be define</value>
   </data>
   <data name="CreateUserClientClientAlreadyRegister" xml:space="preserve">
     <value>Client already register</value>
@@ -152,6 +161,9 @@
   </data>
   <data name="ModelNull" xml:space="preserve">
     <value>Cannot validate a null object</value>
+  </data>
+  <data name="ReturnUrlParameterError" xml:space="preserve">
+    <value>Return url missing or invalid</value>
   </data>
   <data name="SearchClientAskTooMuch" xml:space="preserve">
     <value>You cannot ask for more than 50 results</value>

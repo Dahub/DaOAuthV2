@@ -8,6 +8,7 @@
         public const string ErrorNameInvalidScope = "invalid_scope";
         public const string ErrorNameAccessDenied = "access_denied";
         public const string ErrorNameUnsupportedGrantType = "unsupported_grant_type";
+        public const string ErrorNameInvalidClient = "invalid_client";
 
         public const string ResponseTypeCode = "code";
         public const string ResponseTypeToken = "token";

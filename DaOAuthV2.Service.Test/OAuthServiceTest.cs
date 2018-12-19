@@ -543,7 +543,7 @@ namespace DaOAuthV2.Service.Test
         }
 
         [TestMethod]
-        public void Generate_Token_Should_Throw_DaOAuthTokenException_With_Corret_Error_Message_When_Grant_Type_Is_Invalid()
+        public void Generate_Token_Should_Throw_DaOAuthTokenException_With_Correct_Error_Message_When_Grant_Type_Is_Invalid()
         {
             try
             {
@@ -562,14 +562,14 @@ namespace DaOAuthV2.Service.Test
         }
 
         [TestMethod]
-        public void Generate_Token_Should_Throw_DaOAuthTokenException_With_Corret_Error_Message_When_Client_Credentials_Are_Invalid()
+        public void Generate_Token_Should_Throw_DaOAuthTokenException_With_Correct_Error_Message_When_Client_Credentials_Are_Invalid()
         {
             try
             {
                 _service.GenerateToken(new AskTokenDto()
                 {
                     ClientPublicId = "cl-500",
-                    GrantType = "invalid",
+                    GrantType = OAuthConvention.GrantTypeAuthorizationCode,
                     AuthorizationHeader = String.Concat("Basic ", Convert.ToBase64String(Encoding.UTF8.GetBytes("cl-500:bad_secret500")))
                 });
             }
@@ -577,6 +577,131 @@ namespace DaOAuthV2.Service.Test
             {
                 Assert.IsInstanceOfType(ex, typeof(DaOAuthTokenException));
                 Assert.AreEqual(OAuthConvention.ErrorNameUnauthorizedClient, ((DaOAuthTokenException)ex).Error);
+            }
+        }
+
+        [TestMethod]
+        public void Generate_Token_Should_Throw_DaOAuthTokenException_With_Correct_Error_Message_When_Code_Empty_For_Authorization_Code_Grant()
+        {
+            try
+            {
+                _service.GenerateToken(new AskTokenDto()
+                {
+                    ClientPublicId = "cl-500",
+                    GrantType = OAuthConvention.GrantTypeAuthorizationCode,
+                    AuthorizationHeader = String.Concat("Basic ", Convert.ToBase64String(Encoding.UTF8.GetBytes("cl-500:secret500"))),
+                    Code = String.Empty
+                });
+            }
+            catch (Exception ex)
+            {
+                Assert.IsInstanceOfType(ex, typeof(DaOAuthTokenException));
+                Assert.AreEqual(OAuthConvention.ErrorNameInvalidRequest, ((DaOAuthTokenException)ex).Error);
+            }
+        }
+
+        [TestMethod]
+        public void Generate_Token_Should_Throw_DaOAuthTokenException_With_Correct_Error_Message_When_Return_Url_Empty_For_Authorization_Code_Grant()
+        {
+            try
+            {
+                _service.GenerateToken(new AskTokenDto()
+                {
+                    ClientPublicId = "cl-500",
+                    GrantType = "authorization_code",
+                    AuthorizationHeader = String.Concat("Basic ", Convert.ToBase64String(Encoding.UTF8.GetBytes("cl-500:secret500"))),
+                    Code = "abc",
+                    RedirectUrl = String.Empty
+                });
+            }
+            catch (Exception ex)
+            {
+                Assert.IsInstanceOfType(ex, typeof(DaOAuthTokenException));
+                Assert.AreEqual(OAuthConvention.ErrorNameInvalidRequest, ((DaOAuthTokenException)ex).Error);
+            }
+        }
+
+        [TestMethod]
+        public void Generate_Token_Should_Throw_DaOAuthTokenException_With_Correct_Error_Message_When_Client_Public_Id_Empty_For_Authorization_Code_Grant()
+        {
+            try
+            {
+                _service.GenerateToken(new AskTokenDto()
+                {
+                    ClientPublicId = String.Empty,
+                    GrantType = "authorization_code",
+                    AuthorizationHeader = String.Concat("Basic ", Convert.ToBase64String(Encoding.UTF8.GetBytes("cl-500:secret500"))),
+                    Code = "abc",
+                    RedirectUrl = "http://www.perdu.com"
+                });
+            }
+            catch (Exception ex)
+            {
+                Assert.IsInstanceOfType(ex, typeof(DaOAuthTokenException));
+                Assert.AreEqual(OAuthConvention.ErrorNameInvalidRequest, ((DaOAuthTokenException)ex).Error);
+            }
+        }
+
+        [TestMethod]
+        public void Generate_Token_Should_Throw_DaOAuthTokenException_With_Correct_Error_Message_When_Return_Url_Is_Invalid_For_Authorization_Code_Grant()
+        {
+            try
+            {
+                _service.GenerateToken(new AskTokenDto()
+                {
+                    ClientPublicId = "cl-500",
+                    GrantType = "authorization_code",
+                    AuthorizationHeader = String.Concat("Basic ", Convert.ToBase64String(Encoding.UTF8.GetBytes("cl-500:secret500"))),
+                    Code = "abc",
+                    RedirectUrl = "httpwwwperducom"
+                });
+            }
+            catch (Exception ex)
+            {
+                Assert.IsInstanceOfType(ex, typeof(DaOAuthTokenException));
+                Assert.AreEqual(OAuthConvention.ErrorNameInvalidRequest, ((DaOAuthTokenException)ex).Error);
+            }
+        }
+
+        [TestMethod]
+        public void Generate_Token_Should_Throw_DaOAuthTokenException_With_Correct_Error_Message_When_Client_Type_Is_Public_For_Authorization_Code_Grant()
+        {
+            try
+            {
+                _service.GenerateToken(new AskTokenDto()
+                {
+                    ClientPublicId = "cl-501",
+                    GrantType = "authorization_code",
+                    AuthorizationHeader = String.Concat("Basic ", Convert.ToBase64String(Encoding.UTF8.GetBytes("cl-501:secret501"))),
+                    Code = "abc",
+                    RedirectUrl = "http://www.perdu.com"
+                });
+            }
+            catch (Exception ex)
+            {
+                Assert.IsInstanceOfType(ex, typeof(DaOAuthTokenException));
+                Assert.AreEqual(OAuthConvention.ErrorNameInvalidClient, ((DaOAuthTokenException)ex).Error);
+            }
+        }
+
+        [TestMethod]
+        public void Generate_Token_Should_Throw_DaOAuthTokenException_With_Correct_Error_Message_When_Client_Return_Url_Unknow_For_Authorization_Code_Grant()
+        {
+            try
+            {
+                _service.GenerateToken(new AskTokenDto()
+                {
+                    ClientPublicId = "cl-500",
+                    GrantType = "authorization_code",
+                    AuthorizationHeader = String.Concat("Basic ", Convert.ToBase64String(Encoding.UTF8.GetBytes("cl-500:secret500"))),
+                    Code = "abc",
+                    RedirectUrl = "http://www.perdu2.com"
+                });
+            }
+            catch (Exception ex)
+            {
+                Assert.IsInstanceOfType(ex, typeof(DaOAuthTokenException));
+                Assert.AreEqual(OAuthConvention.ErrorNameInvalidClient, ((DaOAuthTokenException)ex).Error);
             }
         }
     }
