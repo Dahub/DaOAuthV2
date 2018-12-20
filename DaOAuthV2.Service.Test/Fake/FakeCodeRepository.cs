@@ -22,19 +22,36 @@ namespace DaOAuthV2.Service.Test.Fake
             throw new NotImplementedException();
         }
 
-        public IEnumerable<Code> GetAllByClientId(string clientPublicId)
+        public IEnumerable<Code> GetAllByClientIdAndUserName(string clientPublicId, string userName)
         {
-            throw new NotImplementedException();
+            var c = FakeDataBase.Instance.Clients.Where(cl => cl.PublicId.Equals(clientPublicId)).FirstOrDefault();
+            if (c == null)
+                return new List<Code>();
+
+            var u = FakeDataBase.Instance.Users.Where(cl => cl.UserName.Equals(userName)).FirstOrDefault();
+            if (u == null)
+                return new List<Code>();
+
+            var uc = FakeDataBase.Instance.UsersClient.Where(uscl => uscl.ClientId.Equals(c.Id) && uscl.UserId.Equals(u.Id));
+            if (uc == null)
+                return new List<Code>();
+
+            return FakeDataBase.Instance.Codes.Where(co => uc.Select(x => x.Id).Contains(co.UserClientId));
         }
 
         public Code GetById(int id)
         {
-            throw new NotImplementedException();
+            return FakeDataBase.Instance.Codes.Where(c => c.Id.Equals(id)).FirstOrDefault();
         }
 
         public void Update(Code toUpdate)
         {
-            throw new NotImplementedException();
+            var c = FakeDataBase.Instance.Codes.Where(u => u.Id.Equals(toUpdate.Id)).FirstOrDefault();
+            if (c != null)
+            {
+                FakeDataBase.Instance.Codes.Remove(c);
+                FakeDataBase.Instance.Codes.Add(toUpdate);
+            }
         }
     }
 }

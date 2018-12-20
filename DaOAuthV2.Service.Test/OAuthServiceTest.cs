@@ -23,10 +23,14 @@ namespace DaOAuthV2.Service.Test
         private User _invalidUser;
         private Client _invalidClient;
         private Scope _validClientScope;
+        private UserClient _validUserClientConfidential;
+        private Code _invalidCode;
+        private Code _expiredCode;
+        private Code _validCode;
 
         [TestInitialize]
         public void Init()
-        {      
+        {
             _validUser = new User()
             {
                 CreationDate = DateTime.Now,
@@ -94,6 +98,53 @@ namespace DaOAuthV2.Service.Test
             FakeDataBase.Instance.Clients.Add(_validClientConfidential);
             FakeDataBase.Instance.Clients.Add(_validClientPublic);
             FakeDataBase.Instance.Clients.Add(_invalidClient);
+
+            _validUserClientConfidential = new UserClient()
+            {
+                ClientId = _validClientConfidential.Id,
+                CreationDate = DateTime.Now,
+                IsActif = true,
+                Id = 500,
+                IsCreator = true,
+                UserId = _validUser.Id,
+                UserPublicId = Guid.NewGuid()
+            };
+
+            FakeDataBase.Instance.UsersClient.Add(_validUserClientConfidential);
+
+            _invalidCode = new Code()
+            {
+                Id = 200,
+                CodeValue = "invalid",
+                ExpirationTimeStamp = new DateTimeOffset(DateTime.Now.AddMinutes(10)).ToUnixTimeSeconds(),
+                IsValid = false,
+                Scope = "sc1 sc2",
+                UserClientId = _validUserClientConfidential.Id
+            };
+
+            _expiredCode = new Code()
+            {
+                Id = 201,
+                CodeValue = "expired",
+                ExpirationTimeStamp = new DateTimeOffset(DateTime.Now.AddMinutes(-10)).ToUnixTimeSeconds(),
+                IsValid = true,
+                Scope = "sc1 sc2",
+                UserClientId = _validUserClientConfidential.Id
+            };
+
+            _validCode = new Code()
+            {
+                Id = 202,
+                CodeValue = "valid",
+                ExpirationTimeStamp = new DateTimeOffset(DateTime.Now.AddMinutes(10)).ToUnixTimeSeconds(),
+                IsValid = true,
+                Scope = "sc1 sc2",
+                UserClientId = _validUserClientConfidential.Id
+            };
+
+            FakeDataBase.Instance.Codes.Add(_invalidCode);
+            FakeDataBase.Instance.Codes.Add(_expiredCode);
+            FakeDataBase.Instance.Codes.Add(_validCode);
 
             _validClientScope = new Scope()
             {
@@ -411,14 +462,7 @@ namespace DaOAuthV2.Service.Test
         [ExpectedException(typeof(DaOAuthRedirectException))]
         public void Genererate_Uri_For_Authorize_Should_Throw_DaOAuthRedirectException_When_User_Has_Deny_Client()
         {
-            FakeDataBase.Instance.UsersClient.Add(new UserClient()
-            {
-                ClientId = _validClientConfidential.Id,
-                CreationDate = DateTime.Now,
-                IsActif = false,
-                UserId = _validUser.Id,
-                UserPublicId = Guid.NewGuid()
-            });
+            _validUserClientConfidential.IsActif = false;
 
             _service.GenererateUriForAuthorize(new AskAuthorizeDto()
             {
@@ -455,7 +499,7 @@ namespace DaOAuthV2.Service.Test
                     Scope = _validClientScope.Wording
                 });
             }
-            catch(DaOAuthRedirectException ex)
+            catch (DaOAuthRedirectException ex)
             {
                 Assert.IsTrue(ex.RedirectUri.AbsoluteUri.StartsWith("http://www.perdu.com"));
                 Assert.IsTrue(ex.RedirectUri.AbsoluteUri.Contains("error=access_denied"));
@@ -467,25 +511,15 @@ namespace DaOAuthV2.Service.Test
         [TestMethod]
         public void Genererate_Uri_For_Authorize_Should_Contains_Correct_Redirect_Url_When_User_Ask_Code()
         {
-            UserClient ucToAdd = new UserClient()
-            {
-                ClientId = _validClientConfidential.Id,
-                CreationDate = DateTime.Now,
-                IsActif = true,
-                UserId = _validUser.Id,
-                UserPublicId = Guid.NewGuid()
-            };
-            new FakeUserClientRepository().Add(ucToAdd);
-          
             var url = _service.GenererateUriForAuthorize(new AskAuthorizeDto()
-                {
-                    ClientPublicId = _validClientConfidential.PublicId,
-                    RedirectUri = "http://www.perdu.com",
-                    ResponseType = "code",
-                    State = "test",
-                    UserName = _validUser.UserName,
-                    Scope = _validClientScope.Wording
-                });
+            {
+                ClientPublicId = _validClientConfidential.PublicId,
+                RedirectUri = "http://www.perdu.com",
+                ResponseType = "code",
+                State = "test",
+                UserName = _validUser.UserName,
+                Scope = _validClientScope.Wording
+            });
 
 
             Assert.IsNotNull(url);
@@ -495,10 +529,9 @@ namespace DaOAuthV2.Service.Test
             Assert.IsTrue(url.AbsoluteUri.Contains("code=abc"));
 
             var code = FakeDataBase.Instance.Codes.Where(c => c.IsValid.Equals(true)
-                && c.UserClientId.Equals(ucToAdd.Id)).FirstOrDefault();
+                && c.UserClientId.Equals(_validUserClientConfidential.Id) && c.CodeValue.Equals("abc")).FirstOrDefault();
 
             Assert.IsNotNull(code);
-            Assert.AreEqual("abc", code.CodeValue);
         }
 
         [TestMethod]
@@ -554,7 +587,7 @@ namespace DaOAuthV2.Service.Test
                     AuthorizationHeader = String.Concat("Basic ", Convert.ToBase64String(Encoding.UTF8.GetBytes("cl-500:secret500")))
                 });
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Assert.IsInstanceOfType(ex, typeof(DaOAuthTokenException));
                 Assert.AreEqual(OAuthConvention.ErrorNameUnsupportedGrantType, ((DaOAuthTokenException)ex).Error);
@@ -570,6 +603,7 @@ namespace DaOAuthV2.Service.Test
                 {
                     ClientPublicId = "cl-500",
                     GrantType = OAuthConvention.GrantTypeAuthorizationCode,
+                    LoggedUserName = _validUser.UserName,
                     AuthorizationHeader = String.Concat("Basic ", Convert.ToBase64String(Encoding.UTF8.GetBytes("cl-500:bad_secret500")))
                 });
             }
@@ -590,7 +624,8 @@ namespace DaOAuthV2.Service.Test
                     ClientPublicId = "cl-500",
                     GrantType = OAuthConvention.GrantTypeAuthorizationCode,
                     AuthorizationHeader = String.Concat("Basic ", Convert.ToBase64String(Encoding.UTF8.GetBytes("cl-500:secret500"))),
-                    Code = String.Empty
+                    CodeValue = String.Empty,
+                    LoggedUserName = _validUser.UserName,
                 });
             }
             catch (Exception ex)
@@ -610,8 +645,9 @@ namespace DaOAuthV2.Service.Test
                     ClientPublicId = "cl-500",
                     GrantType = "authorization_code",
                     AuthorizationHeader = String.Concat("Basic ", Convert.ToBase64String(Encoding.UTF8.GetBytes("cl-500:secret500"))),
-                    Code = "abc",
-                    RedirectUrl = String.Empty
+                    CodeValue = "abc",
+                    RedirectUrl = String.Empty,
+                    LoggedUserName = _validUser.UserName,
                 });
             }
             catch (Exception ex)
@@ -631,7 +667,7 @@ namespace DaOAuthV2.Service.Test
                     ClientPublicId = String.Empty,
                     GrantType = "authorization_code",
                     AuthorizationHeader = String.Concat("Basic ", Convert.ToBase64String(Encoding.UTF8.GetBytes("cl-500:secret500"))),
-                    Code = "abc",
+                    CodeValue = "abc",
                     RedirectUrl = "http://www.perdu.com"
                 });
             }
@@ -652,8 +688,9 @@ namespace DaOAuthV2.Service.Test
                     ClientPublicId = "cl-500",
                     GrantType = "authorization_code",
                     AuthorizationHeader = String.Concat("Basic ", Convert.ToBase64String(Encoding.UTF8.GetBytes("cl-500:secret500"))),
-                    Code = "abc",
-                    RedirectUrl = "httpwwwperducom"
+                    CodeValue = "abc",
+                    RedirectUrl = "httpwwwperducom",
+                    LoggedUserName = _validUser.UserName,
                 });
             }
             catch (Exception ex)
@@ -673,8 +710,9 @@ namespace DaOAuthV2.Service.Test
                     ClientPublicId = "cl-501",
                     GrantType = "authorization_code",
                     AuthorizationHeader = String.Concat("Basic ", Convert.ToBase64String(Encoding.UTF8.GetBytes("cl-501:secret501"))),
-                    Code = "abc",
-                    RedirectUrl = "http://www.perdu.com"
+                    CodeValue = "abc",
+                    RedirectUrl = "http://www.perdu.com",
+                    LoggedUserName = _validUser.UserName,
                 });
             }
             catch (Exception ex)
@@ -693,8 +731,9 @@ namespace DaOAuthV2.Service.Test
                 {
                     ClientPublicId = "cl-500",
                     GrantType = "authorization_code",
+                    LoggedUserName = _validUser.UserName,
                     AuthorizationHeader = String.Concat("Basic ", Convert.ToBase64String(Encoding.UTF8.GetBytes("cl-500:secret500"))),
-                    Code = "abc",
+                    CodeValue = "abc",
                     RedirectUrl = "http://www.perdu2.com"
                 });
             }
@@ -703,6 +742,124 @@ namespace DaOAuthV2.Service.Test
                 Assert.IsInstanceOfType(ex, typeof(DaOAuthTokenException));
                 Assert.AreEqual(OAuthConvention.ErrorNameInvalidClient, ((DaOAuthTokenException)ex).Error);
             }
+        }
+
+        [TestMethod]
+        public void Generate_Token_Should_Throw_DaOAuthTokenException_With_Correct_Error_Message_When_Code_Incorrect_For_Authorization_Code_Grant()
+        {
+            try
+            {
+                _service.GenerateToken(new AskTokenDto()
+                {
+                    ClientPublicId = _validClientConfidential.PublicId,
+                    GrantType = "authorization_code",
+                    AuthorizationHeader = String.Concat("Basic ",
+                        Convert.ToBase64String(
+                            Encoding.UTF8.GetBytes($"{_validClientConfidential.PublicId}:{_validClientConfidential.ClientSecret}"))),
+                    CodeValue = "non existing",
+                    RedirectUrl = "http://www.perdu.com",
+                    LoggedUserName = _validUser.UserName,
+                });
+            }
+            catch (Exception ex)
+            {
+                Assert.IsInstanceOfType(ex, typeof(DaOAuthTokenException));
+                Assert.AreEqual(OAuthConvention.ErrorNameInvalidGrant, ((DaOAuthTokenException)ex).Error);
+            }
+        }
+
+        [TestMethod]
+        public void Generate_Token_Should_Throw_DaOAuthTokenException_With_Correct_Error_Message_When_Code_Invalid_For_Authorization_Code_Grant()
+        {
+            try
+            {
+                _service.GenerateToken(new AskTokenDto()
+                {
+                    ClientPublicId = _validClientConfidential.PublicId,
+                    GrantType = "authorization_code",
+                    AuthorizationHeader = String.Concat("Basic ",
+                        Convert.ToBase64String(
+                            Encoding.UTF8.GetBytes($"{_validClientConfidential.PublicId}:{_validClientConfidential.ClientSecret}"))),
+                    CodeValue = _invalidCode.CodeValue,
+                    RedirectUrl = "http://www.perdu.com",
+                    LoggedUserName = _validUser.UserName,
+                });
+            }
+            catch (Exception ex)
+            {
+                Assert.IsInstanceOfType(ex, typeof(DaOAuthTokenException));
+                Assert.AreEqual(OAuthConvention.ErrorNameInvalidGrant, ((DaOAuthTokenException)ex).Error);
+            }
+        }
+
+        [TestMethod]
+        public void Generate_Token_Should_Throw_DaOAuthTokenException_With_Correct_Error_Message_When_Code_Expired_For_Authorization_Code_Grant()
+        {
+            try
+            {
+                _service.GenerateToken(new AskTokenDto()
+                {
+                    ClientPublicId = _validClientConfidential.PublicId,
+                    GrantType = "authorization_code",
+                    AuthorizationHeader = String.Concat("Basic ",
+                        Convert.ToBase64String(
+                            Encoding.UTF8.GetBytes($"{_validClientConfidential.PublicId}:{_validClientConfidential.ClientSecret}"))),
+                    CodeValue = _expiredCode.CodeValue,
+                    RedirectUrl = "http://www.perdu.com",
+                    LoggedUserName = _validUser.UserName,
+                });
+            }
+            catch (Exception ex)
+            {
+                Assert.IsInstanceOfType(ex, typeof(DaOAuthTokenException));
+                Assert.AreEqual(OAuthConvention.ErrorNameInvalidGrant, ((DaOAuthTokenException)ex).Error);
+            }
+        }
+
+        [TestMethod]
+        public void Generate_Token_Should_Throw_DaOAuthTokenException_With_Correct_Error_Message_When_Scope_Are_Invalid_For_Authorization_Code_Grant()
+        {
+            try
+            {
+                _service.GenerateToken(new AskTokenDto()
+                {
+                    ClientPublicId = _validClientConfidential.PublicId,
+                    GrantType = "authorization_code",
+                    AuthorizationHeader = String.Concat("Basic ",
+                        Convert.ToBase64String(
+                            Encoding.UTF8.GetBytes($"{_validClientConfidential.PublicId}:{_validClientConfidential.ClientSecret}"))),
+                    CodeValue = _validCode.CodeValue,
+                    Scope = "sc3 sc1 sc2",
+                    RedirectUrl = "http://www.perdu.com",
+                    LoggedUserName = _validUser.UserName,
+                });
+            }
+            catch (Exception ex)
+            {
+                Assert.IsInstanceOfType(ex, typeof(DaOAuthTokenException));
+                Assert.AreEqual(OAuthConvention.ErrorNameInvalidGrant, ((DaOAuthTokenException)ex).Error);
+            }
+        }
+
+        [TestMethod]
+        public void Generate_Token_Should_Invalidate_Valid_Code_For_Authorization_Code_Grant()
+        {
+            _service.GenerateToken(new AskTokenDto()
+            {
+                ClientPublicId = _validClientConfidential.PublicId,
+                GrantType = "authorization_code",
+                AuthorizationHeader = String.Concat("Basic ",
+                    Convert.ToBase64String(
+                        Encoding.UTF8.GetBytes($"{_validClientConfidential.PublicId}:{_validClientConfidential.ClientSecret}"))),
+                CodeValue = _validCode.CodeValue,
+                RedirectUrl = "http://www.perdu.com",
+                LoggedUserName = _validUser.UserName,
+                Scope = _validCode.Scope
+            });
+
+            var codeRepo = new FakeCodeRepository();
+            var c = codeRepo.GetById(_validCode.Id);
+            Assert.IsFalse(c.IsValid);
         }
     }
 }

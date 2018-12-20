@@ -1,4 +1,5 @@
 ﻿using DaOAuthV2.Constants;
+using DaOAuthV2.Dal.Interface;
 using DaOAuthV2.Domain;
 using DaOAuthV2.Service.DTO;
 using DaOAuthV2.Service.Interface;
@@ -173,6 +174,8 @@ namespace DaOAuthV2.Service
 
         private TokenInfoDto GenerateTokenForAuthorizationCodeGrant(AskTokenDto tokenInfo, IStringLocalizer errorLocal)
         {
+            TokenInfoDto toReturn = null;
+
             if (String.IsNullOrWhiteSpace(tokenInfo.ClientPublicId))
                 throw new DaOAuthTokenException()
                 {
@@ -180,43 +183,85 @@ namespace DaOAuthV2.Service
                     Description = errorLocal["ClientIdParameterError"]
                 };
 
-            Client myClient = null;
+            if (String.IsNullOrWhiteSpace(tokenInfo.LoggedUserName))
+                throw new DaOauthUnauthorizeException();
 
             using (var context = RepositoriesFactory.CreateContext(ConnexionString))
             {
                 var clientRepo = RepositoriesFactory.GetClientRepository(context);
-                myClient = clientRepo.GetByPublicId(tokenInfo.ClientPublicId);
+                Client myClient = clientRepo.GetByPublicId(tokenInfo.ClientPublicId);
+
+                if (!AreClientCredentialsValid(myClient, tokenInfo.AuthorizationHeader))
+                    throw new DaOAuthTokenException()
+                    {
+                        Error = OAuthConvention.ErrorNameUnauthorizedClient,
+                        Description = errorLocal["UnauthorizedClient"]
+                    };
+
+                if (String.IsNullOrWhiteSpace(tokenInfo.CodeValue))
+                    throw new DaOAuthTokenException()
+                    {
+                        Error = OAuthConvention.ErrorNameInvalidRequest,
+                        Description = errorLocal["CodeParameterError"]
+                    };
+
+                if (String.IsNullOrWhiteSpace(tokenInfo.RedirectUrl) || !Uri.TryCreate(tokenInfo.RedirectUrl, UriKind.Absolute, out Uri myUri))
+                    throw new DaOAuthTokenException()
+                    {
+                        Error = OAuthConvention.ErrorNameInvalidRequest,
+                        Description = errorLocal["ReturnUrlParameterError"]
+                    };
+
+                if (!CheckIfClientValidForToken(myClient, tokenInfo.RedirectUrl, OAuthConvention.ResponseTypeCode))
+                    throw new DaOAuthTokenException()
+                    {
+                        Error = OAuthConvention.ErrorNameInvalidClient,
+                        Description = errorLocal["AskTokenInvalidClient"]
+                    };
+
+                if (!CheckIfCodeIsValid(tokenInfo.ClientPublicId, tokenInfo.LoggedUserName, tokenInfo.Scope, tokenInfo.CodeValue, context))
+                    throw new DaOAuthTokenException()
+                    {
+                        Error = OAuthConvention.ErrorNameInvalidGrant,
+                        Description = errorLocal["AskTokenInvalidGrant"]
+                    };
+
+                JwtTokenDto newRefreshToken = JwtService.GenerateToken(new CreateTokenDto()
+                {
+                    ClientPublicId = tokenInfo.ClientPublicId,
+                    Scope = tokenInfo.Scope,
+                    SecondsLifeTime = Configuration.RefreshTokenLifeTimeInSeconds,
+                    TokenName = OAuthConvention.RefreshToken,
+                    UserName = tokenInfo.LoggedUserName
+                });
+
+                JwtTokenDto accesToken = JwtService.GenerateToken(new CreateTokenDto()
+                {
+                    ClientPublicId = tokenInfo.ClientPublicId,
+                    Scope = tokenInfo.Scope,
+                    SecondsLifeTime = Configuration.AccesTokenLifeTimeInSeconds,
+                    TokenName = OAuthConvention.AccessToken,
+                    UserName = tokenInfo.LoggedUserName
+                });
+
+                var userClientRepo = RepositoriesFactory.GetUserClientRepository(context);
+                var myUc = userClientRepo.GetUserClientByUserNameAndClientPublicId(tokenInfo.ClientPublicId, tokenInfo.LoggedUserName);
+                myUc.RefreshToken = newRefreshToken.Token;
+                userClientRepo.Update(myUc);
+
+                toReturn = new TokenInfoDto()
+                {
+                    AccessToken = accesToken.Token,
+                    ExpireIn = accesToken.Expire,
+                    RefreshToken = newRefreshToken.Token,
+                    Scope = tokenInfo.Scope,
+                    TokenType = OAuthConvention.AccessToken
+                };
+
+                context.Commit();
             }
 
-            if (!AreClientCredentialsValid(myClient, tokenInfo.AuthorizationHeader))
-                throw new DaOAuthTokenException()
-                {
-                    Error = OAuthConvention.ErrorNameUnauthorizedClient,
-                    Description = errorLocal["UnauthorizedClient"]
-                };
-
-            if (String.IsNullOrWhiteSpace(tokenInfo.Code))
-                throw new DaOAuthTokenException()
-                {
-                    Error = OAuthConvention.ErrorNameInvalidRequest,
-                    Description = errorLocal["CodeParameterError"]
-                };
-
-            if (String.IsNullOrWhiteSpace(tokenInfo.RedirectUrl) || !Uri.TryCreate(tokenInfo.RedirectUrl, UriKind.Absolute, out Uri myUri))
-                throw new DaOAuthTokenException()
-                {
-                    Error = OAuthConvention.ErrorNameInvalidRequest,
-                    Description = errorLocal["ReturnUrlParameterError"]
-                };
-
-            if(!CheckIfClientValidForToken(myClient, tokenInfo.RedirectUrl, OAuthConvention.ResponseTypeCode))
-                throw new DaOAuthTokenException()
-                {
-                    Error = OAuthConvention.ErrorNameInvalidClient,
-                    Description = errorLocal["AskTokenInvalidClient"]
-                };
-
-            throw new NotImplementedException();
+            return toReturn;
         }
 
         private static bool CheckIfClientValidForToken(Client client, string returnUrl, string responseType)
@@ -328,6 +373,52 @@ namespace DaOAuthV2.Service
                 var uc = clientUserRepo.GetUserClientByUserNameAndClientPublicId(clientPublicId, userName);
                 return uc != null && uc.IsActif;
             }
+        }
+
+        private bool CheckIfCodeIsValid(string clientPublicId, string userName, string scope, string codeValue, IContext context)
+        {
+            bool IsValid(Code code)
+            {
+                if (code == null)
+                    return false;
+                if (!code.IsValid)
+                    return false;
+                if (code.ExpirationTimeStamp < new DateTimeOffset(DateTime.Now).ToUnixTimeSeconds())
+                    return false;
+
+                if (!String.IsNullOrWhiteSpace(code.Scope) && !String.IsNullOrWhiteSpace(scope))
+                {
+                    IList<string> scopes = scope.Split(' ', StringSplitOptions.RemoveEmptyEntries).Select(c => c.ToUpper()).ToList();
+                    IList<string> codeScopes = code.Scope.Split(' ', StringSplitOptions.RemoveEmptyEntries).Select(c => c.ToUpper()).ToList();
+                    foreach (var s in scopes)
+                    {
+                        if (!codeScopes.Contains(s))
+                            return false;
+                    }
+                }
+
+                return true;
+            }
+
+            bool toReturn = true;
+
+            Code myCode = null;
+
+            var codeRepo = RepositoriesFactory.GetCodeRepository(context);
+            var codes = codeRepo.GetAllByClientIdAndUserName(clientPublicId, userName);
+
+            if (codes != null && codes.Count() > 0)
+                myCode = codes.Where(c => c.CodeValue.Equals(codeValue, StringComparison.Ordinal)).FirstOrDefault();
+
+            if (!IsValid(myCode))
+                toReturn = false;
+            else
+            {
+                myCode.IsValid = false;
+                codeRepo.Update(myCode);
+            }
+
+            return toReturn;
         }
 
         private string GenerateAndSaveCode(string clientPublicId, string userName, string scope)

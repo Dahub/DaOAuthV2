@@ -8,7 +8,7 @@ using System;
 
 namespace DaOAuthV2.OAuth.Api.Controllers
 {
-    [Route("[controller]")]
+    [Route("")]
     [ApiController]
     public class OAuthController : ControllerBase
     {
@@ -48,7 +48,7 @@ namespace DaOAuthV2.OAuth.Api.Controllers
             {
                 AuthorizationHeader = Request.Headers.ContainsKey("Authorization") ? Request.Headers["Authorization"].FirstOrDefault() : string.Empty,
                 ClientPublicId = model.ClientId,
-                Code = model.Code,
+                CodeValue = model.Code,
                 GrantType = model.GrantType,
                 Password = model.Password,
                 RedirectUrl = model.RedirectUrl,

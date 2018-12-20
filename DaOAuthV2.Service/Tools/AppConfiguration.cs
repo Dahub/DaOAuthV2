@@ -16,5 +16,6 @@ namespace DaOAuthV2.Service
         public Uri AuthorizeClientPageUrl { get; set; }
         public int CodeDurationInSeconds { get; set; }
         public int AccesTokenLifeTimeInSeconds { get; set; }
+        public int RefreshTokenLifeTimeInSeconds { get; set; }
     }
 }

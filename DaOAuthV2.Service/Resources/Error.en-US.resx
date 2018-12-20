@@ -123,6 +123,9 @@
   <data name="AskTokenInvalidClient" xml:space="preserve">
     <value>Invalid client</value>
   </data>
+  <data name="AskTokenInvalidGrant" xml:space="preserve">
+    <value>Invalid code</value>
+  </data>
   <data name="AuthorizeClientIdParameterMandatory" xml:space="preserve">
     <value>client_id is mandatory</value>
   </data>

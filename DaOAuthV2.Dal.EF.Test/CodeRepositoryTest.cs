@@ -93,7 +93,7 @@ namespace DaOAuthV2.Dal.EF.Test
         }
 
         [TestMethod]
-        public void Get_All_By_Client_Id_Should_Return_2_Codes()
+        public void Get_All_By_Client_Id_And_User_Name_Should_Return_2_Codes()
         {
             var options = new DbContextOptionsBuilder<DaOAuthContext>()
                      .UseInMemoryDatabase(databaseName: _dbName)
@@ -104,7 +104,7 @@ namespace DaOAuthV2.Dal.EF.Test
             using (var context = new DaOAuthContext(options))
             {
                 var codeRepo = _repoFactory.GetCodeRepository(context);
-                c = codeRepo.GetAllByClientId("CT1_id");
+                c = codeRepo.GetAllByClientIdAndUserName("CT1_id", "testeur");
 
                 Assert.IsNotNull(c);
                 Assert.AreEqual(2, c.Count());
