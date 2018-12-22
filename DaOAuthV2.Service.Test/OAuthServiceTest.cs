@@ -107,6 +107,7 @@ namespace DaOAuthV2.Service.Test
                 Id = 500,
                 IsCreator = true,
                 UserId = _validUser.Id,
+                RefreshToken = "first refresh token",
                 UserPublicId = Guid.NewGuid()
             };
 
@@ -595,7 +596,7 @@ namespace DaOAuthV2.Service.Test
         }
 
         [TestMethod]
-        public void Generate_Token_Should_Throw_DaOAuthTokenException_With_Correct_Error_Message_When_Client_Credentials_Are_Invalid()
+        public void Generate_Token_Should_Throw_DaOAuthTokenException_With_Correct_Error_Message_When_Client_Credentials_Are_Invalid_For_Authorization_Code_Grant()
         {
             try
             {
@@ -860,6 +861,187 @@ namespace DaOAuthV2.Service.Test
             var codeRepo = new FakeCodeRepository();
             var c = codeRepo.GetById(_validCode.Id);
             Assert.IsFalse(c.IsValid);
+        }
+
+        [TestMethod]
+        public void Generate_Token_Should_Create_New_Refresh_Token_For_Authorization_Code_Grant()
+        {
+            string token = _validUserClientConfidential.RefreshToken;
+
+            _service.GenerateToken(new AskTokenDto()
+            {
+                ClientPublicId = _validClientConfidential.PublicId,
+                GrantType = "authorization_code",
+                AuthorizationHeader = String.Concat("Basic ",
+                  Convert.ToBase64String(
+                      Encoding.UTF8.GetBytes($"{_validClientConfidential.PublicId}:{_validClientConfidential.ClientSecret}"))),
+                CodeValue = _validCode.CodeValue,
+                RedirectUrl = "http://www.perdu.com",
+                LoggedUserName = _validUser.UserName,
+                Scope = _validCode.Scope
+            });
+
+            var ucRepo = new FakeUserClientRepository();
+            var uc = ucRepo.GetUserClientByUserNameAndClientPublicId(_validClientConfidential.PublicId, _validUser.UserName);
+            Assert.IsTrue(uc.RefreshToken != token);
+        }
+
+        [TestMethod]
+        public void Generate_Token_Should_Create_Correct_Jwt_Token_Info_For_Authorization_Code_Grant()
+        {
+            var myJwtInfos = _service.GenerateToken(new AskTokenDto()
+            {
+                ClientPublicId = _validClientConfidential.PublicId,
+                GrantType = "authorization_code",
+                AuthorizationHeader = String.Concat("Basic ",
+                  Convert.ToBase64String(
+                      Encoding.UTF8.GetBytes($"{_validClientConfidential.PublicId}:{_validClientConfidential.ClientSecret}"))),
+                CodeValue = _validCode.CodeValue,
+                RedirectUrl = "http://www.perdu.com",
+                LoggedUserName = _validUser.UserName,
+                Scope = _validCode.Scope
+            });
+
+            var ucRepo = new FakeUserClientRepository();
+            var uc = ucRepo.GetUserClientByUserNameAndClientPublicId(_validClientConfidential.PublicId, _validUser.UserName);
+            Assert.AreEqual(uc.RefreshToken, myJwtInfos.RefreshToken);
+            Assert.AreEqual(_validCode.Scope, myJwtInfos.Scope);
+            Assert.AreEqual(OAuthConvention.AccessToken, myJwtInfos.TokenType);
+        }
+
+        [TestMethod]
+        public void Generate_Token_Should_Throw_DaOAuthTokenException_With_Correct_Error_Message_When_Client_Credentials_Are_Invalid_For_Refresh_Token_Grant()
+        {
+            try
+            {
+                _service.GenerateToken(new AskTokenDto()
+                {
+                    ClientPublicId = "cl-500",
+                    GrantType = OAuthConvention.GrantTypeRefreshToken,
+                    RefreshToken = "abc",
+                    LoggedUserName = _validUser.UserName,
+                    AuthorizationHeader = String.Concat("Basic ", Convert.ToBase64String(Encoding.UTF8.GetBytes("cl-500:bad_secret500")))
+                });
+            }
+            catch (Exception ex)
+            {
+                Assert.IsInstanceOfType(ex, typeof(DaOAuthTokenException));
+                Assert.AreEqual(OAuthConvention.ErrorNameUnauthorizedClient, ((DaOAuthTokenException)ex).Error);
+            }
+        }
+
+        [TestMethod]
+        public void Generate_Token_Should_Throw_DaOAuthTokenException_With_Correct_Error_Message_When_Refresh_Token_Is_Missing_For_Refresh_Token_Grant()
+        {
+            try
+            {
+                _service.GenerateToken(new AskTokenDto()
+                {
+                    ClientPublicId = "cl-500",
+                    GrantType = OAuthConvention.GrantTypeRefreshToken,
+                    RefreshToken = String.Empty,
+                    LoggedUserName = _validUser.UserName,
+                    AuthorizationHeader = String.Concat("Basic ", Convert.ToBase64String(Encoding.UTF8.GetBytes("cl-500:secret500")))
+                });
+            }
+            catch (Exception ex)
+            {
+                Assert.IsInstanceOfType(ex, typeof(DaOAuthTokenException));
+                Assert.AreEqual(OAuthConvention.ErrorNameInvalidGrant, ((DaOAuthTokenException)ex).Error);
+            }
+        }
+
+        [TestMethod]
+        public void Generate_Token_Should_Throw_DaOAuthTokenException_With_Correct_Error_Message_When_Refresh_Token_Is_Invalid_For_Refresh_Token_Grant()
+        {
+            try
+            {
+                _service = new OAuthService()
+                {
+                    Configuration = new AppConfiguration()
+                    {
+                        AuthorizeClientPageUrl = new Uri("http://www.perdu.com")
+                    },
+                    ConnexionString = String.Empty,
+                    RepositoriesFactory = new FakeRepositoriesFactory(),
+                    StringLocalizerFactory = new FakeStringLocalizerFactory(),
+                    Logger = new FakeLogger(),
+                    RandomService = new FakeRandomService(123, "abc"),
+                    JwtService = new FakeJwtService(new JwtTokenDto()
+                    {
+                        ClientId = _validClientPublic.PublicId,
+                        Expire = long.MaxValue,
+                        InvalidationCause = String.Empty,
+                        IsValid = false,
+                        Scope = String.Empty,
+                        Token = "abcdef",
+                        UserName = _validUser.UserName,
+                        UserPublicId = "random"
+                    })
+                };
+
+                _service.GenerateToken(new AskTokenDto()
+                {
+                    ClientPublicId = "cl-500",
+                    GrantType = OAuthConvention.GrantTypeRefreshToken,
+                    RefreshToken = "abc",
+                    LoggedUserName = _validUser.UserName,
+                    AuthorizationHeader = String.Concat("Basic ", Convert.ToBase64String(Encoding.UTF8.GetBytes("cl-500:secret500")))
+                });
+            }
+            catch (Exception ex)
+            {
+                Assert.IsInstanceOfType(ex, typeof(DaOAuthTokenException));
+                Assert.AreEqual(OAuthConvention.ErrorNameInvalidGrant, ((DaOAuthTokenException)ex).Error);
+            }
+        }
+
+        [TestMethod]
+        public void Generate_Token_Should_Throw_DaOAuthTokenException_With_Correct_Error_Message_When_Client_Is_Inactif_For_Refresh_Token_Grant()
+        {
+            try
+            {
+                var uc = new FakeUserClientRepository().GetUserClientByUserNameAndClientPublicId("cl-500", _validUser.UserName);
+                uc.IsActif = false;
+
+                _service.GenerateToken(new AskTokenDto()
+                {
+                    ClientPublicId = "cl-500",
+                    GrantType = OAuthConvention.GrantTypeRefreshToken,
+                    RefreshToken = "abcdef",
+                    LoggedUserName = _validUser.UserName,
+                    AuthorizationHeader = String.Concat("Basic ", Convert.ToBase64String(Encoding.UTF8.GetBytes("cl-500:secret500")))
+                });
+            }
+            catch (Exception ex)
+            {
+                Assert.IsInstanceOfType(ex, typeof(DaOAuthTokenException));
+                Assert.AreEqual(OAuthConvention.ErrorNameInvalidGrant, ((DaOAuthTokenException)ex).Error);
+            }
+        }
+
+        [TestMethod]
+        public void Generate_Token_Should_Throw_DaOAuthTokenException_With_Correct_Error_Message_When_Client_Refresh_Token_Is_Different_For_Refresh_Token_Grant()
+        {
+            try
+            {
+                var uc = new FakeUserClientRepository().GetUserClientByUserNameAndClientPublicId("cl-500", _validUser.UserName);
+                uc.RefreshToken = "fedcba";
+
+                _service.GenerateToken(new AskTokenDto()
+                {
+                    ClientPublicId = "cl-500",
+                    GrantType = OAuthConvention.GrantTypeRefreshToken,
+                    RefreshToken = "abcdef",
+                    LoggedUserName = _validUser.UserName,
+                    AuthorizationHeader = String.Concat("Basic ", Convert.ToBase64String(Encoding.UTF8.GetBytes("cl-500:secret500")))
+                });
+            }
+            catch (Exception ex)
+            {
+                Assert.IsInstanceOfType(ex, typeof(DaOAuthTokenException));
+                Assert.AreEqual(OAuthConvention.ErrorNameInvalidGrant, ((DaOAuthTokenException)ex).Error);
+            }
         }
     }
 }

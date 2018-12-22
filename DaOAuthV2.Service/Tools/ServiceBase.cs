@@ -9,7 +9,6 @@ using System.Security.Cryptography;
 using System.Text;
 using Microsoft.Extensions.Logging;
 
-
 namespace DaOAuthV2.Service
 {
     public abstract class ServiceBase

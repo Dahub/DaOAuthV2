@@ -10,6 +10,7 @@
         public const string ErrorNameUnsupportedGrantType = "unsupported_grant_type";
         public const string ErrorNameInvalidClient = "invalid_client";
         public const string ErrorNameInvalidGrant = "invalid_grant";
+        public const string ErrorNameRefreshToken = "refresh_token";
 
         public const string ResponseTypeCode = "code";
         public const string ResponseTypeToken = "token";

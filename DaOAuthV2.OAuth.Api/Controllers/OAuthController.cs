@@ -42,11 +42,11 @@ namespace DaOAuthV2.OAuth.Api.Controllers
 
         [HttpPost]
         [Route("token")]
-        public JsonResult Token([FromForm] TokenModel model)
+        public JsonResult Token([FromForm] TokenModel model, [FromHeader(Name = "Authorization")] string authorization)
         {
             var result = _authorizeService.GenerateToken(new AskTokenDto()
             {
-                AuthorizationHeader = Request.Headers.ContainsKey("Authorization") ? Request.Headers["Authorization"].FirstOrDefault() : string.Empty,
+                AuthorizationHeader = authorization,
                 ClientPublicId = model.ClientId,
                 CodeValue = model.Code,
                 GrantType = model.GrantType,

@@ -156,6 +156,7 @@ namespace DaOAuthV2.Service
                     result = GenerateTokenForAuthorizationCodeGrant(tokenInfo, errorLocal);
                     break;
                 case OAuthConvention.GrantTypeRefreshToken:
+                    result = GenerateTokenForRefreshToken(tokenInfo, errorLocal);
                     break;
                 case OAuthConvention.GrantTypePassword:
                     break;
@@ -262,6 +263,59 @@ namespace DaOAuthV2.Service
             }
 
             return toReturn;
+        }
+
+        private TokenInfoDto GenerateTokenForRefreshToken(AskTokenDto tokenInfo, IStringLocalizer errorLocal)
+        {
+            TokenInfoDto toReturn = null;
+
+            if (String.IsNullOrWhiteSpace(tokenInfo.ClientPublicId))
+                throw new DaOAuthTokenException()
+                {
+                    Error = OAuthConvention.ErrorNameRefreshToken,
+                    Description = errorLocal["RefreshTokenParameterError"]
+                };
+
+            using (var context = RepositoriesFactory.CreateContext(ConnexionString))
+            {
+                var clientRepo = RepositoriesFactory.GetClientRepository(context);
+                Client myClient = clientRepo.GetByPublicId(tokenInfo.ClientPublicId);
+
+                if (!AreClientCredentialsValid(myClient, tokenInfo.AuthorizationHeader))
+                    throw new DaOAuthTokenException()
+                    {
+                        Error = OAuthConvention.ErrorNameUnauthorizedClient,
+                        Description = errorLocal["UnauthorizedClient"]
+                    };
+
+                var tokenDetail = JwtService.ExtractToken(new ExtractTokenDto(){
+                     Token = tokenInfo.RefreshToken,
+                     TokenName = OAuthConvention.RefreshToken
+                });
+
+                if(!CheckIfTokenIsValid(tokenDetail, context))
+                    throw new DaOAuthTokenException()
+                    {
+                        Error = OAuthConvention.ErrorNameInvalidGrant,
+                        Description = errorLocal["RefreshTokenInvalid"]
+                    };
+            }
+
+            return toReturn;
+        }
+
+        private bool CheckIfTokenIsValid(JwtTokenDto tokenDetail, IContext context)
+        {
+            if (!tokenDetail.IsValid)
+                return false;
+
+            var clientUserRepo = RepositoriesFactory.GetUserClientRepository(context);
+            var client = clientUserRepo.GetUserClientByUserNameAndClientPublicId(tokenDetail.ClientId, tokenDetail.UserName);
+
+            if (client == null || !client.IsActif)
+                return false;
+
+            return client.RefreshToken != null && client.RefreshToken.Equals(tokenDetail.Token, StringComparison.Ordinal);
         }
 
         private static bool CheckIfClientValidForToken(Client client, string returnUrl, string responseType)
