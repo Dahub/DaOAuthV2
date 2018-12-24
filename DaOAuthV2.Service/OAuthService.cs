@@ -192,7 +192,7 @@ namespace DaOAuthV2.Service
                 var clientRepo = RepositoriesFactory.GetClientRepository(context);
                 Client myClient = clientRepo.GetByPublicId(tokenInfo.ClientPublicId);
 
-                if (!AreClientCredentialsValid(myClient, tokenInfo.AuthorizationHeader))
+                if (!CheckIfCredentialsAreValid(myClient, tokenInfo.AuthorizationHeader))
                     throw new DaOAuthTokenException()
                     {
                         Error = OAuthConvention.ErrorNameUnauthorizedClient,
@@ -227,43 +227,13 @@ namespace DaOAuthV2.Service
                         Description = errorLocal["AskTokenInvalidGrant"]
                     };
 
-                JwtTokenDto newRefreshToken = JwtService.GenerateToken(new CreateTokenDto()
-                {
-                    ClientPublicId = tokenInfo.ClientPublicId,
-                    Scope = tokenInfo.Scope,
-                    SecondsLifeTime = Configuration.RefreshTokenLifeTimeInSeconds,
-                    TokenName = OAuthConvention.RefreshToken,
-                    UserName = tokenInfo.LoggedUserName
-                });
-
-                JwtTokenDto accesToken = JwtService.GenerateToken(new CreateTokenDto()
-                {
-                    ClientPublicId = tokenInfo.ClientPublicId,
-                    Scope = tokenInfo.Scope,
-                    SecondsLifeTime = Configuration.AccesTokenLifeTimeInSeconds,
-                    TokenName = OAuthConvention.AccessToken,
-                    UserName = tokenInfo.LoggedUserName
-                });
-
-                var userClientRepo = RepositoriesFactory.GetUserClientRepository(context);
-                var myUc = userClientRepo.GetUserClientByUserNameAndClientPublicId(tokenInfo.ClientPublicId, tokenInfo.LoggedUserName);
-                myUc.RefreshToken = newRefreshToken.Token;
-                userClientRepo.Update(myUc);
-
-                toReturn = new TokenInfoDto()
-                {
-                    AccessToken = accesToken.Token,
-                    ExpireIn = accesToken.Expire,
-                    RefreshToken = newRefreshToken.Token,
-                    Scope = tokenInfo.Scope,
-                    TokenType = OAuthConvention.AccessToken
-                };
+                toReturn = GenerateAccessTokenAndUpdateRefreshToken(tokenInfo, context);
 
                 context.Commit();
             }
 
             return toReturn;
-        }
+        }      
 
         private TokenInfoDto GenerateTokenForRefreshToken(AskTokenDto tokenInfo, IStringLocalizer errorLocal)
         {
@@ -281,7 +251,7 @@ namespace DaOAuthV2.Service
                 var clientRepo = RepositoriesFactory.GetClientRepository(context);
                 Client myClient = clientRepo.GetByPublicId(tokenInfo.ClientPublicId);
 
-                if (!AreClientCredentialsValid(myClient, tokenInfo.AuthorizationHeader))
+                if (!CheckIfCredentialsAreValid(myClient, tokenInfo.AuthorizationHeader))
                     throw new DaOAuthTokenException()
                     {
                         Error = OAuthConvention.ErrorNameUnauthorizedClient,
@@ -299,8 +269,80 @@ namespace DaOAuthV2.Service
                         Error = OAuthConvention.ErrorNameInvalidGrant,
                         Description = errorLocal["RefreshTokenInvalid"]
                     };
+
+                if(!CheckIfScopesAreAuthorizedForClient(tokenDetail.ClientId, tokenInfo.Scope))
+                    throw new DaOAuthTokenException()
+                    {
+                        Error = OAuthConvention.ErrorNameInvalidScope,
+                        Description = errorLocal["UnauthorizedScope"]
+                    };
+
+                toReturn = GenerateAccessTokenAndUpdateRefreshToken(tokenInfo, context);
             }
 
+            return toReturn;
+        }
+
+        private string GenerateAndSaveCode(string clientPublicId, string userName, string scope)
+        {
+            string codeValue = RandomService.GenerateRandomString(CodeLenght);
+
+            using (var context = RepositoriesFactory.CreateContext(ConnexionString))
+            {
+                var userClientRepo = RepositoriesFactory.GetUserClientRepository(context);
+                var codeRepo = RepositoriesFactory.GetCodeRepository(context);
+
+                var uc = userClientRepo.GetUserClientByUserNameAndClientPublicId(clientPublicId, userName);
+
+                codeRepo.Add(new Domain.Code()
+                {
+                    CodeValue = codeValue,
+                    ExpirationTimeStamp = new DateTimeOffset(DateTime.Now.AddSeconds(Configuration.CodeDurationInSeconds)).ToUnixTimeSeconds(),
+                    IsValid = true,
+                    Scope = scope,
+                    UserClientId = uc.Id
+                });
+
+                context.Commit();
+            }
+
+            return codeValue;
+        }
+
+        private TokenInfoDto GenerateAccessTokenAndUpdateRefreshToken(AskTokenDto tokenInfo, IContext context)
+        {
+            TokenInfoDto toReturn;
+            JwtTokenDto newRefreshToken = JwtService.GenerateToken(new CreateTokenDto()
+            {
+                ClientPublicId = tokenInfo.ClientPublicId,
+                Scope = tokenInfo.Scope,
+                SecondsLifeTime = Configuration.RefreshTokenLifeTimeInSeconds,
+                TokenName = OAuthConvention.RefreshToken,
+                UserName = tokenInfo.LoggedUserName
+            });
+
+            JwtTokenDto accesToken = JwtService.GenerateToken(new CreateTokenDto()
+            {
+                ClientPublicId = tokenInfo.ClientPublicId,
+                Scope = tokenInfo.Scope,
+                SecondsLifeTime = Configuration.AccesTokenLifeTimeInSeconds,
+                TokenName = OAuthConvention.AccessToken,
+                UserName = tokenInfo.LoggedUserName
+            });
+
+            var userClientRepo = RepositoriesFactory.GetUserClientRepository(context);
+            var myUc = userClientRepo.GetUserClientByUserNameAndClientPublicId(tokenInfo.ClientPublicId, tokenInfo.LoggedUserName);
+            myUc.RefreshToken = newRefreshToken.Token;
+            userClientRepo.Update(myUc);
+
+            toReturn = new TokenInfoDto()
+            {
+                AccessToken = accesToken.Token,
+                ExpireIn = accesToken.Expire,
+                RefreshToken = newRefreshToken.Token,
+                Scope = tokenInfo.Scope,
+                TokenType = OAuthConvention.AccessToken
+            };
             return toReturn;
         }
 
@@ -474,34 +516,8 @@ namespace DaOAuthV2.Service
 
             return toReturn;
         }
-
-        private string GenerateAndSaveCode(string clientPublicId, string userName, string scope)
-        {
-            string codeValue = RandomService.GenerateRandomString(CodeLenght);
-
-            using (var context = RepositoriesFactory.CreateContext(ConnexionString))
-            {
-                var userClientRepo = RepositoriesFactory.GetUserClientRepository(context);
-                var codeRepo = RepositoriesFactory.GetCodeRepository(context);
-
-                var uc = userClientRepo.GetUserClientByUserNameAndClientPublicId(clientPublicId, userName);
-
-                codeRepo.Add(new Domain.Code()
-                {
-                    CodeValue = codeValue,
-                    ExpirationTimeStamp = new DateTimeOffset(DateTime.Now.AddSeconds(Configuration.CodeDurationInSeconds)).ToUnixTimeSeconds(),
-                    IsValid = true,
-                    Scope = scope,
-                    UserClientId = uc.Id
-                });
-
-                context.Commit();
-            }
-
-            return codeValue;
-        }
-
-        public bool AreClientCredentialsValid(Client cl, string authentificationHeader)
+      
+        private bool CheckIfCredentialsAreValid(Client cl, string authentificationHeader)
         {
             if (cl == null)
                 return false;

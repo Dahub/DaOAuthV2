@@ -1043,5 +1043,51 @@ namespace DaOAuthV2.Service.Test
                 Assert.AreEqual(OAuthConvention.ErrorNameInvalidGrant, ((DaOAuthTokenException)ex).Error);
             }
         }
+
+        [TestMethod]
+        public void Generate_Token_Should_Create_New_Refresh_Token_For_Refresh_Token_Code_Grant()
+        {
+            string token = _validUserClientConfidential.RefreshToken;
+
+            _service = new OAuthService()
+            {
+                Configuration = new AppConfiguration()
+                {
+                    AuthorizeClientPageUrl = new Uri("http://www.perdu.com")
+                },
+                ConnexionString = String.Empty,
+                RepositoriesFactory = new FakeRepositoriesFactory(),
+                StringLocalizerFactory = new FakeStringLocalizerFactory(),
+                Logger = new FakeLogger(),
+                RandomService = new FakeRandomService(123, "abc"),
+                JwtService = new FakeJwtService(new JwtTokenDto()
+                {
+                    ClientId = _validClientConfidential.PublicId,
+                    Expire = long.MaxValue,
+                    InvalidationCause = String.Empty,
+                    IsValid = true,
+                    Scope = "scp_vc",
+                    Token = token,
+                    UserName = _validUser.UserName,
+                    UserPublicId = "random"
+                })
+            };
+
+            var tokenInfo = _service.GenerateToken(new AskTokenDto()
+            {
+                ClientPublicId = _validClientConfidential.PublicId,
+                GrantType = "refresh_token",
+                AuthorizationHeader = String.Concat("Basic ",
+                   Convert.ToBase64String(
+                       Encoding.UTF8.GetBytes($"{_validClientConfidential.PublicId}:{_validClientConfidential.ClientSecret}"))),
+                CodeValue = _validCode.CodeValue,
+                RedirectUrl = "http://www.perdu.com",
+                LoggedUserName = _validUser.UserName,
+                Scope = "scp_vc",
+                RefreshToken = token
+            });
+
+            Assert.IsNotNull(tokenInfo);
+        }
     }
 }
