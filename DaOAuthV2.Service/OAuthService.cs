@@ -162,6 +162,7 @@ namespace DaOAuthV2.Service
                     result = GenerateTokenForPasswordGrant(tokenInfo, errorLocal);
                     break;
                 case OAuthConvention.GrantTypeClientCredentials:
+                    result = GenerateTokenForClientCredentailsGrant(tokenInfo, errorLocal);
                     break;
                 default:
                     throw new DaOAuthTokenException()
@@ -334,6 +335,53 @@ namespace DaOAuthV2.Service
                     };
 
                 toReturn = GenerateAccessTokenAndUpdateRefreshToken(tokenInfo, context);
+            }
+
+            return toReturn;
+        }
+
+        private TokenInfoDto GenerateTokenForClientCredentailsGrant(AskTokenDto tokenInfo, IStringLocalizer errorLocal)
+        {
+            TokenInfoDto toReturn = null;
+
+            if (String.IsNullOrWhiteSpace(tokenInfo.LoggedUserName))
+                throw new DaOauthUnauthorizeException();
+
+            using (var context = RepositoriesFactory.CreateContext(ConnexionString))
+            {
+                var clientRepo = RepositoriesFactory.GetClientRepository(context);
+                Client myClient = clientRepo.GetByPublicId(tokenInfo.ClientPublicId);
+
+                if (!CheckIfCredentialsAreValid(myClient, tokenInfo.AuthorizationHeader))
+                    throw new DaOAuthTokenException()
+                    {
+                        Error = OAuthConvention.ErrorNameUnauthorizedClient,
+                        Description = errorLocal["UnauthorizedClient"]
+                    };
+
+                if (!CheckIfScopesAreAuthorizedForClient(myClient.PublicId, tokenInfo.Scope))
+                    throw new DaOAuthTokenException()
+                    {
+                        Error = OAuthConvention.ErrorNameInvalidScope,
+                        Description = errorLocal["UnauthorizedScope"]
+                    };
+
+                JwtTokenDto accesToken = JwtService.GenerateToken(new CreateTokenDto()
+                {
+                    ClientPublicId = myClient.PublicId,
+                    Scope = tokenInfo.Scope,
+                    SecondsLifeTime = Configuration.AccesTokenLifeTimeInSeconds,
+                    TokenName = OAuthConvention.AccessToken,
+                    UserName = tokenInfo.LoggedUserName
+                });
+
+                toReturn = new TokenInfoDto()
+                {
+                    AccessToken = accesToken.Token,
+                    ExpireIn = accesToken.Expire,
+                    Scope = tokenInfo.Scope,
+                    TokenType = OAuthConvention.AccessToken
+                };
             }
 
             return toReturn;

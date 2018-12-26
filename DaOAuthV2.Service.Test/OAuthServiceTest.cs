@@ -1376,8 +1376,101 @@ namespace DaOAuthV2.Service.Test
             });
 
             Assert.IsNotNull(tokenInfo);
+            Assert.IsFalse(String.IsNullOrWhiteSpace(tokenInfo.AccessToken));
             Assert.AreNotEqual(token, tokenInfo.RefreshToken);
             Assert.AreEqual(_validUserClientConfidential.RefreshToken, tokenInfo.RefreshToken);
+        }
+
+        [TestMethod]
+        public void Generate_Token_Should_Throw_DaOAuthTokenException_With_Correct_Error_Message_When_Client_Credentials_Are_Invalid_For_Client_Credentials_Code_Grant()
+        {
+            bool exceptionOccured = false;
+
+            try
+            {
+                _service.GenerateToken(new AskTokenDto()
+                {
+                    ClientPublicId = "cl-500",
+                    Scope = "scp_vc",
+                    GrantType = OAuthConvention.GrantTypeClientCredentials,
+                    LoggedUserName = _validUser.UserName,
+                    AuthorizationHeader = String.Concat("Basic ", Convert.ToBase64String(Encoding.UTF8.GetBytes("cl-500:bad_secret500")))
+                });
+            }
+            catch (Exception ex)
+            {
+                Assert.IsInstanceOfType(ex, typeof(DaOAuthTokenException));
+                Assert.AreEqual(OAuthConvention.ErrorNameUnauthorizedClient, ((DaOAuthTokenException)ex).Error);
+                exceptionOccured = true;
+            }
+
+            Assert.IsTrue(exceptionOccured);
+        }
+
+        [TestMethod]
+        public void Generate_Token_Should_Throw_DaOAuthTokenException_With_Correct_Error_Message_When_Scope_Is_Incorrect_For_Client_Credential_Code_Grant()
+        {
+            bool exceptionOccured = false;
+
+            try
+            {
+                _service.GenerateToken(new AskTokenDto()
+                {
+                    ClientPublicId = "cl-500",
+                    Scope = "scp_vc scpppp",
+                    GrantType = OAuthConvention.GrantTypeClientCredentials,
+                    LoggedUserName = _validUser.UserName,
+                    AuthorizationHeader = String.Concat("Basic ", Convert.ToBase64String(Encoding.UTF8.GetBytes("cl-500:secret500")))
+                });
+            }
+            catch (Exception ex)
+            {
+                Assert.IsInstanceOfType(ex, typeof(DaOAuthTokenException));
+                Assert.AreEqual(OAuthConvention.ErrorNameInvalidScope, ((DaOAuthTokenException)ex).Error);
+                exceptionOccured = true;
+            }
+
+            Assert.IsTrue(exceptionOccured);
+        }
+       
+        [TestMethod]
+        public void Generate_Token_Should_Create_Acces_Token_For_Client_Credentials_Code_Grant()
+        {
+            string token = _validUserClientConfidential.RefreshToken;
+
+            _service = new OAuthService()
+            {
+                Configuration = FakeConfigurationHelper.GetFakeConf(),
+                ConnexionString = String.Empty,
+                RepositoriesFactory = new FakeRepositoriesFactory(),
+                StringLocalizerFactory = new FakeStringLocalizerFactory(),
+                Logger = new FakeLogger(),
+                RandomService = new FakeRandomService(123, "abc"),
+                JwtService = new FakeJwtService(new JwtTokenDto()
+                {
+                    ClientId = _validClientConfidential.PublicId,
+                    Expire = long.MaxValue,
+                    InvalidationCause = String.Empty,
+                    IsValid = true,
+                    Scope = "scp_vc",
+                    Token = token,
+                    UserName = _validUser.UserName,
+                    UserPublicId = "random"
+                })
+            };
+
+            var tokenInfo = _service.GenerateToken(new AskTokenDto()
+            {
+                ClientPublicId = "cl-500",
+                Scope = "scp_vc",              
+                GrantType = OAuthConvention.GrantTypeClientCredentials,
+                LoggedUserName = _validUser.UserName,
+                AuthorizationHeader = String.Concat("Basic ", Convert.ToBase64String(Encoding.UTF8.GetBytes("cl-500:secret500")))
+            });
+
+            Assert.IsNotNull(tokenInfo);
+            Assert.IsFalse(String.IsNullOrWhiteSpace(tokenInfo.AccessToken));
+            Assert.IsTrue(String.IsNullOrWhiteSpace(tokenInfo.RefreshToken));
         }
     }
 }
