@@ -2,8 +2,6 @@
 using DaOAuthV2.Service.Test.Fake;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 
 namespace DaOAuthV2.Service.Test

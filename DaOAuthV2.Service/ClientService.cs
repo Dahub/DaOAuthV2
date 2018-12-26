@@ -86,7 +86,6 @@ namespace DaOAuthV2.Service
                     IsActif = true,
                     RefreshToken = String.Empty,
                     UserId = user.Id,
-                    UserPublicId = Guid.NewGuid(),
                     IsCreator = true
                 };
 

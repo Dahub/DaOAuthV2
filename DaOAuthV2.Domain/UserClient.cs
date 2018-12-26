@@ -12,7 +12,6 @@ namespace DaOAuthV2.Domain
         public int ClientId { get; set; }
         public Client Client { get; set; }
         public DateTime CreationDate { get; set; }
-        public Guid UserPublicId { get; set; }
         public string RefreshToken { get; set; }
         public bool IsActif { get; set; }
         public ICollection<Code> Codes { get; set; }

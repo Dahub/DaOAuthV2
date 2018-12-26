@@ -178,8 +178,7 @@ namespace DaOAuthV2.Service.Test.Fake
                 CreationDate = DateTime.Now,
                 IsActif = true,
                 RefreshToken = String.Empty,
-                UserId = 1,
-                UserPublicId = Guid.Parse("0e4db8be-267a-48aa-ba4d-2b8f71e9a6d8")
+                UserId = 1
             },
             new UserClient()
             {
@@ -188,8 +187,7 @@ namespace DaOAuthV2.Service.Test.Fake
                 CreationDate = DateTime.Now,
                 IsActif = true,
                 RefreshToken = String.Empty,
-                UserId = 1,
-                UserPublicId = Guid.Parse("0e4db8be-267a-48aa-ba4d-2b8f71e9a6d7")
+                UserId = 1
             },
             new UserClient()
             {
@@ -198,8 +196,7 @@ namespace DaOAuthV2.Service.Test.Fake
                 CreationDate = DateTime.Now,
                 IsActif = true,
                 RefreshToken = String.Empty,
-                UserId = 1,
-                UserPublicId = Guid.Parse("0e4db8be-267a-48aa-ba4d-2b8f71e9a6d6")
+                UserId = 1
             },
             new UserClient()
             {
@@ -208,8 +205,7 @@ namespace DaOAuthV2.Service.Test.Fake
                 CreationDate = DateTime.Now,
                 IsActif = true,
                 RefreshToken = String.Empty,
-                UserId = 3,
-                UserPublicId = Guid.Parse("0e4db8be-268a-48aa-ba4d-2c8f71e9a6d7")
+                UserId = 3
             },
             new UserClient()
             {
@@ -218,8 +214,7 @@ namespace DaOAuthV2.Service.Test.Fake
                 CreationDate = DateTime.Now,
                 IsActif = true,
                 RefreshToken = String.Empty,
-                UserId = 1,
-                UserPublicId = Guid.Parse("0e4db7ce-268a-48aa-ba4d-2c8f71e9a6d7")
+                UserId = 1
             },
             new UserClient()
             {
@@ -228,8 +223,7 @@ namespace DaOAuthV2.Service.Test.Fake
                 CreationDate = DateTime.Now,
                 IsActif = true,
                 RefreshToken = String.Empty,
-                UserId = 2,
-                UserPublicId = Guid.Parse("0a4db7ce-268a-48aa-ba4d-2c8f71e9a6d7")
+                UserId = 2
             }
         };
 

@@ -80,7 +80,6 @@ namespace DaOAuthV2.Service
                     CreationDate = DateTime.Now,
                     IsActif = toCreate.IsActif,
                     UserId = user.Id,
-                    UserPublicId = Guid.NewGuid(),
                     IsCreator = true
                 });
 

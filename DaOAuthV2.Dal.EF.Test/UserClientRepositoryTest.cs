@@ -122,8 +122,7 @@ namespace DaOAuthV2.Dal.EF.Test
                     CreationDate = DateTime.Now,
                     Id = 100,
                     IsActif = true,
-                    UserId = 100,
-                    UserPublicId = Guid.NewGuid()
+                    UserId = 100
                 });
                 context.UsersClients.Add(new UserClient()
                 {
@@ -131,8 +130,7 @@ namespace DaOAuthV2.Dal.EF.Test
                     CreationDate = DateTime.Now,
                     Id = 101,
                     IsActif = true,
-                    UserId = 100,
-                    UserPublicId = Guid.NewGuid()
+                    UserId = 100
                 });
 
                 context.Commit();

@@ -10,7 +10,6 @@ namespace DaOAuthV2.Service.DTO
         public string Scope { get; set; }
         public string ClientId { get; set; }
         public string UserName { get; set; }
-        public string UserPublicId { get; set; }
         public string InvalidationCause { get; set; }
     }
 }

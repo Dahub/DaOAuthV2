@@ -228,8 +228,7 @@ namespace DaOAuthV2.Service.Test
                 CreationDate = DateTime.Now,
                 Id = 499,
                 IsActif = true,
-                UserId = _validUser.Id,
-                UserPublicId = Guid.NewGuid()
+                UserId = _validUser.Id
             });
 
             _service.CreateUserClient(new DTO.CreateUserClientDto()
@@ -273,7 +272,6 @@ namespace DaOAuthV2.Service.Test
             Assert.AreEqual(_validUser.Id, uc.UserId);
             Assert.AreEqual(_validClient.Id, uc.ClientId);
             Assert.IsTrue(uc.IsActif);
-            Assert.IsNotNull(uc.UserPublicId);
             Assert.IsTrue(uc.CreationDate < DateTime.Now.AddSeconds(1));
             Assert.IsTrue(uc.CreationDate > DateTime.Now.AddSeconds(-10));
         }
@@ -296,7 +294,6 @@ namespace DaOAuthV2.Service.Test
             Assert.AreEqual(_validUser.Id, uc.UserId);
             Assert.AreEqual(_validClient.Id, uc.ClientId);
             Assert.IsFalse(uc.IsActif);
-            Assert.IsNotNull(uc.UserPublicId);
             Assert.IsTrue(uc.CreationDate < DateTime.Now.AddSeconds(1));
             Assert.IsTrue(uc.CreationDate > DateTime.Now.AddSeconds(-10));
         }

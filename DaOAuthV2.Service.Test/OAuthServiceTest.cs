@@ -116,8 +116,7 @@ namespace DaOAuthV2.Service.Test
                 Id = 500,
                 IsCreator = true,
                 UserId = _validUser.Id,
-                RefreshToken = "first refresh token",
-                UserPublicId = Guid.NewGuid()
+                RefreshToken = "first refresh token"
             };
 
             FakeDataBase.Instance.UsersClient.Add(_validUserClientConfidential);
@@ -215,8 +214,7 @@ namespace DaOAuthV2.Service.Test
                     IsValid = true,
                     Scope = String.Empty,
                     Token = "abcdef",
-                    UserName = _validUser.UserName,
-                    UserPublicId = "random"
+                    UserName = _validUser.UserName
                 })
             };
         }
@@ -513,8 +511,7 @@ namespace DaOAuthV2.Service.Test
                 ClientId = _validClientConfidential.Id,
                 CreationDate = DateTime.Now,
                 IsActif = false,
-                UserId = _validUser.Id,
-                UserPublicId = Guid.NewGuid()
+                UserId = _validUser.Id
             });
 
             try
@@ -575,8 +572,7 @@ namespace DaOAuthV2.Service.Test
                 ClientId = _validClientPublic.Id,
                 CreationDate = DateTime.Now,
                 IsActif = true,
-                UserId = _validUser.Id,
-                UserPublicId = Guid.NewGuid()
+                UserId = _validUser.Id
             };
             new FakeUserClientRepository().Add(ucToAdd);
 
@@ -1064,8 +1060,7 @@ namespace DaOAuthV2.Service.Test
                         IsValid = false,
                         Scope = String.Empty,
                         Token = "abcdef",
-                        UserName = _validUser.UserName,
-                        UserPublicId = "random"
+                        UserName = _validUser.UserName
                     })
                 };
 
@@ -1170,8 +1165,7 @@ namespace DaOAuthV2.Service.Test
                     IsValid = true,
                     Scope = "scp_vc",
                     Token = token,
-                    UserName = _validUser.UserName,
-                    UserPublicId = "random"
+                    UserName = _validUser.UserName
                 })
             };
 
@@ -1359,8 +1353,7 @@ namespace DaOAuthV2.Service.Test
                     IsValid = true,
                     Scope = "scp_vc",
                     Token = token,
-                    UserName = _validUser.UserName,
-                    UserPublicId = "random"
+                    UserName = _validUser.UserName
                 })
             };
 
@@ -1454,8 +1447,7 @@ namespace DaOAuthV2.Service.Test
                     IsValid = true,
                     Scope = "scp_vc",
                     Token = token,
-                    UserName = _validUser.UserName,
-                    UserPublicId = "random"
+                    UserName = _validUser.UserName
                 })
             };
 

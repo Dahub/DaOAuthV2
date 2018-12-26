@@ -29,9 +29,7 @@ namespace DaOAuthV2.Service
             claims.Add(new Claim(ClaimName.Issued, utcNow.ToUnixTimeSeconds().ToString(CultureInfo.InvariantCulture)));         
             claims.Add(new Claim(ClaimName.Name, !String.IsNullOrEmpty(value.UserName) ? value.UserName : String.Empty));
             claims.Add(new Claim(ClaimName.Scope, !String.IsNullOrEmpty(value.Scope) ? value.Scope : String.Empty));
-            if (value.UserPublicId.HasValue)
-                claims.Add(new Claim(ClaimName.UserPublicId, value.UserPublicId.Value.ToString()));
-
+           
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration.SecurityKey));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
@@ -104,7 +102,6 @@ namespace DaOAuthV2.Service
             toReturn.Scope = GetValueFromClaim(pClaim.Claims, ClaimName.Scope);
             toReturn.ClientId = GetValueFromClaim(pClaim.Claims, ClaimName.ClientId);
             toReturn.UserName = GetValueFromClaim(pClaim.Claims, ClaimName.Name);
-            toReturn.UserPublicId = GetValueFromClaim(pClaim.Claims, ClaimName.UserPublicId);
             toReturn.IsValid = true;
 
             return toReturn;

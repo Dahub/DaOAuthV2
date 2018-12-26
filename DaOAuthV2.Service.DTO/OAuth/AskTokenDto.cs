@@ -16,6 +16,5 @@ namespace DaOAuthV2.Service.DTO
         public string LoggedUserName { get; set; }
         public string Scope { get; set; }
         public string AuthorizationHeader { get; set; }
-        public Guid? UserPublicId { get;  set; }
     }
 }

@@ -130,8 +130,7 @@ namespace DaOAuthV2.Service.Test.Fake
             uc.IsActif = toUpdate.IsActif;
             uc.IsCreator = toUpdate.IsCreator;
             uc.RefreshToken = toUpdate.RefreshToken;
-            uc.UserId = toUpdate.UserId;
-            uc.UserPublicId = toUpdate.UserPublicId;            
+            uc.UserId = toUpdate.UserId;      
         }
     }
 }
