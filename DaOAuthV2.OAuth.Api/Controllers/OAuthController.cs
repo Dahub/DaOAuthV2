@@ -2,7 +2,6 @@
 using DaOAuthV2.Service.DTO;
 using DaOAuthV2.Service.Interface;
 using Microsoft.AspNetCore.Authorization;
-using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using System;
 
@@ -58,14 +57,58 @@ namespace DaOAuthV2.OAuth.Api.Controllers
                 LoggedUserName = User.Identity.IsAuthenticated?User.Identity.Name:String.Empty
             });
 
-            return new JsonResult(new
+            if (!String.IsNullOrWhiteSpace(result.RefreshToken))
             {
-                access_token = result.AccessToken,
-                token_type = result.TokenType,
-                expires_in = result.ExpireIn,
-                refresh_token = result.RefreshToken,
-                scope = result.Scope
+                return new JsonResult(new
+                {
+                    access_token = result.AccessToken,
+                    token_type = result.TokenType,
+                    expires_in = result.ExpireIn,
+                    refresh_token = result.RefreshToken,
+                    scope = result.Scope
+                });
+            }
+            else
+            {
+                return new JsonResult(new
+                {
+                    access_token = result.AccessToken,
+                    token_type = result.TokenType,
+                    expires_in = result.ExpireIn,
+                    scope = result.Scope
+                });
+            }
+        }
+
+        [HttpPost]
+        [Route("/introspect")]
+        public JsonResult Introspect([FromForm] IntrospectTokenModel model, [FromHeader(Name = "Authorization")] string authorization)
+        {
+            var result = _authorizeService.Introspect(new AskIntrospectDto()
+            {
+                Token = model.Token
             });
+
+            if(!result.IsValid)
+            {
+                return new JsonResult(new
+                {
+                    active = false
+                });
+            }
+            else
+            {
+                return new JsonResult(new
+                {
+                    active = true,
+                    exp = result.Expire,
+                    aud = result.Audiences,
+                    client_id = result.ClientPublicId,
+                    name = result.UserName,
+                    scope = result.Scope,
+                    user_public_id = result.UserPublicId
+                });
+            }
         }
     }
 }

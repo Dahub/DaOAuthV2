@@ -175,6 +175,11 @@ namespace DaOAuthV2.Service
             return result;
         }
 
+        public IntrospectInfoDto Introspect(AskIntrospectDto introspectInfo)
+        {
+            throw new NotImplementedException();
+        }
+
         private TokenInfoDto GenerateTokenForAuthorizationCodeGrant(AskTokenDto tokenInfo, IStringLocalizer errorLocal)
         {
             TokenInfoDto toReturn = null;
@@ -229,6 +234,10 @@ namespace DaOAuthV2.Service
                         Description = errorLocal["AskTokenInvalidGrant"]
                     };
 
+                var ucRepo = RepositoriesFactory.GetUserClientRepository(context);
+                var myUc = ucRepo.GetUserClientByUserNameAndClientPublicId(myClient.PublicId, tokenInfo.LoggedUserName);
+                tokenInfo.UserPublicId = myUc.UserPublicId;
+
                 toReturn = GenerateAccessTokenAndUpdateRefreshToken(tokenInfo, context);
 
                 context.Commit();
@@ -240,6 +249,9 @@ namespace DaOAuthV2.Service
         private TokenInfoDto GenerateTokenForRefreshToken(AskTokenDto tokenInfo, IStringLocalizer errorLocal)
         {
             TokenInfoDto toReturn = null;
+
+            if (String.IsNullOrWhiteSpace(tokenInfo.LoggedUserName))
+                throw new DaOauthUnauthorizeException();
 
             if (String.IsNullOrWhiteSpace(tokenInfo.ClientPublicId))
                 throw new DaOAuthTokenException()
@@ -279,6 +291,10 @@ namespace DaOAuthV2.Service
                         Error = OAuthConvention.ErrorNameInvalidScope,
                         Description = errorLocal["UnauthorizedScope"]
                     };
+
+                var ucRepo = RepositoriesFactory.GetUserClientRepository(context);
+                var myUc = ucRepo.GetUserClientByUserNameAndClientPublicId(myClient.PublicId, tokenInfo.LoggedUserName);
+                tokenInfo.UserPublicId = myUc.UserPublicId;
 
                 toReturn = GenerateAccessTokenAndUpdateRefreshToken(tokenInfo, context);
             }
@@ -334,6 +350,10 @@ namespace DaOAuthV2.Service
                         Description = errorLocal["UnauthorizedScope"]
                     };
 
+                var ucRepo = RepositoriesFactory.GetUserClientRepository(context);
+                var myUc = ucRepo.GetUserClientByUserNameAndClientPublicId(myClient.PublicId, user.UserName);
+                tokenInfo.UserPublicId = myUc.UserPublicId;
+
                 toReturn = GenerateAccessTokenAndUpdateRefreshToken(tokenInfo, context);
             }
 
@@ -366,13 +386,17 @@ namespace DaOAuthV2.Service
                         Description = errorLocal["UnauthorizedScope"]
                     };
 
+                var ucRepo = RepositoriesFactory.GetUserClientRepository(context);
+                var myUc = ucRepo.GetUserClientByUserNameAndClientPublicId(myClient.PublicId, tokenInfo.LoggedUserName);
+
                 JwtTokenDto accesToken = JwtService.GenerateToken(new CreateTokenDto()
                 {
                     ClientPublicId = myClient.PublicId,
                     Scope = tokenInfo.Scope,
                     SecondsLifeTime = Configuration.AccesTokenLifeTimeInSeconds,
                     TokenName = OAuthConvention.AccessToken,
-                    UserName = tokenInfo.LoggedUserName
+                    UserName = tokenInfo.LoggedUserName,
+                    UserPublicId = myUc.UserPublicId
                 });
 
                 toReturn = new TokenInfoDto()
@@ -422,7 +446,8 @@ namespace DaOAuthV2.Service
                 Scope = tokenInfo.Scope,
                 SecondsLifeTime = Configuration.RefreshTokenLifeTimeInSeconds,
                 TokenName = OAuthConvention.RefreshToken,
-                UserName = tokenInfo.LoggedUserName
+                UserName = tokenInfo.LoggedUserName,
+                UserPublicId = tokenInfo.UserPublicId
             });
 
             JwtTokenDto accesToken = JwtService.GenerateToken(new CreateTokenDto()
@@ -431,7 +456,8 @@ namespace DaOAuthV2.Service
                 Scope = tokenInfo.Scope,
                 SecondsLifeTime = Configuration.AccesTokenLifeTimeInSeconds,
                 TokenName = OAuthConvention.AccessToken,
-                UserName = tokenInfo.LoggedUserName
+                UserName = tokenInfo.LoggedUserName,
+                UserPublicId = tokenInfo.UserPublicId
             });
 
             var userClientRepo = RepositoriesFactory.GetUserClientRepository(context);

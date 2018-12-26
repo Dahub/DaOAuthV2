@@ -15,5 +15,7 @@ namespace DaOAuthV2.Service.DTO
         [Required(ErrorMessage = "CreateTokenDtoClientIdRequired")]
         public string ClientPublicId { get; set; }
         public string Scope { get; set; }
+
+        public Guid? UserPublicId { get; set; }
     }
 }
