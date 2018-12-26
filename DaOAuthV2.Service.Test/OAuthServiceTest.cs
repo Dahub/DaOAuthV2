@@ -7,6 +7,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace DaOAuthV2.Service.Test
@@ -16,7 +17,6 @@ namespace DaOAuthV2.Service.Test
     {
         private IOAuthService _service;
         private AskAuthorizeDto _dto;
-        private AppConfiguration _conf;
         private User _validUser;
         private Client _validClientConfidential;
         private Client _validClientPublic;
@@ -28,9 +28,18 @@ namespace DaOAuthV2.Service.Test
         private Code _expiredCode;
         private Code _validCode;
 
+        private string _validUserPassword = "plop";
+
         [TestInitialize]
         public void Init()
         {
+            byte[] pwd;
+            using (SHA256Managed sha256 = new SHA256Managed())
+            {
+                pwd = sha256.ComputeHash(
+                    Encoding.UTF8.GetBytes(String.Concat(FakeConfigurationHelper.GetFakeConf().PasswordSalt,_validUserPassword)));
+            }
+
             _validUser = new User()
             {
                 CreationDate = DateTime.Now,
@@ -38,7 +47,7 @@ namespace DaOAuthV2.Service.Test
                 FullName = "testeur valid",
                 Id = 500,
                 IsValid = true,
-                Password = new byte[] { 0 },
+                Password = pwd,
                 UserName = "valid"
             };
 
@@ -190,16 +199,9 @@ namespace DaOAuthV2.Service.Test
                 ReturnUrl = "http://www.perdu.com"
             });
 
-            AppConfiguration conf = new AppConfiguration()
-            {
-                AuthorizeClientPageUrl = new Uri("http://www.perdu.com")
-            };
-
-            _conf = conf;
-
             _service = new OAuthService()
             {
-                Configuration = conf,
+                Configuration = FakeConfigurationHelper.GetFakeConf(),
                 ConnexionString = String.Empty,
                 RepositoriesFactory = new FakeRepositoriesFactory(),
                 StringLocalizerFactory = new FakeStringLocalizerFactory(),
@@ -268,6 +270,7 @@ namespace DaOAuthV2.Service.Test
         [TestMethod]
         public void Genererate_Uri_For_Authorize_Should_Contain_Redirect_Uri_When_Response_Type_Is_Empty()
         {
+            bool exceptionOccured = false;
             DaOAuthRedirectException ex = null;
             try
             {
@@ -278,7 +281,10 @@ namespace DaOAuthV2.Service.Test
             {
                 Assert.IsInstanceOfType(e, typeof(DaOAuthRedirectException));
                 ex = (DaOAuthRedirectException)e;
+                exceptionOccured = true;
             }
+
+            Assert.IsTrue(exceptionOccured);
 
             Assert.IsNotNull(ex.RedirectUri);
             Assert.IsTrue(ex.RedirectUri.AbsoluteUri.StartsWith($"http://www.perdu.com/?error={OAuthConvention.ErrorNameInvalidRequest}&error_description="));
@@ -286,6 +292,7 @@ namespace DaOAuthV2.Service.Test
 
             _dto.State = String.Empty;
 
+            exceptionOccured = false;
             try
             {
                 _dto.ResponseType = null;
@@ -295,7 +302,10 @@ namespace DaOAuthV2.Service.Test
             {
                 Assert.IsInstanceOfType(e, typeof(DaOAuthRedirectException));
                 ex = (DaOAuthRedirectException)e;
+                exceptionOccured = true;
             }
+
+            Assert.IsTrue(exceptionOccured);
 
             Assert.IsNotNull(ex.RedirectUri);
             Assert.IsTrue(ex.RedirectUri.AbsoluteUri.StartsWith($"http://www.perdu.com/?error={OAuthConvention.ErrorNameInvalidRequest}&error_description="));
@@ -306,6 +316,7 @@ namespace DaOAuthV2.Service.Test
         [TestMethod]
         public void Genererate_Uri_For_Authorize_Should_Contain_Redirect_Uri_When_Response_Type_Is_Unsupported()
         {
+            bool exceptionOccured = false;
             DaOAuthRedirectException ex = null;
             try
             {
@@ -316,7 +327,10 @@ namespace DaOAuthV2.Service.Test
             {
                 Assert.IsInstanceOfType(e, typeof(DaOAuthRedirectException));
                 ex = (DaOAuthRedirectException)e;
+                exceptionOccured = true;
             }
+
+            Assert.IsTrue(exceptionOccured);
 
             Assert.IsNotNull(ex.RedirectUri);
             Assert.IsTrue(ex.RedirectUri.AbsoluteUri.StartsWith($"http://www.perdu.com/?error={OAuthConvention.ErrorNameUnsupportedResponseType}&error_description="));
@@ -324,6 +338,7 @@ namespace DaOAuthV2.Service.Test
 
             _dto.State = String.Empty;
 
+            exceptionOccured = false;
             try
             {
                 _dto.State = null;
@@ -333,7 +348,10 @@ namespace DaOAuthV2.Service.Test
             {
                 Assert.IsInstanceOfType(e, typeof(DaOAuthRedirectException));
                 ex = (DaOAuthRedirectException)e;
+                exceptionOccured = true;
             }
+
+            Assert.IsTrue(exceptionOccured);
 
             Assert.IsNotNull(ex.RedirectUri);
             Assert.IsTrue(ex.RedirectUri.AbsoluteUri.StartsWith($"http://www.perdu.com/?error={OAuthConvention.ErrorNameUnsupportedResponseType}&error_description="));
@@ -360,6 +378,7 @@ namespace DaOAuthV2.Service.Test
         [TestMethod]
         public void Genererate_Uri_For_Authorize_Should_Contain_Redirect_Uri_When_Client_Id_Is_Empty()
         {
+            bool exceptionOccured = false;
             DaOAuthRedirectException ex = null;
             try
             {
@@ -378,6 +397,7 @@ namespace DaOAuthV2.Service.Test
 
             _dto.State = String.Empty;
 
+            exceptionOccured = false;
             try
             {
                 _dto.ClientPublicId = null;
@@ -387,7 +407,10 @@ namespace DaOAuthV2.Service.Test
             {
                 Assert.IsInstanceOfType(e, typeof(DaOAuthRedirectException));
                 ex = (DaOAuthRedirectException)e;
+                exceptionOccured = true;
             }
+
+            Assert.IsTrue(exceptionOccured);
 
             Assert.IsNotNull(ex.RedirectUri);
             Assert.IsTrue(ex.RedirectUri.AbsoluteUri.StartsWith($"http://www.perdu.com/?error={OAuthConvention.ErrorNameInvalidRequest}&error_description="));
@@ -439,6 +462,7 @@ namespace DaOAuthV2.Service.Test
         [TestMethod]
         public void Genererate_Uri_For_Authorize_Should_Contains_Correct_Redirect_Url_When_User_Has_Not_Authorized_Or_Deny_Client_To_Ask()
         {
+            bool exceptionOccured = false;
             try
             {
                 _dto.ClientPublicId = "public_id_4";
@@ -449,14 +473,17 @@ namespace DaOAuthV2.Service.Test
             }
             catch (DaOAuthRedirectException ex)
             {
-                var expectedUri = new Uri($"{_conf.AuthorizeClientPageUrl}?" +
+                var expectedUri = new Uri($"{FakeConfigurationHelper.GetFakeConf().AuthorizeClientPageUrl}?" +
                                    $"response_type={_dto.ResponseType}&" +
                                    $"client_id={_dto.ClientPublicId}&" +
                                    $"state={_dto.State}&" +
                                    $"redirect_uri={_dto.RedirectUri}&" +
                                    $"scope={_dto.Scope}");
                 Assert.AreEqual(expectedUri.AbsolutePath, ex.RedirectUri.AbsolutePath);
+                exceptionOccured = true;
             }
+
+            Assert.IsTrue(exceptionOccured);
         }
 
         [TestMethod]
@@ -479,6 +506,8 @@ namespace DaOAuthV2.Service.Test
         [TestMethod]
         public void Genererate_Uri_For_Authorize_Should_Contains_Correct_Redirect_Url_When_User_Has_Deny_Client()
         {
+            FakeDataBase.Instance.UsersClient.Clear();
+            bool exceptionOccured = false;
             FakeDataBase.Instance.UsersClient.Add(new UserClient()
             {
                 ClientId = _validClientConfidential.Id,
@@ -506,7 +535,10 @@ namespace DaOAuthV2.Service.Test
                 Assert.IsTrue(ex.RedirectUri.AbsoluteUri.Contains("error=access_denied"));
                 Assert.IsTrue(ex.RedirectUri.AbsoluteUri.Contains("error_description"));
                 Assert.IsTrue(ex.RedirectUri.AbsoluteUri.Contains("state=test"));
+                exceptionOccured = true;
             }
+
+            Assert.IsTrue(exceptionOccured);
         }
 
         [TestMethod]
@@ -562,7 +594,7 @@ namespace DaOAuthV2.Service.Test
             Assert.IsTrue(!String.IsNullOrEmpty(url.AbsoluteUri));
             Assert.IsTrue(url.AbsoluteUri.StartsWith("http://www.perdu.com"));
             Assert.IsTrue(url.AbsoluteUri.Contains("state=test"));
-            Assert.IsTrue(url.AbsoluteUri.Contains("token=abcdef"));
+            Assert.IsTrue(url.AbsoluteUri.Contains("token="));
             Assert.IsTrue(url.AbsoluteUri.Contains("token_type=bearer"));
         }
 
@@ -579,6 +611,7 @@ namespace DaOAuthV2.Service.Test
         [TestMethod]
         public void Generate_Token_Should_Throw_DaOAuthTokenException_With_Correct_Error_Message_When_Grant_Type_Is_Invalid()
         {
+            bool exceptionOccured = false;
             try
             {
                 _service.GenerateToken(new AskTokenDto()
@@ -592,12 +625,16 @@ namespace DaOAuthV2.Service.Test
             {
                 Assert.IsInstanceOfType(ex, typeof(DaOAuthTokenException));
                 Assert.AreEqual(OAuthConvention.ErrorNameUnsupportedGrantType, ((DaOAuthTokenException)ex).Error);
+                exceptionOccured = true;
             }
+
+            Assert.IsTrue(exceptionOccured);
         }
 
         [TestMethod]
         public void Generate_Token_Should_Throw_DaOAuthTokenException_With_Correct_Error_Message_When_Client_Credentials_Are_Invalid_For_Authorization_Code_Grant()
         {
+            bool exceptionOccured = false;
             try
             {
                 _service.GenerateToken(new AskTokenDto()
@@ -612,12 +649,16 @@ namespace DaOAuthV2.Service.Test
             {
                 Assert.IsInstanceOfType(ex, typeof(DaOAuthTokenException));
                 Assert.AreEqual(OAuthConvention.ErrorNameUnauthorizedClient, ((DaOAuthTokenException)ex).Error);
+                exceptionOccured = true;
             }
+
+            Assert.IsTrue(exceptionOccured);
         }
 
         [TestMethod]
         public void Generate_Token_Should_Throw_DaOAuthTokenException_With_Correct_Error_Message_When_Code_Empty_For_Authorization_Code_Grant()
         {
+            bool exceptionOccured = false;
             try
             {
                 _service.GenerateToken(new AskTokenDto()
@@ -633,12 +674,16 @@ namespace DaOAuthV2.Service.Test
             {
                 Assert.IsInstanceOfType(ex, typeof(DaOAuthTokenException));
                 Assert.AreEqual(OAuthConvention.ErrorNameInvalidRequest, ((DaOAuthTokenException)ex).Error);
+                exceptionOccured = true;
             }
+
+            Assert.IsTrue(exceptionOccured);
         }
 
         [TestMethod]
         public void Generate_Token_Should_Throw_DaOAuthTokenException_With_Correct_Error_Message_When_Return_Url_Empty_For_Authorization_Code_Grant()
         {
+            bool exceptionOccured = false;
             try
             {
                 _service.GenerateToken(new AskTokenDto()
@@ -655,12 +700,16 @@ namespace DaOAuthV2.Service.Test
             {
                 Assert.IsInstanceOfType(ex, typeof(DaOAuthTokenException));
                 Assert.AreEqual(OAuthConvention.ErrorNameInvalidRequest, ((DaOAuthTokenException)ex).Error);
+                exceptionOccured = true;
             }
+
+            Assert.IsTrue(exceptionOccured);
         }
 
         [TestMethod]
         public void Generate_Token_Should_Throw_DaOAuthTokenException_With_Correct_Error_Message_When_Client_Public_Id_Empty_For_Authorization_Code_Grant()
         {
+            bool exceptionOccured = false;
             try
             {
                 _service.GenerateToken(new AskTokenDto()
@@ -676,12 +725,16 @@ namespace DaOAuthV2.Service.Test
             {
                 Assert.IsInstanceOfType(ex, typeof(DaOAuthTokenException));
                 Assert.AreEqual(OAuthConvention.ErrorNameInvalidRequest, ((DaOAuthTokenException)ex).Error);
+                exceptionOccured = true;
             }
+
+            Assert.IsTrue(exceptionOccured);
         }
 
         [TestMethod]
         public void Generate_Token_Should_Throw_DaOAuthTokenException_With_Correct_Error_Message_When_Return_Url_Is_Invalid_For_Authorization_Code_Grant()
         {
+            bool exceptionOccured = false;
             try
             {
                 _service.GenerateToken(new AskTokenDto()
@@ -698,12 +751,16 @@ namespace DaOAuthV2.Service.Test
             {
                 Assert.IsInstanceOfType(ex, typeof(DaOAuthTokenException));
                 Assert.AreEqual(OAuthConvention.ErrorNameInvalidRequest, ((DaOAuthTokenException)ex).Error);
+                exceptionOccured = true;
             }
+
+            Assert.IsTrue(exceptionOccured);
         }
 
         [TestMethod]
         public void Generate_Token_Should_Throw_DaOAuthTokenException_With_Correct_Error_Message_When_Client_Type_Is_Public_For_Authorization_Code_Grant()
         {
+            bool exceptionOccured = false;
             try
             {
                 _service.GenerateToken(new AskTokenDto()
@@ -720,12 +777,16 @@ namespace DaOAuthV2.Service.Test
             {
                 Assert.IsInstanceOfType(ex, typeof(DaOAuthTokenException));
                 Assert.AreEqual(OAuthConvention.ErrorNameInvalidClient, ((DaOAuthTokenException)ex).Error);
+                exceptionOccured = true;
             }
+
+            Assert.IsTrue(exceptionOccured);
         }
 
         [TestMethod]
         public void Generate_Token_Should_Throw_DaOAuthTokenException_With_Correct_Error_Message_When_Client_Return_Url_Unknow_For_Authorization_Code_Grant()
         {
+            bool exceptionOccured = false;
             try
             {
                 _service.GenerateToken(new AskTokenDto()
@@ -742,12 +803,16 @@ namespace DaOAuthV2.Service.Test
             {
                 Assert.IsInstanceOfType(ex, typeof(DaOAuthTokenException));
                 Assert.AreEqual(OAuthConvention.ErrorNameInvalidClient, ((DaOAuthTokenException)ex).Error);
+                exceptionOccured = true;
             }
+
+            Assert.IsTrue(exceptionOccured);
         }
 
         [TestMethod]
         public void Generate_Token_Should_Throw_DaOAuthTokenException_With_Correct_Error_Message_When_Code_Incorrect_For_Authorization_Code_Grant()
         {
+            bool exceptionOccured = false;
             try
             {
                 _service.GenerateToken(new AskTokenDto()
@@ -766,12 +831,16 @@ namespace DaOAuthV2.Service.Test
             {
                 Assert.IsInstanceOfType(ex, typeof(DaOAuthTokenException));
                 Assert.AreEqual(OAuthConvention.ErrorNameInvalidGrant, ((DaOAuthTokenException)ex).Error);
+                exceptionOccured = true;
             }
+
+            Assert.IsTrue(exceptionOccured);
         }
 
         [TestMethod]
         public void Generate_Token_Should_Throw_DaOAuthTokenException_With_Correct_Error_Message_When_Code_Invalid_For_Authorization_Code_Grant()
         {
+            bool exceptionOccured = false;
             try
             {
                 _service.GenerateToken(new AskTokenDto()
@@ -790,12 +859,16 @@ namespace DaOAuthV2.Service.Test
             {
                 Assert.IsInstanceOfType(ex, typeof(DaOAuthTokenException));
                 Assert.AreEqual(OAuthConvention.ErrorNameInvalidGrant, ((DaOAuthTokenException)ex).Error);
+                exceptionOccured = true;
             }
+
+            Assert.IsTrue(exceptionOccured);
         }
 
         [TestMethod]
         public void Generate_Token_Should_Throw_DaOAuthTokenException_With_Correct_Error_Message_When_Code_Expired_For_Authorization_Code_Grant()
         {
+            bool exceptionOccured = false;
             try
             {
                 _service.GenerateToken(new AskTokenDto()
@@ -814,12 +887,16 @@ namespace DaOAuthV2.Service.Test
             {
                 Assert.IsInstanceOfType(ex, typeof(DaOAuthTokenException));
                 Assert.AreEqual(OAuthConvention.ErrorNameInvalidGrant, ((DaOAuthTokenException)ex).Error);
+                exceptionOccured = true;
             }
+
+            Assert.IsTrue(exceptionOccured);
         }
 
         [TestMethod]
         public void Generate_Token_Should_Throw_DaOAuthTokenException_With_Correct_Error_Message_When_Scope_Are_Invalid_For_Authorization_Code_Grant()
         {
+            bool exceptionOccured = false;
             try
             {
                 _service.GenerateToken(new AskTokenDto()
@@ -839,7 +916,10 @@ namespace DaOAuthV2.Service.Test
             {
                 Assert.IsInstanceOfType(ex, typeof(DaOAuthTokenException));
                 Assert.AreEqual(OAuthConvention.ErrorNameInvalidGrant, ((DaOAuthTokenException)ex).Error);
+                exceptionOccured = true;
             }
+
+            Assert.IsTrue(exceptionOccured);
         }
 
         [TestMethod]
@@ -912,6 +992,7 @@ namespace DaOAuthV2.Service.Test
         [TestMethod]
         public void Generate_Token_Should_Throw_DaOAuthTokenException_With_Correct_Error_Message_When_Client_Credentials_Are_Invalid_For_Refresh_Token_Grant()
         {
+            bool exceptionOccured = false;
             try
             {
                 _service.GenerateToken(new AskTokenDto()
@@ -927,12 +1008,16 @@ namespace DaOAuthV2.Service.Test
             {
                 Assert.IsInstanceOfType(ex, typeof(DaOAuthTokenException));
                 Assert.AreEqual(OAuthConvention.ErrorNameUnauthorizedClient, ((DaOAuthTokenException)ex).Error);
+                exceptionOccured = true;
             }
+
+            Assert.IsTrue(exceptionOccured);
         }
 
         [TestMethod]
         public void Generate_Token_Should_Throw_DaOAuthTokenException_With_Correct_Error_Message_When_Refresh_Token_Is_Missing_For_Refresh_Token_Grant()
         {
+            bool exceptionOccured = false;
             try
             {
                 _service.GenerateToken(new AskTokenDto()
@@ -948,12 +1033,16 @@ namespace DaOAuthV2.Service.Test
             {
                 Assert.IsInstanceOfType(ex, typeof(DaOAuthTokenException));
                 Assert.AreEqual(OAuthConvention.ErrorNameInvalidGrant, ((DaOAuthTokenException)ex).Error);
+                exceptionOccured = true;
             }
+
+            Assert.IsTrue(exceptionOccured);
         }
 
         [TestMethod]
         public void Generate_Token_Should_Throw_DaOAuthTokenException_With_Correct_Error_Message_When_Refresh_Token_Is_Invalid_For_Refresh_Token_Grant()
         {
+            bool exceptionOccured = false;
             try
             {
                 _service = new OAuthService()
@@ -993,12 +1082,17 @@ namespace DaOAuthV2.Service.Test
             {
                 Assert.IsInstanceOfType(ex, typeof(DaOAuthTokenException));
                 Assert.AreEqual(OAuthConvention.ErrorNameInvalidGrant, ((DaOAuthTokenException)ex).Error);
+                exceptionOccured = true;
             }
+
+            Assert.IsTrue(exceptionOccured);
         }
 
         [TestMethod]
         public void Generate_Token_Should_Throw_DaOAuthTokenException_With_Correct_Error_Message_When_Client_Is_Inactif_For_Refresh_Token_Grant()
         {
+            bool exceptionOccured = false;
+
             try
             {
                 var uc = new FakeUserClientRepository().GetUserClientByUserNameAndClientPublicId("cl-500", _validUser.UserName);
@@ -1017,12 +1111,17 @@ namespace DaOAuthV2.Service.Test
             {
                 Assert.IsInstanceOfType(ex, typeof(DaOAuthTokenException));
                 Assert.AreEqual(OAuthConvention.ErrorNameInvalidGrant, ((DaOAuthTokenException)ex).Error);
+                exceptionOccured = true;
             }
+
+            Assert.IsTrue(exceptionOccured);
         }
 
         [TestMethod]
         public void Generate_Token_Should_Throw_DaOAuthTokenException_With_Correct_Error_Message_When_Client_Refresh_Token_Is_Different_For_Refresh_Token_Grant()
         {
+            bool exceptionOccured = false;
+
             try
             {
                 var uc = new FakeUserClientRepository().GetUserClientByUserNameAndClientPublicId("cl-500", _validUser.UserName);
@@ -1041,7 +1140,10 @@ namespace DaOAuthV2.Service.Test
             {
                 Assert.IsInstanceOfType(ex, typeof(DaOAuthTokenException));
                 Assert.AreEqual(OAuthConvention.ErrorNameInvalidGrant, ((DaOAuthTokenException)ex).Error);
+                exceptionOccured = true;
             }
+
+            Assert.IsTrue(exceptionOccured);
         }
 
         [TestMethod]
@@ -1088,6 +1190,194 @@ namespace DaOAuthV2.Service.Test
             });
 
             Assert.IsNotNull(tokenInfo);
+            Assert.AreNotEqual(token, tokenInfo.RefreshToken);
+            Assert.AreEqual(_validUserClientConfidential.RefreshToken, tokenInfo.RefreshToken);
+        }
+
+        [TestMethod]
+        public void Generate_Token_Should_Throw_DaOAuthTokenException_With_Correct_Error_Message_When_Client_Credentials_Are_Invalid_For_Password_Code_Grant()
+        {
+            bool exceptionOccured = false;
+
+            try
+            {
+                _service.GenerateToken(new AskTokenDto()
+                {
+                    ClientPublicId = "cl-500",
+                    ParameterUsername = _validUser.UserName,
+                    Password = "plop",
+                    Scope = "scp_vc",
+                    GrantType = OAuthConvention.GrantTypePassword,
+                    LoggedUserName = _validUser.UserName,
+                    AuthorizationHeader = String.Concat("Basic ", Convert.ToBase64String(Encoding.UTF8.GetBytes("cl-500:bad_secret500")))
+                });
+            }
+            catch (Exception ex)
+            {
+                Assert.IsInstanceOfType(ex, typeof(DaOAuthTokenException));
+                Assert.AreEqual(OAuthConvention.ErrorNameUnauthorizedClient, ((DaOAuthTokenException)ex).Error);
+                exceptionOccured = true;
+            }
+
+            Assert.IsTrue(exceptionOccured);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(DaOAuthTokenException))]
+        public void Generate_Token_Should_Throw_DaOAuthServiceException_When_User_Name_Is_Empty_For_Password_Code_Grant()
+        {           
+            _service.GenerateToken(new AskTokenDto()
+            {
+                ClientPublicId = "cl-500",
+                ParameterUsername = String.Empty,
+                Password = _validUserPassword,
+                Scope = "scp_vc",
+                GrantType = OAuthConvention.GrantTypePassword,
+                LoggedUserName = _validUser.UserName,
+                AuthorizationHeader = String.Concat("Basic ", Convert.ToBase64String(Encoding.UTF8.GetBytes("cl-500:bad_secret500")))
+            });          
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(DaOAuthTokenException))]
+        public void Generate_Token_Should_Throw_DaOAuthServiceException_When_Password_Is_Empty_For_Password_Code_Grant()
+        {            
+            _service.GenerateToken(new AskTokenDto()
+            {
+                ClientPublicId = "cl-500",
+                ParameterUsername = _validUser.UserName,
+                Password = String.Empty,
+                Scope = "scp_vc",
+                GrantType = OAuthConvention.GrantTypePassword,
+                LoggedUserName = _validUser.UserName,
+                AuthorizationHeader = String.Concat("Basic ", Convert.ToBase64String(Encoding.UTF8.GetBytes("cl-500:bad_secret500")))
+            });
+        }
+
+        [TestMethod]
+        public void Generate_Token_Should_Throw_DaOAuthTokenException_With_Correct_Error_Message_When_Password_Is_Incorrect_For_Password_Code_Grant()
+        {
+            bool exceptionOccured = false;
+
+            try
+            {
+                _service.GenerateToken(new AskTokenDto()
+                {
+                    ClientPublicId = "cl-500",
+                    ParameterUsername = _validUser.UserName,
+                    Password = "plop--",
+                    Scope = "scp_vc",
+                    GrantType = OAuthConvention.GrantTypePassword,
+                    LoggedUserName = _validUser.UserName,
+                    AuthorizationHeader = String.Concat("Basic ", Convert.ToBase64String(Encoding.UTF8.GetBytes("cl-500:secret500")))
+                });
+            }
+            catch (Exception ex)
+            {
+                Assert.IsInstanceOfType(ex, typeof(DaOAuthTokenException));
+                Assert.AreEqual(OAuthConvention.ErrorNameInvalidGrant, ((DaOAuthTokenException)ex).Error);
+                exceptionOccured = true;
+            }
+
+            Assert.IsTrue(exceptionOccured);
+        }
+
+        [TestMethod]
+        public void Generate_Token_Should_Throw_DaOAuthTokenException_With_Correct_Error_Message_When_UserName_Is_Incorrect_For_Password_Code_Grant()
+        {
+            bool exceptionOccured = false;
+
+            try
+            {
+                _service.GenerateToken(new AskTokenDto()
+                {
+                    ClientPublicId = "cl-500",
+                    Scope = "scp_vc",
+                    ParameterUsername = _validUser.UserName + "plop",
+                    Password = _validUserPassword,
+                    GrantType = OAuthConvention.GrantTypePassword,
+                    LoggedUserName = _validUser.UserName,
+                    AuthorizationHeader = String.Concat("Basic ", Convert.ToBase64String(Encoding.UTF8.GetBytes("cl-500:secret500")))
+                });
+            }
+            catch (Exception ex)
+            {
+                Assert.IsInstanceOfType(ex, typeof(DaOAuthTokenException));
+                Assert.AreEqual(OAuthConvention.ErrorNameInvalidGrant, ((DaOAuthTokenException)ex).Error);
+                exceptionOccured = true;
+            }
+
+            Assert.IsTrue(exceptionOccured);
+        }
+
+        [TestMethod]
+        public void Generate_Token_Should_Throw_DaOAuthTokenException_With_Correct_Error_Message_When_Scope_Is_Incorrect_For_Password_Code_Grant()
+        {
+            bool exceptionOccured = false;
+
+            try
+            {
+                _service.GenerateToken(new AskTokenDto()
+                {
+                    ClientPublicId = "cl-500",
+                    Scope = "scp_vc scpppp",
+                    ParameterUsername = _validUser.UserName,
+                    Password = _validUserPassword,
+                    GrantType = OAuthConvention.GrantTypePassword,
+                    LoggedUserName = _validUser.UserName,
+                    AuthorizationHeader = String.Concat("Basic ", Convert.ToBase64String(Encoding.UTF8.GetBytes("cl-500:secret500")))
+                });
+            }
+            catch (Exception ex)
+            {
+                Assert.IsInstanceOfType(ex, typeof(DaOAuthTokenException));
+                Assert.AreEqual(OAuthConvention.ErrorNameInvalidScope, ((DaOAuthTokenException)ex).Error);
+                exceptionOccured = true;
+            }
+
+            Assert.IsTrue(exceptionOccured);
+        }
+
+        [TestMethod]
+        public void Generate_Token_Should_Create_New_Refresh_Token_For_Password_Code_Grant()
+        {
+            string token = _validUserClientConfidential.RefreshToken;
+
+            _service = new OAuthService()
+            {
+                Configuration = FakeConfigurationHelper.GetFakeConf(),
+                ConnexionString = String.Empty,
+                RepositoriesFactory = new FakeRepositoriesFactory(),
+                StringLocalizerFactory = new FakeStringLocalizerFactory(),
+                Logger = new FakeLogger(),
+                RandomService = new FakeRandomService(123, "abc"),
+                JwtService = new FakeJwtService(new JwtTokenDto()
+                {
+                    ClientId = _validClientConfidential.PublicId,
+                    Expire = long.MaxValue,
+                    InvalidationCause = String.Empty,
+                    IsValid = true,
+                    Scope = "scp_vc",
+                    Token = token,
+                    UserName = _validUser.UserName,
+                    UserPublicId = "random"
+                })
+            };
+
+            var tokenInfo = _service.GenerateToken(new AskTokenDto()
+            {
+                ClientPublicId = "cl-500",
+                Scope = "scp_vc",
+                ParameterUsername = _validUser.UserName,
+                Password = _validUserPassword,
+                GrantType = OAuthConvention.GrantTypePassword,
+                LoggedUserName = _validUser.UserName,
+                AuthorizationHeader = String.Concat("Basic ", Convert.ToBase64String(Encoding.UTF8.GetBytes("cl-500:secret500")))
+            });
+
+            Assert.IsNotNull(tokenInfo);
+            Assert.AreNotEqual(token, tokenInfo.RefreshToken);
+            Assert.AreEqual(_validUserClientConfidential.RefreshToken, tokenInfo.RefreshToken);
         }
     }
 }

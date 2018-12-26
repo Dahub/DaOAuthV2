@@ -159,6 +159,7 @@ namespace DaOAuthV2.Service
                     result = GenerateTokenForRefreshToken(tokenInfo, errorLocal);
                     break;
                 case OAuthConvention.GrantTypePassword:
+                    result = GenerateTokenForPasswordGrant(tokenInfo, errorLocal);
                     break;
                 case OAuthConvention.GrantTypeClientCredentials:
                     break;
@@ -233,7 +234,7 @@ namespace DaOAuthV2.Service
             }
 
             return toReturn;
-        }      
+        }
 
         private TokenInfoDto GenerateTokenForRefreshToken(AskTokenDto tokenInfo, IStringLocalizer errorLocal)
         {
@@ -258,19 +259,74 @@ namespace DaOAuthV2.Service
                         Description = errorLocal["UnauthorizedClient"]
                     };
 
-                var tokenDetail = JwtService.ExtractToken(new ExtractTokenDto(){
-                     Token = tokenInfo.RefreshToken,
-                     TokenName = OAuthConvention.RefreshToken
+                var tokenDetail = JwtService.ExtractToken(new ExtractTokenDto()
+                {
+                    Token = tokenInfo.RefreshToken,
+                    TokenName = OAuthConvention.RefreshToken
                 });
 
-                if(!CheckIfTokenIsValid(tokenDetail, context))
+                if (!CheckIfTokenIsValid(tokenDetail, context))
                     throw new DaOAuthTokenException()
                     {
                         Error = OAuthConvention.ErrorNameInvalidGrant,
                         Description = errorLocal["RefreshTokenInvalid"]
                     };
 
-                if(!CheckIfScopesAreAuthorizedForClient(tokenDetail.ClientId, tokenInfo.Scope))
+                if (!CheckIfScopesAreAuthorizedForClient(tokenDetail.ClientId, tokenInfo.Scope))
+                    throw new DaOAuthTokenException()
+                    {
+                        Error = OAuthConvention.ErrorNameInvalidScope,
+                        Description = errorLocal["UnauthorizedScope"]
+                    };
+
+                toReturn = GenerateAccessTokenAndUpdateRefreshToken(tokenInfo, context);
+            }
+
+            return toReturn;
+        }
+
+        private TokenInfoDto GenerateTokenForPasswordGrant(AskTokenDto tokenInfo, IStringLocalizer errorLocal)
+        {
+            TokenInfoDto toReturn = null;
+
+            if (String.IsNullOrWhiteSpace(tokenInfo.ParameterUsername))
+                throw new DaOAuthTokenException()
+                {
+                    Error = OAuthConvention.ErrorNameInvalidRequest,
+                    Description = errorLocal["UserNameParameterError"]
+                };
+
+            if (String.IsNullOrWhiteSpace(tokenInfo.Password))
+                throw new DaOAuthTokenException()
+                {
+                    Error = OAuthConvention.ErrorNameInvalidRequest,
+                    Description = errorLocal["PasswordParameterError"]
+                };
+
+            using (var context = RepositoriesFactory.CreateContext(ConnexionString))
+            {
+                var clientRepo = RepositoriesFactory.GetClientRepository(context);
+                Client myClient = clientRepo.GetByPublicId(tokenInfo.ClientPublicId);
+
+                if (!CheckIfCredentialsAreValid(myClient, tokenInfo.AuthorizationHeader))
+                    throw new DaOAuthTokenException()
+                    {
+                        Error = OAuthConvention.ErrorNameUnauthorizedClient,
+                        Description = errorLocal["UnauthorizedClient"]
+                    };
+
+                var repo = RepositoriesFactory.GetUserRepository(context);
+                var user = repo.GetByUserName(tokenInfo.ParameterUsername);
+
+                if (user == null || !user.IsValid || !AreEqualsSha256(
+                    String.Concat(Configuration.PasswordSalt, tokenInfo.Password), user.Password))
+                    throw new DaOAuthTokenException()
+                    {
+                        Error = OAuthConvention.ErrorNameInvalidGrant,
+                        Description = errorLocal["UserCredentialsIncorrects"]
+                    };
+
+                if (!CheckIfScopesAreAuthorizedForClient(myClient.PublicId, tokenInfo.Scope))
                     throw new DaOAuthTokenException()
                     {
                         Error = OAuthConvention.ErrorNameInvalidScope,
@@ -516,7 +572,7 @@ namespace DaOAuthV2.Service
 
             return toReturn;
         }
-      
+
         private bool CheckIfCredentialsAreValid(Client cl, string authentificationHeader)
         {
             if (cl == null)

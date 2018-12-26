@@ -1,4 +1,6 @@
-﻿namespace DaOAuthV2.Service.Test.Fake
+﻿using System;
+
+namespace DaOAuthV2.Service.Test.Fake
 {
     internal static class FakeConfigurationHelper
     {
@@ -7,7 +9,8 @@
             return new AppConfiguration()
             {
                 PasswordSalt = "SALT",
-                SecurityKey = "KEY"
+                SecurityKey = "KEY",
+                AuthorizeClientPageUrl = new Uri("http://www.perdu.com")
             };
         }
     }

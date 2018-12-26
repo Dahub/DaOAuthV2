@@ -165,6 +165,9 @@
   <data name="ModelNull" xml:space="preserve">
     <value>Cannot validate a null object</value>
   </data>
+  <data name="PasswordParameterError" xml:space="preserve">
+    <value>Password is mandatory</value>
+  </data>
   <data name="RefreshTokenInvalid" xml:space="preserve">
     <value>Invalid refresh token</value>
   </data>
@@ -200,5 +203,11 @@
   </data>
   <data name="UpdateUserNoUserFound" xml:space="preserve">
     <value>User don't exist or ban</value>
+  </data>
+  <data name="UserCredentialsIncorrects" xml:space="preserve">
+    <value>User name or password incorrects</value>
+  </data>
+  <data name="UserNameParameterError" xml:space="preserve">
+    <value>User name is mandatory</value>
   </data>
 </root>
