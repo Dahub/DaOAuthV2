@@ -53,6 +53,9 @@ namespace DaOAuthV2.Dal.EF
             modelBuilder.Entity<ClientType>().HasKey(c => c.Id);
             modelBuilder.Entity<ClientType>().Property(p => p.Id).HasColumnName("Id").HasColumnType("int").IsRequired();
             modelBuilder.Entity<ClientType>().Property(p => p.Wording).HasColumnName("Wording").HasColumnType("nvarchar(256)").HasMaxLength(256).IsRequired();
+            modelBuilder.Entity<ClientType>().HasData(
+                new ClientType() { Id = 1, Wording = "public" },
+                new ClientType() { Id = 2, Wording = "confidential" });
 
             modelBuilder.Entity<Client>().ToTable("Client");
             modelBuilder.Entity<Client>().HasKey(c => c.Id);
@@ -62,7 +65,7 @@ namespace DaOAuthV2.Dal.EF
             modelBuilder.Entity<Client>().Property(p => p.IsValid).HasColumnName("IsValid").HasColumnType("bit").IsRequired();
             modelBuilder.Entity<Client>().Property(p => p.Name).HasColumnName("Name").HasColumnType("nvarchar(256)").HasMaxLength(256).IsRequired();
             modelBuilder.Entity<Client>().Property(p => p.PublicId).HasColumnName("PublicId").HasColumnType("nvarchar(256)").HasMaxLength(256).IsRequired();
-            modelBuilder.Entity<Client>().Property(p => p.ClientSecret).HasColumnName("ClientSecret").HasColumnType("nvarchar(256)").HasMaxLength(256);           
+            modelBuilder.Entity<Client>().Property(p => p.ClientSecret).HasColumnName("ClientSecret").HasColumnType("nvarchar(256)").HasMaxLength(256);
             modelBuilder.Entity<Client>().HasMany<ClientScope>(c => c.ClientsScopes).WithOne(c => c.Client).OnDelete(DeleteBehavior.Cascade);
             modelBuilder.Entity<Client>().Property(p => p.ClientTypeId).HasColumnName("FK_ClientType").HasColumnType("int").IsRequired();
             modelBuilder.Entity<Client>().HasOne<ClientType>(c => c.ClientType).WithMany(ct => ct.Clients).HasForeignKey(ct => ct.ClientTypeId);
@@ -81,7 +84,7 @@ namespace DaOAuthV2.Dal.EF
             modelBuilder.Entity<Code>().Property(p => p.CodeValue).HasColumnName("CodeValue").HasColumnType("nvarchar(256)").HasMaxLength(256).IsRequired();
             modelBuilder.Entity<Code>().Property(p => p.ExpirationTimeStamp).HasColumnName("ExpirationTimeStamp").HasColumnType("bigint").IsRequired();
             modelBuilder.Entity<Code>().Property(p => p.IsValid).HasColumnName("IsValid").HasColumnType("bit").IsRequired();
-            modelBuilder.Entity<Code>().Property(p => p.Scope).HasColumnName("Scope").HasColumnType("nvarchar(max)").HasMaxLength(Int32.MaxValue);            
+            modelBuilder.Entity<Code>().Property(p => p.Scope).HasColumnName("Scope").HasColumnType("nvarchar(max)").HasMaxLength(Int32.MaxValue);
             modelBuilder.Entity<Code>().Property(p => p.UserClientId).HasColumnName("FK_UserClient").HasColumnType("int").IsRequired();
             modelBuilder.Entity<Code>().HasOne<UserClient>(c => c.UserClient).WithMany(g => g.Codes).HasForeignKey(c => c.UserClientId);
 
