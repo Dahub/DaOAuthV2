@@ -8,12 +8,6 @@ namespace DaOAuthV2.Dal.EF
 {
     internal class RessourceServerRepository : RepositoryBase<RessourceServer>, IRessourceServerRepository
     {
-        public IEnumerable<RessourceServer> GetAllActives()
-        {
-            return Context.RessourceServers.
-                Where(rs => rs.IsValid.Equals(true));
-        }
-
         public RessourceServer GetByLogin(string login)
         {
             return Context.RessourceServers.

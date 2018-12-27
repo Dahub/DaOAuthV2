@@ -9,7 +9,7 @@ namespace DaOAuthV2.Service.Test.Fake
 {
     public class FakeScopeRepository : IScopeRepository
     {
-        public IContext Context { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public IContext Context { get; set; }
 
         public int Add(Scope toAdd)
         {
@@ -17,6 +17,11 @@ namespace DaOAuthV2.Service.Test.Fake
         }
 
         public void Delete(Scope toDelete)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<Scope> GetAll()
         {
             throw new NotImplementedException();
         }

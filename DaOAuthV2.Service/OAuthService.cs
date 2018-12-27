@@ -177,7 +177,63 @@ namespace DaOAuthV2.Service
 
         public IntrospectInfoDto Introspect(AskIntrospectDto introspectInfo)
         {
-            throw new NotImplementedException();
+            Validate(introspectInfo);
+
+            IntrospectInfoDto toReturn = new IntrospectInfoDto()
+            {
+                IsValid = false
+            };
+
+            string[] authsInfos = introspectInfo.AuthorizationHeader.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+
+            if (authsInfos.Length != 2)
+                return toReturn;
+
+            if (!authsInfos[0].Equals("Basic", StringComparison.OrdinalIgnoreCase))
+                return toReturn;
+
+            string credentials = Encoding.UTF8.GetString(Convert.FromBase64String(authsInfos[1]));
+            int separatorIndex = credentials.IndexOf(':');
+            if (separatorIndex == -1)
+                return toReturn;
+
+            string rsLogin = credentials.Substring(0, separatorIndex);
+            RessourceServer rs = null;
+
+            using (var context = RepositoriesFactory.CreateContext(ConnexionString))
+            {
+                var rsRepo = RepositoriesFactory.GetRessourceServerRepository(context);
+                rs = rsRepo.GetByLogin(rsLogin);
+
+
+                if (rs == null)
+                    return toReturn;
+
+                string rsSecret = credentials.Substring(separatorIndex + 1);
+                if (!AreEqualsSha256(String.Concat(Configuration.PasswordSalt, rsSecret), rs.ServerSecret))
+                    return toReturn;
+
+                if (!rs.IsValid)
+                    return toReturn;
+
+                var tokenInfo = JwtService.ExtractToken(new ExtractTokenDto()
+                {
+                    TokenName = OAuthConvention.AccessToken,
+                    Token = introspectInfo.Token
+                });
+
+                if (!tokenInfo.IsValid)
+                    return toReturn;
+
+                toReturn.ClientPublicId = tokenInfo.ClientId;
+                toReturn.Expire = tokenInfo.Expire;
+                toReturn.IsValid = true;
+                toReturn.Scope = tokenInfo.Scope;
+                toReturn.UserName = tokenInfo.UserName;
+                toReturn.Audiences = rsRepo.GetAll().Where(r => r.IsValid.Equals(true)).Select(r => r.Name).ToArray();
+            }
+
+            return toReturn;
         }
 
         private TokenInfoDto GenerateTokenForAuthorizationCodeGrant(AskTokenDto tokenInfo, IStringLocalizer errorLocal)
@@ -199,7 +255,7 @@ namespace DaOAuthV2.Service
                 var clientRepo = RepositoriesFactory.GetClientRepository(context);
                 Client myClient = clientRepo.GetByPublicId(tokenInfo.ClientPublicId);
 
-                if (!CheckIfCredentialsAreValid(myClient, tokenInfo.AuthorizationHeader))
+                if (!CheckIfClientsCredentialsAreValid(myClient, tokenInfo.AuthorizationHeader))
                     throw new DaOAuthTokenException()
                     {
                         Error = OAuthConvention.ErrorNameUnauthorizedClient,
@@ -261,7 +317,7 @@ namespace DaOAuthV2.Service
                 var clientRepo = RepositoriesFactory.GetClientRepository(context);
                 Client myClient = clientRepo.GetByPublicId(tokenInfo.ClientPublicId);
 
-                if (!CheckIfCredentialsAreValid(myClient, tokenInfo.AuthorizationHeader))
+                if (!CheckIfClientsCredentialsAreValid(myClient, tokenInfo.AuthorizationHeader))
                     throw new DaOAuthTokenException()
                     {
                         Error = OAuthConvention.ErrorNameUnauthorizedClient,
@@ -317,7 +373,7 @@ namespace DaOAuthV2.Service
                 var clientRepo = RepositoriesFactory.GetClientRepository(context);
                 Client myClient = clientRepo.GetByPublicId(tokenInfo.ClientPublicId);
 
-                if (!CheckIfCredentialsAreValid(myClient, tokenInfo.AuthorizationHeader))
+                if (!CheckIfClientsCredentialsAreValid(myClient, tokenInfo.AuthorizationHeader))
                     throw new DaOAuthTokenException()
                     {
                         Error = OAuthConvention.ErrorNameUnauthorizedClient,
@@ -360,7 +416,7 @@ namespace DaOAuthV2.Service
                 var clientRepo = RepositoriesFactory.GetClientRepository(context);
                 Client myClient = clientRepo.GetByPublicId(tokenInfo.ClientPublicId);
 
-                if (!CheckIfCredentialsAreValid(myClient, tokenInfo.AuthorizationHeader))
+                if (!CheckIfClientsCredentialsAreValid(myClient, tokenInfo.AuthorizationHeader))
                     throw new DaOAuthTokenException()
                     {
                         Error = OAuthConvention.ErrorNameUnauthorizedClient,
@@ -632,12 +688,9 @@ namespace DaOAuthV2.Service
             return toReturn;
         }
 
-        private bool CheckIfCredentialsAreValid(Client cl, string authentificationHeader)
+        private bool CheckIfClientsCredentialsAreValid(Client cl, string authentificationHeader)
         {
-            if (cl == null)
-                return false;
-
-            if (String.IsNullOrWhiteSpace(authentificationHeader))
+            if (cl == null || String.IsNullOrWhiteSpace(authentificationHeader))
                 return false;
 
             string[] authsInfos = authentificationHeader.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
@@ -655,7 +708,9 @@ namespace DaOAuthV2.Service
                 string clientPublicId = credentials.Substring(0, separatorIndex);
                 string clientSecret = credentials.Substring(separatorIndex + 1);
 
-                return clientSecret.Equals(cl.ClientSecret, StringComparison.Ordinal) && cl.IsValid;
+                return clientSecret.Equals(cl.ClientSecret, StringComparison.Ordinal)
+                    && cl.IsValid
+                    && cl.PublicId.Equals(clientPublicId, StringComparison.Ordinal);
             }
 
             return false;

@@ -12,32 +12,50 @@ namespace DaOAuthV2.Service.Test.Fake
 
         public IClientRepository GetClientRepository(IContext context)
         {
-            return new FakeClientRepository();
+            return new FakeClientRepository()
+            {
+                Context = context
+            };
         }
 
         public IClientReturnUrlRepository GetClientReturnUrlRepository(IContext context)
         {
-            return new FakeClientReturnUrlRepository();
+            return new FakeClientReturnUrlRepository()
+            {
+                Context = context
+            };
         }
 
         public ICodeRepository GetCodeRepository(IContext context)
         {
-            return new FakeCodeRepository();
+            return new FakeCodeRepository()
+            {
+                Context = context
+            };
         }
 
         public IRessourceServerRepository GetRessourceServerRepository(IContext context)
         {
-            throw new NotImplementedException();
+            return new FakeRessourceServerRepository()
+            {
+                Context = context
+            };
         }
 
         public IScopeRepository GetScopeRepository(IContext context)
         {
-            return new FakeScopeRepository();
+            return new FakeScopeRepository()
+            {
+                Context = context
+            };
         }
 
         public IUserClientRepository GetUserClientRepository(IContext context)
         {
-            return new FakeUserClientRepository();
+            return new FakeUserClientRepository()
+            {
+                Context = context
+            };
         }
 
         public IUserRepository GetUserRepository(IContext context)

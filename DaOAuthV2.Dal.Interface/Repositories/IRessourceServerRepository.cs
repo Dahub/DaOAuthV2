@@ -6,6 +6,5 @@ namespace DaOAuthV2.Dal.Interface
     public interface IRessourceServerRepository : IRepository<RessourceServer>
     {
         RessourceServer GetByLogin(string login);
-        IEnumerable<RessourceServer> GetAllActives();
     }
 }

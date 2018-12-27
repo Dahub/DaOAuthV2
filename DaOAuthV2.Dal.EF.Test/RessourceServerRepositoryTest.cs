@@ -2,7 +2,6 @@
 using DaOAuthV2.Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Linq;
 
 namespace DaOAuthV2.Dal.EF.Test
 {
@@ -65,24 +64,6 @@ namespace DaOAuthV2.Dal.EF.Test
             using (var context = new DaOAuthContext(options))
             {
                 context.Database.EnsureDeleted();
-            }
-        }
-
-        [TestMethod]
-        public void Get_All_Actives_Should_Return_2_Actives_Ressouce_Server()
-        {
-            var options = new DbContextOptionsBuilder<DaOAuthContext>()
-                        .UseInMemoryDatabase(databaseName: _dbName)
-                        .Options;
-
-            using (var context = new DaOAuthContext(options))
-            {
-                var repo = _repoFactory.GetRessourceServerRepository(context);
-
-                var rs = repo.GetAllActives();
-
-                Assert.AreEqual(2, rs.Count());
-                Assert.AreEqual(0, rs.Where(x => x.IsValid.Equals(false)).Count());
             }
         }
 

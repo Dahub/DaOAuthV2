@@ -27,18 +27,62 @@ namespace DaOAuthV2.Service.Test
         private Code _invalidCode;
         private Code _expiredCode;
         private Code _validCode;
+        private RessourceServer _validRessourceServer;
+        private RessourceServer _invalidRessourceServer;
 
         private string _validUserPassword = "plop";
+        private string _validRessourceServerLogin = "rs";
+        private string _invalidRessourceServerLogin = "rsi";
+        private string _validRessourceServerPassword = "rsp";
+        private string _invalidRessourceServerPassword = "rsp";
 
         [TestInitialize]
         public void Init()
         {
-            byte[] pwd;
+            byte[] pwdValidUser;
+            byte[] pwdValidRessourceServer;
+            byte[] pwdInvalidRessourceServer;
+
             using (SHA256Managed sha256 = new SHA256Managed())
             {
-                pwd = sha256.ComputeHash(
-                    Encoding.UTF8.GetBytes(String.Concat(FakeConfigurationHelper.GetFakeConf().PasswordSalt,_validUserPassword)));
+                pwdValidUser = sha256.ComputeHash(
+                    Encoding.UTF8.GetBytes(String.Concat(FakeConfigurationHelper.GetFakeConf().PasswordSalt, _validUserPassword)));
             }
+
+            using (SHA256Managed sha256 = new SHA256Managed())
+            {
+                pwdValidRessourceServer = sha256.ComputeHash(
+                    Encoding.UTF8.GetBytes(String.Concat(FakeConfigurationHelper.GetFakeConf().PasswordSalt, _validRessourceServerPassword)));
+            }
+
+            using (SHA256Managed sha256 = new SHA256Managed())
+            {
+                pwdInvalidRessourceServer = sha256.ComputeHash(
+                    Encoding.UTF8.GetBytes(String.Concat(FakeConfigurationHelper.GetFakeConf().PasswordSalt, _invalidRessourceServerPassword)));
+            }
+
+            _validRessourceServer = new RessourceServer()
+            {
+                Description = "valid",
+                Id = 1,
+                IsValid = true,
+                Login = _validRessourceServerLogin,
+                Name = "validRs",
+                ServerSecret = pwdValidRessourceServer
+            };
+
+            _invalidRessourceServer = new RessourceServer()
+            {
+                Description = "invalid",
+                Id = 1,
+                IsValid = false,
+                Login = _invalidRessourceServerLogin,
+                Name = "invalidRs",
+                ServerSecret = pwdInvalidRessourceServer
+            };
+
+            FakeDataBase.Instance.RessourceServers.Add(_validRessourceServer);
+            FakeDataBase.Instance.RessourceServers.Add(_invalidRessourceServer);
 
             _validUser = new User()
             {
@@ -47,7 +91,7 @@ namespace DaOAuthV2.Service.Test
                 FullName = "testeur valid",
                 Id = 500,
                 IsValid = true,
-                Password = pwd,
+                Password = pwdValidUser,
                 UserName = "valid"
             };
 
@@ -1219,7 +1263,7 @@ namespace DaOAuthV2.Service.Test
         [TestMethod]
         [ExpectedException(typeof(DaOAuthTokenException))]
         public void Generate_Token_Should_Throw_DaOAuthServiceException_When_User_Name_Is_Empty_For_Password_Code_Grant()
-        {           
+        {
             _service.GenerateToken(new AskTokenDto()
             {
                 ClientPublicId = "cl-500",
@@ -1229,13 +1273,13 @@ namespace DaOAuthV2.Service.Test
                 GrantType = OAuthConvention.GrantTypePassword,
                 LoggedUserName = _validUser.UserName,
                 AuthorizationHeader = String.Concat("Basic ", Convert.ToBase64String(Encoding.UTF8.GetBytes("cl-500:bad_secret500")))
-            });          
+            });
         }
 
         [TestMethod]
         [ExpectedException(typeof(DaOAuthTokenException))]
         public void Generate_Token_Should_Throw_DaOAuthServiceException_When_Password_Is_Empty_For_Password_Code_Grant()
-        {            
+        {
             _service.GenerateToken(new AskTokenDto()
             {
                 ClientPublicId = "cl-500",
@@ -1425,7 +1469,7 @@ namespace DaOAuthV2.Service.Test
 
             Assert.IsTrue(exceptionOccured);
         }
-       
+
         [TestMethod]
         public void Generate_Token_Should_Create_Acces_Token_For_Client_Credentials_Code_Grant()
         {
@@ -1454,7 +1498,7 @@ namespace DaOAuthV2.Service.Test
             var tokenInfo = _service.GenerateToken(new AskTokenDto()
             {
                 ClientPublicId = "cl-500",
-                Scope = "scp_vc",              
+                Scope = "scp_vc",
                 GrantType = OAuthConvention.GrantTypeClientCredentials,
                 LoggedUserName = _validUser.UserName,
                 AuthorizationHeader = String.Concat("Basic ", Convert.ToBase64String(Encoding.UTF8.GetBytes("cl-500:secret500")))
@@ -1463,6 +1507,160 @@ namespace DaOAuthV2.Service.Test
             Assert.IsNotNull(tokenInfo);
             Assert.IsFalse(String.IsNullOrWhiteSpace(tokenInfo.AccessToken));
             Assert.IsTrue(String.IsNullOrWhiteSpace(tokenInfo.RefreshToken));
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(DaOAuthServiceException))]
+        public void Introspect_Should_Throw_DaOAuthServiceException_When_Authorization_Header_Is_Missing()
+        {
+            _service.Introspect(new AskIntrospectDto()
+            {
+                Token = "abc",
+                AuthorizationHeader = String.Empty
+            });
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(DaOAuthServiceException))]
+        public void Introspect_Should_Throw_DaOAuthServiceException_When_Token_Is_Missing()
+        {
+            _service.Introspect(new AskIntrospectDto()
+            {
+                Token = String.Empty,
+                AuthorizationHeader = String.Empty
+            });
+        }
+
+        [TestMethod]
+        public void Introspect_Should_Return_False_When_Ressource_Server_Credentials_Are_Invalid()
+        {
+            string token = "test-token";
+
+            _service = new OAuthService()
+            {
+                Configuration = FakeConfigurationHelper.GetFakeConf(),
+                ConnexionString = String.Empty,
+                RepositoriesFactory = new FakeRepositoriesFactory(),
+                StringLocalizerFactory = new FakeStringLocalizerFactory(),
+                Logger = new FakeLogger(),
+                RandomService = new FakeRandomService(123, "abc"),
+                JwtService = new FakeJwtService(new JwtTokenDto()
+                {
+                    Expire = long.MaxValue,
+                    IsValid = true,
+                    Token = token
+                })
+            };
+
+            var introspectInfo = _service.Introspect(new AskIntrospectDto()
+            {
+                Token = token,
+                AuthorizationHeader = String.Concat("Basic ", Convert.ToBase64String(Encoding.UTF8.GetBytes($"{_validRessourceServerLogin}:{_validRessourceServerPassword + "plop"}")))
+            });
+
+            Assert.IsNotNull(introspectInfo);
+            Assert.IsFalse(introspectInfo.IsValid);
+        }
+
+        [TestMethod]
+        public void Introspect_Should_Return_False_When_Ressource_Server_Is_Invalid()
+        {
+            string token = "test-token";
+
+            _service = new OAuthService()
+            {
+                Configuration = FakeConfigurationHelper.GetFakeConf(),
+                ConnexionString = String.Empty,
+                RepositoriesFactory = new FakeRepositoriesFactory(),
+                StringLocalizerFactory = new FakeStringLocalizerFactory(),
+                Logger = new FakeLogger(),
+                RandomService = new FakeRandomService(123, "abc"),
+                JwtService = new FakeJwtService(new JwtTokenDto()
+                {
+                    Expire = long.MaxValue,
+                    IsValid = true,
+                    Token = token
+                })
+            };
+
+            var introspectInfo = _service.Introspect(new AskIntrospectDto()
+            {
+                Token = token,
+                AuthorizationHeader = String.Concat("Basic ", Convert.ToBase64String(Encoding.UTF8.GetBytes($"{_invalidRessourceServerLogin}:{_invalidRessourceServerPassword}")))
+            });
+
+            Assert.IsNotNull(introspectInfo);
+            Assert.IsFalse(introspectInfo.IsValid);
+        }
+
+        [TestMethod]
+        public void Introspect_Should_Return_False_When_Token_Is_Invalid()
+        {
+            string token = "test-token";
+
+            _service = new OAuthService()
+            {
+                Configuration = FakeConfigurationHelper.GetFakeConf(),
+                ConnexionString = String.Empty,
+                RepositoriesFactory = new FakeRepositoriesFactory(),
+                StringLocalizerFactory = new FakeStringLocalizerFactory(),
+                Logger = new FakeLogger(),
+                RandomService = new FakeRandomService(123, "abc"),
+                JwtService = new FakeJwtService(new JwtTokenDto()
+                {
+                    Expire = long.MaxValue,
+                    IsValid = false,
+                    Token = token
+                })
+            };
+
+            var introspectInfo = _service.Introspect(new AskIntrospectDto()
+            {
+                Token = token,
+                AuthorizationHeader = String.Concat("Basic ", Convert.ToBase64String(Encoding.UTF8.GetBytes($"{_validRessourceServerLogin}:{_validRessourceServerPassword}")))
+            });
+
+            Assert.IsNotNull(introspectInfo);
+            Assert.IsFalse(introspectInfo.IsValid);
+        }
+
+        [TestMethod]
+        public void Introspect_Should_Return_True_When_All_Is_Correct()
+        {
+            string token = "test-token";
+
+            _service = new OAuthService()
+            {
+                Configuration = FakeConfigurationHelper.GetFakeConf(),
+                ConnexionString = String.Empty,
+                RepositoriesFactory = new FakeRepositoriesFactory(),
+                StringLocalizerFactory = new FakeStringLocalizerFactory(),
+                Logger = new FakeLogger(),
+                RandomService = new FakeRandomService(123, "abc"),
+                JwtService = new FakeJwtService(new JwtTokenDto()
+                {
+                    Expire = long.MaxValue,
+                    IsValid = true,
+                    Token = token,
+                    ClientId = "clid",
+                    Scope = "sc1 sc2",
+                    UserName = "Sammy"
+                })
+            };
+
+            var introspectInfo = _service.Introspect(new AskIntrospectDto()
+            {
+                Token = token,
+                AuthorizationHeader = String.Concat("Basic ", Convert.ToBase64String(Encoding.UTF8.GetBytes($"{_validRessourceServerLogin}:{_validRessourceServerPassword}")))
+            });
+
+            Assert.IsNotNull(introspectInfo);
+            Assert.IsTrue(introspectInfo.IsValid);
+            Assert.AreEqual("Sammy", introspectInfo.UserName);
+            Assert.AreEqual("sc1 sc2", introspectInfo.Scope);
+            Assert.AreEqual("clid", introspectInfo.ClientPublicId);
+            Assert.AreEqual(1, introspectInfo.Audiences.Length);
+            Assert.AreEqual("validRs", introspectInfo.Audiences[0]);
         }
     }
 }

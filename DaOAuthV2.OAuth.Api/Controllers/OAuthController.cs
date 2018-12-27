@@ -86,7 +86,8 @@ namespace DaOAuthV2.OAuth.Api.Controllers
         {
             var result = _authorizeService.Introspect(new AskIntrospectDto()
             {
-                Token = model.Token
+                Token = model.Token,
+                AuthorizationHeader = authorization
             });
 
             if(!result.IsValid)
@@ -105,8 +106,7 @@ namespace DaOAuthV2.OAuth.Api.Controllers
                     aud = result.Audiences,
                     client_id = result.ClientPublicId,
                     name = result.UserName,
-                    scope = result.Scope,
-                    user_public_id = result.UserPublicId
+                    scope = result.Scope
                 });
             }
         }

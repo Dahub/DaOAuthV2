@@ -183,6 +183,22 @@ namespace DaOAuthV2.Dal.EF.Test
 
             Assert.IsNull(s);
         }
+
+        [TestMethod]
+        public void Get_All_Should_Return_All_Entities()
+        {
+            var options = new DbContextOptionsBuilder<DaOAuthContext>()
+           .UseInMemoryDatabase(databaseName: _dbName)
+           .Options;         
+
+            using (var context = new DaOAuthContext(options))
+            {
+                var scopeRepo = _repoFactory.GetScopeRepository(context);
+                var result = scopeRepo.GetAll();
+                Assert.IsNotNull(result);
+                Assert.AreEqual(1, result.Count());
+            }
+        }
     }
 
 }

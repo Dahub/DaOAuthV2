@@ -1,4 +1,5 @@
 ﻿using DaOAuthV2.Domain.Interface;
+using System.Collections.Generic;
 
 namespace DaOAuthV2.Dal.Interface
 {
@@ -9,5 +10,6 @@ namespace DaOAuthV2.Dal.Interface
         int Add(T toAdd);
         void Update(T toUpdate);
         void Delete(T toDelete);
+        IEnumerable<T> GetAll();
     }
 }

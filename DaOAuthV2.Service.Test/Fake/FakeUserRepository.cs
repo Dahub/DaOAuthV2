@@ -1,6 +1,7 @@
 ﻿using DaOAuthV2.Dal.Interface;
 using DaOAuthV2.Domain;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace DaOAuthV2.Service.Test.Fake
@@ -21,6 +22,11 @@ namespace DaOAuthV2.Service.Test.Fake
             var user = FakeDataBase.Instance.Users.Where(u => u.Id.Equals(toDelete.Id)).FirstOrDefault();
             if (user != null)
                 FakeDataBase.Instance.Users.Remove(user);
+        }
+
+        public IEnumerable<User> GetAll()
+        {
+            throw new NotImplementedException();
         }
 
         public User GetByEmail(string email)

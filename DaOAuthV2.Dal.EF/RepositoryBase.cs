@@ -1,6 +1,7 @@
 ﻿using DaOAuthV2.Dal.Interface;
 using DaOAuthV2.Domain.Interface;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace DaOAuthV2.Dal.EF
@@ -32,6 +33,11 @@ namespace DaOAuthV2.Dal.EF
         {
             Context.Set<T>().Attach(toUpdate);
             Context.Entry(toUpdate).State = EntityState.Modified;
+        }
+
+        public virtual IEnumerable<T> GetAll()
+        {
+            return Context.Set<T>();
         }
     }
 }
