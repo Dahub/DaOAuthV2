@@ -681,7 +681,6 @@ namespace DaOAuthV2.Service.Test
                 {
                     ClientPublicId = "cl-500",
                     GrantType = OAuthConvention.GrantTypeAuthorizationCode,
-                    LoggedUserName = _validUser.UserName,
                     AuthorizationHeader = String.Concat("Basic ", Convert.ToBase64String(Encoding.UTF8.GetBytes("cl-500:bad_secret500")))
                 });
             }
@@ -706,8 +705,7 @@ namespace DaOAuthV2.Service.Test
                     ClientPublicId = "cl-500",
                     GrantType = OAuthConvention.GrantTypeAuthorizationCode,
                     AuthorizationHeader = String.Concat("Basic ", Convert.ToBase64String(Encoding.UTF8.GetBytes("cl-500:secret500"))),
-                    CodeValue = String.Empty,
-                    LoggedUserName = _validUser.UserName,
+                    CodeValue = String.Empty
                 });
             }
             catch (Exception ex)
@@ -732,8 +730,7 @@ namespace DaOAuthV2.Service.Test
                     GrantType = "authorization_code",
                     AuthorizationHeader = String.Concat("Basic ", Convert.ToBase64String(Encoding.UTF8.GetBytes("cl-500:secret500"))),
                     CodeValue = "abc",
-                    RedirectUrl = String.Empty,
-                    LoggedUserName = _validUser.UserName,
+                    RedirectUrl = String.Empty
                 });
             }
             catch (Exception ex)
@@ -783,8 +780,7 @@ namespace DaOAuthV2.Service.Test
                     GrantType = "authorization_code",
                     AuthorizationHeader = String.Concat("Basic ", Convert.ToBase64String(Encoding.UTF8.GetBytes("cl-500:secret500"))),
                     CodeValue = "abc",
-                    RedirectUrl = "httpwwwperducom",
-                    LoggedUserName = _validUser.UserName,
+                    RedirectUrl = "httpwwwperducom"
                 });
             }
             catch (Exception ex)
@@ -809,8 +805,7 @@ namespace DaOAuthV2.Service.Test
                     GrantType = "authorization_code",
                     AuthorizationHeader = String.Concat("Basic ", Convert.ToBase64String(Encoding.UTF8.GetBytes("cl-501:secret501"))),
                     CodeValue = "abc",
-                    RedirectUrl = "http://www.perdu.com",
-                    LoggedUserName = _validUser.UserName,
+                    RedirectUrl = "http://www.perdu.com"
                 });
             }
             catch (Exception ex)
@@ -833,7 +828,6 @@ namespace DaOAuthV2.Service.Test
                 {
                     ClientPublicId = "cl-500",
                     GrantType = "authorization_code",
-                    LoggedUserName = _validUser.UserName,
                     AuthorizationHeader = String.Concat("Basic ", Convert.ToBase64String(Encoding.UTF8.GetBytes("cl-500:secret500"))),
                     CodeValue = "abc",
                     RedirectUrl = "http://www.perdu2.com"
@@ -863,8 +857,7 @@ namespace DaOAuthV2.Service.Test
                         Convert.ToBase64String(
                             Encoding.UTF8.GetBytes($"{_validClientConfidential.PublicId}:{_validClientConfidential.ClientSecret}"))),
                     CodeValue = "non existing",
-                    RedirectUrl = "http://www.perdu.com",
-                    LoggedUserName = _validUser.UserName,
+                    RedirectUrl = "http://www.perdu.com"
                 });
             }
             catch (Exception ex)
@@ -892,7 +885,6 @@ namespace DaOAuthV2.Service.Test
                             Encoding.UTF8.GetBytes($"{_validClientConfidential.PublicId}:{_validClientConfidential.ClientSecret}"))),
                     CodeValue = _invalidCode.CodeValue,
                     RedirectUrl = "http://www.perdu.com",
-                    LoggedUserName = _validUser.UserName,
                 });
             }
             catch (Exception ex)
@@ -919,8 +911,7 @@ namespace DaOAuthV2.Service.Test
                         Convert.ToBase64String(
                             Encoding.UTF8.GetBytes($"{_validClientConfidential.PublicId}:{_validClientConfidential.ClientSecret}"))),
                     CodeValue = _expiredCode.CodeValue,
-                    RedirectUrl = "http://www.perdu.com",
-                    LoggedUserName = _validUser.UserName,
+                    RedirectUrl = "http://www.perdu.com"
                 });
             }
             catch (Exception ex)
@@ -948,8 +939,7 @@ namespace DaOAuthV2.Service.Test
                             Encoding.UTF8.GetBytes($"{_validClientConfidential.PublicId}:{_validClientConfidential.ClientSecret}"))),
                     CodeValue = _validCode.CodeValue,
                     Scope = "sc3 sc1 sc2",
-                    RedirectUrl = "http://www.perdu.com",
-                    LoggedUserName = _validUser.UserName,
+                    RedirectUrl = "http://www.perdu.com"
                 });
             }
             catch (Exception ex)
@@ -974,7 +964,6 @@ namespace DaOAuthV2.Service.Test
                         Encoding.UTF8.GetBytes($"{_validClientConfidential.PublicId}:{_validClientConfidential.ClientSecret}"))),
                 CodeValue = _validCode.CodeValue,
                 RedirectUrl = "http://www.perdu.com",
-                LoggedUserName = _validUser.UserName,
                 Scope = _validCode.Scope
             });
 
@@ -997,7 +986,6 @@ namespace DaOAuthV2.Service.Test
                       Encoding.UTF8.GetBytes($"{_validClientConfidential.PublicId}:{_validClientConfidential.ClientSecret}"))),
                 CodeValue = _validCode.CodeValue,
                 RedirectUrl = "http://www.perdu.com",
-                LoggedUserName = _validUser.UserName,
                 Scope = _validCode.Scope
             });
 
@@ -1018,7 +1006,6 @@ namespace DaOAuthV2.Service.Test
                       Encoding.UTF8.GetBytes($"{_validClientConfidential.PublicId}:{_validClientConfidential.ClientSecret}"))),
                 CodeValue = _validCode.CodeValue,
                 RedirectUrl = "http://www.perdu.com",
-                LoggedUserName = _validUser.UserName,
                 Scope = _validCode.Scope
             });
 
@@ -1040,7 +1027,6 @@ namespace DaOAuthV2.Service.Test
                     ClientPublicId = "cl-500",
                     GrantType = OAuthConvention.GrantTypeRefreshToken,
                     RefreshToken = "abc",
-                    LoggedUserName = _validUser.UserName,
                     AuthorizationHeader = String.Concat("Basic ", Convert.ToBase64String(Encoding.UTF8.GetBytes("cl-500:bad_secret500")))
                 });
             }
@@ -1065,7 +1051,6 @@ namespace DaOAuthV2.Service.Test
                     ClientPublicId = "cl-500",
                     GrantType = OAuthConvention.GrantTypeRefreshToken,
                     RefreshToken = String.Empty,
-                    LoggedUserName = _validUser.UserName,
                     AuthorizationHeader = String.Concat("Basic ", Convert.ToBase64String(Encoding.UTF8.GetBytes("cl-500:secret500")))
                 });
             }
@@ -1113,7 +1098,6 @@ namespace DaOAuthV2.Service.Test
                     ClientPublicId = "cl-500",
                     GrantType = OAuthConvention.GrantTypeRefreshToken,
                     RefreshToken = "abc",
-                    LoggedUserName = _validUser.UserName,
                     AuthorizationHeader = String.Concat("Basic ", Convert.ToBase64String(Encoding.UTF8.GetBytes("cl-500:secret500")))
                 });
             }
@@ -1142,7 +1126,6 @@ namespace DaOAuthV2.Service.Test
                     ClientPublicId = "cl-500",
                     GrantType = OAuthConvention.GrantTypeRefreshToken,
                     RefreshToken = "abcdef",
-                    LoggedUserName = _validUser.UserName,
                     AuthorizationHeader = String.Concat("Basic ", Convert.ToBase64String(Encoding.UTF8.GetBytes("cl-500:secret500")))
                 });
             }
@@ -1171,7 +1154,6 @@ namespace DaOAuthV2.Service.Test
                     ClientPublicId = "cl-500",
                     GrantType = OAuthConvention.GrantTypeRefreshToken,
                     RefreshToken = "abcdef",
-                    LoggedUserName = _validUser.UserName,
                     AuthorizationHeader = String.Concat("Basic ", Convert.ToBase64String(Encoding.UTF8.GetBytes("cl-500:secret500")))
                 });
             }
@@ -1222,7 +1204,6 @@ namespace DaOAuthV2.Service.Test
                        Encoding.UTF8.GetBytes($"{_validClientConfidential.PublicId}:{_validClientConfidential.ClientSecret}"))),
                 CodeValue = _validCode.CodeValue,
                 RedirectUrl = "http://www.perdu.com",
-                LoggedUserName = _validUser.UserName,
                 Scope = "scp_vc",
                 RefreshToken = token
             });
@@ -1246,7 +1227,6 @@ namespace DaOAuthV2.Service.Test
                     Password = "plop",
                     Scope = "scp_vc",
                     GrantType = OAuthConvention.GrantTypePassword,
-                    LoggedUserName = _validUser.UserName,
                     AuthorizationHeader = String.Concat("Basic ", Convert.ToBase64String(Encoding.UTF8.GetBytes("cl-500:bad_secret500")))
                 });
             }
@@ -1271,7 +1251,6 @@ namespace DaOAuthV2.Service.Test
                 Password = _validUserPassword,
                 Scope = "scp_vc",
                 GrantType = OAuthConvention.GrantTypePassword,
-                LoggedUserName = _validUser.UserName,
                 AuthorizationHeader = String.Concat("Basic ", Convert.ToBase64String(Encoding.UTF8.GetBytes("cl-500:bad_secret500")))
             });
         }
@@ -1287,7 +1266,6 @@ namespace DaOAuthV2.Service.Test
                 Password = String.Empty,
                 Scope = "scp_vc",
                 GrantType = OAuthConvention.GrantTypePassword,
-                LoggedUserName = _validUser.UserName,
                 AuthorizationHeader = String.Concat("Basic ", Convert.ToBase64String(Encoding.UTF8.GetBytes("cl-500:bad_secret500")))
             });
         }
@@ -1306,7 +1284,6 @@ namespace DaOAuthV2.Service.Test
                     Password = "plop--",
                     Scope = "scp_vc",
                     GrantType = OAuthConvention.GrantTypePassword,
-                    LoggedUserName = _validUser.UserName,
                     AuthorizationHeader = String.Concat("Basic ", Convert.ToBase64String(Encoding.UTF8.GetBytes("cl-500:secret500")))
                 });
             }
@@ -1334,7 +1311,6 @@ namespace DaOAuthV2.Service.Test
                     ParameterUsername = _validUser.UserName + "plop",
                     Password = _validUserPassword,
                     GrantType = OAuthConvention.GrantTypePassword,
-                    LoggedUserName = _validUser.UserName,
                     AuthorizationHeader = String.Concat("Basic ", Convert.ToBase64String(Encoding.UTF8.GetBytes("cl-500:secret500")))
                 });
             }
@@ -1362,7 +1338,6 @@ namespace DaOAuthV2.Service.Test
                     ParameterUsername = _validUser.UserName,
                     Password = _validUserPassword,
                     GrantType = OAuthConvention.GrantTypePassword,
-                    LoggedUserName = _validUser.UserName,
                     AuthorizationHeader = String.Concat("Basic ", Convert.ToBase64String(Encoding.UTF8.GetBytes("cl-500:secret500")))
                 });
             }
@@ -1408,7 +1383,6 @@ namespace DaOAuthV2.Service.Test
                 ParameterUsername = _validUser.UserName,
                 Password = _validUserPassword,
                 GrantType = OAuthConvention.GrantTypePassword,
-                LoggedUserName = _validUser.UserName,
                 AuthorizationHeader = String.Concat("Basic ", Convert.ToBase64String(Encoding.UTF8.GetBytes("cl-500:secret500")))
             });
 
@@ -1430,7 +1404,6 @@ namespace DaOAuthV2.Service.Test
                     ClientPublicId = "cl-500",
                     Scope = "scp_vc",
                     GrantType = OAuthConvention.GrantTypeClientCredentials,
-                    LoggedUserName = _validUser.UserName,
                     AuthorizationHeader = String.Concat("Basic ", Convert.ToBase64String(Encoding.UTF8.GetBytes("cl-500:bad_secret500")))
                 });
             }
@@ -1456,7 +1429,6 @@ namespace DaOAuthV2.Service.Test
                     ClientPublicId = "cl-500",
                     Scope = "scp_vc scpppp",
                     GrantType = OAuthConvention.GrantTypeClientCredentials,
-                    LoggedUserName = _validUser.UserName,
                     AuthorizationHeader = String.Concat("Basic ", Convert.ToBase64String(Encoding.UTF8.GetBytes("cl-500:secret500")))
                 });
             }
@@ -1500,7 +1472,6 @@ namespace DaOAuthV2.Service.Test
                 ClientPublicId = "cl-500",
                 Scope = "scp_vc",
                 GrantType = OAuthConvention.GrantTypeClientCredentials,
-                LoggedUserName = _validUser.UserName,
                 AuthorizationHeader = String.Concat("Basic ", Convert.ToBase64String(Encoding.UTF8.GetBytes("cl-500:secret500")))
             });
 

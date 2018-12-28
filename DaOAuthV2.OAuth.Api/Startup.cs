@@ -60,9 +60,14 @@ namespace DaOAuthV2.OAuth.Api
                 RepositoriesFactory = new EfRepositoriesFactory(),
                 ConnexionString = Configuration.GetConnectionString("DaOAuthConnexionString"),
                 StringLocalizerFactory = localizationServiceFactory,
-                Logger = loggerServiceFactory.CreateLogger<UserService>(),
+                Logger = loggerServiceFactory.CreateLogger<OAuthService>(),
                 RandomService = new RandomService(),
                 JwtService = new JwtService()
+                {
+                    Configuration = conf,
+                    StringLocalizerFactory = localizationServiceFactory,
+                    Logger = loggerServiceFactory.CreateLogger<JwtService>()
+                }
             });
 
             services.AddMvc(options =>

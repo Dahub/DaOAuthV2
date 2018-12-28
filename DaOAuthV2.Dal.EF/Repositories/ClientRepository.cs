@@ -38,6 +38,7 @@ namespace DaOAuthV2.Dal.EF
             return Context.Clients.
                 Include(c => c.ClientsScopes).
                 ThenInclude(cs => cs.Scope).
+                Include(c => c.ClientReturnUrls).
                 Where(c => c.PublicId.Equals(publicId, StringComparison.Ordinal)).FirstOrDefault();
         }
 

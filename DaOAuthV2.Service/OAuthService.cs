@@ -247,9 +247,6 @@ namespace DaOAuthV2.Service
                     Description = errorLocal["ClientIdParameterError"]
                 };
 
-            if (String.IsNullOrWhiteSpace(tokenInfo.LoggedUserName))
-                throw new DaOauthUnauthorizeException();
-
             using (var context = RepositoriesFactory.CreateContext(ConnexionString))
             {
                 var clientRepo = RepositoriesFactory.GetClientRepository(context);
@@ -283,14 +280,14 @@ namespace DaOAuthV2.Service
                         Description = errorLocal["AskTokenInvalidClient"]
                     };
 
-                if (!CheckIfCodeIsValid(tokenInfo.ClientPublicId, tokenInfo.LoggedUserName, tokenInfo.Scope, tokenInfo.CodeValue, context))
+                if (!CheckIfCodeIsValid(tokenInfo.ClientPublicId, tokenInfo.Scope, tokenInfo.CodeValue, context, out string userName))
                     throw new DaOAuthTokenException()
                     {
                         Error = OAuthConvention.ErrorNameInvalidGrant,
                         Description = errorLocal["AskTokenInvalidGrant"]
                     };
 
-                toReturn = GenerateAccessTokenAndUpdateRefreshToken(tokenInfo, context);
+                toReturn = GenerateAccessTokenAndUpdateRefreshToken(tokenInfo, context, userName);
 
                 context.Commit();
             }
@@ -301,9 +298,6 @@ namespace DaOAuthV2.Service
         private TokenInfoDto GenerateTokenForRefreshToken(AskTokenDto tokenInfo, IStringLocalizer errorLocal)
         {
             TokenInfoDto toReturn = null;
-
-            if (String.IsNullOrWhiteSpace(tokenInfo.LoggedUserName))
-                throw new DaOauthUnauthorizeException();
 
             if (String.IsNullOrWhiteSpace(tokenInfo.ClientPublicId))
                 throw new DaOAuthTokenException()
@@ -344,7 +338,7 @@ namespace DaOAuthV2.Service
                         Description = errorLocal["UnauthorizedScope"]
                     };
 
-                toReturn = GenerateAccessTokenAndUpdateRefreshToken(tokenInfo, context);
+                toReturn = GenerateAccessTokenAndUpdateRefreshToken(tokenInfo, context, tokenDetail.UserName);
             }
 
             return toReturn;
@@ -398,7 +392,7 @@ namespace DaOAuthV2.Service
                         Description = errorLocal["UnauthorizedScope"]
                     };
 
-                toReturn = GenerateAccessTokenAndUpdateRefreshToken(tokenInfo, context);
+                toReturn = GenerateAccessTokenAndUpdateRefreshToken(tokenInfo, context, tokenInfo.ParameterUsername);
             }
 
             return toReturn;
@@ -407,9 +401,6 @@ namespace DaOAuthV2.Service
         private TokenInfoDto GenerateTokenForClientCredentailsGrant(AskTokenDto tokenInfo, IStringLocalizer errorLocal)
         {
             TokenInfoDto toReturn = null;
-
-            if (String.IsNullOrWhiteSpace(tokenInfo.LoggedUserName))
-                throw new DaOauthUnauthorizeException();
 
             using (var context = RepositoriesFactory.CreateContext(ConnexionString))
             {
@@ -430,16 +421,14 @@ namespace DaOAuthV2.Service
                         Description = errorLocal["UnauthorizedScope"]
                     };
 
-                var ucRepo = RepositoriesFactory.GetUserClientRepository(context);
-                var myUc = ucRepo.GetUserClientByUserNameAndClientPublicId(myClient.PublicId, tokenInfo.LoggedUserName);
-
+             
                 JwtTokenDto accesToken = JwtService.GenerateToken(new CreateTokenDto()
                 {
                     ClientPublicId = myClient.PublicId,
                     Scope = tokenInfo.Scope,
                     SecondsLifeTime = Configuration.AccesTokenLifeTimeInSeconds,
                     TokenName = OAuthConvention.AccessToken,
-                    UserName = tokenInfo.LoggedUserName
+                    UserName = String.Empty
                 });
 
                 toReturn = new TokenInfoDto()
@@ -480,7 +469,7 @@ namespace DaOAuthV2.Service
             return codeValue;
         }
 
-        private TokenInfoDto GenerateAccessTokenAndUpdateRefreshToken(AskTokenDto tokenInfo, IContext context)
+        private TokenInfoDto GenerateAccessTokenAndUpdateRefreshToken(AskTokenDto tokenInfo, IContext context, string userName)
         {
             TokenInfoDto toReturn;
             JwtTokenDto newRefreshToken = JwtService.GenerateToken(new CreateTokenDto()
@@ -489,7 +478,7 @@ namespace DaOAuthV2.Service
                 Scope = tokenInfo.Scope,
                 SecondsLifeTime = Configuration.RefreshTokenLifeTimeInSeconds,
                 TokenName = OAuthConvention.RefreshToken,
-                UserName = tokenInfo.LoggedUserName
+                UserName = userName
             });
 
             JwtTokenDto accesToken = JwtService.GenerateToken(new CreateTokenDto()
@@ -498,11 +487,11 @@ namespace DaOAuthV2.Service
                 Scope = tokenInfo.Scope,
                 SecondsLifeTime = Configuration.AccesTokenLifeTimeInSeconds,
                 TokenName = OAuthConvention.AccessToken,
-                UserName = tokenInfo.LoggedUserName
+                UserName = userName
             });
 
             var userClientRepo = RepositoriesFactory.GetUserClientRepository(context);
-            var myUc = userClientRepo.GetUserClientByUserNameAndClientPublicId(tokenInfo.ClientPublicId, tokenInfo.LoggedUserName);
+            var myUc = userClientRepo.GetUserClientByUserNameAndClientPublicId(tokenInfo.ClientPublicId, userName);
             myUc.RefreshToken = newRefreshToken.Token;
             userClientRepo.Update(myUc);
 
@@ -642,7 +631,7 @@ namespace DaOAuthV2.Service
             }
         }
 
-        private bool CheckIfCodeIsValid(string clientPublicId, string userName, string scope, string codeValue, IContext context)
+        private bool CheckIfCodeIsValid(string clientPublicId, string scope, string codeValue, IContext context, out string userName)
         {
             bool IsValid(Code code)
             {
@@ -664,18 +653,20 @@ namespace DaOAuthV2.Service
                     }
                 }
 
+                if (!code.UserClient.Client.PublicId.Equals(clientPublicId, StringComparison.Ordinal))
+                    return false;
+
                 return true;
             }
 
+            userName = String.Empty;
             bool toReturn = true;
 
-            Code myCode = null;
-
             var codeRepo = RepositoriesFactory.GetCodeRepository(context);
-            var codes = codeRepo.GetAllByClientIdAndUserName(clientPublicId, userName);
+            Code myCode = codeRepo.GetByCode(codeValue);
 
-            if (codes != null && codes.Count() > 0)
-                myCode = codes.Where(c => c.CodeValue.Equals(codeValue, StringComparison.Ordinal)).FirstOrDefault();
+            if (myCode == null)
+                return false;
 
             if (!IsValid(myCode))
                 toReturn = false;
@@ -684,6 +675,8 @@ namespace DaOAuthV2.Service
                 myCode.IsValid = false;
                 codeRepo.Update(myCode);
             }
+
+            userName = myCode.UserClient.User.UserName;
 
             return toReturn;
         }

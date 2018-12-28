@@ -53,8 +53,7 @@ namespace DaOAuthV2.OAuth.Api.Controllers
                 RedirectUrl = model.RedirectUrl,
                 RefreshToken = model.RefreshToken,
                 Scope = model.Scope,
-                ParameterUsername = model.Username,
-                LoggedUserName = User.Identity.IsAuthenticated?User.Identity.Name:String.Empty
+                ParameterUsername = model.Username
             });
 
             if (!String.IsNullOrWhiteSpace(result.RefreshToken))

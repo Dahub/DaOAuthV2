@@ -167,6 +167,24 @@ namespace DaOAuthV2.Dal.EF.Test
         }
 
         [TestMethod]
+        public void Get_By_Public_Id_Should_Return_Client_With_Returns_Urls()
+        {
+            var options = new DbContextOptionsBuilder<DaOAuthContext>()
+                     .UseInMemoryDatabase(databaseName: _dbName)
+                     .Options;
+
+            using (var context = new DaOAuthContext(options))
+            {
+                var clientRepo = _repoFactory.GetClientRepository(context);
+                var c = clientRepo.GetByPublicId("CT1_id");
+
+                Assert.IsNotNull(c);
+                Assert.IsNotNull(c.ClientReturnUrls);
+                Assert.AreEqual(1, c.ClientReturnUrls.Count());
+            }
+        }
+
+        [TestMethod]
         public void Get_By_Id_Should_Return_Client_Type()
         {
             var options = new DbContextOptionsBuilder<DaOAuthContext>()

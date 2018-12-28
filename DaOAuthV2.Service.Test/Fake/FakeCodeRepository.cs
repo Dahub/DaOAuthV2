@@ -58,5 +58,21 @@ namespace DaOAuthV2.Service.Test.Fake
                 FakeDataBase.Instance.Codes.Add(toUpdate);
             }
         }
+
+        public Code GetByCode(string code)
+        {
+            Code c = FakeDataBase.Instance.Codes.Where(co => co.CodeValue.Equals(code)).FirstOrDefault();
+            if (c == null)
+                return null;
+            UserClient uc = FakeDataBase.Instance.UsersClient.Where(uscl => uscl.Id.Equals(c.UserClientId)).FirstOrDefault();
+            if (uc == null)
+                return c;
+            else
+                c.UserClient = uc;
+            c.UserClient.Client = FakeDataBase.Instance.Clients.Where(cl => cl.Id.Equals(c.UserClient.ClientId)).FirstOrDefault();
+            c.UserClient.User = FakeDataBase.Instance.Users.Where(cl => cl.Id.Equals(c.UserClient.UserId)).FirstOrDefault();
+
+            return c;
+        }
     }
 }

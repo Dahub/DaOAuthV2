@@ -110,5 +110,21 @@ namespace DaOAuthV2.Dal.EF.Test
                 Assert.AreEqual(2, c.Count());
             }
         }
+
+        [TestMethod]
+        public void Get_By_Code_Should_Return_Code()
+        {
+            var options = new DbContextOptionsBuilder<DaOAuthContext>()
+                    .UseInMemoryDatabase(databaseName: _dbName)
+                    .Options;
+
+            using (var context = new DaOAuthContext(options))
+            {
+                var codeRepo = _repoFactory.GetCodeRepository(context);
+                var c = codeRepo.GetByCode("1234");
+
+                Assert.IsNotNull(c);
+            }
+        }
     }
 }
