@@ -17,7 +17,9 @@ namespace DaOAuthV2.Dal.EF
         public DbSet<Scope> Scopes { get; set; }
         public DbSet<ClientScope> ClientsScopes { get; set; }
         public DbSet<RessourceServer> RessourceServers { get; set; }
-        public DbSet<ClientReturnUrl> ClientReturnUrl { get; set; }
+        public DbSet<ClientReturnUrl> ClientReturnUrls { get; set; }
+        public DbSet<Role> Roles { get; set; }
+        public DbSet<UserRole> UsersRoles { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -48,6 +50,8 @@ namespace DaOAuthV2.Dal.EF
             modelBuilder.Entity<User>().Property(p => p.IsValid).HasColumnName("IsValid").HasColumnType("bit").IsRequired();
             modelBuilder.Entity<User>().Property(p => p.Password).HasColumnName("Password").HasColumnType("varbinary(50)").HasMaxLength(50);
             modelBuilder.Entity<User>().Property(p => p.UserName).HasColumnName("UserName").HasColumnType("nvarchar(32)").HasMaxLength(32).IsRequired();
+            modelBuilder.Entity<User>().HasMany<UserClient>(p => p.UsersClients).WithOne(uc => uc.User).OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<User>().HasMany<UserRole>(u => u.UsersRoles).WithOne(uc => uc.User).OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<ClientType>().ToTable("ClientType");
             modelBuilder.Entity<ClientType>().HasKey(c => c.Id);
@@ -107,6 +111,23 @@ namespace DaOAuthV2.Dal.EF
             modelBuilder.Entity<ClientScope>().HasOne<Client>(c => c.Client).WithMany(g => g.ClientsScopes).HasForeignKey(c => c.ClientId);
             modelBuilder.Entity<ClientScope>().Property(p => p.ScopeId).HasColumnName("FK_Scope").HasColumnType("int").IsRequired();
             modelBuilder.Entity<ClientScope>().HasOne<Scope>(c => c.Scope).WithMany(g => g.ClientsScopes).HasForeignKey(c => c.ScopeId);
+
+            modelBuilder.Entity<Role>().ToTable("Role");
+            modelBuilder.Entity<Role>().HasKey(r => r.Id);
+            modelBuilder.Entity<Role>().Property(r => r.Id).HasColumnName("Id").HasColumnType("int").IsRequired();
+            modelBuilder.Entity<Role>().Property(r => r.Wording).HasColumnName("Wording").HasColumnType("nvarchar(256)").HasMaxLength(256).IsRequired();
+            modelBuilder.Entity<Role>().HasMany<UserRole>(u => u.UsersRoles).WithOne(uc => uc.Role).OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<Role>().HasData(
+                new Role() { Id = 1, Wording = "User" },
+                new Role() { Id = 2, Wording = "Administrator" });
+
+            modelBuilder.Entity<UserRole>().ToTable("UserRole");
+            modelBuilder.Entity<UserRole>().HasKey(ur => ur.Id);
+            modelBuilder.Entity<UserRole>().Property(ur => ur.Id).HasColumnName("Id").HasColumnType("int").IsRequired();
+            modelBuilder.Entity<UserRole>().Property(ur => ur.UserId).HasColumnName("FK_User").HasColumnType("int").IsRequired();
+            modelBuilder.Entity<UserRole>().HasOne<User>(ur => ur.User).WithMany(g => g.UsersRoles).HasForeignKey(c => c.UserId);
+            modelBuilder.Entity<UserRole>().Property(ur => ur.RoleId).HasColumnName("FK_Role").HasColumnType("int").IsRequired();
+            modelBuilder.Entity<UserRole>().HasOne<Role>(ur => ur.Role).WithMany(g => g.UsersRoles).HasForeignKey(c => c.RoleId);
         }
 
         public void Commit()

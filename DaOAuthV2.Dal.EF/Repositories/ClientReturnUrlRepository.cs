@@ -10,7 +10,7 @@ namespace DaOAuthV2.Dal.EF
     {
         public IEnumerable<ClientReturnUrl> GetAllByClientId(string clientPublicId)
         {
-            return Context.ClientReturnUrl.
+            return Context.ClientReturnUrls.
                Where(c => c.Client.PublicId.Equals(clientPublicId, StringComparison.Ordinal));
         }
     }

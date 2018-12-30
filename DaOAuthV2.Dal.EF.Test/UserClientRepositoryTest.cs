@@ -98,7 +98,7 @@ namespace DaOAuthV2.Dal.EF.Test
                     ScopeId = 100
                 });
 
-                context.ClientReturnUrl.Add(new ClientReturnUrl()
+                context.ClientReturnUrls.Add(new ClientReturnUrl()
                 {
                     ClientId = 100,
                     Id = 100,

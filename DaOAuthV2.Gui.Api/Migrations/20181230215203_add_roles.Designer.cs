@@ -4,14 +4,16 @@ using DaOAuthV2.Dal.EF;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace DaOAuthV2.Gui.Api.Migrations
 {
     [DbContext(typeof(DaOAuthContext))]
-    partial class DaOAuthContextModelSnapshot : ModelSnapshot
+    [Migration("20181230215203_add_roles")]
+    partial class add_roles
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

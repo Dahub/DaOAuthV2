@@ -35,14 +35,14 @@ namespace DaOAuthV2.Dal.EF.Test
                     PublicId = "CT1_id"
                 });
 
-                context.ClientReturnUrl.Add(new ClientReturnUrl()
+                context.ClientReturnUrls.Add(new ClientReturnUrl()
                 {
                     ClientId = 100,
                     Id = 100,
                     ReturnUrl = "http://www.perdu.com"
                 });
 
-                context.ClientReturnUrl.Add(new ClientReturnUrl()
+                context.ClientReturnUrls.Add(new ClientReturnUrl()
                 {
                     ClientId = 100,
                     Id = 101,

@@ -15,5 +15,6 @@ namespace DaOAuthV2.Domain
         public DateTime CreationDate { get; set; }
         public bool IsValid { get; set; }
         public ICollection<UserClient> UsersClients { get; set; }
+        public ICollection<UserRole> UsersRoles { get; set; }
     }
 }
