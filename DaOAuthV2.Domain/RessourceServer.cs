@@ -1,4 +1,5 @@
 ﻿using DaOAuthV2.Domain.Interface;
+using System.Collections.Generic;
 
 namespace DaOAuthV2.Domain
 {
@@ -10,5 +11,6 @@ namespace DaOAuthV2.Domain
         public string Name { get; set; }
         public string Description { get; set; }
         public bool IsValid { get; set; }
+        public ICollection<Scope> Scopes { get; set; }
     }
 }

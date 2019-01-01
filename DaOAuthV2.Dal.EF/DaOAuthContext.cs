@@ -40,6 +40,7 @@ namespace DaOAuthV2.Dal.EF
             modelBuilder.Entity<RessourceServer>().Property(rs => rs.Login).HasColumnName("Login").HasColumnType("nvarchar(256)").HasMaxLength(256).IsRequired();
             modelBuilder.Entity<RessourceServer>().Property(rs => rs.ServerSecret).HasColumnName("ServerSecret").HasColumnType("varbinary(50)").HasMaxLength(50);
             modelBuilder.Entity<RessourceServer>().Property(rs => rs.IsValid).HasColumnName("IsValid").HasColumnType("bit").IsRequired();
+            modelBuilder.Entity<RessourceServer>().HasMany<Scope>(c => c.Scopes).WithOne(c => c.RessourceServer).OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<User>().ToTable("User");
             modelBuilder.Entity<User>().HasKey(c => c.Id);
@@ -82,6 +83,8 @@ namespace DaOAuthV2.Dal.EF
             modelBuilder.Entity<Scope>().Property(p => p.Wording).HasColumnName("Wording").HasColumnType("nvarchar(max)");
             modelBuilder.Entity<Scope>().Property(p => p.NiceWording).HasColumnName("NiceWording").HasColumnType("nvarchar(512)").HasMaxLength(512);
             modelBuilder.Entity<Scope>().HasMany<ClientScope>(c => c.ClientsScopes).WithOne(c => c.Scope).OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<Scope>().Property(p => p.RessourceServerId).HasColumnName("FK_RessourceServer").HasColumnType("int").IsRequired();
+            modelBuilder.Entity<Scope>().HasOne<RessourceServer>(c => c.RessourceServer).WithMany(ct => ct.Scopes).HasForeignKey(ct => ct.RessourceServerId);
 
             modelBuilder.Entity<Code>().ToTable("Code");
             modelBuilder.Entity<Code>().HasKey(c => c.Id);
