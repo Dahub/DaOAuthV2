@@ -159,6 +159,15 @@
   <data name="CreateClientDtoUserNameRequired" xml:space="preserve">
     <value>Le nom d'utilisateur est obigatoire</value>
   </data>
+  <data name="CreateReturnUrlClientIdRequired" xml:space="preserve">
+    <value>L'id publique du clien est obligatoire</value>
+  </data>
+  <data name="CreateReturnUrlReturnUrlRequired" xml:space="preserve">
+    <value>L'url de redirection est obligatoire</value>
+  </data>
+  <data name="CreateReturnUrlUserNameRequired" xml:space="preserve">
+    <value>Le nom d'utilisateur est obligatoire</value>
+  </data>
   <data name="CreateTokenDtoClientIdRequired" xml:space="preserve">
     <value>L'id du client est obligatoire</value>
   </data>
@@ -192,10 +201,25 @@
   <data name="CreateUserDtoUserNameRequired" xml:space="preserve">
     <value>Le nom d'utilisateur est obligatoire</value>
   </data>
+  <data name="DeleteReturnUrlShouldBePositive" xml:space="preserve">
+    <value>L'id de return url doit être supérieure à zéro</value>
+  </data>
+  <data name="DeleteReturnUrlUserNameRequired" xml:space="preserve">
+    <value>Le nom d'utilisateur est obligatoire</value>
+  </data>
   <data name="LoginUserDtoPasswordRequired" xml:space="preserve">
     <value>Le mot de passe est obligatoire</value>
   </data>
   <data name="LoginUserDtoUserNameRequired" xml:space="preserve">
+    <value>Le nom d'utilisateur est obligatoire</value>
+  </data>
+  <data name="UpdateReturnUrlReturnUrlRequired" xml:space="preserve">
+    <value>L'url de redirection est obligatoire</value>
+  </data>
+  <data name="UpdateReturnUrlShouldBePositive" xml:space="preserve">
+    <value>L'id de return url doit être supérieure à zéro</value>
+  </data>
+  <data name="UpdateReturnUrlUserNameRequired" xml:space="preserve">
     <value>Le nom d'utilisateur est obligatoire</value>
   </data>
   <data name="UpdateUserClientDtoClientPublicIdRequired" xml:space="preserve">

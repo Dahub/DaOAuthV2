@@ -159,6 +159,15 @@
   <data name="CreateClientDtoUserNameRequired" xml:space="preserve">
     <value>User name is mandatory</value>
   </data>
+  <data name="CreateReturnUrlClientIdRequired" xml:space="preserve">
+    <value>Client public id is mandatory</value>
+  </data>
+  <data name="CreateReturnUrlReturnUrlRequired" xml:space="preserve">
+    <value>Return url is mandatory</value>
+  </data>
+  <data name="CreateReturnUrlUserNameRequired" xml:space="preserve">
+    <value>User name is mandatory</value>
+  </data>
   <data name="CreateTokenDtoClientIdRequired" xml:space="preserve">
     <value>Client Id is mandatory</value>
   </data>
@@ -189,10 +198,25 @@
   <data name="CreateUserDtoUserNameRequired" xml:space="preserve">
     <value>User name is mandatory</value>
   </data>
+  <data name="DeleteReturnUrlShouldBePositive" xml:space="preserve">
+    <value>Return url id should be greater than zero</value>
+  </data>
+  <data name="DeleteReturnUrlUserNameRequired" xml:space="preserve">
+    <value>User name is mandatory</value>
+  </data>
   <data name="LoginUserDtoPasswordRequired" xml:space="preserve">
     <value>Password is mandatory</value>
   </data>
   <data name="LoginUserDtoUserNameRequired" xml:space="preserve">
+    <value>User name is mandatory</value>
+  </data>
+  <data name="UpdateReturnUrlReturnUrlRequired" xml:space="preserve">
+    <value>Return url is mandatory</value>
+  </data>
+  <data name="UpdateReturnUrlShouldBePositive" xml:space="preserve">
+    <value>Return url id should be greater than zero</value>
+  </data>
+  <data name="UpdateReturnUrlUserNameRequired" xml:space="preserve">
     <value>User name is mandatory</value>
   </data>
   <data name="UpdateUserClientDtoClientPublicIdRequired" xml:space="preserve">

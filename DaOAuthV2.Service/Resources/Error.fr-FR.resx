@@ -141,6 +141,18 @@
   <data name="CodeParameterError" xml:space="preserve">
     <value>Le paramètre code doit être renseigné</value>
   </data>
+  <data name="CreateReturnUrlBadUserNameOrClientId" xml:space="preserve">
+    <value>L'utilisateur n'est pas relié au client</value>
+  </data>
+  <data name="CreateReturnUrlInvalidClient" xml:space="preserve">
+    <value>Client invalide ou inconnu</value>
+  </data>
+  <data name="CreateReturnUrlInvalidUser" xml:space="preserve">
+    <value>Utilisateur invalide ou inconnu</value>
+  </data>
+  <data name="CreateReturnUrlReturnUrlIncorrect" xml:space="preserve">
+    <value>L'url de redirection est incorrecte</value>
+  </data>
   <data name="CreateUserClientClientAlreadyRegister" xml:space="preserve">
     <value>Le client est déjà existant</value>
   </data>

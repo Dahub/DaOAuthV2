@@ -103,6 +103,15 @@ namespace DaOAuthV2.Gui.Api
                 RandomService = new RandomService()
             });
 
+            services.AddTransient<IReturnUrlService>(u => new ReturnUrlService()
+            {
+                Configuration = conf,
+                RepositoriesFactory = new EfRepositoriesFactory(),
+                ConnexionString = Configuration.GetConnectionString("DaOAuthConnexionString"),
+                StringLocalizerFactory = localizationServiceFactory,
+                Logger = loggerServiceFactory.CreateLogger<JwtService>()
+            });
+
             services.AddMvc(options =>
                 options.Filters.Add(new DaOAuthExceptionFilter(CurrentEnvironment, loggerServiceFactory)))
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);

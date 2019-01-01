@@ -141,6 +141,18 @@
   <data name="CodeParameterError" xml:space="preserve">
     <value>Code parameter must be define</value>
   </data>
+  <data name="CreateReturnUrlBadUserNameOrClientId" xml:space="preserve">
+    <value>User and client aren't linked</value>
+  </data>
+  <data name="CreateReturnUrlInvalidClient" xml:space="preserve">
+    <value>Invalid or non existing client</value>
+  </data>
+  <data name="CreateReturnUrlInvalidUser" xml:space="preserve">
+    <value>Invalid or non existing user</value>
+  </data>
+  <data name="CreateReturnUrlReturnUrlIncorrect" xml:space="preserve">
+    <value>Incorrect return url</value>
+  </data>
   <data name="CreateUserClientClientAlreadyRegister" xml:space="preserve">
     <value>Client already register</value>
   </data>
