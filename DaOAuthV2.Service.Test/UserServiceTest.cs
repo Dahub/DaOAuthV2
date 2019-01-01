@@ -3,6 +3,7 @@ using DaOAuthV2.Service.Interface;
 using DaOAuthV2.Service.Test.Fake;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
+using System.Linq;
 
 namespace DaOAuthV2.Service.Test
 {
@@ -93,8 +94,14 @@ namespace DaOAuthV2.Service.Test
         }
 
         [TestMethod]
-        public void Create_New_User_Should_Create_User()
-        {           
+        public void Create_New_User_Should_Create_User_Whit_Minimum_Role()
+        {
+            FakeDataBase.Instance.Roles.Add(new Domain.Role()
+            {
+                Id = 1,
+                Wording = "test"
+            });
+
             var user = _repo.GetById(_service.CreateUser(new DTO.CreateUserDto()
             {
                 BirthDate = new DateTime(1978, 09, 16),
@@ -107,6 +114,9 @@ namespace DaOAuthV2.Service.Test
 
             Assert.IsNotNull(user);
             Assert.IsTrue((DateTime.Now - user.CreationDate).TotalSeconds < 10);
+            Assert.IsNotNull(user.UsersRoles);
+            Assert.AreEqual(1, user.UsersRoles.Count());
+            Assert.IsNotNull(user.UsersRoles.First().Role);
         }
 
         [TestMethod]

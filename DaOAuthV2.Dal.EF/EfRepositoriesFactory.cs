@@ -45,6 +45,14 @@ namespace DaOAuthV2.Dal.EF
             };
         }
 
+        public IRoleRepository GetRoleRepository(IContext context)
+        {
+            return new RoleRepository()
+            {
+                Context = (DaOAuthContext)context,
+            };
+        }
+
         public IScopeRepository GetScopeRepository(IContext context)
         {
             return new ScopeRepository()
@@ -64,6 +72,14 @@ namespace DaOAuthV2.Dal.EF
         public IUserRepository GetUserRepository(IContext context)
         {
             return new UserRepository()
+            {
+                Context = (DaOAuthContext)context,
+            };
+        }
+
+        public IUserRoleRepository GetUserRoleRepository(IContext context)
+        {
+            return new UserRoleRepository()
             {
                 Context = (DaOAuthContext)context,
             };

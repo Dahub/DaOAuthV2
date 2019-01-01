@@ -42,6 +42,14 @@ namespace DaOAuthV2.Service.Test.Fake
             };
         }
 
+        public IRoleRepository GetRoleRepository(IContext context)
+        {
+            return new FakeRoleRepository()
+            {
+                Context = context
+            };
+        }
+
         public IScopeRepository GetScopeRepository(IContext context)
         {
             return new FakeScopeRepository()
@@ -61,6 +69,14 @@ namespace DaOAuthV2.Service.Test.Fake
         public IUserRepository GetUserRepository(IContext context)
         {
             return new FakeUserRepository()
+            {
+                Context = context
+            };
+        }
+
+        public IUserRoleRepository GetUserRoleRepository(IContext context)
+        {
+            return new FakeUserRoleRepository()
             {
                 Context = context
             };

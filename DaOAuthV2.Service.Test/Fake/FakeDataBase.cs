@@ -32,6 +32,10 @@ namespace DaOAuthV2.Service.Test.Fake
 
         internal IList<Code> Codes = new List<Code>();
 
+        internal IList<Role> Roles = new List<Role>();
+
+        internal IList<UserRole> UsersRoles = new List<UserRole>();
+
         internal IList<ClientType> ClientTypes = new List<ClientType>()
         {
             new ClientType()

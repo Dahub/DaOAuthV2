@@ -58,6 +58,20 @@ namespace DaOAuthV2.Service
             {
                 var repo = RepositoriesFactory.GetUserRepository(c);
                 repo.Add(u);
+
+                var userRoleRepo = RepositoriesFactory.GetUserRoleRepository(c);
+                var roleRepo = RepositoriesFactory.GetRoleRepository(c);
+
+                var myRole = roleRepo.GetById((int)ERole.USER);
+                if(myRole != null)
+                {
+                    userRoleRepo.Add(new UserRole()
+                    {
+                        RoleId = myRole.Id,
+                        UserId = u.Id
+                    });
+                }
+
                 c.Commit();
                 idCreated = u.Id;
             }

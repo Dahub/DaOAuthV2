@@ -11,5 +11,7 @@
         IScopeRepository GetScopeRepository(IContext context);
         IRessourceServerRepository GetRessourceServerRepository(IContext context);
         IClientReturnUrlRepository GetClientReturnUrlRepository(IContext context);
+        IRoleRepository GetRoleRepository(IContext context);
+        IUserRoleRepository GetUserRoleRepository(IContext context);
     }
 }

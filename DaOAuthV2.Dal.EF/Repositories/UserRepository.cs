@@ -1,5 +1,6 @@
 ﻿using DaOAuthV2.Dal.Interface;
 using DaOAuthV2.Domain;
+using Microsoft.EntityFrameworkCore;
 using System.Linq;
 
 namespace DaOAuthV2.Dal.EF
@@ -15,7 +16,10 @@ namespace DaOAuthV2.Dal.EF
         public User GetByUserName(string userName)
         {
             return Context.Users.
-               Where(c => c.UserName.Equals(userName, System.StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
+               Where(c => c.UserName.Equals(userName, System.StringComparison.OrdinalIgnoreCase)).
+               Include(u => u.UsersRoles).
+               ThenInclude(ur => ur.Role).               
+               FirstOrDefault();
         }
     }
 }

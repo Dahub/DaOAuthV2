@@ -34,6 +34,32 @@ namespace DaOAuthV2.Dal.EF.Test
                     UserName = "testeur"
                 });
 
+                context.Roles.Add(new Role()
+                {
+                    Id = 1,
+                    Wording = "R1"
+                });
+
+                context.Roles.Add(new Role()
+                {
+                    Id = 2,
+                    Wording = "R2"
+                });
+
+                context.UsersRoles.Add(new UserRole()
+                {
+                    Id = 1,
+                    RoleId = 1,
+                    UserId = 100
+                });
+
+                context.UsersRoles.Add(new UserRole()
+                {
+                    Id =2,
+                    RoleId = 2,
+                    UserId = 100
+                });
+
                 context.Commit();
             }
         }
@@ -69,6 +95,26 @@ namespace DaOAuthV2.Dal.EF.Test
         }
 
         [TestMethod]
+        public void Get_By_Existing_UserName_Should_Return_User_With_Roles()
+        {
+            var options = new DbContextOptionsBuilder<DaOAuthContext>()
+                       .UseInMemoryDatabase(databaseName: _dbName)
+                       .Options;
+
+            using (var context = new DaOAuthContext(options))
+            {
+                var repo = _repoFactory.GetUserRepository(context);
+
+                var u = repo.GetByUserName("testeur");
+
+                Assert.IsNotNull(u);
+                Assert.IsNotNull(u.UsersRoles);
+                Assert.AreEqual(2, u.UsersRoles.Count());
+                Assert.IsNotNull(u.UsersRoles.First().Role);
+            }
+        }
+
+        [TestMethod]
         public void Get_By_Non_Existing_UserName_Should_Return_Null()
         {
             var options = new DbContextOptionsBuilder<DaOAuthContext>()
@@ -96,7 +142,7 @@ namespace DaOAuthV2.Dal.EF.Test
             using (var context = new DaOAuthContext(options))
             {
                 var repo = _repoFactory.GetUserRepository(context);
-                
+
                 var u = repo.GetByEmail("sam@rab.com");
 
                 Assert.IsNotNull(u);
