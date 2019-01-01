@@ -2,7 +2,7 @@
 {
     public static class ClientTypeName
     {
-        public static string Confidential = "confidential";
-        public static string Public = "public";
+        public const string Confidential = "confidential";
+        public const string Public = "public";
     }
 }

@@ -1,5 +1,6 @@
 ﻿using DaOAuthV2.ApiTools;
 using System;
+using System.Collections.Generic;
 
 namespace DaOAuthV2.Service.DTO
 {
@@ -29,5 +30,10 @@ namespace DaOAuthV2.Service.DTO
         /// User création date
         /// </summary>
         public DateTime CreationDate { get; set; }
+
+        /// <summary>
+        /// User roles
+        /// </summary>
+        public IEnumerable<string> Roles { get; set; }
     }
 }

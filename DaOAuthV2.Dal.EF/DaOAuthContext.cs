@@ -1,4 +1,5 @@
-﻿using DaOAuthV2.Dal.Interface;
+﻿using DaOAuthV2.Constants;
+using DaOAuthV2.Dal.Interface;
 using DaOAuthV2.Domain;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -118,8 +119,8 @@ namespace DaOAuthV2.Dal.EF
             modelBuilder.Entity<Role>().Property(r => r.Wording).HasColumnName("Wording").HasColumnType("nvarchar(256)").HasMaxLength(256).IsRequired();
             modelBuilder.Entity<Role>().HasMany<UserRole>(u => u.UsersRoles).WithOne(uc => uc.Role).OnDelete(DeleteBehavior.Cascade);
             modelBuilder.Entity<Role>().HasData(
-                new Role() { Id = 1, Wording = "User" },
-                new Role() { Id = 2, Wording = "Administrator" });
+                new Role() { Id = 1, Wording = RoleName.User },
+                new Role() { Id = 2, Wording = RoleName.Administrator });
 
             modelBuilder.Entity<UserRole>().ToTable("UserRole");
             modelBuilder.Entity<UserRole>().HasKey(ur => ur.Id);

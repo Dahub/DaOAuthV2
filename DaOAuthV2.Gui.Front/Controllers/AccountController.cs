@@ -1,4 +1,5 @@
 ﻿using DaOAuthV2.ApiTools;
+using DaOAuthV2.Constants;
 using DaOAuthV2.Gui.Front.Models;
 using DaOAuthV2.Gui.Front.Tools;
 using DaOAuthV2.Service.DTO;
@@ -16,7 +17,7 @@ using System.Threading.Tasks;
 
 namespace DaOAuthV2.Gui.Front.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = RoleName.User)]
     public class AccountController : DaOauthFrontController
     {
         public AccountController(IConfiguration configuration) : base(configuration)
@@ -209,8 +210,16 @@ namespace DaOAuthV2.Gui.Front.Controllers
             var loginClaim = new Claim(ClaimTypes.Name, u.UserName);
             var fullNameClaim = new Claim(ClaimTypes.GivenName, u.FullName);
             var birthDayClaim = new Claim(ClaimTypes.DateOfBirth, u.BirthDate.HasValue ? u.BirthDate.Value.ToShortDateString() : String.Empty);
+
             var claimsIdentity = new ClaimsIdentity(new[] { loginClaim, fullNameClaim, birthDayClaim }, "cookie");
+            foreach (var r in u.Roles)
+            {
+                var roleClaim = new Claim(ClaimTypes.Role, r);
+                claimsIdentity.AddClaim(roleClaim);
+            }
+
             ClaimsPrincipal principal = new ClaimsPrincipal(claimsIdentity);
+
             HttpContext.SignInAsync("DaOAuth", principal, new AuthenticationProperties()
             {
                 ExpiresUtc = rememberMe ? DateTime.Now.AddYears(100) : DateTime.Now.AddMinutes(20),

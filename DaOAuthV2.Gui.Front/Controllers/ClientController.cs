@@ -1,4 +1,5 @@
 ﻿using DaOAuthV2.ApiTools;
+using DaOAuthV2.Constants;
 using DaOAuthV2.Gui.Front.Models;
 using DaOAuthV2.Gui.Front.Tools;
 using DaOAuthV2.Service.DTO;
@@ -12,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace DaOAuthV2.Gui.Front.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = RoleName.User)]
     public class ClientController : DaOauthFrontController
     {
         public ClientController(IConfiguration configuration) : base(configuration)

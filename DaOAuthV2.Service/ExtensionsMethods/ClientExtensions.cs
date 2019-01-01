@@ -19,7 +19,7 @@ namespace DaOAuthV2.Service.ExtensionsMethods
                 PublicId = value.PublicId
             };
 
-            c.ReturnUrls = value.ClientReturnUrls.Select(r => r.ReturnUrl).ToList();
+            c.ReturnUrls = value.ClientReturnUrls.ToDictionary(k => k.Id, v => v.ReturnUrl);
 
             c.Scopes = value.ClientsScopes.Select(s => 
                 new KeyValuePair<string, string>(

@@ -9,5 +9,6 @@ namespace DaOAuthV2.Domain
         public string Wording { get; set; }
         public string NiceWording { get; set; }
         public ICollection<ClientScope> ClientsScopes { get; set; }
+
     }
 }

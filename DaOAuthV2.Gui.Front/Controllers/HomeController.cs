@@ -1,4 +1,5 @@
-﻿using DaOAuthV2.Gui.Front.Tools;
+﻿using DaOAuthV2.Constants;
+using DaOAuthV2.Gui.Front.Tools;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -9,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace DaOAuthV2.Gui.Front.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = RoleName.User)]
     public class HomeController : DaOauthFrontController
     {
         public HomeController(IConfiguration configuration) : base(configuration)

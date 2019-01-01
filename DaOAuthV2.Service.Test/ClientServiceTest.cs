@@ -35,7 +35,7 @@ namespace DaOAuthV2.Service.Test
         {
             FakeDataBase.Reset();
         }
-
+     
         [TestMethod]
         public void Create_New_Client_Should_Create_A_Creator_User_Client()
         {

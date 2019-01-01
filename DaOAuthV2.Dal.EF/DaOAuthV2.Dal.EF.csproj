@@ -16,6 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\DaOAuthV2.Constants\DaOAuthV2.Constants.csproj" />
     <ProjectReference Include="..\DaOAuthV2.Dal.Interface\DaOAuthV2.Dal.Interface.csproj" />
   </ItemGroup>
 
