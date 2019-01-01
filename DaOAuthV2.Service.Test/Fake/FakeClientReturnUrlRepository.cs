@@ -19,7 +19,9 @@ namespace DaOAuthV2.Service.Test.Fake
 
         public void Delete(ClientReturnUrl toDelete)
         {
-            throw new NotImplementedException();
+            var ru = FakeDataBase.Instance.ClientReturnUrls.Where(x => x.Id.Equals(toDelete.Id)).FirstOrDefault();
+            if (ru != null)
+                FakeDataBase.Instance.ClientReturnUrls.Remove(ru);
         }
 
         public IEnumerable<ClientReturnUrl> GetAll()
@@ -37,12 +39,21 @@ namespace DaOAuthV2.Service.Test.Fake
 
         public ClientReturnUrl GetById(int id)
         {
-            throw new NotImplementedException();
+            var ru = FakeDataBase.Instance.ClientReturnUrls.FirstOrDefault(x => x.Id.Equals(id));
+
+            if (ru == null)
+                return null;
+
+            ru.Client = FakeDataBase.Instance.Clients.FirstOrDefault(x => x.Id.Equals(ru.ClientId));
+
+            return ru;
         }
 
         public void Update(ClientReturnUrl toUpdate)
         {
-            throw new NotImplementedException();
+            var ru = FakeDataBase.Instance.ClientReturnUrls.Where(x => x.Id.Equals(toUpdate.Id)).FirstOrDefault();
+            if (ru != null)
+                ru.ReturnUrl = toUpdate.ReturnUrl;
         }
     }
 }

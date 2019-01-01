@@ -171,6 +171,15 @@
   <data name="CreateUserUserNameExists" xml:space="preserve">
     <value>Le nom d'utilisateur {0} existe déjà</value>
   </data>
+  <data name="DeleteReturnUrlBadUserNameOrClientId" xml:space="preserve">
+    <value>L'utilisateur n'est pas relié au client</value>
+  </data>
+  <data name="DeleteReturnUrlInvalidUser" xml:space="preserve">
+    <value>Utilisateur invalide ou inconnu</value>
+  </data>
+  <data name="DeleteReturnUrlUnknowReturnUrl" xml:space="preserve">
+    <value>Aucun url de redirection correspondant trouvée</value>
+  </data>
   <data name="DeleteUserNoUserFound" xml:space="preserve">
     <value>L'utilisateur n'existe pas</value>
   </data>
@@ -203,6 +212,18 @@
   </data>
   <data name="UnsupportedGrantType" xml:space="preserve">
     <value>Grant type inconnu</value>
+  </data>
+  <data name="UpdateReturnUrlBadUserNameOrClientId" xml:space="preserve">
+    <value>L'utilisateur n'est pas relié au client</value>
+  </data>
+  <data name="UpdateReturnUrlInvalidUser" xml:space="preserve">
+    <value>Utilisateur invalide ou inconnu</value>
+  </data>
+  <data name="UpdateReturnUrlReturnUrlIncorrect" xml:space="preserve">
+    <value>L'url de redirection est incorrecte</value>
+  </data>
+  <data name="UpdateReturnUrlUnknowReturnUrl" xml:space="preserve">
+    <value>Aucun url de redirection correspondant trouvée</value>
   </data>
   <data name="UpdateUserClientClientNotValid" xml:space="preserve">
     <value>Client invalide</value>

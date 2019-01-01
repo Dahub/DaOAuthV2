@@ -67,6 +67,22 @@ namespace DaOAuthV2.Dal.EF.Test
         }
 
         [TestMethod]
+        public void Get_By_Id_Should_Return_Return_Url_With_Client()
+        {
+            var options = new DbContextOptionsBuilder<DaOAuthContext>()
+                     .UseInMemoryDatabase(databaseName: _dbName)
+                     .Options;
+
+            using (var context = new DaOAuthContext(options))
+            {
+                var ruRepo = _repoFactory.GetClientReturnUrlRepository(context);
+                var ru = ruRepo.GetById(100);
+                Assert.IsNotNull(ru);
+                Assert.IsNotNull(ru.Client);
+            }
+        }
+
+        [TestMethod]
         public void Get_All_By_Client_Id_Should_Return_2_Client_Return_Url()
         {
             var options = new DbContextOptionsBuilder<DaOAuthContext>()

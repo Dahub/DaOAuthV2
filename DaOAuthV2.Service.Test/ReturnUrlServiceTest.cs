@@ -290,7 +290,7 @@ namespace DaOAuthV2.Service.Test
                 ReturnUrl = _returnUrl
             });
 
-            FakeDataBase.Instance.ClientReturnUrls.Clear();
+            FakeDataBase.Instance.UsersClient.Clear();
 
             _service.DeleteReturnUrl(new DTO.DeleteReturnUrlDto()
             {
@@ -315,7 +315,7 @@ namespace DaOAuthV2.Service.Test
                 UserName = _validUser.UserName
             });
 
-            var ru = FakeDataBase.Instance.ClientReturnUrls.Where(r => r.Id.Equals(800));
+            var ru = FakeDataBase.Instance.ClientReturnUrls.Where(r => r.Id.Equals(800)).FirstOrDefault();
             Assert.IsNull(ru);
         }
 
@@ -379,7 +379,7 @@ namespace DaOAuthV2.Service.Test
                 ReturnUrl = _returnUrl
             });
 
-            FakeDataBase.Instance.ClientReturnUrls.Clear();
+            FakeDataBase.Instance.UsersClient.Clear();
 
             _service.UpdateReturnUrl(new DTO.UpdateReturnUrlDto()
             {
@@ -422,7 +422,7 @@ namespace DaOAuthV2.Service.Test
             {
                 IdReturnUrl = 800,
                 UserName = _validUser.UserName,
-                ReturnUrl = "htp:eee"
+                ReturnUrl = "htpeee"
             });
         }
 
