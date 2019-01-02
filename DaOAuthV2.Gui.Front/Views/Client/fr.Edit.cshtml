@@ -1,0 +1,34 @@
+﻿@model DaOAuthV2.Gui.Front.Models.EditClientModel
+
+@{
+    Layout = "_fr.layout";
+}
+
+@await Html.PartialAsync("_fr.modelErrors")
+
+<h1>Modification du client <em>@Model.Name</em></h1>
+<hr />
+<form asp-action="Edit" method="post">
+    <div class="row justify-content-md-center">
+        <div class="col-6">
+
+            <h4>Informations</h4>
+            <div class="form-group">
+                <label asp-for="Name" class="control-label">Nom</label>
+                @Html.TextBoxFor(model => model.Name, new { @class = "form-control" })
+            </div>
+
+        </div>
+        <div class="col-6">
+            <h4>Urls de redirection</h4>
+            <hr />
+            <h4>Scopes</h4>
+        </div>
+        <div class="col-4">
+            <a href="@Url.Action("List", "Client")" class="btn btn-lg btn-secondary btn-block">Retour</a>
+        </div>
+        <div class="col-8">
+            <input type="submit" value="Submit" class="btn btn-lg btn-primary btn-block" />
+        </div>
+    </div>
+</form>

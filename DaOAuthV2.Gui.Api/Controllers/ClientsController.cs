@@ -1,4 +1,5 @@
 ﻿using DaOAuthV2.ApiTools;
+using DaOAuthV2.Constants;
 using DaOAuthV2.Service.DTO;
 using DaOAuthV2.Service.Interface;
 using Microsoft.AspNetCore.Authorization;
@@ -10,7 +11,7 @@ namespace DaOAuthV2.Gui.Api.Controllers
 {
     [Route("[controller]")]
     [ApiController]
-    [Authorize]
+    [Authorize(Roles = RoleName.User)]
     public class ClientsController : ControllerBase
     {
         private IClientService _service;

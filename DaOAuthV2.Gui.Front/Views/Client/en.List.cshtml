@@ -45,8 +45,8 @@
                     <a href="@Url.Action("Details", "Client", new { id = @item.ClientId })"><i class="fas fa-2x fa-search"></i></a>
                     @if (item.IsCreator)
                     {
-                        <a href="@Url.Action("Edit", "Client", new { id = @item.ClientPublicId })"><i class="fas fa-2x fa-edit"></i></a>
-                        <a href="@Url.Action("Delete", "Client", new { id = @item.ClientPublicId })"><i class="fas fa-2x fa-trash-alt"></i></a>
+                        <a href="@Url.Action("Edit", "Client", new { id = @item.ClientId })"><i class="fas fa-2x fa-edit"></i></a>
+                        <a href="@Url.Action("Delete", "Client", new { id = @item.ClientId })"><i class="fas fa-2x fa-trash-alt"></i></a>
                     }
                 </td>
                 <td>

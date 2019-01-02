@@ -34,5 +34,11 @@ namespace DaOAuthV2.Gui.Front.Controllers
 
             return Int32.Parse(response.Headers.GetValues("X-Total-Count").First());
         }
+
+        [HttpGet]
+        public async Task<int> GetRessourceServerNumberAsync()
+        {
+            return 0;
+        }
     }
 }

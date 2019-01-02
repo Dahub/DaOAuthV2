@@ -27,7 +27,7 @@ namespace DaOAuthV2.Gui.Front.Controllers
             nv.Add("skip", "0");
             nv.Add("limit", "50");
 
-            var response = await GetToApi($"UsersClients", nv);
+            var response = await GetToApi($"usersClients", nv);
 
             var clients = JsonConvert.DeserializeObject<SearchResult<UserClientListDto>>(
                 await response.Content.ReadAsStringAsync());
@@ -69,8 +69,7 @@ namespace DaOAuthV2.Gui.Front.Controllers
 
             return RedirectToAction("List");
         }
-
-
+        
         [HttpGet]
         public async Task<IActionResult> Accept(RevokeOrAcceptClientModel model)
         {
@@ -91,6 +90,30 @@ namespace DaOAuthV2.Gui.Front.Controllers
             var client = JsonConvert.DeserializeObject<ClientDto>(await response.Content.ReadAsStringAsync());
 
             return View(client);
+        }
+
+        [HttpGet]       
+        public async Task<IActionResult> Edit(int id)
+        {
+            HttpResponseMessage response = await GetToApi(string.Concat("clients/", id));
+
+            var client = JsonConvert.DeserializeObject<ClientDto>(await response.Content.ReadAsStringAsync());
+
+            return View(new EditClientModel()
+            {
+                Id = client.Id,
+                Name = client.Name
+            });
+        }
+
+        [HttpGet]
+        [HttpPost]
+        public async Task<IActionResult> Edit(EditClientModel model)
+        {
+            //if (!await model.ValidateAsync(response))
+            //    return View(model);
+
+            return RedirectToAction("List");
         }
     }
 }
