@@ -35,6 +35,7 @@ namespace DaOAuthV2.Dal.EF
             modelBuilder.Entity<RessourceServer>().ToTable("RessourceServer");
             modelBuilder.Entity<RessourceServer>().HasKey(rs => rs.Id);
             modelBuilder.Entity<RessourceServer>().Property(rs => rs.Id).HasColumnName("Id").HasColumnType("int").IsRequired();
+            modelBuilder.Entity<RessourceServer>().Property(rs => rs.CreationDate).HasColumnName("CreationDate").HasColumnType("datetime").IsRequired();
             modelBuilder.Entity<RessourceServer>().Property(rs => rs.Description).HasColumnName("Description").HasColumnType("nvarchar(max)");
             modelBuilder.Entity<RessourceServer>().Property(rs => rs.Name).HasColumnName("Name").HasColumnType("nvarchar(256)").HasMaxLength(256).IsRequired();
             modelBuilder.Entity<RessourceServer>().Property(rs => rs.Login).HasColumnName("Login").HasColumnType("nvarchar(256)").HasMaxLength(256).IsRequired();
