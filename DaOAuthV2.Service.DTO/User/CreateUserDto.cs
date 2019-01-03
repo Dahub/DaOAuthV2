@@ -17,7 +17,6 @@ namespace DaOAuthV2.Service.DTO
         public string EMail { get; set; }
 
         [Required(ErrorMessage = "CreateUserDtoPasswordRequired")]
-        [MinLength(7, ErrorMessage = "CreateUserDtoPasswordPolicyFailed")]
         public string Password { get; set; }
         public string RepeatPassword { get; set; }
         public DateTime? BirthDate { get; set; }

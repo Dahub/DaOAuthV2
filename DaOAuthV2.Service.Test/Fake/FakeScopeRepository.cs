@@ -13,7 +13,13 @@ namespace DaOAuthV2.Service.Test.Fake
 
         public int Add(Scope toAdd)
         {
-            throw new NotImplementedException();
+            if (FakeDataBase.Instance.Scopes.Count > 0)
+                toAdd.Id = FakeDataBase.Instance.Scopes.Max(u => u.Id) + 1;
+            else
+                toAdd.Id = 1;
+
+            FakeDataBase.Instance.Scopes.Add(toAdd);
+            return toAdd.Id;
         }
 
         public void Delete(Scope toDelete)
@@ -38,6 +44,11 @@ namespace DaOAuthV2.Service.Test.Fake
         public Scope GetById(int id)
         {
             throw new NotImplementedException();
+        }
+
+        public Scope GetByWording(string wording)
+        {
+            return FakeDataBase.Instance.Scopes.Where(s => s.Wording.Equals(wording, StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
         }
 
         public void Update(Scope toUpdate)

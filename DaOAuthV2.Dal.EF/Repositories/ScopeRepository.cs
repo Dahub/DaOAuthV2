@@ -13,5 +13,10 @@ namespace DaOAuthV2.Dal.EF
             return Context.ClientsScopes.
               Where(c => c.Client.PublicId.Equals(clientPublicId, StringComparison.Ordinal)).Select(c => c.Scope);
         }
+
+        public Scope GetByWording(string wording)
+        {
+            return Context.Scopes.Where(s => s.Wording.Equals(wording, StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
+        }
     }
 }

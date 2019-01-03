@@ -12,7 +12,13 @@ namespace DaOAuthV2.Service.Test.Fake
 
         public int Add(RessourceServer toAdd)
         {
-            throw new NotImplementedException();
+            if (FakeDataBase.Instance.RessourceServers.Count > 0)
+                toAdd.Id = FakeDataBase.Instance.RessourceServers.Max(u => u.Id) + 1;
+            else
+                toAdd.Id = 1;
+
+            FakeDataBase.Instance.RessourceServers.Add(toAdd);
+            return toAdd.Id;
         }
 
         public void Delete(RessourceServer toDelete)

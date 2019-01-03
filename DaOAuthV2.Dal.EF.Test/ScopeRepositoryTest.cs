@@ -139,5 +139,35 @@ namespace DaOAuthV2.Dal.EF.Test
                 Assert.AreEqual(0, scopes.Count());
             }
         }
+
+        [TestMethod]
+        public void Get_By_Wording_Should_Return_Scope()
+        {
+            var options = new DbContextOptionsBuilder<DaOAuthContext>()
+                   .UseInMemoryDatabase(databaseName: _dbName)
+                   .Options;
+            using (var context = new DaOAuthContext(options))
+            {
+                var repo = _repoFactory.GetScopeRepository(context);
+                var scope = repo.GetByWording("scope_test_2");
+
+                Assert.IsNotNull(scope);
+            }
+        }
+
+        [TestMethod]
+        public void Get_By_Wording_With_Case_Change_Should_Return_Scope()
+        {
+            var options = new DbContextOptionsBuilder<DaOAuthContext>()
+                   .UseInMemoryDatabase(databaseName: _dbName)
+                   .Options;
+            using (var context = new DaOAuthContext(options))
+            {
+                var repo = _repoFactory.GetScopeRepository(context);
+                var scope = repo.GetByWording("sCOpe_test_2");
+
+                Assert.IsNotNull(scope);
+            }
+        }
     }
 }

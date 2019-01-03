@@ -159,6 +159,18 @@
   <data name="CreateClientDtoUserNameRequired" xml:space="preserve">
     <value>Le nom d'utilisateur est obigatoire</value>
   </data>
+  <data name="CreateRessourceServerLoginRequired" xml:space="preserve">
+    <value>Le login est obligatoire</value>
+  </data>
+  <data name="CreateRessourceServerNameRequired" xml:space="preserve">
+    <value>Le nom est obligatoire</value>
+  </data>
+  <data name="CreateRessourceServerPasswordRequired" xml:space="preserve">
+    <value>Le mot de passe est obligatoire</value>
+  </data>
+  <data name="CreateRessourceServerUserNameRequired" xml:space="preserve">
+    <value>Le nom d'utilisateur est obligatoire</value>
+  </data>
   <data name="CreateReturnUrlClientIdRequired" xml:space="preserve">
     <value>L'id publique du clien est obligatoire</value>
   </data>
@@ -191,9 +203,6 @@
   </data>
   <data name="CreateUserDtoIncorrectEmailFormatRequired" xml:space="preserve">
     <value>Format d'email incorrect</value>
-  </data>
-  <data name="CreateUserDtoPasswordPolicyFailed" xml:space="preserve">
-    <value>Le mot de passe doit comporter au moins 7 caractères</value>
   </data>
   <data name="CreateUserDtoPasswordRequired" xml:space="preserve">
     <value>Le mot de passe est obligatoire</value>

@@ -141,6 +141,30 @@
   <data name="CodeParameterError" xml:space="preserve">
     <value>Code parameter must be define</value>
   </data>
+  <data name="CreateRessourceServerEmptyScopeWording" xml:space="preserve">
+    <value>Scope wording is null</value>
+  </data>
+  <data name="CreateRessourceServerExistingLogin" xml:space="preserve">
+    <value>Login already used</value>
+  </data>
+  <data name="CreateRessourceServerExistingScope" xml:space="preserve">
+    <value>Scope already exist</value>
+  </data>
+  <data name="CreateRessourceServerInvalidUserName" xml:space="preserve">
+    <value>User don't exist or ban</value>
+  </data>
+  <data name="CreateRessourceServerMultipleScopeWording" xml:space="preserve">
+    <value>Multiple scopes wording find</value>
+  </data>
+  <data name="CreateRessourceServerNonAdminUserName" xml:space="preserve">
+    <value>User isn't admin</value>
+  </data>
+  <data name="CreateRessourceServerPasswordDontMatch" xml:space="preserve">
+    <value>Passwords don't match</value>
+  </data>
+  <data name="CreateRessourceServerPasswordPolicyFailed" xml:space="preserve">
+    <value>Password don't match policy</value>
+  </data>
   <data name="CreateReturnUrlBadUserNameOrClientId" xml:space="preserve">
     <value>User and client aren't linked</value>
   </data>
@@ -167,6 +191,9 @@
   </data>
   <data name="CreateUserPasswordDontMatch" xml:space="preserve">
     <value>Passwords don't match</value>
+  </data>
+  <data name="CreateUserPasswordPolicyFailed" xml:space="preserve">
+    <value>Password don't match policy</value>
   </data>
   <data name="CreateUserUserNameExists" xml:space="preserve">
     <value>User name {0} already in use</value>

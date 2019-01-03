@@ -95,6 +95,23 @@ namespace DaOAuthV2.Dal.EF.Test
         }
 
         [TestMethod]
+        public void Get_By_Existing_UserName_With_Different_Case_Should_Return_User()
+        {
+            var options = new DbContextOptionsBuilder<DaOAuthContext>()
+                       .UseInMemoryDatabase(databaseName: _dbName)
+                       .Options;
+
+            using (var context = new DaOAuthContext(options))
+            {
+                var repo = _repoFactory.GetUserRepository(context);
+
+                var u = repo.GetByUserName("teSTeur");
+
+                Assert.IsNotNull(u);
+            }
+        }
+
+        [TestMethod]
         public void Get_By_Existing_UserName_Should_Return_User_With_Roles()
         {
             var options = new DbContextOptionsBuilder<DaOAuthContext>()

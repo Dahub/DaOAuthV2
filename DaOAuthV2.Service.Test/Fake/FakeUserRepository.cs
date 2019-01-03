@@ -59,7 +59,25 @@ namespace DaOAuthV2.Service.Test.Fake
 
         public User GetByUserName(string userName)
         {
-            return FakeDataBase.Instance.Users.Where(u => u.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
+            var u = FakeDataBase.Instance.Users.Where(user => user.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
+
+            if (u == null)
+                return null;
+
+            var ur = FakeDataBase.Instance.UsersRoles.Where(x => x.UserId.Equals(u.Id));
+
+            if (ur == null)
+                return u;
+            u.UsersRoles = new List<UserRole>();
+            foreach (var userRole in ur)
+            {
+                var r = FakeDataBase.Instance.Roles.Where(x => x.Id.Equals(userRole.RoleId)).FirstOrDefault();
+                if (r != null)
+                    userRole.Role = r;
+                u.UsersRoles.Add(userRole);
+            }
+
+            return u;
         }
 
         public void Update(User toUpdate)

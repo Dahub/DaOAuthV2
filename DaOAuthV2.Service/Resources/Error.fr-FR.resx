@@ -141,6 +141,30 @@
   <data name="CodeParameterError" xml:space="preserve">
     <value>Le paramètre code doit être renseigné</value>
   </data>
+  <data name="CreateRessourceServerEmptyScopeWording" xml:space="preserve">
+    <value>Un scope a un libellé vide</value>
+  </data>
+  <data name="CreateRessourceServerExistingLogin" xml:space="preserve">
+    <value>Login déjà utlisé</value>
+  </data>
+  <data name="CreateRessourceServerExistingScope" xml:space="preserve">
+    <value>Scope déjà existant</value>
+  </data>
+  <data name="CreateRessourceServerInvalidUserName" xml:space="preserve">
+    <value>L'utilisateur n'existe pas ou est bloqué</value>
+  </data>
+  <data name="CreateRessourceServerMultipleScopeWording" xml:space="preserve">
+    <value>Libellés de scope dupliqués détectés</value>
+  </data>
+  <data name="CreateRessourceServerNonAdminUserName" xml:space="preserve">
+    <value>L'utilisateur n'est pas administrateur</value>
+  </data>
+  <data name="CreateRessourceServerPasswordDontMatch" xml:space="preserve">
+    <value>Les deux mots de passe fournis ne correspondent pas</value>
+  </data>
+  <data name="CreateRessourceServerPasswordPolicyFailed" xml:space="preserve">
+    <value>Le mot de passe ne rempli pas les critères requis</value>
+  </data>
   <data name="CreateReturnUrlBadUserNameOrClientId" xml:space="preserve">
     <value>L'utilisateur n'est pas relié au client</value>
   </data>
@@ -167,6 +191,9 @@
   </data>
   <data name="CreateUserPasswordDontMatch" xml:space="preserve">
     <value>Les deux mots de passe fournis ne correspondent pas</value>
+  </data>
+  <data name="CreateUserPasswordPolicyFailed" xml:space="preserve">
+    <value>Le mot de passe ne rempli pas les critères requis</value>
   </data>
   <data name="CreateUserUserNameExists" xml:space="preserve">
     <value>Le nom d'utilisateur {0} existe déjà</value>

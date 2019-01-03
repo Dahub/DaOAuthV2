@@ -159,6 +159,18 @@
   <data name="CreateClientDtoUserNameRequired" xml:space="preserve">
     <value>User name is mandatory</value>
   </data>
+  <data name="CreateRessourceServerLoginRequired" xml:space="preserve">
+    <value>Login is mandatory</value>
+  </data>
+  <data name="CreateRessourceServerNameRequired" xml:space="preserve">
+    <value>Name is mandatory</value>
+  </data>
+  <data name="CreateRessourceServerPasswordRequired" xml:space="preserve">
+    <value>Password is mandatory</value>
+  </data>
+  <data name="CreateRessourceServerUserNameRequired" xml:space="preserve">
+    <value>User name is mandatory</value>
+  </data>
   <data name="CreateReturnUrlClientIdRequired" xml:space="preserve">
     <value>Client public id is mandatory</value>
   </data>
@@ -188,9 +200,6 @@
   </data>
   <data name="CreateUserDtoIncorrectEmailFormatRequired" xml:space="preserve">
     <value>Incorrect Email format</value>
-  </data>
-  <data name="CreateUserDtoPasswordPolicyFailed" xml:space="preserve">
-    <value>Password should be at least 7 characters long </value>
   </data>
   <data name="CreateUserDtoPasswordRequired" xml:space="preserve">
     <value>Password is mandatory</value>

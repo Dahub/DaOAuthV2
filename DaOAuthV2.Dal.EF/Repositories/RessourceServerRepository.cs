@@ -11,7 +11,7 @@ namespace DaOAuthV2.Dal.EF
         public RessourceServer GetByLogin(string login)
         {
             return Context.RessourceServers.
-              Where(rs => rs.Login.Equals(login, StringComparison.Ordinal)).FirstOrDefault();
+              Where(rs => rs.Login.Equals(login, StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
         }
     }
 }

@@ -105,14 +105,14 @@ namespace DaOAuthV2.Gui.Front.Controllers
             if (!await model.ValidateAsync(response))
                 return View(model);
 
-            LogUser(new UserDto()
+            // reload user to get roles
+            HttpResponseMessage loggedUserResponse = await PostToApi("users/find", new LoginUserDto
             {
-                BirthDate = model.BirthDate,
-                CreationDate = DateTime.Now,
-                EMail = model.EMail,
-                FullName = model.FullName,
-                UserName = model.UserName
-            }, false);
+                UserName = model.UserName,
+                Password = model.Password
+            });
+
+            LogUser(await loggedUserResponse.Content.ReadAsAsync<UserDto>(), false);
 
             return RedirectToAction("RegisterOk", "Account");
         }

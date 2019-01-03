@@ -23,6 +23,9 @@ namespace DaOAuthV2.Service
                     &&!toCreate.Password.Equals(toCreate.RepeatPassword, StringComparison.Ordinal))
                     result.Add(new ValidationResult(resource["CreateUserPasswordDontMatch"]));
 
+                if (!toValidate.Password.IsMatchPasswordPolicy())
+                    result.Add(new ValidationResult(resource["CreateUserPasswordPolicyFailed"]));
+
                 using (var c = RepositoriesFactory.CreateContext(ConnexionString))
                 {
                     var repo = RepositoriesFactory.GetUserRepository(c);

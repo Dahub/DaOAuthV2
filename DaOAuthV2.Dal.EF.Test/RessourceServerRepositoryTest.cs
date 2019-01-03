@@ -83,6 +83,24 @@ namespace DaOAuthV2.Dal.EF.Test
                 Assert.IsNotNull(rs);
             }
         }
+
+        [TestMethod]
+        public void Get_By_Existing_Login_With_Different_Case_Should_Return_Ressource_Server()
+        {
+            var options = new DbContextOptionsBuilder<DaOAuthContext>()
+                      .UseInMemoryDatabase(databaseName: _dbName)
+                      .Options;
+
+            using (var context = new DaOAuthContext(options))
+            {
+                var repo = _repoFactory.GetRessourceServerRepository(context);
+
+                var rs = repo.GetByLogin("lOGin_tEst3");
+
+                Assert.IsNotNull(rs);
+            }
+        }
+
         [TestMethod]
         public void Get_By_Non_Existing_Login_Should_Return_Null()
         {
