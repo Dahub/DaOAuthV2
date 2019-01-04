@@ -128,12 +128,33 @@ namespace DaOAuthV2.Service
 
         public int SearchCount(RessourceServerSearchDto criterias)
         {
-            throw new NotImplementedException();
+            Validate(criterias, ExtendValidationSearchCriterias);
+
+            int count = 0;
+
+            using (var c = RepositoriesFactory.CreateContext(ConnexionString))
+            {
+                var rsRepo = RepositoriesFactory.GetRessourceServerRepository(c);
+                count = rsRepo.GetAllByCriteriasCount(criterias.Name, criterias.Login, true);
+            }
+
+            return count;
         }
 
         public RessourceServerDto Update(UpdateRessourceServerDto toUpdate)
         {
             throw new NotImplementedException();
+        }
+
+        private IList<ValidationResult> ExtendValidationSearchCriterias(RessourceServerSearchDto c)
+        {
+            var resource = this.GetErrorStringLocalizer();
+            IList<ValidationResult> result = new List<ValidationResult>();
+
+            if (c.Limit - c.Skip > 50)
+                result.Add(new ValidationResult(String.Format(resource["SearchRessourceServerAskTooMuch"], c)));
+
+            return result;
         }
     }
 }

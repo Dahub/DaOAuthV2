@@ -22,6 +22,8 @@ namespace DaOAuthV2.Service.Test
         private User _invalidUser;
         private Scope _existingScope;
         private RessourceServer _existingRessourceServer;
+        private RessourceServer _validRessourceServer;
+        private RessourceServer _invalidRessourceServer;
 
         [TestInitialize]
         public void Init()
@@ -107,7 +109,29 @@ namespace DaOAuthV2.Service.Test
                 Name = "existing",
                 ServerSecret = new byte[] { 0 }
             };
+            _validRessourceServer = new RessourceServer()
+            {
+                CreationDate = DateTime.Now,
+                Description = "I am valid, yeah",
+                Id = 1999,
+                IsValid = true,
+                Login = "i_am_valid_rs",
+                Name = "valid_rs_name",
+                ServerSecret = new byte[] { 0 }
+            };
+            _invalidRessourceServer = new RessourceServer()
+            {
+                CreationDate = DateTime.Now,
+                Description = "I am not valid, sad",
+                Id = 2000,
+                IsValid = false,
+                Login = "i_am_not_valid_rs",
+                Name = "invalid_rs_name",
+                ServerSecret = new byte[] { 0 }
+            };
             FakeDataBase.Instance.RessourceServers.Add(_existingRessourceServer);
+            FakeDataBase.Instance.RessourceServers.Add(_validRessourceServer);
+            FakeDataBase.Instance.RessourceServers.Add(_invalidRessourceServer);
 
             _existingScope = new Scope()
             {
@@ -352,6 +376,50 @@ namespace DaOAuthV2.Service.Test
                 NiceWording = "ploP plop"
             });
             _service.CreateRessourceServer(_createDto);
+        }
+
+        [TestMethod]
+        public void Search_Count_Should_Return_All_Valid_Ressource_Server_Number_Without_Search_Criterias()
+        {
+            int total = _service.SearchCount(new RessourceServerSearchDto()
+            {
+                Limit = 50,
+                Skip = 0,
+                Login = String.Empty,
+                Name = String.Empty
+            });
+
+            int expected = FakeDataBase.Instance.RessourceServers.Where(r => r.IsValid.Equals(true)).Count();
+
+            Assert.AreEqual(expected, total);
+        }
+
+        [TestMethod]
+        public void Search_Count_Should_Return_1_With_Valid_Ressource_Server_Name()
+        {
+            int total = _service.SearchCount(new RessourceServerSearchDto()
+            {
+                Limit = 50,
+                Skip = 0,
+                Login = String.Empty,
+                Name = _validRessourceServer.Name
+            });
+            
+            Assert.AreEqual(1, total);
+        }
+
+        [TestMethod]
+        public void Search_Count_Should_Return_0_With_Invalid_Ressource_Server_Name()
+        {
+            int total = _service.SearchCount(new RessourceServerSearchDto()
+            {
+                Limit = 50,
+                Skip = 0,
+                Login = String.Empty,
+                Name = _invalidRessourceServer.Name
+            });
+
+            Assert.AreEqual(0, total);
         }
     }
 }

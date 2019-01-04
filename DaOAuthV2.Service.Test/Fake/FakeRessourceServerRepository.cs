@@ -31,6 +31,24 @@ namespace DaOAuthV2.Service.Test.Fake
             return FakeDataBase.Instance.RessourceServers;
         }
 
+        public IEnumerable<RessourceServer> GetAllByCriterias(string name, string login, bool? isValid, uint skip, uint take)
+        {
+            return FakeDataBase.Instance.RessourceServers.Where(c =>
+               (String.IsNullOrEmpty(name) || c.Name.Equals(name))
+               && (String.IsNullOrEmpty(login) || c.Login.Equals(login))
+               && (!isValid.HasValue || c.IsValid.Equals(isValid.Value))
+               ).Skip((int)skip).Take((int)take);
+        }
+
+        public int GetAllByCriteriasCount(string name, string login, bool? isValid)
+        {
+            return FakeDataBase.Instance.RessourceServers.Where(c =>
+                  (String.IsNullOrEmpty(name) || c.Name.Equals(name))
+                  && (String.IsNullOrEmpty(login) || c.Login.Equals(login))
+                  && (!isValid.HasValue || c.IsValid.Equals(isValid.Value))
+                  ).Count();            
+        }
+
         public RessourceServer GetById(int id)
         {
             throw new NotImplementedException();

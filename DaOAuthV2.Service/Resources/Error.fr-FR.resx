@@ -231,6 +231,9 @@
   <data name="SearchClientInvalidUser" xml:space="preserve">
     <value>L'utilisateur n'existe pas ou est bloqué</value>
   </data>
+  <data name="SearchRessourceServerAskTooMuch" xml:space="preserve">
+    <value>Vous ne pouvez demander plus de 50 résultats</value>
+  </data>
   <data name="UnauthorizedClient" xml:space="preserve">
     <value>Le client ne possède pas l'authorisation</value>
   </data>

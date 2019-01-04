@@ -117,5 +117,85 @@ namespace DaOAuthV2.Dal.EF.Test
                 Assert.IsNull(rs);
             }
         }
+
+        [TestMethod]
+        public void Get_All_By_Criterias_Count_Should_Return_1_With_Ressource_Server_Name()
+        {
+            var options = new DbContextOptionsBuilder<DaOAuthContext>()
+                      .UseInMemoryDatabase(databaseName: _dbName)
+                      .Options;
+
+            using (var context = new DaOAuthContext(options))
+            {
+                var rsRepo = _repoFactory.GetRessourceServerRepository(context);
+                int result = rsRepo.GetAllByCriteriasCount("testServer", null, null);
+
+                Assert.AreEqual(1, result);
+            }
+        }
+
+        [TestMethod]
+        public void Get_All_By_Criterias_Count_Should_Return_1_With_Ressource_Server_Login()
+        {
+            var options = new DbContextOptionsBuilder<DaOAuthContext>()
+                      .UseInMemoryDatabase(databaseName: _dbName)
+                      .Options;
+
+            using (var context = new DaOAuthContext(options))
+            {
+                var rsRepo = _repoFactory.GetRessourceServerRepository(context);
+                int result = rsRepo.GetAllByCriteriasCount(null, "login_test3", null);
+
+                Assert.AreEqual(1, result);
+            }
+        }
+
+        [TestMethod]
+        public void Get_All_By_Criterias_Count_Should_Return_3_Without_Criteria()
+        {
+            var options = new DbContextOptionsBuilder<DaOAuthContext>()
+                      .UseInMemoryDatabase(databaseName: _dbName)
+                      .Options;
+
+            using (var context = new DaOAuthContext(options))
+            {
+                var rsRepo = _repoFactory.GetRessourceServerRepository(context);
+                int result = rsRepo.GetAllByCriteriasCount(null, null, null);
+
+                Assert.AreEqual(3, result);
+            }
+        }
+
+        [TestMethod]
+        public void Get_All_By_Criterias_Count_Should_Return_2_With_Only_Valid()
+        {
+            var options = new DbContextOptionsBuilder<DaOAuthContext>()
+                      .UseInMemoryDatabase(databaseName: _dbName)
+                      .Options;
+
+            using (var context = new DaOAuthContext(options))
+            {
+                var rsRepo = _repoFactory.GetRessourceServerRepository(context);
+                int result = rsRepo.GetAllByCriteriasCount(null, null, true);
+
+                Assert.AreEqual(2, result);
+            }
+        }
+
+        [TestMethod]
+        public void Get_All_By_Criterias_Count_Should_Return_0_With_Unknow_Ressource_Server()
+        {
+            var options = new DbContextOptionsBuilder<DaOAuthContext>()
+                      .UseInMemoryDatabase(databaseName: _dbName)
+                      .Options;
+
+            using (var context = new DaOAuthContext(options))
+            {
+                var rsRepo = _repoFactory.GetRessourceServerRepository(context);
+                int result = rsRepo.GetAllByCriteriasCount(null, "unknow", true);
+
+                Assert.AreEqual(0, result);
+            }
+        }
     }
 }
