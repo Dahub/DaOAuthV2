@@ -108,7 +108,7 @@ namespace DaOAuthV2.Service
                 var clientRepo = RepositoriesFactory.GetClientRepository(context);
                 var client = clientRepo.GetById(id);
 
-                if (client == null)
+                if (client == null || !client.IsValid)
                     throw new DaOAuthNotFoundException();
 
                 toReturn = client.ToDto();

@@ -23,7 +23,9 @@ namespace DaOAuthV2.Service.Test.Fake
 
         public void Delete(RessourceServer toDelete)
         {
-            throw new NotImplementedException();
+            var rs =FakeDataBase.Instance.RessourceServers.FirstOrDefault(r => r.Id.Equals(toDelete.Id));
+            if (rs != null)
+                FakeDataBase.Instance.RessourceServers.Remove(rs);
         }
 
         public IEnumerable<RessourceServer> GetAll()
@@ -51,7 +53,11 @@ namespace DaOAuthV2.Service.Test.Fake
 
         public RessourceServer GetById(int id)
         {
-            throw new NotImplementedException();
+            var rs = FakeDataBase.Instance.RessourceServers.Where(c => c.Id.Equals(id)).FirstOrDefault();
+            if (rs == null)
+                return null;
+            rs.Scopes = FakeDataBase.Instance.Scopes.Where(s => s.RessourceServerId.Equals(id)).ToList();
+            return rs;
         }
 
         public RessourceServer GetByLogin(string login)
@@ -61,7 +67,9 @@ namespace DaOAuthV2.Service.Test.Fake
 
         public void Update(RessourceServer toUpdate)
         {
-            throw new NotImplementedException();
+            var rs = FakeDataBase.Instance.RessourceServers.FirstOrDefault(r => r.Id.Equals(toUpdate.Id));
+            if (rs != null)
+                rs = toUpdate;
         }
     }
 }

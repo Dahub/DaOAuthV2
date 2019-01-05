@@ -24,7 +24,9 @@ namespace DaOAuthV2.Service.Test.Fake
 
         public void Delete(Scope toDelete)
         {
-            throw new NotImplementedException();
+            var s = FakeDataBase.Instance.Scopes.FirstOrDefault(r => r.Id.Equals(toDelete.Id));
+            if (s != null)
+                FakeDataBase.Instance.Scopes.Remove(s);
         }
 
         public IEnumerable<Scope> GetAll()

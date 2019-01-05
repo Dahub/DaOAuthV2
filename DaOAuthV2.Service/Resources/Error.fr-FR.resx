@@ -198,6 +198,15 @@
   <data name="CreateUserUserNameExists" xml:space="preserve">
     <value>Le nom d'utilisateur {0} existe déjà</value>
   </data>
+  <data name="DeleteRessourceServerInvalidUserName" xml:space="preserve">
+    <value>L'utilisateur n'existe pas ou est bloqué</value>
+  </data>
+  <data name="DeleteRessourceServerNonAdminUserName" xml:space="preserve">
+    <value>L'utilisateur ne possède pas les droits d'effectuer cette action</value>
+  </data>
+  <data name="DeleteRessourceServerRessourceServerNotFound" xml:space="preserve">
+    <value>Impossible de trouver le ressource server</value>
+  </data>
   <data name="DeleteReturnUrlBadUserNameOrClientId" xml:space="preserve">
     <value>L'utilisateur n'est pas relié au client</value>
   </data>
@@ -242,6 +251,15 @@
   </data>
   <data name="UnsupportedGrantType" xml:space="preserve">
     <value>Grant type inconnu</value>
+  </data>
+  <data name="UpdateRessourceServerInvalidUserName" xml:space="preserve">
+    <value>L'utilisateur n'existe pas ou est bloqué</value>
+  </data>
+  <data name="UpdateRessourceServerNonAdminUserName" xml:space="preserve">
+    <value>L'utilisateur ne possède pas les droits d'effectuer cette action</value>
+  </data>
+  <data name="UpdateRessourceServerRessourceServerNotFound" xml:space="preserve">
+    <value>Impossible de trouver le ressource server</value>
   </data>
   <data name="UpdateReturnUrlBadUserNameOrClientId" xml:space="preserve">
     <value>L'utilisateur n'est pas relié au client</value>

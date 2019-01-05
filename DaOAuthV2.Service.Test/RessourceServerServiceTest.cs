@@ -136,6 +136,7 @@ namespace DaOAuthV2.Service.Test
             _existingScope = new Scope()
             {
                 Id = 789,
+                RessourceServerId = _existingRessourceServer.Id,
                 NiceWording = "I Exist",
                 Wording = "RW_I_Exist"
             };
@@ -404,7 +405,7 @@ namespace DaOAuthV2.Service.Test
                 Login = String.Empty,
                 Name = _validRessourceServer.Name
             });
-            
+
             Assert.AreEqual(1, total);
         }
 
@@ -421,5 +422,321 @@ namespace DaOAuthV2.Service.Test
 
             Assert.AreEqual(0, total);
         }
+
+        [TestMethod]
+        [ExpectedException(typeof(DaOAuthServiceException))]
+        public void Search_Should_Throw_DaOAuthServiceException_When_Ask_Too_Much_Results()
+        {
+            _service.Search(new DTO.RessourceServerSearchDto()
+            {
+                Skip = 0,
+                Limit = 51
+            });
+        }
+
+        [TestMethod]
+        public void Search_Should_Find_All_Valids_Ressource_Server()
+        {
+            var result = _service.Search(new DTO.RessourceServerSearchDto()
+            {
+                Skip = 0,
+                Limit = 50
+            });
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(FakeDataBase.Instance.RessourceServers.Where(rs => rs.IsValid).Count(), result.Count());
+        }
+
+        [TestMethod]
+        public void Search_Should_Find_First_Ressource_Server()
+        {
+            var result = _service.Search(new DTO.RessourceServerSearchDto()
+            {
+                Skip = 0,
+                Limit = 1
+            });
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(1, result.Count());
+            Assert.IsTrue(FakeDataBase.Instance.RessourceServers.Where(rs => rs.IsValid).Select(rs => rs.Name).Contains(result.First().Name));
+        }
+
+        [TestMethod]
+        public void Search_Should_Find_Ressource_Server_By_Login()
+        {
+            var result = _service.Search(new DTO.RessourceServerSearchDto()
+            {
+                Login = _existingRessourceServer.Login,
+                Skip = 0,
+                Limit = 50
+            });
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(1, result.Count());
+            Assert.AreEqual(_existingRessourceServer.Login, result.First().Login);
+        }
+
+        [TestMethod]
+        public void Search_Should_Not_Find_Invalid_Ressource_Server_By_Login()
+        {
+            var result = _service.Search(new DTO.RessourceServerSearchDto()
+            {
+                Login = _invalidRessourceServer.Login,
+                Skip = 0,
+                Limit = 50
+            });
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(0, result.Count());
+        }
+
+        [TestMethod]
+        public void Get_By_Id_Should_Return_Ressource_Server_For_Existing_Id()
+        {
+            FakeDataBase.Instance.Scopes.Add(new Scope()
+            {
+                Id = 654,
+                NiceWording = "test 1",
+                RessourceServerId = _validRessourceServer.Id,
+                Wording = "test_1"
+            });
+
+            FakeDataBase.Instance.Scopes.Add(new Scope()
+            {
+                Id = 653,
+                NiceWording = "test 2",
+                RessourceServerId = _validRessourceServer.Id,
+                Wording = "test_2"
+            });
+
+            var result = _service.GetById(_validRessourceServer.Id);
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(_validRessourceServer.Id, result.Id);
+            Assert.AreEqual(_validRessourceServer.Login, result.Login);
+            Assert.AreEqual(_validRessourceServer.Name, result.Name);
+            Assert.AreEqual(_validRessourceServer.Description, result.Description);
+            Assert.AreEqual(FakeDataBase.Instance.Scopes.Where(s => s.RessourceServerId.Equals(_validRessourceServer.Id)).Count(), result.Scopes.Count());
+            foreach (var s in FakeDataBase.Instance.Scopes.Where(s => s.RessourceServerId.Equals(_validRessourceServer.Id)).Select(s => s.NiceWording))
+            {
+                Assert.IsTrue(result.Scopes.Contains(s));
+            }
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(DaOAuthNotFoundException))]
+        public void Get_By_Id_Should_Throw_DaOAuthNotFoundException_For_Non_Existing_Id()
+        {
+            _service.GetById(96552);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(DaOAuthNotFoundException))]
+        public void Get_By_Id_Should_Throw_DaOAuthNotFoundException_For_Invalid_Ressource_Server_Id()
+        {
+            _service.GetById(_invalidRessourceServer.Id);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(DaOAuthServiceException))]
+        public void Update_Should_Throw_DaOAuthServiceException_When_User_Is_Not_Admin()
+        {
+            _service.Update(new UpdateRessourceServerDto()
+            {
+                Id = _existingRessourceServer.Id,
+                Description = "new description",
+                IsValid = true,
+                Name = "new name",
+                UserName = _normalUser.UserName
+            });
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(DaOAuthServiceException))]
+        public void Update_Should_Throw_DaOAuthServiceException_When_User_Is_Invalid()
+        {
+            _service.Update(new UpdateRessourceServerDto()
+            {
+                Id = _existingRessourceServer.Id,
+                Description = "new description",
+                IsValid = true,
+                Name = "new name",
+                UserName = _invalidUser.UserName
+            });
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(DaOAuthServiceException))]
+        public void Update_Should_Throw_DaOAuthServiceException_When_User_Not_Exists()
+        {
+            _service.Update(new UpdateRessourceServerDto()
+            {
+                Id = _existingRessourceServer.Id,
+                Description = "new description",
+                IsValid = true,
+                Name = "new name",
+                UserName = "i_dont_exists"
+            });
+        }
+
+        [TestMethod]
+        public void Update_Should_Update()
+        {
+            _service.Update(new UpdateRessourceServerDto()
+            {
+                Id = _existingRessourceServer.Id,
+                Description = "new description",
+                IsValid = true,
+                Name = "new name",
+                UserName = _adminUser.UserName
+            });
+
+            var rs = FakeDataBase.Instance.RessourceServers.Where(r => r.Id.Equals(_existingRessourceServer.Id)).FirstOrDefault();
+
+            Assert.IsNotNull(rs);
+            Assert.AreEqual("new name", rs.Name);
+            Assert.AreEqual("new description", rs.Description);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(DaOAuthServiceException))]
+        public void Update_Should_Throw_DaOAuthServiceException_When_Name_Is_Empty()
+        {
+            _service.Update(new UpdateRessourceServerDto()
+            {
+                Id = _existingRessourceServer.Id,
+                Description = "new description",
+                IsValid = true,
+                Name = String.Empty,
+                UserName = _adminUser.UserName
+            });
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(DaOAuthServiceException))]
+        public void Update_Should_Throw_DaOAuthServiceException_When_User_Name_Is_Empty()
+        {
+            _service.Update(new UpdateRessourceServerDto()
+            {
+                Id = _existingRessourceServer.Id,
+                Description = "new description",
+                IsValid = true,
+                Name = "new name",
+                UserName = String.Empty
+            });
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(DaOAuthServiceException))]
+        public void Update_Should_Throw_DaOAuthServiceException_When_Id_Dont_Exists()
+        {
+            _service.Update(new UpdateRessourceServerDto()
+            {
+                Id = 9521,
+                Description = "new description",
+                IsValid = true,
+                Name = "new name",
+                UserName = _adminUser.UserName
+            });
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(DaOAuthServiceException))]
+        public void Delete_Should_Throw_DaOAuthServiceException_When_Id_Dont_Exists()
+        {
+            _service.Delete(new DeleteRessourceServerDto()
+            {
+                Id = 9521,
+                UserName = _adminUser.UserName
+            });
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(DaOAuthServiceException))]
+        public void Delete_Should_Throw_DaOAuthServiceException_When_User_Is_Not_Admin()
+        {
+            _service.Delete(new DeleteRessourceServerDto()
+            {
+                Id = _existingRessourceServer.Id,
+                UserName = _normalUser.UserName
+            });
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(DaOAuthServiceException))]
+        public void Delete_Should_Throw_DaOAuthServiceException_When_User_Is_Not_Valid()
+        {
+            _service.Delete(new DeleteRessourceServerDto()
+            {
+                Id = _existingRessourceServer.Id,
+                UserName = _invalidUser.UserName
+            });
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(DaOAuthServiceException))]
+        public void Delete_Should_Throw_DaOAuthServiceException_When_User_Is_Non_Existing()
+        {
+            _service.Delete(new DeleteRessourceServerDto()
+            {
+                Id = _existingRessourceServer.Id,
+                UserName = "i_dont_exists"
+            });
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(DaOAuthServiceException))]
+        public void Delete_Should_Throw_DaOAuthServiceException_When_User_Name_Is_Empty()
+        {
+            _service.Delete(new DeleteRessourceServerDto()
+            {
+                Id = _existingRessourceServer.Id,
+                UserName = String.Empty
+            });
+        }
+
+        [TestMethod]
+        public void Delete_Should_Delete()
+        {
+            _service.Delete(new DeleteRessourceServerDto()
+            {
+                Id = _existingRessourceServer.Id,
+                UserName = _adminUser.UserName
+            });
+
+            Assert.IsNull(FakeDataBase.Instance.RessourceServers.FirstOrDefault(rs => rs.Id.Equals(_existingRessourceServer.Id)));
+        }
+
+        [TestMethod]
+        public void Delete_Should_Delete_Scopes_And_Client_Scopes()
+        {
+            FakeDataBase.Instance.Clients.Add(new Client()
+            {
+                Id = 7777,
+                ClientTypeId = 1,
+                CreationDate = DateTime.Now,
+                IsValid = true,
+                Name = "demo",
+                PublicId = "abc"
+            });
+
+            FakeDataBase.Instance.ClientsScopes.Add(new ClientScope()
+            {
+                ClientId = 7777,
+                ScopeId = _existingScope.Id,
+                Id = 9731
+            });
+
+            _service.Delete(new DeleteRessourceServerDto()
+            {
+                Id = _existingRessourceServer.Id,
+                UserName = _adminUser.UserName
+            });
+
+            Assert.IsNull(FakeDataBase.Instance.RessourceServers.FirstOrDefault(rs => rs.Id.Equals(_existingRessourceServer.Id)));
+            Assert.IsNull(FakeDataBase.Instance.Scopes.FirstOrDefault(s => s.Id.Equals(_existingScope.Id)));
+            Assert.IsNull(FakeDataBase.Instance.ClientsScopes.FirstOrDefault(s => s.Id.Equals(9731)));
+        }
     }
 }
+

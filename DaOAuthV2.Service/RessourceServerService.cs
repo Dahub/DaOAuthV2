@@ -1,9 +1,7 @@
-﻿using DaOAuthV2.Constants;
-using DaOAuthV2.Domain;
+﻿using DaOAuthV2.Domain;
 using DaOAuthV2.Service.DTO;
 using DaOAuthV2.Service.ExtensionsMethods;
 using DaOAuthV2.Service.Interface;
-using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -56,13 +54,13 @@ namespace DaOAuthV2.Service
                 {
                     throw new DaOAuthServiceException("CreateRessourceServerInvalidUserName");
                 }
-                if(myUser.UsersRoles.FirstOrDefault(r => r.RoleId.Equals((int)ERole.ADMIN)) == null)
+                if (myUser.UsersRoles.FirstOrDefault(r => r.RoleId.Equals((int)ERole.ADMIN)) == null)
                 {
                     throw new DaOAuthServiceException("CreateRessourceServerNonAdminUserName");
                 }
 
                 var existingRs = rsRepo.GetByLogin(toCreate.Login);
-                if(existingRs != null)
+                if (existingRs != null)
                 {
                     throw new DaOAuthServiceException("CreateRessourceServerExistingLogin");
                 }
@@ -87,7 +85,7 @@ namespace DaOAuthV2.Service
                         string s2 = s.NiceWording.ToScopeWording(false);
 
                         var scope = scopeRepo.GetByWording(s1);
-                        if(scope != null)
+                        if (scope != null)
                             throw new DaOAuthServiceException("CreateRessourceServerExistingScope");
 
                         scope = scopeRepo.GetByWording(s2);
@@ -113,17 +111,82 @@ namespace DaOAuthV2.Service
 
         public void Delete(DeleteRessourceServerDto toDelete)
         {
-            throw new NotImplementedException();
+            Validate(toDelete);
+
+            using (var context = RepositoriesFactory.CreateContext(ConnexionString))
+            {
+                var userRepo = RepositoriesFactory.GetUserRepository(context);
+                var rsRepo = RepositoriesFactory.GetRessourceServerRepository(context);
+                var scopeRepo = RepositoriesFactory.GetScopeRepository(context);
+                var clientScopeRepo = RepositoriesFactory.GetClientScopeRepository(context);
+
+                var myUser = userRepo.GetByUserName(toDelete.UserName);
+                if (myUser == null || !myUser.IsValid)
+                {
+                    throw new DaOAuthServiceException("DeleteRessourceServerInvalidUserName");
+                }
+                if (myUser.UsersRoles.FirstOrDefault(r => r.RoleId.Equals((int)ERole.ADMIN)) == null)
+                {
+                    throw new DaOAuthServiceException("DeleteRessourceServerNonAdminUserName");
+                }
+
+                var myRs = rsRepo.GetById(toDelete.Id);
+                if (myRs == null)
+                {
+                    throw new DaOAuthServiceException("DeleteRessourceServerRessourceServerNotFound");
+                }
+
+                foreach(var s in myRs.Scopes.ToList())
+                {
+                    foreach(var cs in clientScopeRepo.GetAllByScopeId(s.Id).ToList())
+                    {
+                        clientScopeRepo.Delete(cs);
+                    }
+                    scopeRepo.Delete(s);
+                }
+
+                rsRepo.Delete(myRs);
+
+                context.Commit();
+            }
         }
 
         public RessourceServerDto GetById(int id)
         {
-            throw new NotImplementedException();
+            RessourceServerDto toReturn = null;
+
+            using (var context = RepositoriesFactory.CreateContext(ConnexionString))
+            {
+                var rsRepo = RepositoriesFactory.GetRessourceServerRepository(context);
+                var rs = rsRepo.GetById(id);
+
+                if (rs == null || !rs.IsValid)
+                    throw new DaOAuthNotFoundException();
+
+                toReturn = rs.ToDto();
+            }
+
+            return toReturn;
         }
 
         public IEnumerable<RessourceServerDto> Search(RessourceServerSearchDto criterias)
         {
-            throw new NotImplementedException();
+            Validate(criterias, ExtendValidationSearchCriterias);
+
+            IList<RessourceServer> rs = null;
+
+
+            using (var context = RepositoriesFactory.CreateContext(this.ConnexionString))
+            {
+                var rsRepo = RepositoriesFactory.GetRessourceServerRepository(context);
+
+                rs = rsRepo.GetAllByCriterias(criterias.Name, criterias.Login, true, criterias.Skip, criterias.Limit).ToList();
+            }
+
+            if (rs != null)
+                return rs.ToDto();
+
+            return new List<RessourceServerDto>();
         }
 
         public int SearchCount(RessourceServerSearchDto criterias)
@@ -143,7 +206,39 @@ namespace DaOAuthV2.Service
 
         public RessourceServerDto Update(UpdateRessourceServerDto toUpdate)
         {
-            throw new NotImplementedException();
+            Validate(toUpdate);
+
+            using (var context = RepositoriesFactory.CreateContext(ConnexionString))
+            {
+                var userRepo = RepositoriesFactory.GetUserRepository(context);
+                var rsRepo = RepositoriesFactory.GetRessourceServerRepository(context);
+
+                var myUser = userRepo.GetByUserName(toUpdate.UserName);
+                if (myUser == null || !myUser.IsValid)
+                {
+                    throw new DaOAuthServiceException("UpdateRessourceServerInvalidUserName");
+                }
+                if (myUser.UsersRoles.FirstOrDefault(r => r.RoleId.Equals((int)ERole.ADMIN)) == null)
+                {
+                    throw new DaOAuthServiceException("UpdateRessourceServerNonAdminUserName");
+                }
+
+                var myRs = rsRepo.GetById(toUpdate.Id);
+                if (myRs == null)
+                {
+                    throw new DaOAuthServiceException("UpdateRessourceServerRessourceServerNotFound");
+                }
+
+                myRs.IsValid = toUpdate.IsValid;
+                myRs.Name = toUpdate.Name;
+                myRs.Description = toUpdate.Description;
+
+                rsRepo.Update(myRs);
+
+                context.Commit();
+
+                return myRs.ToDto();
+            }
         }
 
         private IList<ValidationResult> ExtendValidationSearchCriterias(RessourceServerSearchDto c)

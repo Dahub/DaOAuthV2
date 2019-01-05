@@ -2,6 +2,7 @@
 using DaOAuthV2.Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Linq;
 
 namespace DaOAuthV2.Dal.EF.Test
 {
@@ -48,6 +49,22 @@ namespace DaOAuthV2.Dal.EF.Test
                     Login = "login_test3",
                     Name = "testServer3",
                     ServerSecret = new byte[] { 1, 1 }
+                });
+
+                context.Scopes.Add(new Scope()
+                {
+                    Id = 1,
+                    NiceWording = "test",
+                    RessourceServerId = 100,
+                    Wording = "t1"
+                });
+
+                context.Scopes.Add(new Scope()
+                {
+                    Id = 2,
+                    NiceWording = "test2",
+                    RessourceServerId = 100,
+                    Wording = "t2"
                 });
 
                 context.SaveChanges();
@@ -195,6 +212,76 @@ namespace DaOAuthV2.Dal.EF.Test
                 int result = rsRepo.GetAllByCriteriasCount(null, "unknow", true);
 
                 Assert.AreEqual(0, result);
+            }
+        }
+
+        [TestMethod]
+        public void Get_All_By_Criterias_Should_Return_Right_Ressource_Server()
+        {
+            var options = new DbContextOptionsBuilder<DaOAuthContext>()
+                     .UseInMemoryDatabase(databaseName: _dbName)
+                     .Options;
+
+            using (var context = new DaOAuthContext(options))
+            {
+                var rsRepo = _repoFactory.GetRessourceServerRepository(context);
+                var result = rsRepo.GetAllByCriterias(null, "login_test3", null, 0, 50);
+
+                Assert.IsNotNull(result);
+                Assert.AreEqual(1, result.Count());
+                Assert.AreEqual("login_test3", result.First().Login);
+            }
+        }
+
+        [TestMethod]
+        public void Get_All_By_Criterias_Should_Return_First_Page()
+        {
+            var options = new DbContextOptionsBuilder<DaOAuthContext>()
+                     .UseInMemoryDatabase(databaseName: _dbName)
+                     .Options;
+
+            using (var context = new DaOAuthContext(options))
+            {
+                var rsRepo = _repoFactory.GetRessourceServerRepository(context);
+                var result = rsRepo.GetAllByCriterias(null, null, null, 0, 2);
+
+                Assert.IsNotNull(result);
+                Assert.AreEqual(2, result.Count());
+            }
+        }
+
+        [TestMethod]
+        public void Get_All_By_Criterias_Should_Return_Second_Page()
+        {
+            var options = new DbContextOptionsBuilder<DaOAuthContext>()
+                     .UseInMemoryDatabase(databaseName: _dbName)
+                     .Options;
+
+            using (var context = new DaOAuthContext(options))
+            {
+                var rsRepo = _repoFactory.GetRessourceServerRepository(context);
+                var result = rsRepo.GetAllByCriterias(null, null, null, 2, 1);
+
+                Assert.IsNotNull(result);
+                Assert.AreEqual(1, result.Count());
+            }
+        }
+
+        [TestMethod]
+        public void Get_By_Id_Should_Return_Ressource_Server_With_Scopes()
+        {
+            var options = new DbContextOptionsBuilder<DaOAuthContext>()
+                     .UseInMemoryDatabase(databaseName: _dbName)
+                     .Options;
+
+            using (var context = new DaOAuthContext(options))
+            {
+                var rsRepo = _repoFactory.GetRessourceServerRepository(context);
+                var result = rsRepo.GetById(100);
+
+                Assert.IsNotNull(result);
+                Assert.IsNotNull(result.Scopes);
+                Assert.AreEqual(2, result.Scopes.Count());
             }
         }
     }

@@ -1,5 +1,6 @@
 ﻿using DaOAuthV2.Dal.Interface;
 using DaOAuthV2.Domain;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,6 +31,13 @@ namespace DaOAuthV2.Dal.EF
         {
             return Context.RessourceServers.
               Where(rs => rs.Login.Equals(login, StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
+        }
+
+        public new RessourceServer GetById(int id)
+        {
+            return Context.RessourceServers.
+              Where(rs => rs.Id.Equals(id)).
+              Include(rs => rs.Scopes).FirstOrDefault();
         }
     }
 }

@@ -207,6 +207,9 @@
   <data name="CreateUserDtoUserNameRequired" xml:space="preserve">
     <value>User name is mandatory</value>
   </data>
+  <data name="DeleteRessourceServerUserNameRequired" xml:space="preserve">
+    <value>User name is mandatory</value>
+  </data>
   <data name="DeleteReturnUrlShouldBePositive" xml:space="preserve">
     <value>Return url id should be greater than zero</value>
   </data>
@@ -217,6 +220,12 @@
     <value>Password is mandatory</value>
   </data>
   <data name="LoginUserDtoUserNameRequired" xml:space="preserve">
+    <value>User name is mandatory</value>
+  </data>
+  <data name="UpdateRessourceServerNameRequired" xml:space="preserve">
+    <value>Name is mandatory</value>
+  </data>
+  <data name="UpdateRessourceServerUserNameRequired" xml:space="preserve">
     <value>User name is mandatory</value>
   </data>
   <data name="UpdateReturnUrlReturnUrlRequired" xml:space="preserve">

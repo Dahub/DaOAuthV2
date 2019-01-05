@@ -198,6 +198,15 @@
   <data name="CreateUserUserNameExists" xml:space="preserve">
     <value>User name {0} already in use</value>
   </data>
+  <data name="DeleteRessourceServerInvalidUserName" xml:space="preserve">
+    <value>User invalid or ban</value>
+  </data>
+  <data name="DeleteRessourceServerNonAdminUserName" xml:space="preserve">
+    <value>User don't have right to do this action</value>
+  </data>
+  <data name="DeleteRessourceServerRessourceServerNotFound" xml:space="preserve">
+    <value>Can not find ressource server</value>
+  </data>
   <data name="DeleteReturnUrlBadUserNameOrClientId" xml:space="preserve">
     <value>User and client aren't linked</value>
   </data>
@@ -242,6 +251,15 @@
   </data>
   <data name="UnsupportedGrantType" xml:space="preserve">
     <value>Unsupported grant type</value>
+  </data>
+  <data name="UpdateRessourceServerInvalidUserName" xml:space="preserve">
+    <value>User invalid or ban</value>
+  </data>
+  <data name="UpdateRessourceServerNonAdminUserName" xml:space="preserve">
+    <value>User don't have right to do this action</value>
+  </data>
+  <data name="UpdateRessourceServerRessourceServerNotFound" xml:space="preserve">
+    <value>Can not find ressource server</value>
   </data>
   <data name="UpdateReturnUrlBadUserNameOrClientId" xml:space="preserve">
     <value>User and client aren't linked</value>

@@ -210,6 +210,9 @@
   <data name="CreateUserDtoUserNameRequired" xml:space="preserve">
     <value>Le nom d'utilisateur est obligatoire</value>
   </data>
+  <data name="DeleteRessourceServerUserNameRequired" xml:space="preserve">
+    <value>Le nom d'utilisateur est obligatoire</value>
+  </data>
   <data name="DeleteReturnUrlShouldBePositive" xml:space="preserve">
     <value>L'id de return url doit être supérieure à zéro</value>
   </data>
@@ -221,6 +224,12 @@
   </data>
   <data name="LoginUserDtoUserNameRequired" xml:space="preserve">
     <value>Le nom d'utilisateur est obligatoire</value>
+  </data>
+  <data name="UpdateRessourceServerNameRequired" xml:space="preserve">
+    <value>Le nom est obligatoire</value>
+  </data>
+  <data name="UpdateRessourceServerUserNameRequired" xml:space="preserve">
+    <value>Le nom d'utlilisateur est obligatoire</value>
   </data>
   <data name="UpdateReturnUrlReturnUrlRequired" xml:space="preserve">
     <value>L'url de redirection est obligatoire</value>

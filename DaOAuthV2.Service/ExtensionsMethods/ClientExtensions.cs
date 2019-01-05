@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace DaOAuthV2.Service.ExtensionsMethods
 {
-    public static class ClientExtensions
+    internal static class ClientExtensions
     {
         internal static ClientDto ToDto(this Client value)
         {

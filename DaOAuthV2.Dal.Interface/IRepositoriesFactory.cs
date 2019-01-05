@@ -13,5 +13,6 @@
         IClientReturnUrlRepository GetClientReturnUrlRepository(IContext context);
         IRoleRepository GetRoleRepository(IContext context);
         IUserRoleRepository GetUserRoleRepository(IContext context);
+        IClientScopeRepository GetClientScopeRepository(IContext context);
     }
 }

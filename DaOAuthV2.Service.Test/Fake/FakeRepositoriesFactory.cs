@@ -1,5 +1,4 @@
 ﻿using DaOAuthV2.Dal.Interface;
-using System;
 
 namespace DaOAuthV2.Service.Test.Fake
 {
@@ -21,6 +20,14 @@ namespace DaOAuthV2.Service.Test.Fake
         public IClientReturnUrlRepository GetClientReturnUrlRepository(IContext context)
         {
             return new FakeClientReturnUrlRepository()
+            {
+                Context = context
+            };
+        }
+
+        public IClientScopeRepository GetClientScopeRepository(IContext context)
+        {
+            return new FakeClientScopeRepository()
             {
                 Context = context
             };

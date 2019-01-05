@@ -29,6 +29,14 @@ namespace DaOAuthV2.Dal.EF
             };
         }
 
+        public IClientScopeRepository GetClientScopeRepository(IContext context)
+        {
+            return new ClientScopeRepository()
+            {
+                Context = (DaOAuthContext)context,
+            };
+        }
+
         public ICodeRepository GetCodeRepository(IContext context)
         {
             return new CodeRepository()

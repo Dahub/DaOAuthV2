@@ -33,7 +33,6 @@ namespace DaOAuthV2.ApiTools
                 result.Links.Prev = currentUri.Replace(pattern, t);
             }
 
-
             return result;
         }
     }
