@@ -66,7 +66,7 @@ namespace DaOAuthV2.Service
                 }
 
                 // create ressource server
-                rsId = rsRepo.Add(new RessourceServer()
+                var myRs = new RessourceServer()
                 {
                     CreationDate = DateTime.Now,
                     Description = toCreate.Description,
@@ -74,7 +74,8 @@ namespace DaOAuthV2.Service
                     Login = toCreate.Login,
                     Name = toCreate.Name,
                     ServerSecret = Sha256Hash(string.Concat(Configuration.PasswordSalt, toCreate.Password))
-                });
+                };
+                rsId = rsRepo.Add(myRs);
 
                 // check for existing scope, if ok, create
                 if (toCreate.Scopes != null)
@@ -104,6 +105,8 @@ namespace DaOAuthV2.Service
                 }
 
                 context.Commit();
+
+                rsId = myRs.Id;
             }
 
             return rsId;

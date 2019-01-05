@@ -1,0 +1,50 @@
+﻿@model IEnumerable<DaOAuthV2.Service.DTO.RessourceServerDto>
+
+@{
+    Layout = "_fr.layout";
+}
+
+<h1>Liste des serveurs de ressources</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Nom
+            </th>
+            <th>
+                Login
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Login)
+                </td>               
+                <td>
+                    <a href="@Url.Action("Details", "RessourceServer", new { id = @item.Id })"><i class="fas fa-2x fa-search"></i></a>
+                    @if (User.IsInRole(DaOAuthV2.Constants.RoleName.Administrator))
+                    {
+                        <a href="@Url.Action("Edit", "RessourceServer", new { id = @item.Id })"><i class="fas fa-2x fa-edit"></i></a>
+                        <a href="@Url.Action("Delete", "RessourceServer", new { id = @item.Id })"><i class="fas fa-2x fa-trash-alt"></i></a>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+<p>
+    <a href="@Url.Action("Dashboard", "Home")" class="btn btn-lg btn-secondary">Retour</a>
+    @if (User.IsInRole(DaOAuthV2.Constants.RoleName.Administrator))
+    {
+        <a href="@Url.Action("Create", "RessourceServer")" class="btn btn-lg btn-primary">Nouveau serveur de ressources</a>
+    }
+</p>
+

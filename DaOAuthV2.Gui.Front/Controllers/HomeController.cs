@@ -38,7 +38,9 @@ namespace DaOAuthV2.Gui.Front.Controllers
         [HttpGet]
         public async Task<int> GetRessourceServerNumberAsync()
         {
-            return 0;
+            HttpResponseMessage response = await HeadToApi($"RessourcesServers");
+
+            return Int32.Parse(response.Headers.GetValues("X-Total-Count").First());
         }
     }
 }

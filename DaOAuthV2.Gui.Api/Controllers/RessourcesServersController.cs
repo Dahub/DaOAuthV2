@@ -12,11 +12,11 @@ namespace DaOAuthV2.Gui.Api.Controllers
     [Route("[controller]")]
     [ApiController]
     [Authorize(Roles = RoleName.User)]
-    public class RessourceServerController : ControllerBase
+    public class RessourcesServersController : ControllerBase
     {
         private IRessourceServerService _service;
 
-        public RessourceServerController([FromServices] IRessourceServerService service)
+        public RessourcesServersController([FromServices] IRessourceServerService service)
         {
             _service = service;
         }
