@@ -38,6 +38,7 @@ namespace DaOAuthV2.Gui.Front.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = RoleName.Administrator)]
         public IActionResult Create()
         {
             return View(new CreateRessouceServerModel()
@@ -47,6 +48,7 @@ namespace DaOAuthV2.Gui.Front.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = RoleName.Administrator)]
         public async Task<IActionResult> Create(CreateRessouceServerModel model)
         {
             if (model.Scopes == null)
@@ -70,6 +72,34 @@ namespace DaOAuthV2.Gui.Front.Controllers
                 return View(model);
 
             return RedirectToAction("List");
+        }
+
+        [HttpGet]
+        [Authorize(Roles = RoleName.Administrator)]
+        public async Task<IActionResult> Edit(int id)
+        {
+            UpdateRessouceServerModel model = new UpdateRessouceServerModel();
+            
+            var response = await GetToApi($"ressourcesServers/{id}");
+            var rs = JsonConvert.DeserializeObject<RessourceServerDto>(
+               await response.Content.ReadAsStringAsync());
+
+            if (!await model.ValidateAsync(response))
+                return View(model);
+
+            model.Description = rs.Description;
+            model.Id = rs.Id;
+            model.Login = rs.Login;
+            model.Name = rs.Name;
+            if (rs.Scopes != null)
+            {
+                model.Scopes = rs.Scopes;
+            }
+            else
+            {
+                model.Scopes = new Dictionary<string, bool>();
+            }
+            return View(model);
         }
     }
 }

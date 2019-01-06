@@ -528,7 +528,7 @@ namespace DaOAuthV2.Service.Test
             Assert.AreEqual(FakeDataBase.Instance.Scopes.Where(s => s.RessourceServerId.Equals(_validRessourceServer.Id)).Count(), result.Scopes.Count());
             foreach (var s in FakeDataBase.Instance.Scopes.Where(s => s.RessourceServerId.Equals(_validRessourceServer.Id)).Select(s => s.NiceWording))
             {
-                Assert.IsTrue(result.Scopes.Contains(s));
+                Assert.IsTrue(result.Scopes.ContainsKey(s));
             }
         }
 

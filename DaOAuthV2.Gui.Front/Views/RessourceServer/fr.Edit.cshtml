@@ -1,4 +1,4 @@
-﻿@model DaOAuthV2.Gui.Front.Models.CreateRessouceServerModel
+﻿@model DaOAuthV2.Gui.Front.Models.UpdateRessouceServerModel
 
 @{
     Layout = "_fr.layout";
@@ -6,10 +6,12 @@
 
 @await Html.PartialAsync("_fr.modelErrors")
 
-<h1>Création d'un nouveau serveur de ressources</h1>
+
+<h1>Edition du serveur de ressources <em>@Model.Name</em></h1>
 <hr />
 
-<form asp-action="Create" id="rsForm" method="post">
+<form asp-action="Edit" id="rsForm" method="post">
+    @Html.HiddenFor(m => m.Id)
     <div class="row">
         <div class="col">
             <h3>Informations</h3>
@@ -21,16 +23,6 @@
             <div class="form-group">
                 <label asp-for="Login" class="control-label">Login</label>
                 @Html.TextBoxFor(model => model.Login, new { @class = "form-control" })
-            </div>
-
-            <div class="form-group">
-                <label asp-for="Password" class="control-label">Mot de passe</label>
-                @Html.PasswordFor(model => model.Password, new { @class = "form-control" })
-            </div>
-
-            <div class="form-group">
-                <label asp-for="RepeatPassword" class="control-label">Répétez le mot de passe</label>
-                @Html.PasswordFor(model => model.RepeatPassword, new { @class = "form-control" })
             </div>
 
             <div class="form-group">

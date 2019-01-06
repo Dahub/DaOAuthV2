@@ -1,37 +1,28 @@
-﻿@model DaOAuthV2.Gui.Front.Models.CreateRessouceServerModel
+﻿@model DaOAuthV2.Gui.Front.Models.UpdateRessouceServerModel
 
 @{
-    Layout = "_fr.layout";
+    Layout = "_en.layout";
 }
 
-@await Html.PartialAsync("_fr.modelErrors")
+@await Html.PartialAsync("_en.modelErrors")
 
-<h1>Création d'un nouveau serveur de ressources</h1>
+<h1>Edit <em>@Model.Name</em> new ressource server</h1>
 <hr />
 
-<form asp-action="Create" id="rsForm" method="post">
+<form asp-action="Edit" id="rsForm" method="post">
+    @Html.HiddenFor(m => m.Id)
     <div class="row">
         <div class="col">
             <h3>Informations</h3>
             <div class="form-group">
-                <label asp-for="Name" class="control-label">Nom</label>
+                <label asp-for="Name" class="control-label">Name</label>
                 @Html.TextBoxFor(model => model.Name, new { @class = "form-control" })
             </div>
 
             <div class="form-group">
                 <label asp-for="Login" class="control-label">Login</label>
                 @Html.TextBoxFor(model => model.Login, new { @class = "form-control" })
-            </div>
-
-            <div class="form-group">
-                <label asp-for="Password" class="control-label">Mot de passe</label>
-                @Html.PasswordFor(model => model.Password, new { @class = "form-control" })
-            </div>
-
-            <div class="form-group">
-                <label asp-for="RepeatPassword" class="control-label">Répétez le mot de passe</label>
-                @Html.PasswordFor(model => model.RepeatPassword, new { @class = "form-control" })
-            </div>
+            </div>         
 
             <div class="form-group">
                 <label asp-for="Description" class="control-label">Description</label>
@@ -67,10 +58,10 @@
                 <thead class="thead-dark">
                     <tr>
                         <th>
-                            Libellé
+                            Nice wording
                         </th>
                         <th>
-                            Lecture écriture
+                            Is read write
                         </th>
                         <th></th>
                     </tr>
@@ -98,12 +89,12 @@
                 </tbody>
             </table>
 
-            <button id="addScope" type="button" class="btn btn-lg btn-block btn-secondary">Ajouter un scope</button>
+            <button id="addScope" type="button" class="btn btn-lg btn-block btn-secondary">Add new scope</button>
         </div>
         <div class="w-100"></div>
         <div class="col">
             <div class="form-group">
-                <input id="postForm" value="Valider" class="btn btn-lg btn-primary btn-block" />
+                <input id="postForm" value="Submit" class="btn btn-lg btn-primary btn-block" />
             </div>
         </div>
     </div>
