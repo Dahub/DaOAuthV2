@@ -251,6 +251,15 @@ namespace DaOAuthV2.Service.Test
         }
 
         [TestMethod]
+        [ExpectedException(typeof(DaOAuthServiceException))]
+        public void Create_Ressource_Server_Should_Throw_DaOAuthServiceException_Where_Repeat_Password_Is_Empty()
+        {
+            _createDto.Password = "first_password_#123AA";
+            _createDto.RepeatPassword = String.Empty;
+            _service.CreateRessourceServer(_createDto);
+        }
+
+        [TestMethod]
         public void Create_Ressource_Server_Should_Create()
         {
             var rsId = _service.CreateRessourceServer(_createDto);

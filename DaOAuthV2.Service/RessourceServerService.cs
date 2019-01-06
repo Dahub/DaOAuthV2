@@ -21,7 +21,6 @@ namespace DaOAuthV2.Service
                 IList<ValidationResult> result = new List<ValidationResult>();
 
                 if (!String.IsNullOrEmpty(toCreate.Password)
-                    && !String.IsNullOrEmpty(toCreate.RepeatPassword)
                     && !toCreate.Password.Equals(toCreate.RepeatPassword, StringComparison.Ordinal))
                     result.Add(new ValidationResult(resource["CreateRessourceServerPasswordDontMatch"]));
 

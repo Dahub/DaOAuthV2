@@ -10,6 +10,8 @@ using Newtonsoft.Json;
 using System.Collections.Specialized;
 using System.Net.Http;
 using System.Threading.Tasks;
+using System.Linq;
+using System.Collections.Generic;
 
 namespace DaOAuthV2.Gui.Front.Controllers
 {
@@ -33,6 +35,41 @@ namespace DaOAuthV2.Gui.Front.Controllers
                 await response.Content.ReadAsStringAsync());
 
             return View(rs.Datas);
+        }
+
+        [HttpGet]
+        public IActionResult Create()
+        {
+            return View(new CreateRessouceServerModel()
+            {
+                Scopes = new Dictionary<string, bool>()
+            });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Create(CreateRessouceServerModel model)
+        {
+            if (model.Scopes == null)
+                model.Scopes = new Dictionary<string, bool>();
+
+            HttpResponseMessage response = await PostToApi("ressourcesServers", new CreateRessourceServerDto()
+            {
+                Login = model.Login,
+                Password = model.Password,
+                RepeatPassword = model.RepeatPassword,
+                Description = model.Description,
+                Name = model.Name,
+                Scopes = model.Scopes.Select(s => new CreateRessourceServerScopesDto()
+                {
+                    IsReadWrite = s.Value,
+                    NiceWording = s.Key
+                }).ToList()
+            });
+
+            if (!await model.ValidateAsync(response))
+                return View(model);
+
+            return RedirectToAction("List");
         }
     }
 }

@@ -14,7 +14,7 @@
             <div class="form-group">
                 <label asp-for="ClientType" class="control-label">Type de client</label>
                 <br />
-                @Html.RadioButtonFor(m => m.ClientType, "confidential") Confidential
+                @Html.RadioButtonFor(m => m.ClientType, "confidential") Confidentiel
                 <br />
                 @Html.RadioButtonFor(m => m.ClientType, "public") Public
             </div>
@@ -31,7 +31,7 @@
                 @Html.TextAreaFor(model => model.Description, 10, 80, new { @class = "form-control" })
             </div>
             <div class="form-group">
-                <input type="submit" value="Submit" class="btn btn-lg btn-primary btn-block" />
+                <input type="submit" value="Valider" class="btn btn-lg btn-primary btn-block" />
             </div>
         </form>
     </div>

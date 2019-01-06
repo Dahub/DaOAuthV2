@@ -1,0 +1,172 @@
+﻿@model DaOAuthV2.Gui.Front.Models.CreateRessouceServerModel
+
+@{
+    Layout = "_en.layout";
+}
+
+@await Html.PartialAsync("_en.modelErrors")
+
+<h1>Create a new ressource server</h1>
+<hr />
+
+<form asp-action="Create" id="createForm" method="post">
+    <div class="row">
+        <div class="col">
+            <h3>Informations</h3>
+            <div class="form-group">
+                <label asp-for="Name" class="control-label">Name</label>
+                @Html.TextBoxFor(model => model.Name, new { @class = "form-control" })
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Login" class="control-label">Login</label>
+                @Html.TextBoxFor(model => model.Login, new { @class = "form-control" })
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Password" class="control-label">Password</label>
+                @Html.PasswordFor(model => model.Password, new { @class = "form-control" })
+            </div>
+
+            <div class="form-group">
+                <label asp-for="RepeatPassword" class="control-label">Repeat password</label>
+                @Html.PasswordFor(model => model.RepeatPassword, new { @class = "form-control" })
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Description" class="control-label">Description</label>
+                @Html.TextAreaFor(model => model.Description, new { @class = "form-control" })
+            </div>
+
+        </div>
+
+        <div id="scopesToPost">
+            @{
+                int count = 0;
+                @foreach (var scope in Model.Scopes)
+                {
+                    <input type="hidden" name="Scopes[@count].Key" value="@scope.Key" />
+                    if (scope.Value)
+                    {
+                        <input type="hidden" name="Scopes[@count].Value" value="true" />
+                    }
+                    else
+                    {
+                        <input type="hidden" name="Scopes[@count].Value" value="false" />
+                    }
+
+                    count++;
+                }
+            }
+        </div>
+
+        <div class="col">
+            <h3>Scopes</h3>
+            <br />
+            <table class="table">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>
+                            Nice wording
+                        </th>
+                        <th>
+                            Is read write
+                        </th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody id="scopeTBody">
+                    @foreach (var scope in Model.Scopes)
+                    {
+                        <tr>
+                            <td>
+                                <input type="text" id="scopeWording" class="form-control" value="@scope.Key" />
+                            </td>
+                            <td>
+                                @if (scope.Value)
+                                {
+                                    <input checked="checked" id="scopeReadWrite" type="checkbox" />
+                                }
+                                else
+                                {
+                                    <input id="scopeReadWrite" type="checkbox" />
+                                }
+                            </td>
+                            <td><span><i onclick="deleteScope(this)" class="fas fa-2x fa-trash-alt"></i></span></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+            <button id="addScope" type="button" class="btn btn-lg btn-block btn-secondary">Add new scope</button>
+        </div>
+        <div class="w-100"></div>
+        <div class="col">
+            <div class="form-group">
+                <input id="postForm" value="Submit" class="btn btn-lg btn-primary btn-block" />
+            </div>
+        </div>
+    </div>
+</form>
+
+
+@section PageScript{
+    <script type="text/javascript">
+        var nextId = @(Model.Scopes.Count()+1);
+
+        $("#postForm").click(function () {
+            preparScopesForPost();
+            $("#createForm").submit();
+        });
+
+        $('#addScope').click(function () {
+            addScopeTr();
+        });
+
+        function deleteScope(elem) {
+            $(elem).parent().parent().parent().remove();
+        }
+
+        function addScopeTr() {
+            var html = '<tr>';
+            html += '<td>';
+            html += '<input type="text" id="scopeWording" class="form-control" value="" />';
+            html += '</td>';
+            html += '<td>';
+            html += '<input id="scopeReadWrite" type="checkbox" />';
+            html += '</td>';
+            html += '<td>';
+            html += '<span><i onclick="deleteScope(this)" class="fas fa-2x fa-trash-alt"></i></span>';
+            html += '</td>';
+            html += '</tr>';
+
+            $("#scopeTBody").append(html);
+        }
+
+        function preparScopesForPost() {
+            $('#scopesToPost').html('');
+
+            var count = 0;
+            var existingWordings = []
+            $('#scopeTBody > tr').each(function () {
+                var wording = $(this).find('#scopeWording').val().trim();
+                var isReadWrite = $(this).find('#scopeReadWrite').is(":checked");
+
+
+                if (isEmptyOrSpaces(wording)) {
+                    $(this).remove();
+                }
+                else if ($.inArray(wording, existingWordings) !== -1){
+                    $(this).remove();
+                }
+                else {
+
+                    existingWordings.push(wording);
+                    $('#scopesToPost').append('<input type="hidden" name="Scopes[' + count + '].Key" value="' + wording + '" />');
+                    $('#scopesToPost').append('<input type="hidden" name="Scopes[' + count + '].Value" value="' + isReadWrite + '" />');
+                    count++;
+                }
+            });
+        }
+    </script>
+}
