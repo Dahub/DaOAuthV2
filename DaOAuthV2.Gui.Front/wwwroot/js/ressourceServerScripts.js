@@ -3,6 +3,11 @@
     $("#rsForm").submit();
 });
 
+$("#putForm").click(function () {
+    preparScopesForPut();
+    $("#rsForm").submit();
+});
+
 $('#addScope').click(function () {
     addScopeTr();
 });
@@ -25,6 +30,34 @@ function addScopeTr() {
     html += '</tr>';
 
     $("#scopeTBody").append(html);
+}
+
+function preparScopesForPut() {
+    $('#scopesToPost').html('');
+
+    var count = 0;
+    var count = 0;
+    var existingWordings = []
+    $('#scopeTBody > tr').each(function () {
+        var wording = $(this).find('#scopeWording').val().trim();
+        var isReadWrite = $(this).find('#scopeReadWrite').is(":checked");
+        var id = $(this).find('#scopeId').val();
+
+        if (isEmptyOrSpaces(wording)) {
+            $(this).remove();
+        }
+        else if ($.inArray(wording, existingWordings) !== -1) {
+            $(this).remove();
+        }
+        else {
+
+            existingWordings.push(wording);
+            $('#scopesToPost').append('<input type="hidden" name="Scopes[' + count + '].IdScope" value="' + id + '" />');
+            $('#scopesToPost').append('<input type="hidden" name="Scopes[' + count + '].Wording" value="' + wording + '" />');
+            $('#scopesToPost').append('<input type="hidden" name="Scopes[' + count + '].IsReadWrite" value="' + isReadWrite + '" />');
+            count++;
+        }
+    });
 }
 
 function preparScopesForPost() {

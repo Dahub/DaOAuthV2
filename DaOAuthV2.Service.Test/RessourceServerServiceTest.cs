@@ -528,7 +528,7 @@ namespace DaOAuthV2.Service.Test
             Assert.AreEqual(FakeDataBase.Instance.Scopes.Where(s => s.RessourceServerId.Equals(_validRessourceServer.Id)).Count(), result.Scopes.Count());
             foreach (var s in FakeDataBase.Instance.Scopes.Where(s => s.RessourceServerId.Equals(_validRessourceServer.Id)).Select(s => s.NiceWording))
             {
-                Assert.IsTrue(result.Scopes.ContainsKey(s));
+                Assert.IsTrue(result.Scopes.Select(sc => sc.NiceWording).Contains(s));
             }
         }
 
@@ -605,6 +605,124 @@ namespace DaOAuthV2.Service.Test
             Assert.IsNotNull(rs);
             Assert.AreEqual("new name", rs.Name);
             Assert.AreEqual("new description", rs.Description);
+        }
+
+        [TestMethod]
+        public void Update_Should_Delete_Scopes()
+        {
+            FakeDataBase.Instance.Scopes.Clear();
+            FakeDataBase.Instance.Scopes.Add(new Scope()
+            {
+                Id = 531,
+                NiceWording = "i will be delete",
+                Wording = "RW_i_will_be_delete",
+                RessourceServerId = _existingRessourceServer.Id
+            });
+
+            _service.Update(new UpdateRessourceServerDto()
+            {
+                Id = _existingRessourceServer.Id,
+                Description = "new description",
+                IsValid = true,
+                Name = "new name",
+                UserName = _adminUser.UserName,
+                Scopes = new List<UpdateRessourceServerScopesDto>()
+                {
+                    new UpdateRessourceServerScopesDto()
+                    {
+                        IsReadWrite = false,
+                        NiceWording = "i am new"
+                    }
+                }
+            });
+
+            var rs = FakeDataBase.Instance.RessourceServers.Where(r => r.Id.Equals(_existingRessourceServer.Id)).FirstOrDefault();
+
+            Assert.IsNotNull(rs);
+            rs.Scopes = FakeDataBase.Instance.Scopes.Where(s => s.RessourceServerId.Equals(rs.Id)).ToList();
+
+            Assert.AreEqual("new name", rs.Name);
+            Assert.AreEqual("new description", rs.Description);
+            Assert.IsNotNull(rs.Scopes);
+            Assert.AreEqual(1, rs.Scopes.Count());
+            Assert.AreEqual("R_i_am_new", rs.Scopes.First().Wording);
+            Assert.AreEqual(532, rs.Scopes.First().Id);
+        }
+
+        [TestMethod]
+        public void Update_Should_Update_Scopes()
+        {
+            FakeDataBase.Instance.Scopes.Clear();
+            FakeDataBase.Instance.Scopes.Add(new Scope()
+            {
+                Id = 531,
+                NiceWording = "i will be update",
+                Wording = "RW_i_will_be_update",
+                RessourceServerId = _existingRessourceServer.Id
+            });
+
+            _service.Update(new UpdateRessourceServerDto()
+            {
+                Id = _existingRessourceServer.Id,
+                Description = "new description",
+                IsValid = true,
+                Name = "new name",
+                UserName = _adminUser.UserName,
+                Scopes = new List<UpdateRessourceServerScopesDto>()
+                {
+                    new UpdateRessourceServerScopesDto()
+                    {
+                        IdScope = 531,
+                        IsReadWrite = false,
+                        NiceWording = "i am updated"
+                    }
+                }
+            });
+
+            var rs = FakeDataBase.Instance.RessourceServers.Where(r => r.Id.Equals(_existingRessourceServer.Id)).FirstOrDefault();
+
+            Assert.IsNotNull(rs);
+            rs.Scopes = FakeDataBase.Instance.Scopes.Where(s => s.RessourceServerId.Equals(rs.Id)).ToList();
+
+            Assert.AreEqual("new name", rs.Name);
+            Assert.AreEqual("new description", rs.Description);
+            Assert.IsNotNull(rs.Scopes);
+            Assert.AreEqual(1, rs.Scopes.Count());
+            Assert.AreEqual("R_i_am_updated", rs.Scopes.First().Wording);
+            Assert.AreEqual(531, rs.Scopes.First().Id);
+        }
+
+        [TestMethod]
+        public void Update_Should_Create_Scopes()
+        {
+            FakeDataBase.Instance.Scopes.Clear();
+            _service.Update(new UpdateRessourceServerDto()
+            {
+                Id = _existingRessourceServer.Id,
+                Description = "new description",
+                IsValid = true,
+                Name = "new name",
+                UserName = _adminUser.UserName,
+                Scopes = new List<UpdateRessourceServerScopesDto>()
+                {
+                    new UpdateRessourceServerScopesDto()
+                    {
+                        IsReadWrite = false,
+                        NiceWording = "i am to create"
+                    }
+                }
+            });
+
+            var rs = FakeDataBase.Instance.RessourceServers.Where(r => r.Id.Equals(_existingRessourceServer.Id)).FirstOrDefault();
+
+            Assert.IsNotNull(rs);
+            rs.Scopes = FakeDataBase.Instance.Scopes.Where(s => s.RessourceServerId.Equals(rs.Id)).ToList();
+            
+            Assert.AreEqual("new name", rs.Name);
+            Assert.AreEqual("new description", rs.Description);
+            Assert.IsNotNull(rs.Scopes);
+            Assert.AreEqual(1, rs.Scopes.Count());
+            Assert.AreEqual("R_i_am_to_create", rs.Scopes.First().Wording);
         }
 
         [TestMethod]

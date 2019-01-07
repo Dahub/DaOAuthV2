@@ -21,6 +21,7 @@ namespace DaOAuthV2.Service.DTO
         [IgnoreDataMember]
         [Required(ErrorMessage = "CreateRessourceServerUserNameRequired")]
         public string UserName { get; set; }
+
         public IList<CreateRessourceServerScopesDto> Scopes { get; set; }
     }
 

@@ -138,9 +138,9 @@ namespace DaOAuthV2.Service
                     throw new DaOAuthServiceException("DeleteRessourceServerRessourceServerNotFound");
                 }
 
-                foreach(var s in myRs.Scopes.ToList())
+                foreach (var s in myRs.Scopes.ToList())
                 {
-                    foreach(var cs in clientScopeRepo.GetAllByScopeId(s.Id).ToList())
+                    foreach (var cs in clientScopeRepo.GetAllByScopeId(s.Id).ToList())
                     {
                         clientScopeRepo.Delete(cs);
                     }
@@ -214,6 +214,8 @@ namespace DaOAuthV2.Service
             {
                 var userRepo = RepositoriesFactory.GetUserRepository(context);
                 var rsRepo = RepositoriesFactory.GetRessourceServerRepository(context);
+                var scopeRepo = RepositoriesFactory.GetScopeRepository(context);
+                var clientScopeRepo = RepositoriesFactory.GetClientScopeRepository(context);
 
                 var myUser = userRepo.GetByUserName(toUpdate.UserName);
                 if (myUser == null || !myUser.IsValid)
@@ -236,6 +238,42 @@ namespace DaOAuthV2.Service
                 myRs.Description = toUpdate.Description;
 
                 rsRepo.Update(myRs);
+
+                if (toUpdate.Scopes == null)
+                    toUpdate.Scopes = new List<UpdateRessourceServerScopesDto>();
+                if (myRs.Scopes == null)
+                    myRs.Scopes = new List<Scope>();
+
+                foreach (var toUpdateScope in toUpdate.Scopes)
+                {
+                    if (toUpdateScope.IdScope.HasValue && myRs.Scopes.Select(s => s.Id).Contains(toUpdateScope.IdScope.Value))
+                    {
+                        var myScope = myRs.Scopes.Where(s => s.Id.Equals(toUpdateScope.IdScope.Value)).First();
+                        myScope.NiceWording = toUpdateScope.NiceWording;
+                        myScope.Wording = toUpdateScope.NiceWording.ToScopeWording(toUpdateScope.IsReadWrite);
+                        scopeRepo.Update(myScope);
+                    }
+                    else if (!toUpdateScope.IdScope.HasValue)
+                    {
+                        scopeRepo.Add(new Scope()
+                        {
+                            NiceWording = toUpdateScope.NiceWording,
+                            Wording = toUpdateScope.NiceWording.ToScopeWording(toUpdateScope.IsReadWrite),
+                            RessourceServerId = myRs.Id
+                        });
+                    }
+                }
+                foreach(var toDeleteScope in myRs.Scopes.Where(s => s.Id > 0)) // only existings scopes
+                {
+                    if(!toUpdate.Scopes.Where(s => s.IdScope.HasValue).Select(s => s.IdScope.Value).Contains(toDeleteScope.Id))
+                    {
+                        foreach (var cs in clientScopeRepo.GetAllByScopeId(toDeleteScope.Id).ToList())
+                        {
+                            clientScopeRepo.Delete(cs);
+                        }
+                        scopeRepo.Delete(toDeleteScope);
+                    }
+                }
 
                 context.Commit();
 

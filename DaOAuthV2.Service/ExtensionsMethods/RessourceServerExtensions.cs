@@ -16,7 +16,12 @@ namespace DaOAuthV2.Service.ExtensionsMethods
                 Id = value.Id,
                 Login = value.Login,
                 Name = value.Name,
-                Scopes = value.Scopes != null ? value.Scopes.ToDictionary(key => key.NiceWording, val => val.Wording.StartsWith("RW")) : null
+                Scopes = value.Scopes != null ? value.Scopes.Select(s => new RessourceServerScopeDto()
+                {
+                    IdScope = s.Id,
+                    IsReadWrite = s.Wording.StartsWith("RW"),
+                    NiceWording = s.NiceWording
+                }).ToList(): null
             };
         }
 

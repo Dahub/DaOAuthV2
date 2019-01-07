@@ -93,13 +93,45 @@ namespace DaOAuthV2.Gui.Front.Controllers
             model.Name = rs.Name;
             if (rs.Scopes != null)
             {
-                model.Scopes = rs.Scopes;
+                model.Scopes = rs.Scopes.Select(s => new UpdateRessourceServerScopeModel()
+                {
+                    IdScope = s.IdScope,
+                    IsReadWrite = s.IsReadWrite,
+                    Wording = s.NiceWording
+                }).ToList();
             }
             else
             {
-                model.Scopes = new Dictionary<string, bool>();
+                model.Scopes = new List<UpdateRessourceServerScopeModel>();
             }
             return View(model);
+        }
+
+        [HttpPost]
+        [Authorize(Roles = RoleName.Administrator)]
+        public async Task<IActionResult> Edit(UpdateRessouceServerModel model)
+        {
+            if (model.Scopes == null)
+                model.Scopes = new List<UpdateRessourceServerScopeModel>();
+
+            HttpResponseMessage response = await PutToApi("ressourcesServers", new UpdateRessourceServerDto()
+            {
+                Id = model.Id,
+                Description = model.Description,
+                Name = model.Name,
+                IsValid= true,
+                Scopes = model.Scopes.Select(s => new UpdateRessourceServerScopesDto()
+                {
+                    IsReadWrite = s.IsReadWrite,
+                    NiceWording = s.Wording,
+                    IdScope = s.IdScope
+                }).ToList()
+            });
+
+            if (!await model.ValidateAsync(response))
+                return View(model);
+
+            return RedirectToAction("List");
         }
     }
 }

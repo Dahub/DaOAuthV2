@@ -8,6 +8,13 @@ namespace DaOAuthV2.Gui.Front.Models
         public string Name { get; set; }
         public string Login { get; set; }
         public string Description { get; set; }
-        public IDictionary<string, bool> Scopes { get; set; }
+        public IList<UpdateRessourceServerScopeModel> Scopes { get; set; }
+    }
+
+    public class UpdateRessourceServerScopeModel
+    {
+        public int? IdScope { get; set; }
+        public string Wording { get; set; }
+        public bool IsReadWrite { get; set; }
     }
 }

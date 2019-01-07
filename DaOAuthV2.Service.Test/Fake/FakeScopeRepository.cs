@@ -45,7 +45,7 @@ namespace DaOAuthV2.Service.Test.Fake
 
         public Scope GetById(int id)
         {
-            throw new NotImplementedException();
+            return FakeDataBase.Instance.Scopes.Where(s => s.Id.Equals(id)).FirstOrDefault();
         }
 
         public Scope GetByWording(string wording)
@@ -55,7 +55,12 @@ namespace DaOAuthV2.Service.Test.Fake
 
         public void Update(Scope toUpdate)
         {
-            throw new NotImplementedException();
+            var sc = FakeDataBase.Instance.Scopes.Where(u => u.Id.Equals(toUpdate.Id)).FirstOrDefault();
+            if (sc != null)
+            {
+                FakeDataBase.Instance.Scopes.Remove(sc);
+                FakeDataBase.Instance.Scopes.Add(toUpdate);
+            }
         }
     }
 }

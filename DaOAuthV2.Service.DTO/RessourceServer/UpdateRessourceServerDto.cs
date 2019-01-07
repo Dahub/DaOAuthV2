@@ -15,5 +15,14 @@ namespace DaOAuthV2.Service.DTO
         [Required(ErrorMessage = "UpdateRessourceServerNameRequired")]
         public string Name { get; set; }
         public string Description { get; set; }
+
+        public IList<UpdateRessourceServerScopesDto> Scopes { get; set; }
+    }
+
+    public class UpdateRessourceServerScopesDto
+    {
+        public int? IdScope { get; set; }
+        public string NiceWording { get; set; }
+        public bool IsReadWrite { get; set; }
     }
 }
