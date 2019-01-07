@@ -79,7 +79,7 @@ namespace DaOAuthV2.Gui.Front.Controllers
         public async Task<IActionResult> Edit(int id)
         {
             UpdateRessouceServerModel model = new UpdateRessouceServerModel();
-            
+
             var response = await GetToApi($"ressourcesServers/{id}");
             var rs = JsonConvert.DeserializeObject<RessourceServerDto>(
                await response.Content.ReadAsStringAsync());
@@ -97,7 +97,7 @@ namespace DaOAuthV2.Gui.Front.Controllers
                 {
                     IdScope = s.IdScope,
                     IsReadWrite = s.IsReadWrite,
-                    Wording = s.NiceWording
+                    NiceWording = s.NiceWording
                 }).ToList();
             }
             else
@@ -119,11 +119,11 @@ namespace DaOAuthV2.Gui.Front.Controllers
                 Id = model.Id,
                 Description = model.Description,
                 Name = model.Name,
-                IsValid= true,
+                IsValid = true,
                 Scopes = model.Scopes.Select(s => new UpdateRessourceServerScopesDto()
                 {
                     IsReadWrite = s.IsReadWrite,
-                    NiceWording = s.Wording,
+                    NiceWording = s.NiceWording,
                     IdScope = s.IdScope
                 }).ToList()
             });
@@ -141,6 +141,35 @@ namespace DaOAuthV2.Gui.Front.Controllers
             HttpResponseMessage response = await DeleteToApi($"ressourcesServers/{id}");
 
             return RedirectToAction("List");
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Details(int id)
+        {
+            HttpResponseMessage response = await GetToApi($"ressourcesServers/{id}");
+
+            var rs = JsonConvert.DeserializeObject<RessourceServerDto>(
+                await response.Content.ReadAsStringAsync());
+
+            DetailsRessouceServerModel model = new DetailsRessouceServerModel();
+            model.Scopes = new List<DetailsRessourceServerScopeModel>();
+
+            if (!await model.ValidateAsync(response))
+                return View(model);
+
+            model.Description = rs.Description;
+            model.Login = rs.Login;
+            model.Name = rs.Name;
+            if (rs.Scopes != null)
+            {
+                model.Scopes = rs.Scopes.Select(s => new DetailsRessourceServerScopeModel()
+                {
+                    Wording = s.Wording,
+                    NiceWording = s.NiceWording
+                }).ToList();
+            }
+
+            return View(model);
         }
     }
 }

@@ -14,7 +14,7 @@ namespace DaOAuthV2.Gui.Front.Models
     public class UpdateRessourceServerScopeModel
     {
         public int? IdScope { get; set; }
-        public string Wording { get; set; }
+        public string NiceWording { get; set; }
         public bool IsReadWrite { get; set; }
     }
 }

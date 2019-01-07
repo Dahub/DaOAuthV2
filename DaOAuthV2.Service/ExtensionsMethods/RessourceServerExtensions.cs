@@ -20,7 +20,8 @@ namespace DaOAuthV2.Service.ExtensionsMethods
                 {
                     IdScope = s.Id,
                     IsReadWrite = s.Wording.StartsWith("RW"),
-                    NiceWording = s.NiceWording
+                    NiceWording = s.NiceWording,
+                    Wording = s.Wording
                 }).ToList(): null
             };
         }

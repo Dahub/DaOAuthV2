@@ -38,7 +38,7 @@
                 @foreach (var scope in Model.Scopes)
                 {
                     <input type="hidden" id="Scopes[@count].IdScope" value="@scope.IdScope" />
-                    <input type="hidden" name="Scopes[@count].Wording" value="@scope.Wording" />
+                    <input type="hidden" name="Scopes[@count].Wording" value="@scope.NiceWording" />
                     if (scope.IsReadWrite)
                     {
                         <input type="hidden" name="Scopes[@count].IsReadWrite" value="true" />
@@ -75,7 +75,7 @@
                         <tr>
                             <td>
                                 <input type="hidden" id="scopeId" value="@scope.IdScope" />
-                                <input type="text" id="scopeWording" class="form-control" value="@scope.Wording" />
+                                <input type="text" id="scopeWording" class="form-control" value="@scope.NiceWording" />
                             </td>
                             <td>
                                 @if (scope.IsReadWrite)

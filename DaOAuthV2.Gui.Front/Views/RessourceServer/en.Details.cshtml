@@ -1,0 +1,38 @@
+﻿@model DaOAuthV2.Gui.Front.Models.DetailsRessouceServerModel
+
+@{
+    Layout = "_en.layout";
+}
+
+@await Html.PartialAsync("_en.modelErrors")
+
+<h1>Details for ressource server <em>@Model.Name</em></h1>
+<hr />
+
+<div class="row justify-content-md-center">
+    <div class="col-8">
+        <h4>Informations</h4>
+        <strong>Name : </strong>@Model.Name<br />
+        <strong>Login : </strong>@Model.Login<br />
+        <strong>Description : </strong>@Model.Description<br />
+
+        @if (Model.Scopes != null && Model.Scopes.Count > 0)
+        {
+            <hr />
+            <h4>Scopes</h4>
+            <ul class="list-group">
+                @foreach (var s in Model.Scopes)
+                {
+                    <li class="list-group-item"><strong>@s.Wording</strong> : @s.NiceWording</li>
+                }
+            </ul>
+        }
+
+    </div>
+</div>
+<br />
+<div class="row">
+    <div class="col-12">
+        <a href="@Url.Action("List", "RessourceServer")" class="btn btn-lg btn-secondary btn-block">Back</a>
+    </div>
+</div>

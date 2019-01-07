@@ -53,7 +53,7 @@ function preparScopesForPut() {
 
             existingWordings.push(wording);
             $('#scopesToPost').append('<input type="hidden" name="Scopes[' + count + '].IdScope" value="' + id + '" />');
-            $('#scopesToPost').append('<input type="hidden" name="Scopes[' + count + '].Wording" value="' + wording + '" />');
+            $('#scopesToPost').append('<input type="hidden" name="Scopes[' + count + '].NiceWording" value="' + wording + '" />');
             $('#scopesToPost').append('<input type="hidden" name="Scopes[' + count + '].IsReadWrite" value="' + isReadWrite + '" />');
             count++;
         }
