@@ -2,19 +2,44 @@
     Layout = "_fr.layout";
 }
 
-<a href="@Url.Action("List", "RessourceServer")" class="btn btn-sq-lg btn-blue" style="padding-top: 20px">
-    Ressource <br />Serveurs<br />
-    <span id="ressourceServerCount"></span>
-</a>
-&nbsp;
-<a href="@Url.Action("List", "Client")" class="btn btn-sq-lg btn-blue">
-    Clients<br />
-    <span id="clientCount"></span>
-</a>
-&nbsp;
-<a href="@Url.Action("Edit", "Account")" class="btn btn-sq-lg btn-blue">
-    Mon<br />Compte
-</a>
+<div class="row">
+
+    <div class="col-4">
+
+        <a href="@Url.Action("List", "RessourceServer")" class="btn btn-sq-lg btn-blue" style="padding-top: 20px">
+            Serveurs de <br />Ressources<br />
+            <span id="ressourceServerCount"></span>
+        </a>
+        &nbsp;
+        <a href="@Url.Action("List", "Client")" class="btn btn-sq-lg btn-blue">
+            Clients<br />
+            <span id="clientCount"></span>
+        </a>
+
+    </div>
+
+    <div class="col-4">
+
+        <a href="@Url.Action("Edit", "Account")" class="btn btn-sq-lg btn-blue">
+            Mon<br />Compte
+        </a>&nbsp;
+        @if (User.IsInRole(DaOAuthV2.Constants.RoleName.Administrator))
+        {
+            <a href="@Url.Action("Index", "Administration")" class="btn btn-sq-lg btn-blue" style="font-size:26px; padding-top: 70px;">
+                Administration
+            </a>
+        }
+
+    </div>
+    <div class="col-4">
+
+        <a href="@Url.Action("Index", "Documentation")" class="btn btn-sq-lg btn-blue" style="font-size:26px; padding-top: 70px;">
+            Documentation
+        </a>
+
+    </div>
+
+</div>
 
 @section PageScript{
     <script type="text/javascript">

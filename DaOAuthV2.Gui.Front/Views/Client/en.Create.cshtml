@@ -8,9 +8,10 @@
 
 <h1>Create a new client</h1>
 <hr />
-<div class="row">
-    <div class="col-md-8">
-        <form asp-action="Create" method="post">
+
+<form asp-action="Create" method="post">
+    <div class="row">
+        <div class="col">
             <div class="form-group">
                 <label asp-for="ClientType" class="control-label">Client type</label>
                 <br />
@@ -29,11 +30,21 @@
             <div class="form-group">
                 <label asp-for="Description" class="control-label">Description</label>
                 @Html.TextAreaFor(model => model.Description, 10, 80, new { @class = "form-control" })
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Submit" class="btn btn-lg btn-primary btn-block" />
-            </div>
-        </form>
+            </div>         
+        </div>
+
+        <div class="w-100"></div>
+
+        <br />
+        <div class="col-3">
+            <a href="@Url.Action("List", "Client")" class="btn btn-lg btn-secondary btn-block">Back</a>
+        </div>
+        <div class="col-9">
+            <input type="submit" value="Submit" class="btn btn-lg btn-primary btn-block" />
+        </div>
+
     </div>
-</div>
+</form>
+
+
 

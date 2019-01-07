@@ -63,7 +63,12 @@
         }
     </tbody>
 </table>
-<p>
-    <a href="@Url.Action("Dashboard", "Home")" class="btn btn-lg btn-secondary">Back</a>
-    <a href="@Url.Action("Create", "Client")" class="btn btn-lg btn-primary">New client</a>
-</p>
+
+<div class="row">
+    <div class="col-3">
+        <a href="@Url.Action("Dashboard", "Home")" class="btn btn-lg btn-secondary btn-block">Back</a>
+    </div>
+    <div class="col-9">
+        <a href="@Url.Action("Create", "Client")" class="btn btn-lg btn-primary btn-block">New client</a>
+    </div>
+</div>
