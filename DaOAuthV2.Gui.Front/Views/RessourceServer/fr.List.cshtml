@@ -27,24 +27,38 @@
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Login)
-                </td>               
+                </td>
                 <td>
                     <a href="@Url.Action("Details", "RessourceServer", new { id = @item.Id })"><i class="fas fa-2x fa-search"></i></a>
                     @if (User.IsInRole(DaOAuthV2.Constants.RoleName.Administrator))
                     {
                         <a href="@Url.Action("Edit", "RessourceServer", new { id = @item.Id })"><i class="fas fa-2x fa-edit"></i></a>
-                        <a href="@Url.Action("Delete", "RessourceServer", new { id = @item.Id })"><i class="fas fa-2x fa-trash-alt"></i></a>
+                        <span onclick="return doConfirm(@item.Id);" style="cursor: pointer;"><i class="fas fa-2x fa-trash-alt"></i></span>
                     }
                 </td>
             </tr>
         }
     </tbody>
 </table>
-<p>
-    <a href="@Url.Action("Dashboard", "Home")" class="btn btn-lg btn-secondary">Retour</a>
+
+<div class="row">
+    <div class="col-3">
+        <a href="@Url.Action("Dashboard", "Home")" class="btn btn-lg btn-secondary btn-block">Retour</a>
+    </div>
     @if (User.IsInRole(DaOAuthV2.Constants.RoleName.Administrator))
     {
-        <a href="@Url.Action("Create", "RessourceServer")" class="btn btn-lg btn-primary">Nouveau serveur de ressources</a>
+        <div class="col-9">
+            <a href="@Url.Action("Create", "RessourceServer")" class="btn btn-lg btn-primary btn-block">Nouveau serveur de ressources</a>
+        </div>
     }
-</p>
-
+</div>
+@section PageScript {
+    <script type="text/javascript">
+        function doConfirm(id) {
+            $.bsAlert.confirm("Etes vous sûr de vouloir supprimer ?", function () {
+                console.log(id);
+                $(location).attr('href', '/fr/RessourceServer/delete/' + id);
+            });
+        }
+    </script>
+}

@@ -81,6 +81,16 @@ namespace DaOAuthV2.Gui.Front.Tools
                 $"{_conf.GuiApiUrl}/{route}", data);
         }
 
+        protected async Task<HttpResponseMessage> DeleteToApi(string route)
+        {
+            route = ApplyCultureToRoute(route);
+
+            AddAuthorizationCookieIfAuthentificated();
+
+            return await _client.DeleteAsync(
+               $"{_conf.GuiApiUrl}/{route}");
+        }
+
         protected async Task<HttpResponseMessage> HeadToApi(string route)
         {
             return await HeadToApi(route, null);

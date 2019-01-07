@@ -50,12 +50,15 @@ namespace DaOAuthV2.Gui.Api.Controllers
         }
 
         [HttpDelete]
-        [Route("")]
+        [Route("{id}")]
         [Authorize(Roles = RoleName.Administrator)]
-        public IActionResult Delete(DeleteRessourceServerDto toDelete)
+        public IActionResult Delete(int id)
         {
-            toDelete.UserName = User.Identity.Name;
-            _service.Delete(toDelete);
+            _service.Delete(new DeleteRessourceServerDto()
+            {
+                Id = id,
+                UserName = User.Identity.Name
+            });
             return Ok();
         }
 

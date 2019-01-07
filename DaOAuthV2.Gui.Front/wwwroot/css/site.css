@@ -2,6 +2,10 @@
     margin-top: 60px;
 }
 
+a {
+    color: black;
+}
+
 .btn-sq-lg {
     width: 200px !important;
     height: 200px !important;

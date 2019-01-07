@@ -25,7 +25,7 @@ function addScopeTr() {
     html += '<input id="scopeReadWrite" type="checkbox" />';
     html += '</td>';
     html += '<td>';
-    html += '<span><i onclick="deleteScope(this)" class="fas fa-2x fa-trash-alt"></i></span>';
+    html += '<span style="cursor: pointer;"><i onclick="deleteScope(this)" class="fas fa-2x fa-trash-alt"></i></span>';
     html += '</td>';
     html += '</tr>';
 
