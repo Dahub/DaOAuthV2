@@ -31,7 +31,12 @@ namespace DaOAuthV2.Service.Test.Fake
 
         public IEnumerable<Scope> GetAll()
         {
-            throw new NotImplementedException();
+            var scopes = FakeDataBase.Instance.Scopes;
+            foreach(var s in scopes)
+            {
+                s.RessourceServer = FakeDataBase.Instance.RessourceServers.Where(rs => rs.Id.Equals(s.RessourceServerId)).FirstOrDefault();
+            }
+            return scopes;
         }
 
         public IEnumerable<Scope> GetByClientPublicId(string clientPublicId)

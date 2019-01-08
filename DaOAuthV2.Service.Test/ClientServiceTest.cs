@@ -1,5 +1,6 @@
 ﻿using DaOAuthV2.Constants;
 using DaOAuthV2.Dal.Interface;
+using DaOAuthV2.Domain;
 using DaOAuthV2.Service.Interface;
 using DaOAuthV2.Service.Test.Fake;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -374,6 +375,133 @@ namespace DaOAuthV2.Service.Test
         public void Get_By_Id_Should_Throw_DaOAuthNotFoundException_For_Non_Existing_Id()
         {
             _service.GetById(85674);
+        }
+
+        [TestMethod]
+        public void Get_By_Id_Should_Return_Client_With_Active_Ressource_Server_Scopes()
+        {
+            Client cl;
+            Scope sc1, sc2, sc3;
+            InitTestForInvalidRessourceServerScopes(out cl, out sc1, out sc2, out sc3);
+
+            var client = _service.GetById(cl.Id);
+
+            Assert.IsNotNull(client);
+            Assert.IsNotNull(client.Scopes);
+            Assert.AreEqual(2, client.Scopes.Count());
+            Assert.IsNull(client.Scopes.Where(s => s.Key.Equals(sc3.Wording)).Select(s => s.Value).FirstOrDefault());
+            Assert.IsNotNull(client.Scopes.Where(s => s.Key.Equals(sc1.Wording)).Select(s => s.Value).FirstOrDefault());
+            Assert.IsNotNull(client.Scopes.Where(s => s.Key.Equals(sc2.Wording)).Select(s => s.Value).FirstOrDefault());
+        }
+
+        [TestMethod]
+        public void Search_Should_Return_Client_With_Active_Ressource_Server_Scopes()
+        {
+            Client cl;
+            Scope sc1, sc2, sc3;
+            InitTestForInvalidRessourceServerScopes(out cl, out sc1, out sc2, out sc3);
+
+            var client = _service.Search(new DTO.ClientSearchDto()
+            {
+                Name = cl.Name,
+                Skip = 0,
+                Limit = 1
+            }).FirstOrDefault();
+
+            Assert.IsNotNull(client);
+            Assert.IsNotNull(client.Scopes);
+            Assert.AreEqual(2, client.Scopes.Count());
+            Assert.IsNull(client.Scopes.Where(s => s.Key.Equals(sc3.Wording)).Select(s => s.Value).FirstOrDefault());
+            Assert.IsNotNull(client.Scopes.Where(s => s.Key.Equals(sc1.Wording)).Select(s => s.Value).FirstOrDefault());
+            Assert.IsNotNull(client.Scopes.Where(s => s.Key.Equals(sc2.Wording)).Select(s => s.Value).FirstOrDefault());
+        }
+
+        private static void InitTestForInvalidRessourceServerScopes(out Client cl, out Scope sc1, out Scope sc2, out Scope sc3)
+        {
+            FakeDataBase.Instance.Clients.Clear();
+            FakeDataBase.Instance.RessourceServers.Clear();
+            FakeDataBase.Instance.Scopes.Clear();
+            FakeDataBase.Instance.ClientsScopes.Clear();
+
+            cl = new Client()
+            {
+                ClientSecret = "abc",
+                ClientTypeId = 1,
+                CreationDate = DateTime.Now,
+                Id = 1,
+                IsValid = true,
+                Name = "cl",
+                PublicId = "abc"
+            };
+            FakeDataBase.Instance.Clients.Add(cl);
+
+            FakeDataBase.Instance.RessourceServers.Add(new RessourceServer()
+            {
+                CreationDate = DateTime.Now,
+                Description = "test rs",
+                Id = 1,
+                IsValid = true,
+                Login = "rs_valid",
+                Name = "rs valid",
+                ServerSecret = new byte[] { 0 }
+            });
+
+            FakeDataBase.Instance.RessourceServers.Add(new RessourceServer()
+            {
+                CreationDate = DateTime.Now,
+                Description = "test rs",
+                Id = 2,
+                IsValid = false,
+                Login = "rs_nvalid",
+                Name = "rs invalid",
+                ServerSecret = new byte[] { 0 }
+            });
+
+            sc1 = new Scope()
+            {
+                Id = 1,
+                Wording = "RW_test_1",
+                NiceWording = "test_1",
+                RessourceServerId = 1
+            };
+            sc2 = new Scope()
+            {
+                Id = 2,
+                Wording = "RW_test_2",
+                NiceWording = "test_2",
+                RessourceServerId = 1
+            };
+            sc3 = new Scope()
+            {
+                Id = 3,
+                Wording = "RW_test_3",
+                NiceWording = "test_3",
+                RessourceServerId = 2
+            };
+            FakeDataBase.Instance.Scopes.Add(sc1);
+            FakeDataBase.Instance.Scopes.Add(sc2);
+            FakeDataBase.Instance.Scopes.Add(sc3);
+
+            FakeDataBase.Instance.ClientsScopes.Add(new ClientScope()
+            {
+                Id = 1,
+                ClientId = cl.Id,
+                ScopeId = sc1.Id
+            });
+
+            FakeDataBase.Instance.ClientsScopes.Add(new ClientScope()
+            {
+                Id = 2,
+                ClientId = cl.Id,
+                ScopeId = sc2.Id
+            });
+
+            FakeDataBase.Instance.ClientsScopes.Add(new ClientScope()
+            {
+                Id = 3,
+                ClientId = cl.Id,
+                ScopeId = sc3.Id
+            });
         }
     }
 }

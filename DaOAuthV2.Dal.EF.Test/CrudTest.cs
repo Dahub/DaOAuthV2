@@ -193,8 +193,8 @@ namespace DaOAuthV2.Dal.EF.Test
 
             using (var context = new DaOAuthContext(options))
             {
-                var scopeRepo = _repoFactory.GetScopeRepository(context);
-                var result = scopeRepo.GetAll();
+                var clientRepo = _repoFactory.GetClientRepository(context);
+                var result = clientRepo.GetAll();
                 Assert.IsNotNull(result);
                 Assert.AreEqual(1, result.Count());
             }

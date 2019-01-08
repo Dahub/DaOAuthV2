@@ -106,17 +106,26 @@ namespace DaOAuthV2.Service
             using (var context = RepositoriesFactory.CreateContext(ConnexionString))
             {
                 var clientRepo = RepositoriesFactory.GetClientRepository(context);
+
                 var client = clientRepo.GetById(id);
 
                 if (client == null || !client.IsValid)
                     throw new DaOAuthNotFoundException();
+
+                // we need to remove scopes from invalid ressources servers
+                if(client.ClientsScopes != null && client.ClientsScopes.Count() > 0)
+                {
+                    IList<int> invalidsRs = ExtractInvalidRessourceServerIds(context);
+
+                    client.ClientsScopes = client.ClientsScopes.ToList().Where(cs => !invalidsRs.Contains(cs.Scope.RessourceServerId)).ToList();
+                }
 
                 toReturn = client.ToDto();
             }
 
             return toReturn;
         }
-
+        
         public IEnumerable<ClientDto> Search(ClientSearchDto criterias)
         {
             Validate(criterias, ExtendValidationSearchCriterias);
@@ -131,6 +140,15 @@ namespace DaOAuthV2.Service
 
                 clients = clientRepo.GetAllByCriterias(criterias.Name, criterias.PublicId,
                     true, clientTypeId, criterias.Skip, criterias.Limit).ToList();
+
+                IList<int> invalidsRs = ExtractInvalidRessourceServerIds(context);
+                foreach (var c in clients)
+                {
+                    if (c.ClientsScopes != null && c.ClientsScopes.Count() > 0)
+                    {
+                        c.ClientsScopes = c.ClientsScopes.ToList().Where(cs => !invalidsRs.Contains(cs.Scope.RessourceServerId)).ToList();
+                    }
+                }
             }
 
             if (clients != null)
@@ -162,6 +180,12 @@ namespace DaOAuthV2.Service
                 result.Add(new ValidationResult(String.Format(resource["SearchClientAskTooMuch"], c)));
 
             return result;
+        }
+
+        private IList<int> ExtractInvalidRessourceServerIds(Dal.Interface.IContext context)
+        {
+            var ressourceServerRepo = RepositoriesFactory.GetRessourceServerRepository(context);
+            return ressourceServerRepo.GetAll().Where(rs => rs.IsValid.Equals(false)).Select(rs => rs.Id).ToList();
         }
     }
 }

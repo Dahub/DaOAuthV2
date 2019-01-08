@@ -72,7 +72,13 @@ namespace DaOAuthV2.Service.Test.Fake
             c.ClientType = FakeDataBase.Instance.ClientTypes.Where(ct => ct.Id.Equals(c.ClientTypeId)).FirstOrDefault();
             c.ClientReturnUrls = FakeDataBase.Instance.ClientReturnUrls.Where(cru => cru.ClientId.Equals(c.Id)).ToList();
             c.ClientsScopes = FakeDataBase.Instance.ClientsScopes.Where(cs => cs.ClientId.Equals(c.Id)).ToList();
-
+            if (c.ClientsScopes != null)
+            {
+                foreach (var cs in c.ClientsScopes)
+                {
+                    cs.Scope = FakeDataBase.Instance.Scopes.FirstOrDefault(s => s.Id.Equals(cs.ScopeId));
+                }
+            }
             return c;
         }
 

@@ -22,23 +22,37 @@ namespace DaOAuthV2.Dal.EF.Test
 
             using (var context = new DaOAuthContext(options))
             {
+                context.RessourceServers.Add(new RessourceServer()
+                {
+                    CreationDate = DateTime.Now,
+                    Description = "test rs",
+                    Id = 1,
+                    IsValid = true,
+                    Login = "rs",
+                    Name = "rs name",
+                    ServerSecret = new byte[] { 0 }
+                });
+
                 context.Scopes.Add(new Scope()
                 {
                     Id = 100,
                     NiceWording = "scope test 1",
-                    Wording = "scope_test_1"
+                    Wording = "scope_test_1",
+                    RessourceServerId = 1
                 });
                 context.Scopes.Add(new Scope()
                 {
                     Id = 101,
                     NiceWording = "scope test 2",
-                    Wording = "scope_test_2"
+                    Wording = "scope_test_2",
+                    RessourceServerId = 1
                 });
                 context.Scopes.Add(new Scope()
                 {
                     Id = 102,
                     NiceWording = "scope test 3",
-                    Wording = "scope_test_3"
+                    Wording = "scope_test_3",
+                    RessourceServerId = 1
                 });
 
                 context.Clients.Add(new Client()
@@ -167,6 +181,23 @@ namespace DaOAuthV2.Dal.EF.Test
                 var scope = repo.GetByWording("sCOpe_test_2");
 
                 Assert.IsNotNull(scope);
+            }
+        }
+
+        [TestMethod]
+        public void Get_All_Should_Return_Scopes_With_Ressource_Server()
+        {
+            var options = new DbContextOptionsBuilder<DaOAuthContext>()
+                  .UseInMemoryDatabase(databaseName: _dbName)
+                  .Options;
+            using (var context = new DaOAuthContext(options))
+            {
+                var repo = _repoFactory.GetScopeRepository(context);
+                var scopes = repo.GetAll();
+
+                Assert.IsNotNull(scopes);
+                Assert.IsTrue(scopes.Count() > 0);
+                Assert.IsNotNull(scopes.First().RessourceServer);
             }
         }
     }

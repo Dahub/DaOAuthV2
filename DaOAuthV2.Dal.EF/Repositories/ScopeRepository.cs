@@ -1,5 +1,6 @@
 ﻿using DaOAuthV2.Dal.Interface;
 using DaOAuthV2.Domain;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,6 +18,11 @@ namespace DaOAuthV2.Dal.EF
         public Scope GetByWording(string wording)
         {
             return Context.Scopes.Where(s => s.Wording.Equals(wording, StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
+        }
+
+        public new IEnumerable<Scope> GetAll()
+        {
+            return Context.Scopes.Include(s => s.RessourceServer);
         }
     }
 }
