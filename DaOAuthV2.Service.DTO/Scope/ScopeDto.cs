@@ -1,6 +1,8 @@
-﻿namespace DaOAuthV2.Service.DTO
+﻿using DaOAuthV2.ApiTools;
+
+namespace DaOAuthV2.Service.DTO
 {
-    public class ScopeDto
+    public class ScopeDto : IDto
     {
         public int Id { get; set; }
         public string Wording { get; set; }

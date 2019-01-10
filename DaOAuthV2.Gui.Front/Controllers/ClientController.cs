@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -36,9 +37,36 @@ namespace DaOAuthV2.Gui.Front.Controllers
         }
 
         [HttpGet]
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            return View(new CreateClientModel());
+            var model = new CreateClientModel();
+            model.Scopes = new Dictionary<string, IList<ScopeClientModel>>();
+
+            // get all scopes
+            HttpResponseMessage response = await GetToApi("scopes");
+
+            if (!await model.ValidateAsync(response))
+                return View(model);
+
+            var scopes = JsonConvert.DeserializeObject<SearchResult<ScopeDto>>(await response.Content.ReadAsStringAsync());
+            if(scopes != null)
+            {
+                foreach(var s in scopes.Datas)
+                {
+                    if (!model.Scopes.ContainsKey(s.RessourceServerName))
+                        model.Scopes.Add(s.RessourceServerName, new List<ScopeClientModel>());
+
+                    model.Scopes[s.RessourceServerName].Add(new ScopeClientModel()
+                    {
+                        Id = s.Id,
+                        NiceWording = s.NiceWording,
+                        Selected = false,
+                        Wording = s.Wording
+                    });
+                }
+            }
+
+            return View(model);
         }
 
         [HttpPost]

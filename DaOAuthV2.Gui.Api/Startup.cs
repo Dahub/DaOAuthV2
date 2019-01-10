@@ -90,7 +90,7 @@ namespace DaOAuthV2.Gui.Api
                 RepositoriesFactory = new EfRepositoriesFactory(),
                 ConnexionString = Configuration.GetConnectionString("DaOAuthConnexionString"),
                 StringLocalizerFactory = localizationServiceFactory,
-                Logger = loggerServiceFactory.CreateLogger<JwtService>()
+                Logger = loggerServiceFactory.CreateLogger<UserClientService>()
             });
 
             services.AddTransient<IClientService>(u => new ClientService()
@@ -99,7 +99,7 @@ namespace DaOAuthV2.Gui.Api
                 RepositoriesFactory = new EfRepositoriesFactory(),
                 ConnexionString = Configuration.GetConnectionString("DaOAuthConnexionString"),
                 StringLocalizerFactory = localizationServiceFactory,
-                Logger = loggerServiceFactory.CreateLogger<JwtService>(),
+                Logger = loggerServiceFactory.CreateLogger<ClientService>(),
                 RandomService = new RandomService()
             });
 
@@ -109,7 +109,7 @@ namespace DaOAuthV2.Gui.Api
                 RepositoriesFactory = new EfRepositoriesFactory(),
                 ConnexionString = Configuration.GetConnectionString("DaOAuthConnexionString"),
                 StringLocalizerFactory = localizationServiceFactory,
-                Logger = loggerServiceFactory.CreateLogger<JwtService>()
+                Logger = loggerServiceFactory.CreateLogger<ReturnUrlService>()
             });
 
             services.AddTransient<IRessourceServerService>(u => new RessourceServerService()
@@ -118,7 +118,16 @@ namespace DaOAuthV2.Gui.Api
                 RepositoriesFactory = new EfRepositoriesFactory(),
                 ConnexionString = Configuration.GetConnectionString("DaOAuthConnexionString"),
                 StringLocalizerFactory = localizationServiceFactory,
-                Logger = loggerServiceFactory.CreateLogger<JwtService>()
+                Logger = loggerServiceFactory.CreateLogger<RessourceServerService>()
+            });
+
+            services.AddTransient<IScopeService>(u => new ScopeService()
+            {
+                Configuration = conf,
+                RepositoriesFactory = new EfRepositoriesFactory(),
+                ConnexionString = Configuration.GetConnectionString("DaOAuthConnexionString"),
+                StringLocalizerFactory = localizationServiceFactory,
+                Logger = loggerServiceFactory.CreateLogger<ScopeService>()
             });
 
             services.AddMvc(options =>

@@ -5,6 +5,19 @@ namespace DaOAuthV2.ApiTools
 {
     public static class DtoExtensions
     {
+        public static SearchResult<T> ToSearchResult<T>(this IEnumerable<IDto> values, string currentUri, int count) where T : IDto
+        {
+            SearchResult<T> result = new SearchResult<T>()
+            {
+                Count = count,
+                Datas = values.Select(v => (T)v),
+                Limit = 0,
+                Skip = 0
+            };
+            result.Links.This = currentUri;     
+            return result;
+        }
+
         public static SearchResult<T> ToSearchResult<T>(this IEnumerable<IDto> values, string currentUri, int count, ISearchCriteriasDto criterias) where T:IDto
         {
             SearchResult<T> result = new SearchResult<T>()

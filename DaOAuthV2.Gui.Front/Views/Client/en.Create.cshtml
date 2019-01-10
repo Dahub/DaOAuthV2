@@ -30,7 +30,90 @@
             <div class="form-group">
                 <label asp-for="Description" class="control-label">Description</label>
                 @Html.TextAreaFor(model => model.Description, 10, 80, new { @class = "form-control" })
-            </div>         
+            </div>
+        </div>
+
+        <div id="scopesRsNames">
+            @{
+                int countKey = 0;
+
+
+                foreach (var rs in Model.Scopes)
+                {
+                    int countValue = 0;
+                    <input type="hidden" name="Scopes[@countKey].Key" value="@rs.Key" />
+                    @foreach (var s in rs.Value)
+                    {
+                        <input type="hidden" name="Scopes[@countKey].Value[@countValue].Id" value="@s.Id" />
+                        <input type="hidden" name="Scopes[@countKey].Value[@countValue].Wording" value="@s.Wording" />
+                        <input type="hidden" name="Scopes[@countKey].Value[@countValue].NiceWording" value="@s.NiceWording" />
+
+                        string id = $"scope_{countKey}_{countValue}";
+
+                        if (s.Selected)
+                        {
+                            <input type="hidden" id="@id" name="Scopes[@countKey].Value[@countValue].Selected" value="true" />
+                        }
+                        else
+                        {
+                            <input type="hidden" id="@id" name="Scopes[@countKey].Value[@countValue].Selected" value="false" />
+                        }
+                        countValue++;
+                    }
+
+                    countKey++;
+                }
+            }
+        </div>
+
+        <div class="col">
+            <h3>Scopes</h3>
+            <br />
+            @{
+                int rcountKey = 0;
+                foreach (var rs in Model.Scopes.Keys)
+                {
+                    int rcountValue = 0;
+                    <h4>@rs</h4>
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>
+                                    Wording
+                                </th>
+                                <th>
+                                    Selected
+                                </th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var s in Model.Scopes[rs])
+                            {
+                                <tr>
+                                    <td>
+                                        @s.Wording
+                                    </td>
+                                    <td>
+                                        @{ string id = $"scope_{rcountKey}_{rcountValue}"; }
+                                        @if (s.Selected)
+                                        {
+                                            <input checked="checked" type="checkbox" onclick="changeScopeSelected(this, '@id')" />
+                                        }
+                                        else
+                                        {
+                                            <input type="checkbox" onclick="changeScopeSelected(this, '@id')" />
+                                        }
+                                    </td>
+                                </tr>
+                                rcountValue++;
+                            }
+
+                        </tbody>
+                    </table>
+                    rcountKey++;
+                }
+            }
         </div>
 
         <div class="w-100"></div>
@@ -46,5 +129,6 @@
     </div>
 </form>
 
-
-
+@section PageScript{
+    <script src="~/js/clientScripts.js"></script>
+}
