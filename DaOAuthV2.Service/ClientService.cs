@@ -55,6 +55,7 @@ namespace DaOAuthV2.Service
                 var clientRepo = RepositoriesFactory.GetClientRepository(context);
                 var userClientRepo = RepositoriesFactory.GetUserClientRepository(context);
                 var userRepo = RepositoriesFactory.GetUserRepository(context);
+                var clientScopeRepo = RepositoriesFactory.GetClientScopeRepository(context);
 
                 User user = userRepo.GetByUserName(toCreate.UserName);
 
@@ -90,6 +91,18 @@ namespace DaOAuthV2.Service
                 };
 
                 userClientRepo.Add(userClient);
+
+                if(toCreate.ScopesIds != null)
+                {
+                    foreach(var sId in toCreate.ScopesIds)
+                    {
+                        clientScopeRepo.Add(new ClientScope()
+                        {
+                            ClientId = client.Id,
+                            ScopeId = sId
+                        });
+                    }
+                }
 
                 context.Commit();
 

@@ -9,6 +9,7 @@ using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 
@@ -72,12 +73,16 @@ namespace DaOAuthV2.Gui.Front.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(CreateClientModel model)
         {
+
             HttpResponseMessage response = await PostToApi("clients", new CreateClientDto()
             {
                 ClientType = model.ClientType,
                 DefaultReturnUrl = model.DefaultReturnUrl,
                 Description = model.Description,
-                Name = model.Name
+                Name = model.Name,
+                ScopesIds = model.Scopes.SelectMany(s => s.Value)
+                                .Where(sv => sv.Selected)
+                                .Select(sv => sv.Id).ToList()
             });
 
             if (!await model.ValidateAsync(response))

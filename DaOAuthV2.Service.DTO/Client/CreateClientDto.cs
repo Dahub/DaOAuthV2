@@ -1,4 +1,5 @@
 ﻿using DaOAuthV2.ApiTools;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Runtime.Serialization;
 
@@ -20,5 +21,7 @@ namespace DaOAuthV2.Service.DTO
         public string UserName { get; set; }
 
         public string Description { get; set; }
+
+        public IList<int> ScopesIds { get; set; }
     }
 }

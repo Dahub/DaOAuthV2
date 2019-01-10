@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-
 namespace DaOAuthV2.Service.Test.Fake
 {
     internal class FakeClientScopeRepository : IClientScopeRepository
@@ -13,7 +12,13 @@ namespace DaOAuthV2.Service.Test.Fake
 
         public int Add(ClientScope toAdd)
         {
-            throw new NotImplementedException();
+            if (FakeDataBase.Instance.ClientsScopes.Count > 0)
+                toAdd.Id = FakeDataBase.Instance.ClientsScopes.Max(u => u.Id) + 1;
+            else
+                toAdd.Id = 1;
+
+            FakeDataBase.Instance.ClientsScopes.Add(toAdd);
+            return toAdd.Id;
         }
 
         public void Delete(ClientScope toDelete)

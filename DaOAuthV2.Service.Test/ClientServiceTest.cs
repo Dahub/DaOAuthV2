@@ -5,6 +5,7 @@ using DaOAuthV2.Service.Interface;
 using DaOAuthV2.Service.Test.Fake;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace DaOAuthV2.Service.Test
@@ -88,6 +89,50 @@ namespace DaOAuthV2.Service.Test
             Assert.AreEqual(description, client.Description);
             Assert.AreEqual(name, client.Name);
             Assert.IsTrue((DateTime.Now - client.CreationDate).TotalSeconds < 10);
+        }
+
+        [TestMethod]
+        public void Create_New_Client_Should_Create_Scopes()
+        {
+            string name = "client_test_create";
+            string description = "test";
+            Scope sc1 = new Scope()
+            {
+                Id = 456,
+                NiceWording = "sc1",
+                Wording = "sc1"
+            };
+            Scope sc2 = new Scope()
+            {
+                Id = 457,
+                NiceWording = "sc2",
+                Wording = "sc2"
+            };
+
+            FakeDataBase.Instance.Scopes.Add(sc1);
+            FakeDataBase.Instance.Scopes.Add(sc2);
+
+            int id = _service.CreateClient(new DTO.CreateClientDto()
+            {
+                ClientType = ClientTypeName.Confidential,
+                DefaultReturnUrl = "http://www.perdu.com",
+                Name = name,
+                UserName = "Sammy",
+                Description = description,
+                ScopesIds = new List<int> {  456, 457 }
+            });
+
+            Assert.IsTrue(id > 0);
+
+            var client = _repo.GetById(id);
+
+            Assert.IsNotNull(client);
+
+            var clientsScopes = FakeDataBase.Instance.ClientsScopes.Where(cs => cs.ClientId.Equals(id));
+
+            Assert.IsNotNull(clientsScopes);
+            Assert.AreEqual(2, clientsScopes.Count());
+            Assert.IsTrue(clientsScopes.Select(cs => cs.ScopeId).Contains(sc1.Id));
         }
 
         [TestMethod]
