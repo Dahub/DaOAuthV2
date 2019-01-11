@@ -225,6 +225,33 @@
   <data name="LoginUserDtoUserNameRequired" xml:space="preserve">
     <value>User name is mandatory</value>
   </data>
+  <data name="UpdateClientDtoClientSecretDontMatchPolicy" xml:space="preserve">
+    <value>Client secret don't match policy (12 characters)</value>
+  </data>
+  <data name="UpdateClientDtoClientSecretRequired" xml:space="preserve">
+    <value>Client secret is mandatory</value>
+  </data>
+  <data name="UpdateClientDtoDefaultReturnUrlRequired" xml:space="preserve">
+    <value>Client default return url is mandatory</value>
+  </data>
+  <data name="UpdateClientDtoNameRequired" xml:space="preserve">
+    <value>Client name is mandatory</value>
+  </data>
+  <data name="UpdateClientDtoPublicIdRequired" xml:space="preserve">
+    <value>Public Id is mandatory</value>
+  </data>
+  <data name="UpdateClientDtoReturnUrlIncorrect" xml:space="preserve">
+    <value>Incorrect return Url</value>
+  </data>
+  <data name="UpdateClientDtoTypeIncorrect" xml:space="preserve">
+    <value>Incorrect client type</value>
+  </data>
+  <data name="UpdateClientDtoTypeRequired" xml:space="preserve">
+    <value>Client type is mandatory</value>
+  </data>
+  <data name="UpdateClientDtoUserNameRequired" xml:space="preserve">
+    <value>User name is mandatory</value>
+  </data>
   <data name="UpdateRessourceServerNameRequired" xml:space="preserve">
     <value>Name is mandatory</value>
   </data>

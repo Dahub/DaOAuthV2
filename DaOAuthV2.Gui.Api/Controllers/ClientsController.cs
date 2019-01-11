@@ -40,7 +40,6 @@ namespace DaOAuthV2.Gui.Api.Controllers
 
         [HttpDelete]
         [Route("{id}")]
-        [Authorize(Roles = RoleName.Administrator)]
         public IActionResult Delete(int id)
         {
             _service.Delete(new DeleteClientDto()
@@ -48,6 +47,15 @@ namespace DaOAuthV2.Gui.Api.Controllers
                 Id = id,
                 UserName = User.Identity.Name
             });
+            return Ok();
+        }
+
+        [HttpPut]
+        [Route("")]
+        public IActionResult Put(UpdateClientDto toUpdate)
+        {
+            toUpdate.UserName = User.Identity.Name;
+            _service.Update(toUpdate);
             return Ok();
         }
 

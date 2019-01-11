@@ -251,6 +251,145 @@ namespace DaOAuthV2.Service
             return count;
         }
 
+        public ClientDto Update(UpdateClientDto toUpdate)
+        {
+            IList<ValidationResult> ExtendValidation(UpdateClientDto toValidate)
+            {
+                var resource = this.GetErrorStringLocalizer();
+                IList<ValidationResult> result = new List<ValidationResult>();
+
+                if (toValidate.ReturnUrls == null || toValidate.ReturnUrls.Count() == 0)
+                {
+                    result.Add(new ValidationResult(resource["UpdateClientDtoDefaultReturnUrlRequired"]));
+                }
+
+                if (toValidate.ReturnUrls != null)
+                {
+                    foreach (var ur in toValidate.ReturnUrls)
+                    {
+                        if (!Uri.TryCreate(ur, UriKind.Absolute, out Uri u))
+                            result.Add(new ValidationResult(resource["UpdateClientDtoReturnUrlIncorrect"]));
+                    }
+                }
+
+                if (toValidate.ClientType != ClientTypeName.Confidential && toValidate.ClientType != ClientTypeName.Public)
+                    result.Add(new ValidationResult(resource["UpdateClientDtoTypeIncorrect"]));
+
+                if (!toValidate.ClientSecret.IsMatchClientSecretPolicy())
+                    result.Add(new ValidationResult(resource["UpdateClientDtoClientSecretDontMatchPolicy"]));
+
+                return result;
+            }
+
+            Validate(toUpdate, ExtendValidation);
+
+            using (var context = RepositoriesFactory.CreateContext(ConnexionString))
+            {
+                var clientRepo = RepositoriesFactory.GetClientRepository(context);
+                var userClientRepo = RepositoriesFactory.GetUserClientRepository(context);
+                var scopeRepo = RepositoriesFactory.GetScopeRepository(context);
+                var userRepo = RepositoriesFactory.GetUserRepository(context);
+                var clientReturnUrlRepo = RepositoriesFactory.GetClientReturnUrlRepository(context);
+                var clientScopeRepo = RepositoriesFactory.GetClientScopeRepository(context);
+
+                var myClient = clientRepo.GetById(toUpdate.Id);
+
+                if (myClient == null || !myClient.IsValid)
+                {
+                    throw new DaOAuthServiceException("UpdateClientInvalidClient");
+                }
+
+                var ucs = userClientRepo.GetAllByCriterias(toUpdate.UserName, toUpdate.Name, null, null, 0, 50);
+                if (ucs != null && ucs.Count() > 0)
+                {
+                    var myUc = ucs.First();
+                    if (myUc.ClientId != myClient.Id)
+                        throw new DaOAuthServiceException("UpdateClientNameAlreadyUsed");
+                }
+
+                var cl = clientRepo.GetByPublicId(toUpdate.PublicId);
+                if (cl != null && cl.Id != myClient.Id)
+                {
+                    throw new DaOAuthServiceException("UpdateClientpublicIdAlreadyUsed");
+                }
+
+                var scopes = scopeRepo.GetAll();
+                if (toUpdate.ScopesIds != null)
+                {
+                    IList<int> ids = scopes.Select(s => s.Id).ToList();
+                    foreach (int scopeId in toUpdate.ScopesIds)
+                    {
+                        if (!ids.Contains(scopeId))
+                        {
+                            throw new DaOAuthServiceException("UpdateClientScopeDontExists");
+                        }
+                    }
+                }
+
+                var myUser = userRepo.GetByUserName(toUpdate.UserName);
+
+                if (myUser == null || !myUser.IsValid)
+                {
+                    throw new DaOAuthServiceException("UpdateClientInvalidUser");
+                }
+
+                var myUserClient = userClientRepo.
+                    GetUserClientByUserNameAndClientPublicId(myClient.PublicId, toUpdate.UserName);
+
+                if (myUserClient == null || !myUserClient.IsCreator)
+                {
+                    throw new DaOAuthServiceException("UpdateClientInvalidUser");
+                }
+
+                // update returns urls
+                foreach (var ru in clientReturnUrlRepo.GetAllByClientId(myClient.PublicId).ToList())
+                {
+                    clientReturnUrlRepo.Delete(ru);
+                }
+
+                foreach (var ru in toUpdate.ReturnUrls)
+                {
+                    clientReturnUrlRepo.Add(new ClientReturnUrl()
+                    {
+                        ClientId = myClient.Id,
+                        ReturnUrl = ru
+                    });
+                }
+
+                // updates clients scopes
+                foreach(var s in clientScopeRepo.GetAllByClientId(myClient.Id).ToList())
+                {
+                    clientScopeRepo.Delete(s);
+                }
+                if (toUpdate.ScopesIds != null)
+                {
+                    foreach (var s in toUpdate.ScopesIds)
+                    {
+                        clientScopeRepo.Add(new ClientScope()
+                        {
+                            ClientId = myClient.Id,
+                            ScopeId = s
+                        });
+                    }
+                }
+
+                // update client
+                myClient.ClientSecret = toUpdate.ClientSecret;
+                myClient.ClientTypeId = toUpdate.ClientType.Equals(
+                        ClientTypeName.Confidential, StringComparison.OrdinalIgnoreCase) 
+                        ? (int)EClientType.CONFIDENTIAL : (int)EClientType.PUBLIC;
+                myClient.Description = toUpdate.Description;
+                myClient.Name = toUpdate.Name;
+                myClient.PublicId = toUpdate.PublicId;
+
+                clientRepo.Update(myClient);
+
+                context.Commit();
+
+                return myClient.ToDto();
+            }            
+        }
+
         private IList<ValidationResult> ExtendValidationSearchCriterias(ClientSearchDto c)
         {
             var resource = this.GetErrorStringLocalizer();

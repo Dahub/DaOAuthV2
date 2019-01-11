@@ -17,6 +17,7 @@ namespace DaOAuthV2.Service.Test
         private IClientService _service;
         private IClientRepository _repo;
         private Client _validClient;
+        private Client _invalidClient;
         private User _validUserCreator;
         private User _validUserNonCreator;
         private User _invalidUser;
@@ -28,7 +29,7 @@ namespace DaOAuthV2.Service.Test
         {
             _validClient = new Client()
             {
-                ClientSecret = "abc",
+                ClientSecret = "abcdefghijklmnopqrstuv",
                 ClientTypeId = 1,
                 CreationDate = DateTime.Now,
                 Description = "test",
@@ -36,6 +37,18 @@ namespace DaOAuthV2.Service.Test
                 IsValid = true,
                 Name = "test",
                 PublicId = "abc"
+            };
+
+            _invalidClient = new Client()
+            {
+                ClientSecret = "abcdefghijklmnopqrstuv",
+                ClientTypeId = 1,
+                CreationDate = DateTime.Now,
+                Description = "test_invalid",
+                Id = 776,
+                IsValid = false,
+                Name = "test_invalid",
+                PublicId = "abc_invalid"
             };
 
             _validUserCreator = new User()
@@ -72,6 +85,7 @@ namespace DaOAuthV2.Service.Test
             };
 
             FakeDataBase.Instance.Clients.Add(_validClient);
+            FakeDataBase.Instance.Clients.Add(_invalidClient);
             FakeDataBase.Instance.Users.Add(_validUserCreator);
             FakeDataBase.Instance.Users.Add(_validUserNonCreator);
             FakeDataBase.Instance.Users.Add(_invalidUser);
@@ -102,6 +116,15 @@ namespace DaOAuthV2.Service.Test
                 ScopeId = _scope.Id
             });
 
+            FakeDataBase.Instance.UsersClient.Add(new UserClient()
+            {
+                ClientId = _invalidClient.Id,
+                CreationDate = DateTime.Now,
+                Id = 9595,
+                IsActif = true,
+                IsCreator = true,
+                UserId = _validUserCreator.Id
+            });
             FakeDataBase.Instance.UsersClient.Add(new UserClient()
             {
                 ClientId = _validClient.Id,
@@ -149,7 +172,7 @@ namespace DaOAuthV2.Service.Test
         {
             FakeDataBase.Reset();
         }
-     
+
         [TestMethod]
         public void Create_New_Client_Should_Create_A_Creator_User_Client()
         {
@@ -231,7 +254,7 @@ namespace DaOAuthV2.Service.Test
                 Name = name,
                 UserName = "Sammy",
                 Description = description,
-                ScopesIds = new List<int> {  456, 457 }
+                ScopesIds = new List<int> { 456, 457 }
             });
 
             Assert.IsTrue(id > 0);
@@ -575,7 +598,7 @@ namespace DaOAuthV2.Service.Test
 
         [TestMethod]
         public void Delete_Should_Delete_Client_User_Client_Client_Scopes_And_Client_Return_Url()
-        {      
+        {
             _service.Delete(new DeleteClientDto()
             {
                 Id = _validClient.Id,
@@ -641,6 +664,353 @@ namespace DaOAuthV2.Service.Test
                 Id = _validClient.Id,
                 UserName = String.Empty
             });
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(DaOAuthServiceException))]
+        public void Update_Should_Throw_DaOAuthServiceException_When_User_Name_Is_Empty()
+        {
+            _service.Update(new UpdateClientDto()
+            {
+                Id = _validClient.Id,
+                ClientSecret = _validClient.ClientSecret,
+                ClientType = "confidential",
+                Description = _validClient.Description,
+                Name = _validClient.Name,
+                PublicId = _validClient.PublicId,
+                ReturnUrls = FakeDataBase.Instance.ClientReturnUrls.
+                    Where(ru => ru.ClientId.Equals(_validClient.Id)).Select(ru => ru.ReturnUrl).ToList(),
+                ScopesIds = FakeDataBase.Instance.ClientsScopes.Where(s => s.ClientId.Equals(_validClient.Id)).Select(s => s.ScopeId).ToList(),
+                UserName = String.Empty
+            });
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(DaOAuthServiceException))]
+        public void Update_Should_Throw_DaOAuthServiceException_When_User_Name_Is_Invalid()
+        {
+            _service.Update(new UpdateClientDto()
+            {
+                Id = _validClient.Id,
+                ClientSecret = _validClient.ClientSecret,
+                ClientType = "confidential",
+                Description = _validClient.Description,
+                Name = _validClient.Name,
+                PublicId = _validClient.PublicId,
+                ReturnUrls = FakeDataBase.Instance.ClientReturnUrls.
+                    Where(ru => ru.ClientId.Equals(_validClient.Id)).Select(ru => ru.ReturnUrl).ToList(),
+                ScopesIds = FakeDataBase.Instance.ClientsScopes.Where(s => s.ClientId.Equals(_validClient.Id)).Select(s => s.ScopeId).ToList(),
+                UserName = _invalidUser.UserName
+            });
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(DaOAuthServiceException))]
+        public void Update_Should_Throw_DaOAuthServiceException_When_User_Name_Is_Not_Creator()
+        {
+            _service.Update(new UpdateClientDto()
+            {
+                Id = _validClient.Id,
+                ClientSecret = _validClient.ClientSecret,
+                ClientType = "confidential",
+                Description = _validClient.Description,
+                Name = _validClient.Name,
+                PublicId = _validClient.PublicId,
+                ReturnUrls = FakeDataBase.Instance.ClientReturnUrls.
+                    Where(ru => ru.ClientId.Equals(_validClient.Id)).Select(ru => ru.ReturnUrl).ToList(),
+                ScopesIds = FakeDataBase.Instance.ClientsScopes.Where(s => s.ClientId.Equals(_validClient.Id)).Select(s => s.ScopeId).ToList(),
+                UserName = _validUserNonCreator.UserName
+            });
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(DaOAuthServiceException))]
+        public void Update_Should_Throw_DaOAuthServiceException_When_Client_Is_Invalid()
+        {
+            _service.Update(new UpdateClientDto()
+            {
+                Id = _invalidClient.Id,
+                ClientSecret = _invalidClient.ClientSecret,
+                ClientType = "confidential",
+                Description = _invalidClient.Description,
+                Name = _invalidClient.Name,
+                PublicId = _invalidClient.PublicId,
+                ReturnUrls = FakeDataBase.Instance.ClientReturnUrls.
+                    Where(ru => ru.ClientId.Equals(_invalidClient.Id)).Select(ru => ru.ReturnUrl).ToList(),
+                ScopesIds = FakeDataBase.Instance.ClientsScopes.Where(s => s.ClientId.Equals(_invalidClient.Id)).Select(s => s.ScopeId).ToList(),
+                UserName = _validUserCreator.UserName
+            });
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(DaOAuthServiceException))]
+        public void Update_Should_Throw_DaOAuthServiceException_When_Client_Id_Non_Existing()
+        {
+            _service.Update(new UpdateClientDto()
+            {
+                Id = 44259,
+                ClientSecret = _validClient.ClientSecret,
+                ClientType = "confidential",
+                Description = _validClient.Description,
+                Name = _validClient.Name,
+                PublicId = _validClient.PublicId,
+                ReturnUrls = FakeDataBase.Instance.ClientReturnUrls.
+                    Where(ru => ru.ClientId.Equals(_validClient.Id)).Select(ru => ru.ReturnUrl).ToList(),
+                ScopesIds = FakeDataBase.Instance.ClientsScopes.Where(s => s.ClientId.Equals(_validClient.Id)).Select(s => s.ScopeId).ToList(),
+                UserName = _validUserCreator.UserName
+            });
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(DaOAuthServiceException))]
+        public void Update_Should_Throw_DaOAuthServiceException_When_Client_Secret_Is_Empty()
+        {
+            _service.Update(new UpdateClientDto()
+            {
+                Id = _validClient.Id,
+                ClientSecret = String.Empty,
+                ClientType = "confidential",
+                Description = _validClient.Description,
+                Name = _validClient.Name,
+                PublicId = _validClient.PublicId,
+                ReturnUrls = FakeDataBase.Instance.ClientReturnUrls.
+                    Where(ru => ru.ClientId.Equals(_validClient.Id)).Select(ru => ru.ReturnUrl).ToList(),
+                ScopesIds = FakeDataBase.Instance.ClientsScopes.Where(s => s.ClientId.Equals(_validClient.Id)).Select(s => s.ScopeId).ToList(),
+                UserName = _validUserCreator.UserName
+            });
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(DaOAuthServiceException))]
+        public void Update_Should_Throw_DaOAuthServiceException_When_Client_Secret_Is_Too_Short()
+        {
+            _service.Update(new UpdateClientDto()
+            {
+                Id = _validClient.Id,
+                ClientSecret = "short",
+                ClientType = "confidential",
+                Description = _validClient.Description,
+                Name = _validClient.Name,
+                PublicId = _validClient.PublicId,
+                ReturnUrls = FakeDataBase.Instance.ClientReturnUrls.
+                    Where(ru => ru.ClientId.Equals(_validClient.Id)).Select(ru => ru.ReturnUrl).ToList(),
+                ScopesIds = FakeDataBase.Instance.ClientsScopes.Where(s => s.ClientId.Equals(_validClient.Id)).Select(s => s.ScopeId).ToList(),
+                UserName = _validUserCreator.UserName
+            });
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(DaOAuthServiceException))]
+        public void Update_Should_Throw_DaOAuthServiceException_When_Client_Type_Is_Empty()
+        {
+            _service.Update(new UpdateClientDto()
+            {
+                Id = _validClient.Id,
+                ClientSecret = _validClient.ClientSecret,
+                ClientType = String.Empty,
+                Description = _validClient.Description,
+                Name = _validClient.Name,
+                PublicId = _validClient.PublicId,
+                ReturnUrls = FakeDataBase.Instance.ClientReturnUrls.
+                    Where(ru => ru.ClientId.Equals(_validClient.Id)).Select(ru => ru.ReturnUrl).ToList(),
+                ScopesIds = FakeDataBase.Instance.ClientsScopes.Where(s => s.ClientId.Equals(_validClient.Id)).Select(s => s.ScopeId).ToList(),
+                UserName = _validUserCreator.UserName
+            });
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(DaOAuthServiceException))]
+        public void Update_Should_Throw_DaOAuthServiceException_When_Client_Type_Is_Invalid()
+        {
+            _service.Update(new UpdateClientDto()
+            {
+                Id = _validClient.Id,
+                ClientSecret = _validClient.ClientSecret,
+                ClientType = "invalid",
+                Description = _validClient.Description,
+                Name = _validClient.Name,
+                PublicId = _validClient.PublicId,
+                ReturnUrls = FakeDataBase.Instance.ClientReturnUrls.
+                    Where(ru => ru.ClientId.Equals(_validClient.Id)).Select(ru => ru.ReturnUrl).ToList(),
+                ScopesIds = FakeDataBase.Instance.ClientsScopes.Where(s => s.ClientId.Equals(_validClient.Id)).Select(s => s.ScopeId).ToList(),
+                UserName = _validUserCreator.UserName
+            });
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(DaOAuthServiceException))]
+        public void Update_Should_Throw_DaOAuthServiceException_When_Client_Name_Is_Empty()
+        {
+            _service.Update(new UpdateClientDto()
+            {
+                Id = _validClient.Id,
+                ClientSecret = _validClient.ClientSecret,
+                ClientType = "confidential",
+                Description = _validClient.Description,
+                Name = String.Empty,
+                PublicId = _validClient.PublicId,
+                ReturnUrls = FakeDataBase.Instance.ClientReturnUrls.
+                    Where(ru => ru.ClientId.Equals(_validClient.Id)).Select(ru => ru.ReturnUrl).ToList(),
+                ScopesIds = FakeDataBase.Instance.ClientsScopes.Where(s => s.ClientId.Equals(_validClient.Id)).Select(s => s.ScopeId).ToList(),
+                UserName = _validUserCreator.UserName
+            });
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(DaOAuthServiceException))]
+        public void Update_Should_Throw_DaOAuthServiceException_When_Client_Name_Already_Used()
+        {
+            _service.Update(new UpdateClientDto()
+            {
+                Id = _validClient.Id,
+                ClientSecret = _validClient.ClientSecret,
+                ClientType = "confidential",
+                Description = _validClient.Description,
+                Name = _invalidClient.Name,
+                PublicId = _validClient.PublicId,
+                ReturnUrls = FakeDataBase.Instance.ClientReturnUrls.
+                    Where(ru => ru.ClientId.Equals(_validClient.Id)).Select(ru => ru.ReturnUrl).ToList(),
+                ScopesIds = FakeDataBase.Instance.ClientsScopes.Where(s => s.ClientId.Equals(_validClient.Id)).Select(s => s.ScopeId).ToList(),
+                UserName = _validUserCreator.UserName
+            });
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(DaOAuthServiceException))]
+        public void Update_Should_Throw_DaOAuthServiceException_When_Public_Id_Is_Empty()
+        {
+            _service.Update(new UpdateClientDto()
+            {
+                Id = _validClient.Id,
+                ClientSecret = _validClient.ClientSecret,
+                ClientType = "confidential",
+                Description = _validClient.Description,
+                Name = _validClient.Name,
+                PublicId = String.Empty,
+                ReturnUrls = FakeDataBase.Instance.ClientReturnUrls.
+                    Where(ru => ru.ClientId.Equals(_validClient.Id)).Select(ru => ru.ReturnUrl).ToList(),
+                ScopesIds = FakeDataBase.Instance.ClientsScopes.Where(s => s.ClientId.Equals(_validClient.Id)).Select(s => s.ScopeId).ToList(),
+                UserName = _validUserCreator.UserName
+            });
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(DaOAuthServiceException))]
+        public void Update_Should_Throw_DaOAuthServiceException_When_Public_Id_Is_Already_Used()
+        {
+            _service.Update(new UpdateClientDto()
+            {
+                Id = _validClient.Id,
+                ClientSecret = _validClient.ClientSecret,
+                ClientType = "confidential",
+                Description = _validClient.Description,
+                Name = _validClient.Name,
+                PublicId = _invalidClient.PublicId,
+                ReturnUrls = FakeDataBase.Instance.ClientReturnUrls.
+                    Where(ru => ru.ClientId.Equals(_validClient.Id)).Select(ru => ru.ReturnUrl).ToList(),
+                ScopesIds = FakeDataBase.Instance.ClientsScopes.Where(s => s.ClientId.Equals(_validClient.Id)).Select(s => s.ScopeId).ToList(),
+                UserName = _validUserCreator.UserName
+            });
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(DaOAuthServiceException))]
+        public void Update_Should_Throw_DaOAuthServiceException_When_Return_Urls_Are_Empty()
+        {
+            _service.Update(new UpdateClientDto()
+            {
+                Id = _validClient.Id,
+                ClientSecret = _validClient.ClientSecret,
+                ClientType = "confidential",
+                Description = _validClient.Description,
+                Name = _validClient.Name,
+                PublicId = _invalidClient.PublicId,
+                ReturnUrls = null,
+                ScopesIds = FakeDataBase.Instance.ClientsScopes.Where(s => s.ClientId.Equals(_validClient.Id)).Select(s => s.ScopeId).ToList(),
+                UserName = _validUserCreator.UserName
+            });
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(DaOAuthServiceException))]
+        public void Update_Should_Throw_DaOAuthServiceException_When_Return_Urls_Are_Invalid()
+        {
+            _service.Update(new UpdateClientDto()
+            {
+                Id = _validClient.Id,
+                ClientSecret = _validClient.ClientSecret,
+                ClientType = "confidential",
+                Description = _validClient.Description,
+                Name = _validClient.Name,
+                PublicId = _invalidClient.PublicId,
+                ReturnUrls = new List<string>() { "pasvalid" },
+                ScopesIds = FakeDataBase.Instance.ClientsScopes.Where(s => s.ClientId.Equals(_validClient.Id)).Select(s => s.ScopeId).ToList(),
+                UserName = _validUserCreator.UserName
+            });
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(DaOAuthServiceException))]
+        public void Update_Should_Throw_DaOAuthServiceException_When_Scope_Id_Not_Exists()
+        {
+            _service.Update(new UpdateClientDto()
+            {
+                Id = _validClient.Id,
+                ClientSecret = _validClient.ClientSecret,
+                ClientType = "confidential",
+                Description = _validClient.Description,
+                Name = _validClient.Name,
+                PublicId = _invalidClient.PublicId,
+                ReturnUrls = FakeDataBase.Instance.ClientReturnUrls.
+                    Where(ru => ru.ClientId.Equals(_validClient.Id)).Select(ru => ru.ReturnUrl).ToList(),
+                ScopesIds = new List<int>() { 54546, 1541 },
+                UserName = _validUserCreator.UserName
+            });
+        }
+
+        [TestMethod]
+        public void Update_Should_Update()
+        {
+            FakeDataBase.Instance.Scopes.Add(new Scope()
+            {
+                Id = 999999,
+                NiceWording = "new",
+                Wording = "new"
+            });
+
+            _service.Update(new UpdateClientDto()
+            {
+                Id = _validClient.Id,
+                ClientSecret = "i_am_updated",
+                ClientType = ClientTypeName.Public,
+                Description = "a brend new description",
+                Name = "updated name",
+                PublicId = "this is my new public id",
+                ReturnUrls = new List<string>() { "http://updated.com" },
+                ScopesIds = new List<int>() {  999999 },
+                UserName = _validUserCreator.UserName
+            });
+
+            var myClient = FakeDataBase.Instance.Clients.Where(c => c.Id.Equals(_validClient.Id)).FirstOrDefault();
+
+            Assert.IsNotNull(myClient);
+            Assert.AreEqual("i_am_updated", myClient.ClientSecret);
+            Assert.AreEqual(1, myClient.ClientTypeId);
+            Assert.AreEqual("a brend new description", myClient.Description);
+            Assert.AreEqual("updated name", myClient.Name);
+            Assert.AreEqual("this is my new public id", myClient.PublicId);
+
+            var returnUrls = FakeDataBase.Instance.ClientReturnUrls.Where(ru => ru.ClientId.Equals(myClient.Id));
+
+            Assert.IsNotNull(returnUrls);
+            Assert.AreEqual(1, returnUrls.Count());
+            Assert.AreEqual("http://updated.com", returnUrls.First().ReturnUrl);
+
+            var cScopes = FakeDataBase.Instance.ClientsScopes.Where(cs => cs.ClientId.Equals(myClient.Id));
+
+            Assert.IsNotNull(cScopes);
+            Assert.AreEqual(1, cScopes.Count());
+            Assert.AreEqual(999999, cScopes.First().ScopeId);
         }
 
         private static void InitTestForInvalidRessourceServerScopes(out Client cl, out Scope sc1, out Scope sc2, out Scope sc3)

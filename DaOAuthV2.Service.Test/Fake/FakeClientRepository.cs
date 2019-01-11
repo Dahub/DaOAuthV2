@@ -100,7 +100,9 @@ namespace DaOAuthV2.Service.Test.Fake
 
         public void Update(Client toUpdate)
         {
-            throw new NotImplementedException();
+            var rs = FakeDataBase.Instance.Clients.FirstOrDefault(r => r.Id.Equals(toUpdate.Id));
+            if (rs != null)
+                rs = toUpdate;
         }
     }
 }

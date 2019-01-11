@@ -12,5 +12,6 @@ namespace DaOAuthV2.Service.Interface
         IEnumerable<ClientDto> Search(ClientSearchDto criterias);
         ClientDto GetById(int id);
         void Delete(DeleteClientDto toDelete);
+        ClientDto Update(UpdateClientDto toUpdate);
     }
 }

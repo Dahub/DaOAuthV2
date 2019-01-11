@@ -261,6 +261,30 @@
   <data name="UnsupportedGrantType" xml:space="preserve">
     <value>Grant type inconnu</value>
   </data>
+  <data name="UpdateClientDtoDefaultReturnUrlRequired" xml:space="preserve">
+    <value>Le client doit posséder une url de redirection</value>
+  </data>
+  <data name="UpdateClientDtoReturnUrlIncorrect" xml:space="preserve">
+    <value>Url de redirection incorrecte</value>
+  </data>
+  <data name="UpdateClientDtoTypeIncorrect" xml:space="preserve">
+    <value>Type de client incorrect</value>
+  </data>
+  <data name="UpdateClientInvalidClient" xml:space="preserve">
+    <value>Client inconnu ou invalide</value>
+  </data>
+  <data name="UpdateClientInvalidUser" xml:space="preserve">
+    <value>Utilisateur invalide</value>
+  </data>
+  <data name="UpdateClientNameAlreadyUsed" xml:space="preserve">
+    <value>Nom déjà utilisé</value>
+  </data>
+  <data name="UpdateClientpublicIdAlreadyUsed" xml:space="preserve">
+    <value>Id publique déjà utilisée</value>
+  </data>
+  <data name="UpdateClientScopeDontExists" xml:space="preserve">
+    <value>Scope inconnu</value>
+  </data>
   <data name="UpdateRessourceServerInvalidUserName" xml:space="preserve">
     <value>L'utilisateur n'existe pas ou est bloqué</value>
   </data>

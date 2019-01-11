@@ -64,7 +64,7 @@ namespace DaOAuthV2.Service.Test.Fake
                     }
                 }
             }
-            return userClients.
+            return userClients.Where(uc => uc.Client != null).
                 Where(uc => uc.UserId.Equals(user.Id)
                 && (String.IsNullOrEmpty(name) || uc.Client.Name.Equals(name))
                 && (!isValid.HasValue || uc.Client.IsValid.Equals(isValid.Value))
@@ -102,11 +102,13 @@ namespace DaOAuthV2.Service.Test.Fake
                     }
                 }
             }
-            return userClients.
+            var list = userClients.Where(uc => uc.Client != null).
                 Where(uc => uc.UserId.Equals(user.Id)
                 && (String.IsNullOrEmpty(name) || uc.Client.Name.Equals(name))
                 && (!isValid.HasValue || uc.Client.IsValid.Equals(isValid.Value))
-                && (!clientTypeId.HasValue || uc.Client.ClientTypeId.Equals(clientTypeId.Value))).Count();
+                && (!clientTypeId.HasValue || uc.Client.ClientTypeId.Equals(clientTypeId.Value)));
+
+            return list.Count();
         }
 
         public UserClient GetById(int id)

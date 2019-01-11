@@ -261,6 +261,21 @@
   <data name="UnsupportedGrantType" xml:space="preserve">
     <value>Unsupported grant type</value>
   </data>
+  <data name="UpdateClientInvalidClient" xml:space="preserve">
+    <value>Non existing or invalid client</value>
+  </data>
+  <data name="UpdateClientInvalidUser" xml:space="preserve">
+    <value>User not valid</value>
+  </data>
+  <data name="UpdateClientNameAlreadyUsed" xml:space="preserve">
+    <value>Name already used</value>
+  </data>
+  <data name="UpdateClientpublicIdAlreadyUsed" xml:space="preserve">
+    <value>Public Id already used</value>
+  </data>
+  <data name="UpdateClientScopeDontExists" xml:space="preserve">
+    <value>Unknow scope</value>
+  </data>
   <data name="UpdateRessourceServerInvalidUserName" xml:space="preserve">
     <value>User invalid or ban</value>
   </data>

@@ -228,6 +228,24 @@
   <data name="LoginUserDtoUserNameRequired" xml:space="preserve">
     <value>Le nom d'utilisateur est obligatoire</value>
   </data>
+  <data name="UpdateClientDtoClientSecretDontMatchPolicy" xml:space="preserve">
+    <value>Le mot de passe client ne rempli pas les critères de validation (12 caractères minimum)</value>
+  </data>
+  <data name="UpdateClientDtoClientSecretRequired" xml:space="preserve">
+    <value>Le mot de passe du client est obligatoire</value>
+  </data>
+  <data name="UpdateClientDtoNameRequired" xml:space="preserve">
+    <value>Le nom du client est obligatoire</value>
+  </data>
+  <data name="UpdateClientDtoPublicIdRequired" xml:space="preserve">
+    <value>L'id publique du client est obligatoire</value>
+  </data>
+  <data name="UpdateClientDtoTypeRequired" xml:space="preserve">
+    <value>Le type de client est obligatoire</value>
+  </data>
+  <data name="UpdateClientDtoUserNameRequired" xml:space="preserve">
+    <value>Le nom d'utilisateur est obligatoire</value>
+  </data>
   <data name="UpdateRessourceServerNameRequired" xml:space="preserve">
     <value>Le nom est obligatoire</value>
   </data>
