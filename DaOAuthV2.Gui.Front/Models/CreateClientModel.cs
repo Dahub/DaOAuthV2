@@ -6,7 +6,7 @@ namespace DaOAuthV2.Gui.Front.Models
     {
         public string ClientType { get; set; }
         public string Name { get; set; }
-        public string DefaultReturnUrl { get; set; }
+        public IList<string> ReturnUrls { get; set; }
         public string Description { get; set; }
         public IDictionary<string, IList<ScopeClientModel>> Scopes { get; set; } 
     }

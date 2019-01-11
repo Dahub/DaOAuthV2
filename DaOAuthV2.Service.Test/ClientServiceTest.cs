@@ -159,7 +159,7 @@ namespace DaOAuthV2.Service.Test
             int id = _service.CreateClient(new DTO.CreateClientDto()
             {
                 ClientType = ClientTypeName.Confidential,
-                DefaultReturnUrl = "http://www.perdu.com",
+                ReturnUrls = new List<string>() { "http://www.perdu.com" },
                 Name = name,
                 UserName = "Sammy",
                 Description = description
@@ -187,7 +187,7 @@ namespace DaOAuthV2.Service.Test
             int id = _service.CreateClient(new DTO.CreateClientDto()
             {
                 ClientType = ClientTypeName.Confidential,
-                DefaultReturnUrl = "http://www.perdu.com",
+                ReturnUrls = new List<string>() { "http://www.perdu.com" },
                 Name = name,
                 UserName = "Sammy",
                 Description = description
@@ -227,7 +227,7 @@ namespace DaOAuthV2.Service.Test
             int id = _service.CreateClient(new DTO.CreateClientDto()
             {
                 ClientType = ClientTypeName.Confidential,
-                DefaultReturnUrl = "http://www.perdu.com",
+                ReturnUrls = new List<string>() { "http://www.perdu.com" },
                 Name = name,
                 UserName = "Sammy",
                 Description = description,
@@ -256,7 +256,7 @@ namespace DaOAuthV2.Service.Test
             int id = _service.CreateClient(new DTO.CreateClientDto()
             {
                 ClientType = ClientTypeName.Confidential,
-                DefaultReturnUrl = "http://www.perdu.com",
+                ReturnUrls = new List<string>() { "http://www.perdu.com" },
                 Name = name,
                 UserName = "Sammy",
                 Description = description
@@ -276,7 +276,7 @@ namespace DaOAuthV2.Service.Test
         {
             int id = _service.CreateClient(new DTO.CreateClientDto()
             {
-                DefaultReturnUrl = "http://www.perdu.com",
+                ReturnUrls = new List<string>() { "http://www.perdu.com" },
                 Name = "client_test_crete",
                 UserName = "Sammy"
             });
@@ -289,7 +289,7 @@ namespace DaOAuthV2.Service.Test
             int id = _service.CreateClient(new DTO.CreateClientDto()
             {
                 ClientType = ClientTypeName.Confidential,
-                DefaultReturnUrl = "http://www.perdu.com",
+                ReturnUrls = new List<string>() { "http://www.perdu.com" },
                 Name = String.Empty,
                 UserName = "Sammy"
             });
@@ -302,7 +302,7 @@ namespace DaOAuthV2.Service.Test
             int id = _service.CreateClient(new DTO.CreateClientDto()
             {
                 ClientType = ClientTypeName.Confidential,
-                DefaultReturnUrl = String.Empty,
+                ReturnUrls = new List<string>(),
                 Name = "test",
                 UserName = "Sammy"
             });
@@ -315,7 +315,7 @@ namespace DaOAuthV2.Service.Test
             int id = _service.CreateClient(new DTO.CreateClientDto()
             {
                 ClientType = "incorrect",
-                DefaultReturnUrl = "http://www.perdu.com",
+                ReturnUrls = new List<string>() { "http://www.perdu.com" },
                 Name = "test",
                 UserName = "Sammy"
             });
@@ -328,7 +328,7 @@ namespace DaOAuthV2.Service.Test
             int id = _service.CreateClient(new DTO.CreateClientDto()
             {
                 ClientType = ClientTypeName.Confidential,
-                DefaultReturnUrl = "http://www.perdu.com",
+                ReturnUrls = new List<string>() { "http://www.perdu.com" },
                 Name = "client_1",
                 UserName = "Sammy"
             });
@@ -341,7 +341,7 @@ namespace DaOAuthV2.Service.Test
             int id = _service.CreateClient(new DTO.CreateClientDto()
             {
                 ClientType = ClientTypeName.Confidential,
-                DefaultReturnUrl = "httpwww.perdcom",
+                ReturnUrls = new List<string>() { "httpwww.perdcom" },
                 Name = "test",
                 UserName = "Sammy"
             });
@@ -354,7 +354,7 @@ namespace DaOAuthV2.Service.Test
             int id = _service.CreateClient(new DTO.CreateClientDto()
             {
                 ClientType = ClientTypeName.Confidential,
-                DefaultReturnUrl = "http://www.perdu.com",
+                ReturnUrls = new List<string>() { "http://www.perdu.com" },
                 Name = "test",
                 UserName = "Johnny"
             });
@@ -367,7 +367,7 @@ namespace DaOAuthV2.Service.Test
             int id = _service.CreateClient(new DTO.CreateClientDto()
             {
                 ClientType = ClientTypeName.Confidential,
-                DefaultReturnUrl = "http://www.perdu.com",
+                ReturnUrls = new List<string>() { "http://www.perdu.com" },
                 Name = "test",
                 UserName = "I_dont_exist"
             });

@@ -22,8 +22,16 @@ namespace DaOAuthV2.Service
                 var resource = this.GetErrorStringLocalizer();
                 IList<ValidationResult> result = new List<ValidationResult>();
 
-                if (!Uri.TryCreate(toValidate.DefaultReturnUrl, UriKind.Absolute, out Uri u))
-                    result.Add(new ValidationResult(resource["CreateClientDtoReturnUrlIncorrect"]));
+                if (toValidate.ReturnUrls == null || toValidate.ReturnUrls.Count() == 0)
+                {
+                    result.Add(new ValidationResult(resource["CreateClientDtoDefaultReturnUrlRequired"]));
+                }
+
+                foreach (var ur in toValidate.ReturnUrls)
+                {
+                    if (!Uri.TryCreate(ur, UriKind.Absolute, out Uri u))
+                        result.Add(new ValidationResult(resource["CreateClientDtoReturnUrlIncorrect"]));
+                }
 
                 if (toValidate.ClientType != ClientTypeName.Confidential && toValidate.ClientType != ClientTypeName.Public)
                     result.Add(new ValidationResult(resource["CreateClientDtoTypeIncorrect"]));
@@ -72,13 +80,16 @@ namespace DaOAuthV2.Service
 
                 clientRepo.Add(client);
 
-                ClientReturnUrl returnUrl = new ClientReturnUrl()
+                foreach (var ur in toCreate.ReturnUrls)
                 {
-                    ReturnUrl = toCreate.DefaultReturnUrl,
-                    ClientId = client.Id
-                };
+                    ClientReturnUrl returnUrl = new ClientReturnUrl()
+                    {
+                        ReturnUrl = ur,
+                        ClientId = client.Id
+                    };
 
-                returnUrlRepo.Add(returnUrl);
+                    returnUrlRepo.Add(returnUrl);
+                }
 
                 UserClient userClient = new UserClient()
                 {
@@ -92,9 +103,9 @@ namespace DaOAuthV2.Service
 
                 userClientRepo.Add(userClient);
 
-                if(toCreate.ScopesIds != null)
+                if (toCreate.ScopesIds != null)
                 {
-                    foreach(var sId in toCreate.ScopesIds)
+                    foreach (var sId in toCreate.ScopesIds)
                     {
                         clientScopeRepo.Add(new ClientScope()
                         {
@@ -133,7 +144,7 @@ namespace DaOAuthV2.Service
 
                 var myClient = clientRepo.GetById(toDelete.Id);
 
-                if(myClient == null)
+                if (myClient == null)
                 {
                     throw new DaOAuthServiceException("DeleteClientUnknowClient");
                 }
@@ -141,22 +152,22 @@ namespace DaOAuthV2.Service
                 var myUserClient = userClientRepo
                     .GetUserClientByUserNameAndClientPublicId(myClient.PublicId, toDelete.UserName);
 
-                if(myUserClient == null || myUserClient.IsCreator == false)
+                if (myUserClient == null || myUserClient.IsCreator == false)
                 {
                     throw new DaOAuthServiceException("DeleteClientWrongUser");
                 }
 
-                foreach(var cr in clientReturnUrlRepo.GetAllByClientId(myClient.PublicId).ToList())
+                foreach (var cr in clientReturnUrlRepo.GetAllByClientId(myClient.PublicId).ToList())
                 {
                     clientReturnUrlRepo.Delete(cr);
                 }
 
-                foreach(var cs in clientScopeRepo.GetAllByClientId(myClient.Id).ToList())
+                foreach (var cs in clientScopeRepo.GetAllByClientId(myClient.Id).ToList())
                 {
                     clientScopeRepo.Delete(cs);
                 }
 
-                foreach(var uc in userClientRepo.GetAllByClientId(myClient.Id).ToList())
+                foreach (var uc in userClientRepo.GetAllByClientId(myClient.Id).ToList())
                 {
                     userClientRepo.Delete(uc);
                 }
@@ -182,7 +193,7 @@ namespace DaOAuthV2.Service
                     throw new DaOAuthNotFoundException();
 
                 // we need to remove scopes from invalid ressources servers
-                if(client.ClientsScopes != null && client.ClientsScopes.Count() > 0)
+                if (client.ClientsScopes != null && client.ClientsScopes.Count() > 0)
                 {
                     IList<int> invalidsRs = ExtractInvalidRessourceServerIds(context);
 
@@ -194,7 +205,7 @@ namespace DaOAuthV2.Service
 
             return toReturn;
         }
-        
+
         public IEnumerable<ClientDto> Search(ClientSearchDto criterias)
         {
             Validate(criterias, ExtendValidationSearchCriterias);

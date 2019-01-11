@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
@@ -40,9 +41,14 @@ namespace DaOAuthV2.Gui.Front.Controllers
         [HttpGet]
         public async Task<IActionResult> Create()
         {
-            var model = new CreateClientModel();
-            model.Scopes = new Dictionary<string, IList<ScopeClientModel>>();
-
+            var model = new CreateClientModel()
+            {
+                Scopes = new Dictionary<string, IList<ScopeClientModel>>(),
+                ReturnUrls = new List<string>()
+                {
+                    "", "", ""
+                }
+            };
             // get all scopes
             HttpResponseMessage response = await GetToApi("scopes");
 
@@ -73,11 +79,10 @@ namespace DaOAuthV2.Gui.Front.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(CreateClientModel model)
         {
-
             HttpResponseMessage response = await PostToApi("clients", new CreateClientDto()
             {
                 ClientType = model.ClientType,
-                DefaultReturnUrl = model.DefaultReturnUrl,
+                ReturnUrls = model.ReturnUrls.Where(ru => !String.IsNullOrWhiteSpace(ru)).ToList(),
                 Description = model.Description,
                 Name = model.Name,
                 ScopesIds = model.Scopes.SelectMany(s => s.Value)

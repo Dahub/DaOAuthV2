@@ -13,8 +13,7 @@ namespace DaOAuthV2.Service.DTO
         [Required(ErrorMessage = "CreateClientDtoNameRequired")]
         public string Name { get; set; }
 
-        [Required(ErrorMessage = "CreateClientDtoDefaultReturnUrlRequired")]
-        public string DefaultReturnUrl { get; set; }
+        public IList<string> ReturnUrls { get; set; }
 
         [IgnoreDataMember]
         [Required(ErrorMessage = "CreateClientDtoUserNameRequired")]
