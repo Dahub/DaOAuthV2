@@ -1,6 +1,7 @@
 ﻿using DaOAuthV2.Constants;
 using DaOAuthV2.Dal.Interface;
 using DaOAuthV2.Domain;
+using DaOAuthV2.Service.DTO;
 using DaOAuthV2.Service.Interface;
 using DaOAuthV2.Service.Test.Fake;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -15,10 +16,121 @@ namespace DaOAuthV2.Service.Test
     {
         private IClientService _service;
         private IClientRepository _repo;
+        private Client _validClient;
+        private User _validUserCreator;
+        private User _validUserNonCreator;
+        private User _invalidUser;
+        private ClientReturnUrl _clientReturnUrl;
+        private Scope _scope;
 
         [TestInitialize]
         public void Init()
         {
+            _validClient = new Client()
+            {
+                ClientSecret = "abc",
+                ClientTypeId = 1,
+                CreationDate = DateTime.Now,
+                Description = "test",
+                Id = 777,
+                IsValid = true,
+                Name = "test",
+                PublicId = "abc"
+            };
+
+            _validUserCreator = new User()
+            {
+                CreationDate = DateTime.Now,
+                EMail = "sam@crab.org",
+                FullName = "Sammy le Crabe",
+                Id = 646,
+                IsValid = true,
+                Password = new byte[] { 0 },
+                UserName = "Sam_Crab"
+            };
+
+            _validUserNonCreator = new User()
+            {
+                CreationDate = DateTime.Now,
+                EMail = "jack@crab.org",
+                FullName = "Jack le Crabe",
+                Id = 7215,
+                IsValid = true,
+                Password = new byte[] { 0 },
+                UserName = "Jack_Crab"
+            };
+
+            _invalidUser = new User()
+            {
+                CreationDate = DateTime.Now,
+                EMail = "nop@crab.org",
+                FullName = "Nop le Crabe",
+                Id = 2765,
+                IsValid = false,
+                Password = new byte[] { 0 },
+                UserName = "Nop_Crab"
+            };
+
+            FakeDataBase.Instance.Clients.Add(_validClient);
+            FakeDataBase.Instance.Users.Add(_validUserCreator);
+            FakeDataBase.Instance.Users.Add(_validUserNonCreator);
+            FakeDataBase.Instance.Users.Add(_invalidUser);
+
+            _clientReturnUrl = new ClientReturnUrl()
+            {
+                Id = 6131,
+                ClientId = _validClient.Id,
+                ReturnUrl = "http://www.perdu.com"
+            };
+
+            FakeDataBase.Instance.ClientReturnUrls.Add(_clientReturnUrl);
+
+            _scope = new Scope()
+            {
+                Id = 2245,
+                RessourceServerId = 1,
+                Wording = "test",
+                NiceWording = "test"
+            };
+
+            FakeDataBase.Instance.Scopes.Add(_scope);
+
+            FakeDataBase.Instance.ClientsScopes.Add(new ClientScope()
+            {
+                Id = 154,
+                ClientId = _validClient.Id,
+                ScopeId = _scope.Id
+            });
+
+            FakeDataBase.Instance.UsersClient.Add(new UserClient()
+            {
+                ClientId = _validClient.Id,
+                CreationDate = DateTime.Now,
+                Id = 378,
+                IsActif = true,
+                IsCreator = true,
+                UserId = _validUserCreator.Id
+            });
+            FakeDataBase.Instance.UsersClient.Add(new UserClient()
+            {
+                ClientId = _validClient.Id,
+                CreationDate = DateTime.Now,
+                Id = 3784,
+                IsActif = true,
+                IsCreator = false,
+                UserId = _validUserNonCreator.Id
+            });
+            FakeDataBase.Instance.UsersClient.Add(new UserClient()
+            {
+                ClientId = _validClient.Id,
+                CreationDate = DateTime.Now,
+                Id = 3785,
+                IsActif = true,
+                IsCreator = true,
+                UserId = _invalidUser.Id
+            });
+
+
             _service = new ClientService()
             {
                 Configuration = FakeConfigurationHelper.GetFakeConf(),
@@ -459,6 +571,76 @@ namespace DaOAuthV2.Service.Test
             Assert.IsNull(client.Scopes.Where(s => s.Key.Equals(sc3.Wording)).Select(s => s.Value).FirstOrDefault());
             Assert.IsNotNull(client.Scopes.Where(s => s.Key.Equals(sc1.Wording)).Select(s => s.Value).FirstOrDefault());
             Assert.IsNotNull(client.Scopes.Where(s => s.Key.Equals(sc2.Wording)).Select(s => s.Value).FirstOrDefault());
+        }
+
+        [TestMethod]
+        public void Delete_Should_Delete_Client_User_Client_Client_Scopes_And_Client_Return_Url()
+        {      
+            _service.Delete(new DeleteClientDto()
+            {
+                Id = _validClient.Id,
+                UserName = _validUserCreator.UserName
+            });
+
+            Assert.IsNull(FakeDataBase.Instance.Clients.FirstOrDefault(c => c.Id.Equals(_validClient.Id)));
+            Assert.IsNull(FakeDataBase.Instance.UsersClient.FirstOrDefault(uc => uc.ClientId.Equals(_validClient.Id)));
+            Assert.IsNull(FakeDataBase.Instance.ClientReturnUrls.FirstOrDefault(ru => ru.ClientId.Equals(_validClient.Id)));
+            Assert.IsNull(FakeDataBase.Instance.ClientsScopes.FirstOrDefault(cs => cs.ClientId.Equals(_validClient.Id)));
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(DaOAuthServiceException))]
+        public void Delete_Should_Throw_DaOAuthServiceException_When_Id_Dont_Exists()
+        {
+            _service.Delete(new DeleteClientDto()
+            {
+                Id = 952141,
+                UserName = _validUserCreator.UserName
+            });
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(DaOAuthServiceException))]
+        public void Delete_Should_Throw_DaOAuthServiceException_When_User_Is_Not_Creator()
+        {
+            _service.Delete(new DeleteClientDto()
+            {
+                Id = _validClient.Id,
+                UserName = _validUserNonCreator.UserName
+            });
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(DaOAuthServiceException))]
+        public void Delete_Should_Throw_DaOAuthServiceException_When_User_Is_Not_Valid()
+        {
+            _service.Delete(new DeleteClientDto()
+            {
+                Id = _validClient.Id,
+                UserName = _invalidUser.UserName
+            });
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(DaOAuthServiceException))]
+        public void Delete_Should_Throw_DaOAuthServiceException_When_User_Is_Non_Existing()
+        {
+            _service.Delete(new DeleteClientDto()
+            {
+                Id = _validClient.Id,
+                UserName = "i_dont_exists"
+            });
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(DaOAuthServiceException))]
+        public void Delete_Should_Throw_DaOAuthServiceException_When_User_Name_Is_Empty()
+        {
+            _service.Delete(new DeleteClientDto()
+            {
+                Id = _validClient.Id,
+                UserName = String.Empty
+            });
         }
 
         private static void InitTestForInvalidRessourceServerScopes(out Client cl, out Scope sc1, out Scope sc2, out Scope sc3)

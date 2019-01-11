@@ -52,5 +52,11 @@ namespace DaOAuthV2.Dal.EF
                Include(c => c.Client.ClientsScopes).ThenInclude(cs => cs.Scope)).
                Include(c => c.User).Count();
         }
+
+        public IEnumerable<UserClient> GetAllByClientId(int clientId)
+        {
+            return Context.UsersClients.
+               Where(c => c.ClientId.Equals(clientId));
+        }
     }
 }

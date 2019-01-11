@@ -431,5 +431,21 @@ namespace DaOAuthV2.Dal.EF.Test
                 Assert.AreEqual(2, result);
             }
         }
+
+        [TestMethod]
+        public void Get_By_Client_Id_Should_Return_Users_Clients()
+        {
+            var options = new DbContextOptionsBuilder<DaOAuthContext>()
+                     .UseInMemoryDatabase(databaseName: _dbName)
+                     .Options;
+
+            using (var context = new DaOAuthContext(options))
+            {
+                var clientRepo = _repoFactory.GetUserClientRepository(context);
+                var result = clientRepo.GetAllByClientId(100);
+
+                Assert.AreEqual(1, result.Count());
+            }
+        }
     }
 }

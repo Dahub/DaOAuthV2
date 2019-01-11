@@ -148,5 +148,14 @@ namespace DaOAuthV2.Gui.Front.Controllers
 
             return RedirectToAction("List");
         }
+
+        [HttpGet]
+        [Authorize(Roles = RoleName.Administrator)]
+        public async Task<IActionResult> Delete(int id)
+        {
+            HttpResponseMessage response = await DeleteToApi($"clients/{id}");
+
+            return RedirectToAction("List");
+        }
     }
 }

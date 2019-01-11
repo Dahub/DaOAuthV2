@@ -198,6 +198,15 @@
   <data name="CreateUserUserNameExists" xml:space="preserve">
     <value>Le nom d'utilisateur {0} existe déjà</value>
   </data>
+  <data name="DeleteClientInvalidUserName" xml:space="preserve">
+    <value>Utilisateur invalide</value>
+  </data>
+  <data name="DeleteClientUnknowClient" xml:space="preserve">
+    <value>Client inconnu</value>
+  </data>
+  <data name="DeleteClientWrongUser" xml:space="preserve">
+    <value>Le client n'appartient pas à l'utilisateur ou ce dernier n'en est pas le créateur</value>
+  </data>
   <data name="DeleteRessourceServerInvalidUserName" xml:space="preserve">
     <value>L'utilisateur n'existe pas ou est bloqué</value>
   </data>

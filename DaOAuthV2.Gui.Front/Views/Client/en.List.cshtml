@@ -46,7 +46,7 @@
                     @if (item.IsCreator)
                     {
                         <a href="@Url.Action("Edit", "Client", new { id = @item.ClientId })"><i class="fas fa-2x fa-edit"></i></a>
-                        <a href="@Url.Action("Delete", "Client", new { id = @item.ClientId })"><i class="fas fa-2x fa-trash-alt"></i></a>
+                        <span onclick="return doConfirm(@item.Id);" style="cursor: pointer;"><i class="fas fa-2x fa-trash-alt"></i></span>
                     }
                 </td>
                 <td>
@@ -72,3 +72,13 @@
         <a href="@Url.Action("Create", "Client")" class="btn btn-lg btn-primary btn-block">New client</a>
     </div>
 </div>
+
+@section PageScript {
+    <script type="text/javascript">
+        function doConfirm(id) {
+            $.bsAlert.confirm("Are you sure you want to delete ?", function () {
+                $(location).attr('href', '/en/Client/delete/' + id);
+             });
+        }
+    </script>
+}

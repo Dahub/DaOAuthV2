@@ -19,12 +19,19 @@ namespace DaOAuthV2.Service.Test.Fake
 
         public void Delete(UserClient toDelete)
         {
-            throw new NotImplementedException();
+            var uc = FakeDataBase.Instance.UsersClient.FirstOrDefault(r => r.Id.Equals(toDelete.Id));
+            if (uc != null)
+                FakeDataBase.Instance.UsersClient.Remove(uc);
         }
 
         public IEnumerable<UserClient> GetAll()
         {
             throw new NotImplementedException();
+        }
+
+        public IEnumerable<UserClient> GetAllByClientId(int clientId)
+        {
+            return FakeDataBase.Instance.UsersClient.Where(uc => uc.ClientId.Equals(clientId));
         }
 
         public IEnumerable<UserClient> GetAllByCriterias(string userName, string name, bool? isValid, int? clientTypeId, uint skip, uint take)

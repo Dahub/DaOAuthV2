@@ -112,6 +112,62 @@ namespace DaOAuthV2.Service
             return idClient;
         }
 
+        public void Delete(DeleteClientDto toDelete)
+        {
+            Validate(toDelete);
+
+            using (var context = RepositoriesFactory.CreateContext(ConnexionString))
+            {
+                var clientRepo = RepositoriesFactory.GetClientRepository(context);
+                var userClientRepo = RepositoriesFactory.GetUserClientRepository(context);
+                var userRepo = RepositoriesFactory.GetUserRepository(context);
+                var clientScopeRepo = RepositoriesFactory.GetClientScopeRepository(context);
+                var clientReturnUrlRepo = RepositoriesFactory.GetClientReturnUrlRepository(context);
+
+                var myUser = userRepo.GetByUserName(toDelete.UserName);
+
+                if (myUser == null || !myUser.IsValid)
+                {
+                    throw new DaOAuthServiceException("DeleteClientInvalidUserName");
+                }
+
+                var myClient = clientRepo.GetById(toDelete.Id);
+
+                if(myClient == null)
+                {
+                    throw new DaOAuthServiceException("DeleteClientUnknowClient");
+                }
+
+                var myUserClient = userClientRepo
+                    .GetUserClientByUserNameAndClientPublicId(myClient.PublicId, toDelete.UserName);
+
+                if(myUserClient == null || myUserClient.IsCreator == false)
+                {
+                    throw new DaOAuthServiceException("DeleteClientWrongUser");
+                }
+
+                foreach(var cr in clientReturnUrlRepo.GetAllByClientId(myClient.PublicId).ToList())
+                {
+                    clientReturnUrlRepo.Delete(cr);
+                }
+
+                foreach(var cs in clientScopeRepo.GetAllByClientId(myClient.Id).ToList())
+                {
+                    clientScopeRepo.Delete(cs);
+                }
+
+                foreach(var uc in userClientRepo.GetAllByClientId(myClient.Id).ToList())
+                {
+                    userClientRepo.Delete(uc);
+                }
+
+                userClientRepo.Delete(myUserClient);
+                clientRepo.Delete(myClient);
+
+                context.Commit();
+            }
+        }
+
         public ClientDto GetById(int id)
         {
             ClientDto toReturn = null;

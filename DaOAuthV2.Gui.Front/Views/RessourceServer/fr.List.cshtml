@@ -56,7 +56,6 @@
     <script type="text/javascript">
         function doConfirm(id) {
             $.bsAlert.confirm("Etes vous sûr de vouloir supprimer ?", function () {
-                console.log(id);
                 $(location).attr('href', '/fr/RessourceServer/delete/' + id);
             });
         }

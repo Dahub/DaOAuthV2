@@ -58,7 +58,6 @@
     <script type="text/javascript">
         function doConfirm(id) {
             $.bsAlert.confirm("Are you sure you want to delete ?", function () {
-                console.log(id);
                 $(location).attr('href', '/en/RessourceServer/delete/' + id);
              });
         }

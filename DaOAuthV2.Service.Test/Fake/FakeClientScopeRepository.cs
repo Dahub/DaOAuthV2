@@ -33,6 +33,11 @@ namespace DaOAuthV2.Service.Test.Fake
             throw new NotImplementedException();
         }
 
+        public IEnumerable<ClientScope> GetAllByClientId(int clientId)
+        {
+            return FakeDataBase.Instance.ClientsScopes.Where(cs => cs.ClientId.Equals(clientId));
+        }
+
         public IEnumerable<ClientScope> GetAllByScopeId(int scopeId)
         {
             return FakeDataBase.Instance.ClientsScopes.Where(cs => cs.ScopeId.Equals(scopeId));

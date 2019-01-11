@@ -210,6 +210,9 @@
   <data name="CreateUserDtoUserNameRequired" xml:space="preserve">
     <value>Le nom d'utilisateur est obligatoire</value>
   </data>
+  <data name="DeleteClientUserNameRequired" xml:space="preserve">
+    <value>Le nom d'utilisateur est obligatoire</value>
+  </data>
   <data name="DeleteRessourceServerUserNameRequired" xml:space="preserve">
     <value>Le nom d'utilisateur est obligatoire</value>
   </data>

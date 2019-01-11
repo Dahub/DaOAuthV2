@@ -198,6 +198,15 @@
   <data name="CreateUserUserNameExists" xml:space="preserve">
     <value>User name {0} already in use</value>
   </data>
+  <data name="DeleteClientInvalidUserName" xml:space="preserve">
+    <value>User invalid or ban</value>
+  </data>
+  <data name="DeleteClientUnknowClient" xml:space="preserve">
+    <value>Unknow client</value>
+  </data>
+  <data name="DeleteClientWrongUser" xml:space="preserve">
+    <value>Client don't belong to user, or user isn't client creator</value>
+  </data>
   <data name="DeleteRessourceServerInvalidUserName" xml:space="preserve">
     <value>User invalid or ban</value>
   </data>

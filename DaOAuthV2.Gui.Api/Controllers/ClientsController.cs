@@ -38,6 +38,19 @@ namespace DaOAuthV2.Gui.Api.Controllers
             return Ok(_service.GetById(id));
         }
 
+        [HttpDelete]
+        [Route("{id}")]
+        [Authorize(Roles = RoleName.Administrator)]
+        public IActionResult Delete(int id)
+        {
+            _service.Delete(new DeleteClientDto()
+            {
+                Id = id,
+                UserName = User.Identity.Name
+            });
+            return Ok();
+        }
+
         [HttpGet]
         [HttpHead]
         [Route("")]
