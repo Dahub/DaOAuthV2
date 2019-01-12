@@ -7,6 +7,12 @@ namespace DaOAuthV2.Service.DTO
 {
     public class CreateClientDto : IDto
     {
+        public CreateClientDto()
+        {
+            ReturnUrls = new List<string>();
+            ScopesIds = new List<int>();
+        }
+
         [Required(ErrorMessage = "CreateClientDtoTypeRequired")]
         public string ClientType { get; set; }
 

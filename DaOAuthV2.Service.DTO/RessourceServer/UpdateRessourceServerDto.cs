@@ -6,6 +6,11 @@ namespace DaOAuthV2.Service.DTO
 {
     public class UpdateRessourceServerDto : IDto
     {
+        public UpdateRessourceServerDto()
+        {
+            Scopes = new List<UpdateRessourceServerScopesDto>();
+        }
+
         public int Id { get; set; }
 
         [Required(ErrorMessage = "UpdateRessourceServerUserNameRequired")]

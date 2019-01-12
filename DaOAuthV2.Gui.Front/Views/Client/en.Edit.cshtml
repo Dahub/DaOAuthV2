@@ -1,0 +1,154 @@
+﻿@model DaOAuthV2.Gui.Front.Models.UpdateClientModel
+
+@{
+    Layout = "_en.layout";
+}
+
+@await Html.PartialAsync("_en.modelErrors")
+
+<h1>Modification du client <em>@Model.Name</em></h1>
+<hr />
+
+<form asp-action="Edit" method="post">
+    @Html.HiddenFor(m => m.Id)
+    <div class="row">
+        <div class="col">
+            <h3>Informations</h3>
+            <div class="form-group">
+                <label asp-for="ClientType" class="control-label">Client type</label>
+                <br />
+                @Html.RadioButtonFor(m => m.ClientType, "confidential") Confidential
+                <br />
+                @Html.RadioButtonFor(m => m.ClientType, "public") Public
+            </div>
+            <div class="form-group">
+                <label asp-for="DefaultReturnUrl" class="control-label">Return urls</label>
+                @for (int i = 0; i < 3; i++)
+                {
+                    if (Model.ReturnUrls != null && Model.ReturnUrls.Count() > i)
+                    {
+                        <input type="text" id="ReturnUrls" name="ReturnUrls[@i]" class="form-control" value="@Model.ReturnUrls[i]" /><br />
+                    }
+                    else
+                    {
+                        <input type="text" id="ReturnUrls" name="ReturnUrls[@i]" class="form-control" /><br />
+                    }
+                }
+            </div>
+            <div class="form-group">
+                <label asp-for="Name" class="control-label">Name</label>
+                @Html.TextBoxFor(model => model.Name, new { @class = "form-control" })
+            </div>
+            <div class="form-group">
+                <label asp-for="Description" class="control-label">Description</label>
+                @Html.TextAreaFor(model => model.Description, 10, 80, new { @class = "form-control" })
+            </div>
+            <div class="form-group">
+                <label asp-for="Name" class="control-label">Public id</label>
+                @Html.TextBoxFor(model => model.PublicId, new { @class = "form-control" })
+            </div>
+            <div class="form-group">
+                <label asp-for="Name" class="control-label">Client secret</label>
+                @Html.TextBoxFor(model => model.ClientSecret, new { @class = "form-control" })
+            </div>
+        </div>
+
+        <div id="scopesRsNames">
+            @{
+                int countKey = 0;
+
+
+                foreach (var rs in Model.Scopes)
+                {
+                    int countValue = 0;
+                    <input type="hidden" name="Scopes[@countKey].Key" value="@rs.Key" />
+                    @foreach (var s in rs.Value)
+                    {
+                        <input type="hidden" name="Scopes[@countKey].Value[@countValue].Id" value="@s.Id" />
+                        <input type="hidden" name="Scopes[@countKey].Value[@countValue].Wording" value="@s.Wording" />
+                        <input type="hidden" name="Scopes[@countKey].Value[@countValue].NiceWording" value="@s.NiceWording" />
+
+                        string id = $"scope_{countKey}_{countValue}";
+
+                        if (s.Selected)
+                        {
+                            <input type="hidden" id="@id" name="Scopes[@countKey].Value[@countValue].Selected" value="true" />
+                        }
+                        else
+                        {
+                            <input type="hidden" id="@id" name="Scopes[@countKey].Value[@countValue].Selected" value="false" />
+                        }
+                        countValue++;
+                    }
+
+                    countKey++;
+                }
+            }
+        </div>
+
+        <div class="col">
+            <h3>Scopes</h3>
+            <br />
+            @{
+                int rcountKey = 0;
+                foreach (var rs in Model.Scopes.Keys)
+                {
+                    int rcountValue = 0;
+                    <h4>@rs</h4>
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>
+                                    Wording
+                                </th>
+                                <th>
+                                    Selected
+                                </th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var s in Model.Scopes[rs])
+                            {
+                                <tr>
+                                    <td>
+                                        @s.Wording
+                                    </td>
+                                    <td>
+                                        @{ string id = $"scope_{rcountKey}_{rcountValue}"; }
+                                        @if (s.Selected)
+                                        {
+                                            <input checked="checked" type="checkbox" onclick="changeScopeSelected(this, '@id')" />
+                                        }
+                                        else
+                                        {
+                                            <input type="checkbox" onclick="changeScopeSelected(this, '@id')" />
+                                        }
+                                    </td>
+                                </tr>
+                                rcountValue++;
+                            }
+
+                        </tbody>
+                    </table>
+                    rcountKey++;
+                }
+            }
+        </div>
+
+        <div class="w-100"></div>
+
+        <br />
+        <div class="col-3">
+            <a href="@Url.Action("List", "Client")" class="btn btn-lg btn-secondary btn-block">Back</a>
+        </div>
+        <div class="col-9">
+            <input type="submit" value="Submit" class="btn btn-lg btn-primary btn-block" />
+        </div>
+
+    </div>
+</form>
+
+@section PageScript{
+    <script src="~/js/clientScripts.js"></script>
+}

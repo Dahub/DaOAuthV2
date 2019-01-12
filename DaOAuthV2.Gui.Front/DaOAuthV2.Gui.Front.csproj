@@ -34,6 +34,9 @@
     <Content Update="Views\Account\fr.Login.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
+    <Content Update="Views\Client\en.Edit.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
     <Content Update="Views\Client\fr.Details.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>

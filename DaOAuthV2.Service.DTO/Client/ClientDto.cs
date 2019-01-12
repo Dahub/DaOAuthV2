@@ -6,6 +6,12 @@ namespace DaOAuthV2.Service.DTO
 {
     public class ClientDto : IDto
     {
+        public ClientDto()
+        {
+            ReturnUrls = new Dictionary<int, string>();
+            Scopes = new List<ClientScopeDto>();
+        }
+
         public int Id { get; set; }
         public string Name { get; set; }
         public DateTime CreationDate { get; set; }

@@ -7,6 +7,12 @@ namespace DaOAuthV2.Service.DTO
 {
     public class UpdateClientDto : IDto
     {
+        public UpdateClientDto()
+        {
+            ScopesIds = new List<int>();
+            ReturnUrls = new List<string>();
+        }
+
         public int Id { get; set; }
 
         [Required(ErrorMessage = "UpdateClientDtoTypeRequired")]

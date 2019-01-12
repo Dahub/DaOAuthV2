@@ -7,6 +7,11 @@ namespace DaOAuthV2.Service.DTO
 {
     public class CreateRessourceServerDto : IDto
     {
+        public CreateRessourceServerDto()
+        {
+            Scopes = new List<CreateRessourceServerScopesDto>();
+        }
+
         [Required(ErrorMessage = "CreateRessourceServerLoginRequired")]
         public string Login { get; set; }
 

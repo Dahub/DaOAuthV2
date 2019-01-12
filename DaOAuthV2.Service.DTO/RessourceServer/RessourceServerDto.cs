@@ -6,6 +6,11 @@ namespace DaOAuthV2.Service.DTO
 {
     public class RessourceServerDto : IDto
     {
+        public RessourceServerDto()
+        {
+            Scopes = new List<RessourceServerScopeDto>();
+        }
+
         public int Id { get; set; }
         public string Login { get; set; }
         public string Name { get; set; }
