@@ -569,9 +569,9 @@ namespace DaOAuthV2.Service.Test
             Assert.IsNotNull(client);
             Assert.IsNotNull(client.Scopes);
             Assert.AreEqual(2, client.Scopes.Count());
-            Assert.IsNull(client.Scopes.Where(s => s.Key.Equals(sc3.Wording)).Select(s => s.Value).FirstOrDefault());
-            Assert.IsNotNull(client.Scopes.Where(s => s.Key.Equals(sc1.Wording)).Select(s => s.Value).FirstOrDefault());
-            Assert.IsNotNull(client.Scopes.Where(s => s.Key.Equals(sc2.Wording)).Select(s => s.Value).FirstOrDefault());
+            Assert.IsNull(client.Scopes.Where(s => s.Wording.Equals(sc3.Wording)).FirstOrDefault());
+            Assert.IsNotNull(client.Scopes.Where(s => s.Wording.Equals(sc1.Wording)).FirstOrDefault());
+            Assert.IsNotNull(client.Scopes.Where(s => s.Wording.Equals(sc2.Wording)).FirstOrDefault());
         }
 
         [TestMethod]
@@ -591,9 +591,9 @@ namespace DaOAuthV2.Service.Test
             Assert.IsNotNull(client);
             Assert.IsNotNull(client.Scopes);
             Assert.AreEqual(2, client.Scopes.Count());
-            Assert.IsNull(client.Scopes.Where(s => s.Key.Equals(sc3.Wording)).Select(s => s.Value).FirstOrDefault());
-            Assert.IsNotNull(client.Scopes.Where(s => s.Key.Equals(sc1.Wording)).Select(s => s.Value).FirstOrDefault());
-            Assert.IsNotNull(client.Scopes.Where(s => s.Key.Equals(sc2.Wording)).Select(s => s.Value).FirstOrDefault());
+            Assert.IsNull(client.Scopes.Where(s => s.Wording.Equals(sc3.Wording)).FirstOrDefault());
+            Assert.IsNotNull(client.Scopes.Where(s => s.Wording.Equals(sc1.Wording)).FirstOrDefault());
+            Assert.IsNotNull(client.Scopes.Where(s => s.Wording.Equals(sc2.Wording)).FirstOrDefault());
         }
 
         [TestMethod]

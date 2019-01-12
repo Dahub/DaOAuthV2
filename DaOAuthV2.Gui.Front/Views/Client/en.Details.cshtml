@@ -34,7 +34,7 @@
             <ul class="list-group">
                 @foreach (var s in Model.Scopes)
                 {
-                    <li class="list-group-item">@s.Value</li>
+                    <li class="list-group-item"><strong>@s.NiceWording</strong> - <em>@s.Wording</em></li>
                 }
             </ul>
         }
@@ -42,7 +42,7 @@
     </div>
 </div>
 <br /><br />
-<div class="row">   
+<div class="row">
     <div class="col-12">
         <a href="@Url.Action("List", "Client")" class="btn btn-lg btn-secondary btn-block">Back</a>
     </div>

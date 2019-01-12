@@ -148,8 +148,8 @@ namespace DaOAuthV2.Gui.Front.Controllers
             if (myClient.Scopes != null && !String.IsNullOrEmpty(scope))
             {
                 model.NiceWordingScopes = myClient.Scopes.
-                    Where(s => scope.Split(' ', StringSplitOptions.RemoveEmptyEntries).Contains(s.Key)).
-                    Select(s => s.Value).ToList();
+                    Where(s => scope.Split(' ', StringSplitOptions.RemoveEmptyEntries).Contains(s.Wording)).
+                    Select(s => s.NiceWording).ToList();
             }
 
             return View(model);

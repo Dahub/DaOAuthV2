@@ -137,19 +137,66 @@ namespace DaOAuthV2.Gui.Front.Controllers
 
             var client = JsonConvert.DeserializeObject<ClientDto>(await response.Content.ReadAsStringAsync());
 
-            return View(new EditClientModel()
+            var model = new UpdateClientModel()
             {
                 Id = client.Id,
-                Name = client.Name
-            });
+                Name = client.Name,
+                ClientSecret = client.ClientSecret,
+                Description = client.Description,
+                PublicId = client.PublicId,
+                ReturnUrls = client.ReturnUrls.Select(ru => ru.Value).ToList(),
+                ClientType = client.ClientType,
+                Scopes = new Dictionary<string, IList<ScopeClientModel>>()
+            };
+
+            // get all scopes
+            HttpResponseMessage responseScopes = await GetToApi("scopes");
+
+            if (!await model.ValidateAsync(response))
+                return View(responseScopes);
+
+            IList<int> clientScopes = client.Scopes.Select(s => s.Id).ToList();
+
+            var scopes = JsonConvert.DeserializeObject<SearchResult<ScopeDto>>(await responseScopes.Content.ReadAsStringAsync());
+            if (scopes != null)
+            {
+                foreach (var s in scopes.Datas)
+                {
+                    if (!model.Scopes.ContainsKey(s.RessourceServerName))
+                        model.Scopes.Add(s.RessourceServerName, new List<ScopeClientModel>());
+
+                    model.Scopes[s.RessourceServerName].Add(new ScopeClientModel()
+                    {
+                        Id = s.Id,
+                        NiceWording = s.NiceWording,
+                        Selected = clientScopes.Contains(s.Id),
+                        Wording = s.Wording
+                    });
+                }
+            }
+
+            return View(model);
         }
 
-        [HttpGet]
         [HttpPost]
-        public async Task<IActionResult> Edit(EditClientModel model)
+        public async Task<IActionResult> Edit(UpdateClientModel model)
         {
-            //if (!await model.ValidateAsync(response))
-            //    return View(model);
+            HttpResponseMessage response = await PutToApi("clients", new UpdateClientDto()
+            {
+                ClientType = model.ClientType,
+                ReturnUrls = model.ReturnUrls.Where(ru => !String.IsNullOrWhiteSpace(ru)).ToList(),
+                Description = model.Description,
+                Name = model.Name,
+                Id = model.Id,
+                ClientSecret = model.ClientSecret,
+                PublicId = model.PublicId,
+                ScopesIds = model.Scopes.SelectMany(s => s.Value)
+                              .Where(sv => sv.Selected)
+                              .Select(sv => sv.Id).ToList()
+            });
+
+            if (!await model.ValidateAsync(response))
+                return View(model);
 
             return RedirectToAction("List");
         }

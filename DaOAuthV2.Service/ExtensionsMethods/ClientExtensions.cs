@@ -16,16 +16,19 @@ namespace DaOAuthV2.Service.ExtensionsMethods
                 ClientType = value.ClientType.Wording,
                 CreationDate = value.CreationDate,
                 Description = value.Description,
+                ClientSecret = value.ClientSecret,
                 PublicId = value.PublicId
             };
 
             c.ReturnUrls = value.ClientReturnUrls.ToDictionary(k => k.Id, v => v.ReturnUrl);
 
             c.Scopes = value.ClientsScopes.Select(s => 
-                new KeyValuePair<string, string>(
-                        s.Scope.Wording, 
-                        s.Scope.NiceWording
-                    )).ToList();
+                new ClientScopeDto()
+                {
+                    Id = s.Scope.Id,
+                    NiceWording = s.Scope.NiceWording,
+                    Wording = s.Scope.Wording
+                }).ToList();
 
             return c;
         }

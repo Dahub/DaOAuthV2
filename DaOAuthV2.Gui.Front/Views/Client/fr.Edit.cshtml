@@ -1,4 +1,4 @@
-﻿@model DaOAuthV2.Gui.Front.Models.EditClientModel
+﻿@model DaOAuthV2.Gui.Front.Models.UpdateClientModel
 
 @{
     Layout = "_fr.layout";
@@ -8,27 +8,147 @@
 
 <h1>Modification du client <em>@Model.Name</em></h1>
 <hr />
-<form asp-action="Edit" method="post">
-    <div class="row justify-content-md-center">
-        <div class="col-6">
 
-            <h4>Informations</h4>
+<form asp-action="Edit" method="post">
+    @Html.HiddenFor(m => m.Id)
+    <div class="row">
+        <div class="col">
+            <h3>Informations</h3>
+            <div class="form-group">
+                <label asp-for="ClientType" class="control-label">Type de client</label>
+                <br />
+                @Html.RadioButtonFor(m => m.ClientType, "confidential") Confidentiel
+                <br />
+                @Html.RadioButtonFor(m => m.ClientType, "public") Public
+            </div>
+            <div class="form-group">
+                <label asp-for="DefaultReturnUrl" class="control-label">Urls de redirection</label>
+                @for (int i = 0; i < 3; i++)
+                {
+                    if (Model.ReturnUrls != null && Model.ReturnUrls.Count() > i)
+                    {
+                        <input type="text" id="ReturnUrls" name="ReturnUrls[@i]" class="form-control" value="@Model.ReturnUrls[i]" /><br />
+                    }
+                    else
+                    {
+                        <input type="text" id="ReturnUrls" name="ReturnUrls[@i]" class="form-control" /><br />
+                    }
+                }
+            </div>
             <div class="form-group">
                 <label asp-for="Name" class="control-label">Nom</label>
                 @Html.TextBoxFor(model => model.Name, new { @class = "form-control" })
             </div>
+            <div class="form-group">
+                <label asp-for="Description" class="control-label">Description</label>
+                @Html.TextAreaFor(model => model.Description, 10, 80, new { @class = "form-control" })
+            </div>
+            <div class="form-group">
+                <label asp-for="Name" class="control-label">Id publique</label>
+                @Html.TextBoxFor(model => model.PublicId, new { @class = "form-control" })
+            </div>
+            <div class="form-group">
+                <label asp-for="Name" class="control-label">Mot de passe</label>
+                @Html.TextBoxFor(model => model.ClientSecret, new { @class = "form-control" })
+            </div>
+        </div>
 
+        <div id="scopesRsNames">
+            @{
+                int countKey = 0;
+
+
+                foreach (var rs in Model.Scopes)
+                {
+                    int countValue = 0;
+                    <input type="hidden" name="Scopes[@countKey].Key" value="@rs.Key" />
+                    @foreach (var s in rs.Value)
+                    {
+                        <input type="hidden" name="Scopes[@countKey].Value[@countValue].Id" value="@s.Id" />
+                        <input type="hidden" name="Scopes[@countKey].Value[@countValue].Wording" value="@s.Wording" />
+                        <input type="hidden" name="Scopes[@countKey].Value[@countValue].NiceWording" value="@s.NiceWording" />
+
+                        string id = $"scope_{countKey}_{countValue}";
+
+                        if (s.Selected)
+                        {
+                            <input type="hidden" id="@id" name="Scopes[@countKey].Value[@countValue].Selected" value="true" />
+                        }
+                        else
+                        {
+                            <input type="hidden" id="@id" name="Scopes[@countKey].Value[@countValue].Selected" value="false" />
+                        }
+                        countValue++;
+                    }
+
+                    countKey++;
+                }
+            }
         </div>
-        <div class="col-6">
-            <h4>Urls de redirection</h4>
-            <hr />
-            <h4>Scopes</h4>
+
+        <div class="col">
+            <h3>Scopes</h3>
+            <br />
+            @{
+                int rcountKey = 0;
+                foreach (var rs in Model.Scopes.Keys)
+                {
+                    int rcountValue = 0;
+                    <h4>@rs</h4>
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>
+                                    Libellé
+                                </th>
+                                <th>
+                                    Sélectionné
+                                </th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var s in Model.Scopes[rs])
+                            {
+                                <tr>
+                                    <td>
+                                        @s.Wording
+                                    </td>
+                                    <td>
+                                        @{ string id = $"scope_{rcountKey}_{rcountValue}"; }
+                                        @if (s.Selected)
+                                        {
+                                            <input checked="checked" type="checkbox" onclick="changeScopeSelected(this, '@id')" />
+                                        }
+                                        else
+                                        {
+                                            <input type="checkbox" onclick="changeScopeSelected(this, '@id')" />
+                                        }
+                                    </td>
+                                </tr>
+                                rcountValue++;
+                            }
+
+                        </tbody>
+                    </table>
+                    rcountKey++;
+                }
+            }
         </div>
-        <div class="col-4">
+
+        <div class="w-100"></div>
+
+        <br />
+        <div class="col-3">
             <a href="@Url.Action("List", "Client")" class="btn btn-lg btn-secondary btn-block">Retour</a>
         </div>
-        <div class="col-8">
-            <input type="submit" value="Submit" class="btn btn-lg btn-primary btn-block" />
+        <div class="col-9">
+            <input type="submit" value="Valider" class="btn btn-lg btn-primary btn-block" />
         </div>
+
     </div>
 </form>
+
+@section PageScript{
+    <script src="~/js/clientScripts.js"></script>
+}

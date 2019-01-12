@@ -12,7 +12,15 @@ namespace DaOAuthV2.Service.DTO
         public string ClientType { get; set; }
         public string PublicId { get; set; }
         public string Description { get; set; }
+        public string ClientSecret { get; set; }
         public IDictionary<int, string> ReturnUrls { get; set; }
-        public IList<KeyValuePair<string, string>> Scopes { get; set; }
+        public IList<ClientScopeDto> Scopes { get; set; }
+    }
+
+    public class ClientScopeDto
+    {
+        public int Id { get; set; }
+        public string Wording { get; set; }
+        public string NiceWording { get; set; }
     }
 }
