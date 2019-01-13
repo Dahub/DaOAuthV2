@@ -11,6 +11,8 @@ namespace DaOAuthV2.Service
 {
     public class UserService : ServiceBase, IUserService
     {
+        public IMailService MailService { get; set; }
+
         public int CreateUser(CreateUserDto toCreate)
         {
             IList<ValidationResult> ExtendValidation(CreateUserDto toValidate)

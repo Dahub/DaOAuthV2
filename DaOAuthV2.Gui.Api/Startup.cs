@@ -64,15 +64,14 @@ namespace DaOAuthV2.Gui.Api
                 options.SuppressModelStateInvalidFilter = true;
             });
 
-            services.AddTransient<IRandomService>(u => new RandomService());
-            
             services.AddTransient<IUserService>(u => new UserService()
             {
                 Configuration = conf,
                 RepositoriesFactory = new EfRepositoriesFactory(),
                 ConnexionString = Configuration.GetConnectionString("DaOAuthConnexionString"),
                 StringLocalizerFactory = localizationServiceFactory,
-                Logger = loggerServiceFactory.CreateLogger<UserService>()
+                Logger = loggerServiceFactory.CreateLogger<UserService>(),
+                MailService = new SendGridMailService(conf.SendGridKey)
             });
 
             services.AddTransient<IJwtService>(u => new JwtService()
