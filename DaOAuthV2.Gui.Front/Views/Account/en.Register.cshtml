@@ -28,7 +28,7 @@
                 <label asp-for="BirthDate" class="control-label">Birth date</label>
                 <div style="position:relative">
                     <div class='input-group date' id='birthDateContainer'>
-                        @Html.TextBoxFor(model => model.BirthDate, new { @class = "form-control" })
+                        @Html.TextBoxFor(model => model.BirthDate, "{0:dd/MM/yyyy}", new { @class = "form-control" })
                     </div>
                 </div>
             </div>

@@ -46,12 +46,19 @@ namespace DaOAuthV2.Gui.Front
                .AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix)
                .AddDataAnnotationsLocalization();
 
+            CultureInfo en = new CultureInfo("en-US");
+            en.DateTimeFormat.ShortDatePattern = "dd/MMM/yyyy";
+            en.DateTimeFormat.DateSeparator = "/";
+
+            CultureInfo fr = new CultureInfo("fr-FR");
+            fr.DateTimeFormat.ShortDatePattern = "dd/MMM/yyyy";
+            fr.DateTimeFormat.DateSeparator = "/";
+
             services.Configure<RequestLocalizationOptions>(options =>
             {
                 var supportedCultures = new[]
                 {
-                    new CultureInfo("en-US"),
-                    new CultureInfo("fr-FR"),
+                    en, fr
                 };
 
                 options.DefaultRequestCulture = new RequestCulture(culture: "en-US", uiCulture: "en-US");

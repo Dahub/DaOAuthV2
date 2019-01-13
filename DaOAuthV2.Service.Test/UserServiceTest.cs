@@ -38,6 +38,37 @@ namespace DaOAuthV2.Service.Test
         }
 
         [TestMethod]
+        public void Get_By_Valid_User_Name_Should_Return_User()
+        {
+            string userName = FakeDataBase.Instance.Users.FirstOrDefault(u => u.IsValid.Equals(true)).UserName;
+
+            var user = _service.GetUser(userName);
+
+            Assert.IsNotNull(user);
+            Assert.AreEqual(userName, user.UserName);
+        }
+
+        [TestMethod]
+        public void Get_By_Invalid_User_Name_Should_Return_Null()
+        {
+            string userName = FakeDataBase.Instance.Users.FirstOrDefault(u => u.IsValid.Equals(false)).UserName;
+
+            var user = _service.GetUser(userName);
+
+            Assert.IsNull(user);
+        }
+
+        [TestMethod]
+        public void Get_By_Non_Existing_User_Name_Should_Return_Null()
+        {
+            string userName = "i_dont_exists";
+
+            var user = _service.GetUser(userName);
+
+            Assert.IsNull(user);
+        }
+
+        [TestMethod]
         public void Get_User_By_Login_And_Password_Should_Return_User()
         {
             var u = _service.GetUser(new DTO.LoginUserDto() { UserName = "Sammy", Password = "test" });
@@ -151,7 +182,7 @@ namespace DaOAuthV2.Service.Test
 
         [TestMethod]
         [ExpectedException(typeof(DaOAuthServiceException))]
-        public void Create_User_With_In_Use_UserName_Should_Throw_Exception()
+        public void Create_User_With_Used_UserName_Should_Throw_Exception()
         {
             _service.CreateUser(new DTO.CreateUserDto()
             {
@@ -166,7 +197,7 @@ namespace DaOAuthV2.Service.Test
 
         [TestMethod]
         [ExpectedException(typeof(DaOAuthServiceException))]
-        public void Create_User_With_In_Use_UserName_Case_Insensitive_Should_Throw_Exception()
+        public void Create_User_With_Use_UserName_Case_Insensitive_Should_Throw_Exception()
         {
             _service.CreateUser(new DTO.CreateUserDto()
             {

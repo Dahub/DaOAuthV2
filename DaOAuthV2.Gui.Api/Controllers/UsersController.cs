@@ -2,6 +2,7 @@
 using DaOAuthV2.Service;
 using DaOAuthV2.Service.DTO;
 using DaOAuthV2.Service.Interface;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 
@@ -62,6 +63,24 @@ namespace DaOAuthV2.Gui.Api.Controllers
         {
             _service.CreateUser(model);
             return StatusCode(201);
+        }
+
+        [HttpPut]
+        [Route("")]
+        [Authorize]
+        public IActionResult Put(UpdateUserDto model)
+        {
+            model.UserName = User.Identity.Name;
+            _service.UpdateUser(model);
+            return Ok();
+        }
+
+        [HttpGet]
+        [Route("")]
+        [Authorize]
+        public IActionResult Get()
+        {
+            return Ok(_service.GetUser(User.Identity.Name));
         }
     }
 }

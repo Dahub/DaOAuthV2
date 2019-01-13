@@ -8,5 +8,6 @@ namespace DaOAuthV2.Service.Interface
         void UpdateUser(UpdateUserDto toUpdate);
         void DeleteUser(string userName);
         UserDto GetUser(LoginUserDto credentials);
+        UserDto GetUser(string userName);
     }
 }

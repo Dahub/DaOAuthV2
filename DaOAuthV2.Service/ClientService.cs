@@ -55,8 +55,6 @@ namespace DaOAuthV2.Service
 
             this.Validate(toCreate, ExtendValidation);
 
-            int idClient = 0;
-
             using (var context = RepositoriesFactory.CreateContext(this.ConnexionString))
             {
                 var returnUrlRepo = RepositoriesFactory.GetClientReturnUrlRepository(context);
@@ -117,10 +115,8 @@ namespace DaOAuthV2.Service
 
                 context.Commit();
 
-                idClient = client.Id;
+                return client.Id;
             }
-
-            return idClient;
         }
 
         public void Delete(DeleteClientDto toDelete)

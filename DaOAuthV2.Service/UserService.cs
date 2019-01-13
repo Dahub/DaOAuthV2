@@ -125,6 +125,24 @@ namespace DaOAuthV2.Service
             return result;
         }
 
+        public UserDto GetUser(string userName)
+        {
+            UserDto result = null;
+
+            using (var c = RepositoriesFactory.CreateContext(ConnexionString))
+            {
+                var repo = RepositoriesFactory.GetUserRepository(c);
+                var user = repo.GetByUserName(userName);
+
+                if (user != null && user.IsValid)
+                {
+                    result = user.ToDto();
+                }
+            }
+
+            return result;
+        }
+
         public void UpdateUser(UpdateUserDto toUpdate)
         {
             IList<ValidationResult> ExtendValidation(UpdateUserDto toValidate)

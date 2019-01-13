@@ -24,6 +24,7 @@ namespace DaOAuthV2.Gui.Front.Controllers
         {
         }
 
+        [HttpGet]
         [AllowAnonymous]
         public IActionResult Login(string returnUrl)
         {
@@ -67,6 +68,7 @@ namespace DaOAuthV2.Gui.Front.Controllers
             return View(model);
         }
 
+        [HttpGet]
         public async Task<IActionResult> Logout()
         {
             await HttpContext.SignOutAsync();
@@ -83,9 +85,45 @@ namespace DaOAuthV2.Gui.Front.Controllers
             return View(new RegisterModel());
         }
 
+        [HttpGet]
         public IActionResult RegisterOk()
         {
             return View();
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Edit()
+        {
+            UpdateUserModel model = new UpdateUserModel();
+
+            HttpResponseMessage response = await GetToApi("users");
+
+            if (!await model.ValidateAsync(response))
+                return View(model);
+
+            var user = await response.Content.ReadAsAsync<UserDto>();
+
+            model.BirthDate = user.BirthDate;
+            model.EMail = user.EMail;
+            model.FullName = user.FullName;
+
+            return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Edit(UpdateUserModel model)
+        {
+            HttpResponseMessage response = await PutToApi("users", new UpdateUserDto()
+            {
+                BirthDate = model.BirthDate,
+                EMail = model.EMail,
+                FullName = model.FullName
+            });
+
+            if (!await model.ValidateAsync(response))
+                return View(model);
+
+            return RedirectToAction("Dashboard", "Home");
         }
 
         [AllowAnonymous]

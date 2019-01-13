@@ -1,0 +1,55 @@
+﻿@model DaOAuthV2.Gui.Front.Models.UpdateUserModel
+
+@{
+    Layout = "_en.layout";
+}
+
+@await Html.PartialAsync("_en.modelErrors")
+
+<h1>Edit your account</h1>
+<hr />
+
+<form asp-action="Edit" id="rsForm" method="post">
+    <div class="row">
+        <div class="col">
+            <h3>Informations</h3>
+            <div class="form-group">
+                <label asp-for="FullName" class="control-label">Full name</label>
+                @Html.TextBoxFor(model => model.FullName, new { @class = "form-control" })
+            </div>
+            <div class="form-group">
+                <label asp-for="EMail" class="control-label">EMail address</label>
+                @Html.TextBoxFor(model => model.EMail, new { @class = "form-control" })
+            </div>
+
+            <div class="form-group">
+                <label asp-for="BirthDate" class="control-label">Birth date</label>
+                <div style="position:relative">
+                    <div class='input-group date' id='birthDateContainer'>
+                        @Html.TextBoxFor(model => model.BirthDate, "{0:dd/MM/yyyy}", new { @class = "form-control" })
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="w-100"></div>
+        <br />
+        <div class="col-3">
+            <a href="@Url.Action("Dashboard", "Home")" class="btn btn-lg btn-secondary btn-block">Back</a>
+        </div>
+        <div class="col-9">
+            <input id="putForm" type="submit" value="Submit" class="btn btn-lg btn-primary btn-block" />
+        </div>
+
+    </div>
+</form>
+
+
+@section PageScript{
+    <script type="text/javascript">
+        $('#birthDateContainer input').datepicker({
+            format: "dd/mm/yyyy",
+            language: "en"
+        });
+    </script>
+}
