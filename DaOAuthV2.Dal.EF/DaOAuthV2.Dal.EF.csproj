@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <Configurations>Debug;Release;Local</Configurations>
   </PropertyGroup>
 
   <ItemGroup>
