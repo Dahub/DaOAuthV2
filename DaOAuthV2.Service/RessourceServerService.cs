@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using Microsoft.Extensions.Logging;
 
 namespace DaOAuthV2.Service
 {
@@ -39,6 +40,8 @@ namespace DaOAuthV2.Service
 
                 return result;
             }
+
+            Logger.LogInformation(String.Format("Try to create ressource server for user {0}", toCreate != null ? toCreate.UserName : String.Empty));
 
             Validate(toCreate, ExtendValidation);
 
@@ -113,6 +116,8 @@ namespace DaOAuthV2.Service
 
         public void Delete(DeleteRessourceServerDto toDelete)
         {
+            Logger.LogInformation(String.Format("Try to delete ressource server for user {0}", toDelete != null ? toDelete.UserName : String.Empty));
+
             Validate(toDelete);
 
             using (var context = RepositoriesFactory.CreateContext(ConnexionString))
@@ -155,6 +160,8 @@ namespace DaOAuthV2.Service
 
         public RessourceServerDto GetById(int id)
         {
+            Logger.LogInformation(String.Format("Try to get ressource server by id {0}", id));
+
             RessourceServerDto toReturn = null;
 
             using (var context = RepositoriesFactory.CreateContext(ConnexionString))
@@ -173,6 +180,8 @@ namespace DaOAuthV2.Service
 
         public IEnumerable<RessourceServerDto> Search(RessourceServerSearchDto criterias)
         {
+            Logger.LogInformation("Search ressource servers");
+
             Validate(criterias, ExtendValidationSearchCriterias);
 
             IList<RessourceServer> rs = null;
@@ -208,6 +217,8 @@ namespace DaOAuthV2.Service
 
         public RessourceServerDto Update(UpdateRessourceServerDto toUpdate)
         {
+            Logger.LogInformation(String.Format("Try to update ressource server for user {0}", toUpdate != null ? toUpdate.UserName : String.Empty));
+
             Validate(toUpdate);
 
             using (var context = RepositoriesFactory.CreateContext(ConnexionString))

@@ -121,6 +121,8 @@ namespace DaOAuthV2.Service
 
         public void Delete(DeleteClientDto toDelete)
         {
+            Logger.LogInformation(String.Format("Try to create delete for user {0}", toDelete != null ? toDelete.UserName : String.Empty));
+
             Validate(toDelete);
 
             using (var context = RepositoriesFactory.CreateContext(ConnexionString))
@@ -177,6 +179,8 @@ namespace DaOAuthV2.Service
 
         public ClientDto GetById(int id)
         {
+            Logger.LogInformation(String.Format("Try to create client by id {0}", id));
+
             ClientDto toReturn = null;
 
             using (var context = RepositoriesFactory.CreateContext(ConnexionString))
@@ -204,6 +208,8 @@ namespace DaOAuthV2.Service
 
         public IEnumerable<ClientDto> Search(ClientSearchDto criterias)
         {
+            Logger.LogInformation("Search clients");
+
             Validate(criterias, ExtendValidationSearchCriterias);
 
             IList<Client> clients = null;
@@ -276,6 +282,8 @@ namespace DaOAuthV2.Service
 
                 return result;
             }
+
+            Logger.LogInformation(String.Format("Try to update client for user {0}", toUpdate != null ? toUpdate.UserName : String.Empty));
 
             Validate(toUpdate, ExtendValidation);
 

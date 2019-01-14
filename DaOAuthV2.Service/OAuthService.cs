@@ -144,6 +144,8 @@ namespace DaOAuthV2.Service
 
         public TokenInfoDto GenerateToken(AskTokenDto tokenInfo)
         {
+            Logger.LogInformation("Ask for token");
+
             Validate(tokenInfo);
 
             IStringLocalizer errorLocal = GetErrorStringLocalizer();
@@ -178,6 +180,8 @@ namespace DaOAuthV2.Service
         public IntrospectInfoDto Introspect(AskIntrospectDto introspectInfo)
         {
             Validate(introspectInfo);
+
+            Logger.LogInformation($"Introspect token {introspectInfo.Token}");
 
             IntrospectInfoDto toReturn = new IntrospectInfoDto()
             {
