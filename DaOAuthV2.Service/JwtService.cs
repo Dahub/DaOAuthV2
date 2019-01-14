@@ -15,6 +15,8 @@ namespace DaOAuthV2.Service
 {
     public class JwtService : ServiceBase, IJwtService
     {
+        private const int MAIL_TOKEN_LIFETIME_IN_SECONDS = 900;
+
         public JwtTokenDto GenerateToken(CreateTokenDto value)
         {
             Logger.LogInformation("Try to generate token");
@@ -38,7 +40,7 @@ namespace DaOAuthV2.Service
                 audience: Configuration.Audience,
                 claims: claims,
                 signingCredentials: creds,
-                expires: utcNow.AddSeconds(value.SecondsLifeTime).DateTime);
+                expires: utcNow.AddSeconds(value.SecondsLifeTime).UtcDateTime);
 
             JwtTokenDto toReturn = new JwtTokenDto()
             {
@@ -115,6 +117,81 @@ namespace DaOAuthV2.Service
                 return String.Empty;
 
             return claim.Value;
+        }
+
+        public ChangeMailJwtTokenDto GenerateMailToken()
+        {
+            Logger.LogInformation("Try to generate mail token");
+
+            var utcNow = DateTimeOffset.UtcNow;
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration.SecurityKey));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+            IList<Claim> claims = new List<Claim>();
+            claims.Add(new Claim(ClaimName.Issued, utcNow.ToUnixTimeSeconds().ToString(CultureInfo.InvariantCulture)));
+
+            var token = new JwtSecurityToken(
+                issuer: Configuration.Issuer,
+                audience: Configuration.Audience,
+                signingCredentials: creds,
+                claims: claims,
+                expires: utcNow.AddSeconds(MAIL_TOKEN_LIFETIME_IN_SECONDS).UtcDateTime);
+
+            return new ChangeMailJwtTokenDto()
+            {
+                Expire = utcNow.AddSeconds(MAIL_TOKEN_LIFETIME_IN_SECONDS).ToUnixTimeSeconds(),
+                IsValid = true,
+                Token = new JwtSecurityTokenHandler().WriteToken(token)
+            };
+        }
+
+        public ChangeMailJwtTokenDto ExtractMailToken(string token)
+        {
+            Logger.LogInformation("Try to extract mail token");
+
+            var toReturn = new ChangeMailJwtTokenDto()
+            {
+                IsValid = false,
+                Token = token
+            };
+
+            if (String.IsNullOrEmpty(token))
+            {
+                return toReturn;
+            }
+
+            ClaimsPrincipal pClaim = null;
+            var handler = new JwtSecurityTokenHandler();
+            TokenValidationParameters validationParameters = new TokenValidationParameters
+            {
+                ValidIssuer = Configuration.Issuer,
+                ValidAudience = Configuration.Audience,
+                IssuerSigningKeys = new List<SecurityKey>() { new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration.SecurityKey)) }
+            };
+
+            SecurityToken validatedToken;
+            try
+            {
+                pClaim = handler.ValidateToken(token, validationParameters, out validatedToken);
+            }
+            catch (Exception ex)
+            {
+                toReturn.InvalidationCause = ex.Message;
+                return toReturn;
+            }
+
+            long expire;
+            if (!long.TryParse(GetValueFromClaim(pClaim.Claims, ClaimName.Expire), out expire))
+                return toReturn;
+
+            toReturn.Expire = expire;
+
+            if (expire < DateTimeOffset.Now.ToUnixTimeSeconds())
+                return toReturn;
+
+            toReturn.IsValid = true;
+
+            return toReturn;
         }
     }
 }

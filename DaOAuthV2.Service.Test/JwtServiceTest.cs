@@ -13,7 +13,7 @@ namespace DaOAuthV2.Service.Test
         private string _tokenName = "tokenName";
         private string _longLifeToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjbGllbnRfaWQiOiJjbGllbnRJZCIsInRva2VuX25hbWUiOiJ0b2tlbk5hbWUiLCJpc3N1ZWQiOiIxNTQyMjMxMDc4IiwidXNlcl9wdWJsaWNfaWQiOiIwMjA0YmE0NC02NWRhLTQ4ZjMtOWE2OC03ZjdlMWIxNmQ1MmQiLCJuYW1lIjoidXNlck5hbWUiLCJzY29wZSI6InNjb3BlIiwiZXhwIjoxODU3NTg3NDc4LCJpc3MiOiJ0ZXN0LWlzc3VlciIsImF1ZCI6InRlc3QtYXVkaWVuY2UifQ.jEUu9UWgEJ0bsSdnUgR8ylxzjwCx909GfisBPDg0A78";
         private string _shortLifeToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjbGllbnRfaWQiOiJjbGllbnRJZCIsInRva2VuX25hbWUiOiJ0b2tlbk5hbWUiLCJpc3N1ZWQiOiIxNTQyMjMxMTk4IiwidXNlcl9wdWJsaWNfaWQiOiI4MjM0MmU0Yi01YmI0LTQ5M2YtYjA4NC0xM2Y5MjhmNGU1YmMiLCJuYW1lIjoidXNlck5hbWUiLCJzY29wZSI6InNjb3BlIiwiZXhwIjoxNTQyMjI3NTk4LCJpc3MiOiJ0ZXN0LWlzc3VlciIsImF1ZCI6InRlc3QtYXVkaWVuY2UifQ.2Csoj8pKMBuW6Qpcqiv7sbYM5odmN7sxjYi8FFwiESM";
-
+        
         [TestInitialize]
         public void Init()
         {
@@ -33,6 +33,14 @@ namespace DaOAuthV2.Service.Test
                 StringLocalizerFactory = new FakeStringLocalizerFactory(),
                 Logger = new FakeLogger()
             };
+        }
+
+        [TestMethod]
+        public void Generate_Mail_Token_Should_Return_Valid_Token()
+        {
+            var t = _service.GenerateMailToken();
+            Assert.IsTrue(!String.IsNullOrWhiteSpace(t.Token));
+            Assert.IsTrue(t.IsValid);
         }
 
         [TestMethod]
@@ -76,6 +84,13 @@ namespace DaOAuthV2.Service.Test
                 TokenName = _tokenName,
                 UserName = "userName"
             });
+        }
+
+        [TestMethod]
+        public void Extract_Mail_Token_Should_Return_Valid()
+        {
+            var t = _service.ExtractMailToken(_service.GenerateMailToken().Token);
+            Assert.IsTrue(t.IsValid);
         }
 
         [TestMethod]

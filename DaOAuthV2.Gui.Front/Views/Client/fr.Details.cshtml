@@ -15,6 +15,7 @@
         <strong>Type : </strong>@Model.ClientType<br />
         <strong>Date de création : </strong>@Model.CreationDate.ToShortDateString()<br />
         <strong>Id publique : </strong>@Model.PublicId<br />
+        <strong>Mot de passe : </strong>@Model.ClientSecret<br />
         <strong>Description : </strong>@Model.Description
         @if (Model.ReturnUrls != null && Model.ReturnUrls.Count > 0)
         {
