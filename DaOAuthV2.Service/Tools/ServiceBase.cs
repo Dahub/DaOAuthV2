@@ -81,6 +81,11 @@ namespace DaOAuthV2.Service
             return GetStringLocalizer(ResourceConstant.DtoResource);
         }
 
+        protected IStringLocalizer GetMailStringLocalizer()
+        {
+            return GetStringLocalizer(ResourceConstant.MailResource);
+        }
+
         protected int? GetClientTypeId(string clientType)
         {
             int? clientTypeId = null;

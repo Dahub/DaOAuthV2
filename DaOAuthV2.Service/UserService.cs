@@ -12,41 +12,42 @@ namespace DaOAuthV2.Service
     public class UserService : ServiceBase, IUserService
     {
         public IMailService MailService { get; set; }
+        public IRandomService RandomService { get; set; }
 
         public int CreateUser(CreateUserDto toCreate)
         {
             IList<ValidationResult> ExtendValidation(CreateUserDto toValidate)
             {
-                var resource = this.GetErrorStringLocalizer();
+                var errorResource = this.GetErrorStringLocalizer();
                 IList<ValidationResult> result = new List<ValidationResult>();
 
                 if (!String.IsNullOrEmpty(toCreate.Password)
                     && !String.IsNullOrEmpty(toCreate.RepeatPassword)
                     &&!toCreate.Password.Equals(toCreate.RepeatPassword, StringComparison.Ordinal))
-                    result.Add(new ValidationResult(resource["CreateUserPasswordDontMatch"]));
+                    result.Add(new ValidationResult(errorResource["CreateUserPasswordDontMatch"]));
 
                 if (!toValidate.Password.IsMatchPasswordPolicy())
-                    result.Add(new ValidationResult(resource["CreateUserPasswordPolicyFailed"]));
+                    result.Add(new ValidationResult(errorResource["CreateUserPasswordPolicyFailed"]));
 
                 using (var c = RepositoriesFactory.CreateContext(ConnexionString))
                 {
                     var repo = RepositoriesFactory.GetUserRepository(c);
 
                     if (repo.GetByUserName(toCreate.UserName) != null)
-                        result.Add(new ValidationResult(String.Format(resource["CreateUserUserNameExists"], toCreate.UserName)));
+                        result.Add(new ValidationResult(String.Format(errorResource["CreateUserUserNameExists"], toCreate.UserName)));
 
                     if (repo.GetByEmail(toCreate.EMail) != null)
-                        result.Add(new ValidationResult(String.Format(resource["CreateUserEmailExists"], toCreate.EMail)));
+                        result.Add(new ValidationResult(String.Format(errorResource["CreateUserEmailExists"], toCreate.EMail)));
                 }
 
                 return result;
             }
-
             Logger.LogInformation(String.Format("Try to create user {0}", toCreate != null ? toCreate.UserName : String.Empty));
 
             Validate(toCreate, ExtendValidation);
 
             int idCreated = 0;
+            var mailResource = this.GetMailStringLocalizer();
 
             User u = new User()
             {
@@ -54,7 +55,8 @@ namespace DaOAuthV2.Service
                 CreationDate = DateTime.Now,
                 EMail = toCreate.EMail,
                 FullName = toCreate.FullName,
-                IsValid = true,
+                IsValid = false,
+                ValidationToken = RandomService.GenerateRandomString(32),
                 Password = Sha256Hash(string.Concat(Configuration.PasswordSalt, toCreate.Password)),
                 UserName = toCreate.UserName
             };
@@ -76,6 +78,20 @@ namespace DaOAuthV2.Service
                         UserId = u.Id
                     });
                 }
+
+                Uri link = new Uri(String.Format(Configuration.ValidateAccountPageUrl, u.UserName, u.ValidationToken));
+
+                MailService.SendEmail(new SendEmailDto()
+                {
+                    Body = String.Format(mailResource["MailValidateAccountBody"], u.UserName, link.AbsoluteUri),
+                    IsHtml = true,
+                    Receviers = new Dictionary<string, string>()
+                    {
+                        { u.EMail, u.EMail }
+                    },
+                    Sender = new KeyValuePair<string, string>("no-reply@daOauth.fr", "no reply"),
+                    Subject = mailResource["MailValidateAccountSubject"]
+                });
 
                 c.Commit();
                 idCreated = u.Id;
@@ -180,6 +196,36 @@ namespace DaOAuthV2.Service
                 repo.Update(user);
 
                 c.Commit();
+            }
+        }
+
+        public UserDto ValidateUser(ValidateUserDto infos)
+        {
+            Validate(infos);
+
+            using (var context = RepositoriesFactory.CreateContext(ConnexionString))
+            {
+                var local = this.GetErrorStringLocalizer();
+                var userRepo = RepositoriesFactory.GetUserRepository(context);
+
+                var myUser = userRepo.GetByUserName(infos.UserName);
+
+                if(myUser == null)
+                    throw new DaOAuthServiceException(local["ValidateUserNoUserFound"]);
+
+                if(!infos.Token.Equals(myUser.ValidationToken, StringComparison.Ordinal))
+                    throw new DaOAuthServiceException(local["ValidateUserInvalidToken"]);
+
+                if(myUser.IsValid)
+                    throw new DaOAuthServiceException(local["ValidateUserEverValidated"]);
+
+                myUser.IsValid = true;
+
+                userRepo.Update(myUser);
+
+                context.Commit();
+
+                return myUser.ToDto();
             }
         }
     }

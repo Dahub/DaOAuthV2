@@ -54,6 +54,7 @@ namespace DaOAuthV2.Dal.EF
             modelBuilder.Entity<User>().Property(p => p.IsValid).HasColumnName("IsValid").HasColumnType("bit").IsRequired();
             modelBuilder.Entity<User>().Property(p => p.Password).HasColumnName("Password").HasColumnType("varbinary(50)").HasMaxLength(50);
             modelBuilder.Entity<User>().Property(p => p.UserName).HasColumnName("UserName").HasColumnType("nvarchar(32)").HasMaxLength(32).IsRequired();
+            modelBuilder.Entity<User>().Property(p => p.ValidationToken).HasColumnName("ValidationToken").HasColumnType("nvarchar(256)").HasMaxLength(256);
             modelBuilder.Entity<User>().HasMany<UserClient>(p => p.UsersClients).WithOne(uc => uc.User).OnDelete(DeleteBehavior.Cascade);
             modelBuilder.Entity<User>().HasMany<UserRole>(u => u.UsersRoles).WithOne(uc => uc.User).OnDelete(DeleteBehavior.Cascade);
             modelBuilder.Entity<User>().HasIndex(u => u.UserName).IsUnique();

@@ -18,5 +18,6 @@ namespace DaOAuthV2.Service
         public int AccesTokenLifeTimeInSeconds { get; set; }
         public int RefreshTokenLifeTimeInSeconds { get; set; }
         public string SendGridKey { get; set; }
+        public string ValidateAccountPageUrl { get; set; }
     }
 }

@@ -82,5 +82,12 @@ namespace DaOAuthV2.Gui.Api.Controllers
         {
             return Ok(_service.GetUser(User.Identity.Name));
         }
+
+        [HttpPut]
+        [Route("validate")]
+        public IActionResult Validate(ValidateUserDto model)
+        {
+            return Ok(_service.ValidateUser(model));
+        }
     }
 }

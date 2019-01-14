@@ -28,7 +28,8 @@ namespace DaOAuthV2.Service.Test
                 RepositoriesFactory = new FakeRepositoriesFactory(),
                 StringLocalizerFactory = new FakeStringLocalizerFactory(),
                 Logger = new FakeLogger(),
-                MailService = new FakeMailService()
+                MailService = new FakeMailService(),
+                RandomService = new FakeRandomService(123, "returnString")
             };
         }
 
@@ -123,6 +124,25 @@ namespace DaOAuthV2.Service.Test
 
             Assert.IsNotNull(user);
             Assert.IsTrue((DateTime.Now - user.CreationDate).TotalSeconds < 10);
+        }
+
+        [TestMethod]
+        public void Create_New_User_Should_Create_User_Invalid_With_Validation_Token()
+        {
+            var user = _repo.GetById(_service.CreateUser(new DTO.CreateUserDto()
+            {
+                BirthDate = new DateTime(1978, 09, 16),
+                EMail = "test@test.com",
+                FullName = "testeur createur",
+                UserName = "testCreate",
+                Password = "test#1254",
+                RepeatPassword = "test#1254"
+            }));
+
+            Assert.IsNotNull(user);
+            Assert.IsFalse(user.IsValid);
+            Assert.IsTrue(!String.IsNullOrWhiteSpace(user.ValidationToken));
+            Assert.AreEqual("returnString", user.ValidationToken);
         }
 
         [TestMethod]
@@ -433,7 +453,7 @@ namespace DaOAuthV2.Service.Test
 
         [TestMethod]
         [ExpectedException(typeof(DaOAuthServiceException))]
-        public void When_Update_With_Empty_Email_Should_Throw_Exception()
+        public void Update_With_Empty_Email_Should_Throw_Exception()
         {
             _service.UpdateUser(new DTO.UpdateUserDto()
             {
@@ -480,6 +500,157 @@ namespace DaOAuthV2.Service.Test
                 BirthDate = new DateTime(1918, 11, 11),
                 FullName = "john john",
                 EMail = "newJohn@corp.org"
+            });
+        }
+
+        [TestMethod]
+        public void Validate_User_Should_Validate_User()
+        {
+            FakeDataBase.Instance.Users.Clear();
+            FakeDataBase.Instance.Users.Add(new Domain.User()
+            {
+                BirthDate = DateTime.Now,
+                CreationDate = DateTime.Now,
+                EMail = "test@test.com",
+                FullName = "I am testeur",
+                Id = 3566,
+                IsValid = false,
+                Password = new byte[] { 0 },
+                UserName = "validate_test",
+                ValidationToken = "validateToken"
+            });
+
+            _service.ValidateUser(new DTO.ValidateUserDto()
+            {
+                UserName = "validate_test",
+                Token = "validateToken"
+            });
+
+            Assert.IsTrue(FakeDataBase.Instance.Users.First(u => u.Id.Equals(3566)).IsValid);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(DaOAuthServiceException))]
+        public void Validate_User_With_Wrong_User_Name_Should_Throw_Exception()
+        {
+            FakeDataBase.Instance.Users.Clear();
+            FakeDataBase.Instance.Users.Add(new Domain.User()
+            {
+                BirthDate = DateTime.Now,
+                CreationDate = DateTime.Now,
+                EMail = "test@test.com",
+                FullName = "I am testeur",
+                Id = 3566,
+                IsValid = false,
+                Password = new byte[] { 0 },
+                UserName = "validate_test",
+                ValidationToken = "validateToken"
+            });
+
+            _service.ValidateUser(new DTO.ValidateUserDto()
+            {
+                UserName = "validate_test_wrong",
+                Token = "validateToken"
+            });
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(DaOAuthServiceException))]
+        public void Validate_User_With_Wrong_Token_Should_Throw_Exception()
+        {
+            FakeDataBase.Instance.Users.Clear();
+            FakeDataBase.Instance.Users.Add(new Domain.User()
+            {
+                BirthDate = DateTime.Now,
+                CreationDate = DateTime.Now,
+                EMail = "test@test.com",
+                FullName = "I am testeur",
+                Id = 3566,
+                IsValid = false,
+                Password = new byte[] { 0 },
+                UserName = "validate_test",
+                ValidationToken = "validateToken"
+            });
+
+            _service.ValidateUser(new DTO.ValidateUserDto()
+            {
+                UserName = "validate_test",
+                Token = "validateToken_wrong"
+            });
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(DaOAuthServiceException))]
+        public void Validate_User_With_Empty_Token_Should_Throw_Exception()
+        {
+            FakeDataBase.Instance.Users.Clear();
+            FakeDataBase.Instance.Users.Add(new Domain.User()
+            {
+                BirthDate = DateTime.Now,
+                CreationDate = DateTime.Now,
+                EMail = "test@test.com",
+                FullName = "I am testeur",
+                Id = 3566,
+                IsValid = false,
+                Password = new byte[] { 0 },
+                UserName = "validate_test",
+                ValidationToken = "validateToken"
+            });
+
+            _service.ValidateUser(new DTO.ValidateUserDto()
+            {
+                UserName = "validate_test",
+                Token = String.Empty
+            });
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(DaOAuthServiceException))]
+        public void Validate_User_With_Valid_User_Throw_Exception()
+        {
+            FakeDataBase.Instance.Users.Clear();
+            FakeDataBase.Instance.Users.Add(new Domain.User()
+            {
+                BirthDate = DateTime.Now,
+                CreationDate = DateTime.Now,
+                EMail = "test@test.com",
+                FullName = "I am testeur",
+                Id = 3566,
+                IsValid = true,
+                Password = new byte[] { 0 },
+                UserName = "validate_test",
+                ValidationToken = "validateToken"
+            });
+
+            _service.ValidateUser(new DTO.ValidateUserDto()
+            {
+                UserName = "validate_test",
+                Token = "validateToken"
+            });
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(DaOAuthServiceException))]
+        public void Validate_User_With_Empty_User_Name_Throw_Exception()
+        {
+            FakeDataBase.Instance.Users.Clear();
+            FakeDataBase.Instance.Users.Add(new Domain.User()
+            {
+                BirthDate = DateTime.Now,
+                CreationDate = DateTime.Now,
+                EMail = "test@test.com",
+                FullName = "I am testeur",
+                Id = 3566,
+                IsValid = false,
+                Password = new byte[] { 0 },
+                UserName = "validate_test",
+                ValidationToken = "validateToken"
+            });
+
+            _service.ValidateUser(new DTO.ValidateUserDto()
+            {
+                UserName = String.Empty,
+                Token = "validateToken"
             });
         }
     }

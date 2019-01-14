@@ -71,7 +71,8 @@ namespace DaOAuthV2.Gui.Api
                 ConnexionString = Configuration.GetConnectionString("DaOAuthConnexionString"),
                 StringLocalizerFactory = localizationServiceFactory,
                 Logger = loggerServiceFactory.CreateLogger<UserService>(),
-                MailService = new SendGridMailService(conf.SendGridKey)
+                MailService = new SendGridMailService(conf.SendGridKey),
+                RandomService = new RandomService()
             });
 
             services.AddTransient<IJwtService>(u => new JwtService()

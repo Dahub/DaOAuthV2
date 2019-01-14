@@ -279,4 +279,10 @@
   <data name="UpdateUserDtoUserNameRequired" xml:space="preserve">
     <value>Le nom d'utilisateur est obligatoire</value>
   </data>
+  <data name="ValidateUserDtoTokenRequired" xml:space="preserve">
+    <value>Le token est obligatoire</value>
+  </data>
+  <data name="ValidateUserDtoUserNameRequired" xml:space="preserve">
+    <value>Le nom d'utilisateur est obligatoire</value>
+  </data>
 </root>

@@ -85,7 +85,28 @@ namespace DaOAuthV2.Gui.Front.Controllers
             return View(new RegisterModel());
         }
 
+        [HttpPost]
+        [AllowAnonymous]      
+        public async Task<IActionResult> Register(RegisterModel model)
+        {
+            HttpResponseMessage response = await PostToApi("users", new CreateUserDto()
+            {
+                BirthDate = model.BirthDate,
+                EMail = model.EMail,
+                FullName = model.FullName,
+                Password = model.Password,
+                RepeatPassword = model.RepeatPassword,
+                UserName = model.UserName
+            });
+
+            if (!await model.ValidateAsync(response))
+                return View(model);
+
+            return RedirectToAction("RegisterOk", "Account");
+        }
+
         [HttpGet]
+        [AllowAnonymous]
         public IActionResult RegisterOk()
         {
             return View();
@@ -124,35 +145,6 @@ namespace DaOAuthV2.Gui.Front.Controllers
                 return View(model);
 
             return RedirectToAction("Dashboard", "Home");
-        }
-
-        [AllowAnonymous]
-        [HttpPost]
-        public async Task<IActionResult> Register(RegisterModel model)
-        {
-            HttpResponseMessage response = await PostToApi("users", new CreateUserDto()
-            {
-                BirthDate = model.BirthDate,
-                EMail = model.EMail,
-                FullName = model.FullName,
-                Password = model.Password,
-                RepeatPassword = model.RepeatPassword,
-                UserName = model.UserName
-            });
-
-            if (!await model.ValidateAsync(response))
-                return View(model);
-
-            // reload user to get roles
-            HttpResponseMessage loggedUserResponse = await PostToApi("users/find", new LoginUserDto
-            {
-                UserName = model.UserName,
-                Password = model.Password
-            });
-
-            LogUser(await loggedUserResponse.Content.ReadAsAsync<UserDto>(), false);
-
-            return RedirectToAction("RegisterOk", "Account");
         }
 
         [Authorize]
@@ -241,6 +233,28 @@ namespace DaOAuthV2.Gui.Front.Controllers
 
             // TODO manage exceptions
             throw new Exception("TODO mécanisme exception");
+        }
+
+        [HttpGet]
+        [Route("{culture}/Account/Validate/{userName}/{token}")]
+        [AllowAnonymous]
+        public async Task<IActionResult> ValidateUser(string userName, string token)
+        {
+            HttpResponseMessage response = await PutToApi("users/validate", new ValidateUserDto()
+            {
+                UserName = userName,
+                Token = token
+            });
+
+            if (response.StatusCode != System.Net.HttpStatusCode.OK)
+            {
+                ErrorApiResultDto e = JsonConvert.DeserializeObject<ErrorApiResultDto>(await response.Content.ReadAsStringAsync());
+                throw new Exception(e.Message);
+            }
+
+            LogUser(await response.Content.ReadAsAsync<UserDto>(), false);
+
+            return RedirectToAction("DashBoard", "Home");
         }
 
         private void LogUser(UserDto u, bool rememberMe)

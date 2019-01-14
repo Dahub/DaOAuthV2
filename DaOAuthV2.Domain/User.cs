@@ -16,5 +16,6 @@ namespace DaOAuthV2.Domain
         public bool IsValid { get; set; }
         public ICollection<UserClient> UsersClients { get; set; }
         public ICollection<UserRole> UsersRoles { get; set; }
+        public string ValidationToken { get; set; }
     }
 }

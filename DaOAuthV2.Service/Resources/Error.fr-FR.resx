@@ -324,4 +324,13 @@
   <data name="UserNameParameterError" xml:space="preserve">
     <value>Le paramètre user name est obligatoire</value>
   </data>
+  <data name="ValidateUserEverValidated" xml:space="preserve">
+    <value>Utilisateur déjà validé</value>
+  </data>
+  <data name="ValidateUserInvalidToken" xml:space="preserve">
+    <value>Token invalide</value>
+  </data>
+  <data name="ValidateUserNoUserFound" xml:space="preserve">
+    <value>Utilisateur inconnu</value>
+  </data>
 </root>
