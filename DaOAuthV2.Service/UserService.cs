@@ -13,6 +13,39 @@ namespace DaOAuthV2.Service
     {
         public IMailService MailService { get; set; }
         public IRandomService RandomService { get; set; }
+        public IEncryptionService EncryptionService { get; set; }
+
+        public void ChangeUserPassword(ChangePasswordDto infos)
+        {
+            Validate(infos);
+
+            using (var context = RepositoriesFactory.CreateContext(ConnexionString))
+            {
+                var local = this.GetErrorStringLocalizer();
+                var userRepo = RepositoriesFactory.GetUserRepository(context);
+
+                var user = userRepo.GetByUserName(infos.UserName);
+
+                if(user == null || !user.IsValid)
+                    throw new DaOAuthServiceException(local["ChangeUserPasswordUserInvalid"]);
+
+                if(!EncryptionService.AreEqualsSha256(
+                        String.Concat(Configuration.PasswordSalt, infos.OldPassword), user.Password))
+                    throw new DaOAuthServiceException(local["ChangeUserPasswordPasswordInvalid"]);
+
+                if(!infos.NewPassword.Equals(infos.NewPasswordRepeat, StringComparison.Ordinal))
+                    throw new DaOAuthServiceException(local["ChangeUserPasswordDifferentsNewPasswords"]);
+
+                if(!infos.NewPassword.IsMatchPasswordPolicy())
+                    throw new DaOAuthServiceException(local["ChangeUserPasswordNewPasswordDontMatchPolicy"]);
+
+                user.Password = EncryptionService.Sha256Hash(String.Concat(Configuration.PasswordSalt, infos.NewPassword));
+
+                userRepo.Update(user);
+
+                context.Commit();
+            }           
+        }
 
         public int CreateUser(CreateUserDto toCreate)
         {
@@ -23,7 +56,7 @@ namespace DaOAuthV2.Service
 
                 if (!String.IsNullOrEmpty(toCreate.Password)
                     && !String.IsNullOrEmpty(toCreate.RepeatPassword)
-                    &&!toCreate.Password.Equals(toCreate.RepeatPassword, StringComparison.Ordinal))
+                    && !toCreate.Password.Equals(toCreate.RepeatPassword, StringComparison.Ordinal))
                     result.Add(new ValidationResult(errorResource["CreateUserPasswordDontMatch"]));
 
                 if (!toValidate.Password.IsMatchPasswordPolicy())
@@ -57,7 +90,7 @@ namespace DaOAuthV2.Service
                 FullName = toCreate.FullName,
                 IsValid = false,
                 ValidationToken = RandomService.GenerateRandomString(32),
-                Password = Sha256Hash(string.Concat(Configuration.PasswordSalt, toCreate.Password)),
+                Password = EncryptionService.Sha256Hash(string.Concat(Configuration.PasswordSalt, toCreate.Password)),
                 UserName = toCreate.UserName
             };
 
@@ -70,7 +103,7 @@ namespace DaOAuthV2.Service
                 var roleRepo = RepositoriesFactory.GetRoleRepository(c);
 
                 var myRole = roleRepo.GetById((int)ERole.USER);
-                if(myRole != null)
+                if (myRole != null)
                 {
                     userRoleRepo.Add(new UserRole()
                     {
@@ -121,7 +154,7 @@ namespace DaOAuthV2.Service
         }
 
         public UserDto GetUser(LoginUserDto credentials)
-        {            
+        {
             Logger.LogInformation($"Try to get user {credentials.UserName}");
 
             Validate(credentials);
@@ -133,7 +166,7 @@ namespace DaOAuthV2.Service
                 var repo = RepositoriesFactory.GetUserRepository(c);
                 var user = repo.GetByUserName(credentials.UserName);
 
-                if (user != null && user.IsValid && AreEqualsSha256(
+                if (user != null && user.IsValid && EncryptionService.AreEqualsSha256(
                     String.Concat(Configuration.PasswordSalt, credentials.Password), user.Password))
                 {
                     result = user.ToDto();
@@ -210,13 +243,13 @@ namespace DaOAuthV2.Service
 
                 var myUser = userRepo.GetByUserName(infos.UserName);
 
-                if(myUser == null)
+                if (myUser == null)
                     throw new DaOAuthServiceException(local["ValidateUserNoUserFound"]);
 
-                if(!infos.Token.Equals(myUser.ValidationToken, StringComparison.Ordinal))
+                if (!infos.Token.Equals(myUser.ValidationToken, StringComparison.Ordinal))
                     throw new DaOAuthServiceException(local["ValidateUserInvalidToken"]);
 
-                if(myUser.IsValid)
+                if (myUser.IsValid)
                     throw new DaOAuthServiceException(local["ValidateUserEverValidated"]);
 
                 myUser.IsValid = true;

@@ -20,6 +20,7 @@ namespace DaOAuthV2.Service
 
         public IRandomService RandomService { get; set; }
         public IJwtService JwtService { get; set; }
+        public IEncryptionService EncryptonService { get; set; }
 
         public Uri GenererateUriForAuthorize(AskAuthorizeDto authorizeInfo)
         {
@@ -214,7 +215,7 @@ namespace DaOAuthV2.Service
                     return toReturn;
 
                 string rsSecret = credentials.Substring(separatorIndex + 1);
-                if (!AreEqualsSha256(String.Concat(Configuration.PasswordSalt, rsSecret), rs.ServerSecret))
+                if (!EncryptonService.AreEqualsSha256(String.Concat(Configuration.PasswordSalt, rsSecret), rs.ServerSecret))
                     return toReturn;
 
                 if (!rs.IsValid)
@@ -381,7 +382,7 @@ namespace DaOAuthV2.Service
                 var repo = RepositoriesFactory.GetUserRepository(context);
                 var user = repo.GetByUserName(tokenInfo.ParameterUsername);
 
-                if (user == null || !user.IsValid || !AreEqualsSha256(
+                if (user == null || !user.IsValid || !EncryptonService.AreEqualsSha256(
                     String.Concat(Configuration.PasswordSalt, tokenInfo.Password), user.Password))
                     throw new DaOAuthTokenException()
                     {

@@ -132,6 +132,15 @@
   <data name="AuthorizeRedirectUrlRequired" xml:space="preserve">
     <value>Redirect url is required</value>
   </data>
+  <data name="ChangePasswordDtoNewPasswordRequired" xml:space="preserve">
+    <value>New password is mandatory</value>
+  </data>
+  <data name="ChangePasswordDtoOldPasswordRequired" xml:space="preserve">
+    <value>Password is mandatory</value>
+  </data>
+  <data name="ChangePasswordDtoUserNameRequired" xml:space="preserve">
+    <value>User name is mandatory</value>
+  </data>
   <data name="ClientSearchDtoUserNameRequired" xml:space="preserve">
     <value>User name is mandatory</value>
   </data>

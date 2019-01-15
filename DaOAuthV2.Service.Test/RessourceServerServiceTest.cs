@@ -34,7 +34,8 @@ namespace DaOAuthV2.Service.Test
                 ConnexionString = string.Empty,
                 RepositoriesFactory = new FakeRepositoriesFactory(),
                 StringLocalizerFactory = new FakeStringLocalizerFactory(),
-                Logger = new FakeLogger()
+                Logger = new FakeLogger(),
+                EncryptonService = new FakeEncryptionService()
             };
 
             _adminUser = new User()

@@ -1,13 +1,11 @@
 ﻿using DaOAuthV2.Constants;
 using DaOAuthV2.Dal.Interface;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Security.Cryptography;
 using System.Text;
-using Microsoft.Extensions.Logging;
 
 namespace DaOAuthV2.Service
 {
@@ -18,27 +16,6 @@ namespace DaOAuthV2.Service
         public IStringLocalizerFactory StringLocalizerFactory { get; set; }
         public ILogger Logger { get; set; }
         public string ConnexionString { get; set; }
-        
-        protected static bool AreEqualsSha256(string toCompare, byte[] hash)
-        {
-            bool toReturn = false;
-
-            using (SHA256Managed sha256 = new SHA256Managed())
-            {
-                var hashed = sha256.ComputeHash(Encoding.UTF8.GetBytes(toCompare));
-                toReturn = hashed.SequenceEqual(hash);
-            }
-
-            return toReturn;
-        }
-
-        protected static byte[] Sha256Hash(string toHash)
-        {
-            using (SHA256Managed sha256 = new SHA256Managed())
-            {
-                return sha256.ComputeHash(Encoding.UTF8.GetBytes(toHash));
-            }
-        }
 
         protected void Validate<T>(T toValidate, Func<T, IList<ValidationResult>> extendValidate)
         {

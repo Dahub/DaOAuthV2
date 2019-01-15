@@ -23,6 +23,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Update="Views\Account\fr.ChangePassword.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+    <Content Update="Views\Account\fr.ChangePasswordOk.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
     <Content Update="Views\Account\fr.Edit.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>

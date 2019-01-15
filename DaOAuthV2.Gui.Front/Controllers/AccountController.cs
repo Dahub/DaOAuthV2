@@ -102,14 +102,7 @@ namespace DaOAuthV2.Gui.Front.Controllers
             if (!await model.ValidateAsync(response))
                 return View(model);
 
-            return RedirectToAction("RegisterOk", "Account");
-        }
-
-        [HttpGet]
-        [AllowAnonymous]
-        public IActionResult RegisterOk()
-        {
-            return View();
+            return View("RegisterOk");
         }
 
         [HttpGet]
@@ -255,6 +248,28 @@ namespace DaOAuthV2.Gui.Front.Controllers
             LogUser(await response.Content.ReadAsAsync<UserDto>(), false);
 
             return RedirectToAction("DashBoard", "Home");
+        }
+
+        [HttpGet]
+        public IActionResult ChangePassword()
+        {
+            return View(new ChangePasswordModel());
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ChangePassword(ChangePasswordModel model)
+        {
+            var response = await PutToApi("users/password", new ChangePasswordDto()
+            {
+                NewPassword = model.NewPassword,
+                NewPasswordRepeat = model.NewPasswordRepeat,
+                OldPassword = model.OldPassword
+            });
+
+            if (!await model.ValidateAsync(response))
+                return View(model);
+
+            return View("ChangePasswordOk");
         }
 
         private void LogUser(UserDto u, bool rememberMe)

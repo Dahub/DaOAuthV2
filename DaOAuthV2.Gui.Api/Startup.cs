@@ -72,7 +72,8 @@ namespace DaOAuthV2.Gui.Api
                 StringLocalizerFactory = localizationServiceFactory,
                 Logger = loggerServiceFactory.CreateLogger<UserService>(),
                 MailService = new SendGridMailService(conf.SendGridKey),
-                RandomService = new RandomService()
+                RandomService = new RandomService(),
+                EncryptionService = new EncryptionService()
             });
 
             services.AddTransient<IJwtService>(u => new JwtService()
@@ -118,7 +119,8 @@ namespace DaOAuthV2.Gui.Api
                 RepositoriesFactory = new EfRepositoriesFactory(),
                 ConnexionString = Configuration.GetConnectionString("DaOAuthConnexionString"),
                 StringLocalizerFactory = localizationServiceFactory,
-                Logger = loggerServiceFactory.CreateLogger<RessourceServerService>()
+                Logger = loggerServiceFactory.CreateLogger<RessourceServerService>(),
+                EncryptonService = new EncryptionService()
             });
 
             services.AddTransient<IScopeService>(u => new ScopeService()

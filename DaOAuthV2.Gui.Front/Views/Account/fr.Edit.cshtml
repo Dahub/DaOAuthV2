@@ -6,7 +6,16 @@
 
 @await Html.PartialAsync("_fr.modelErrors")
 
-<h1>Modification de votre compte</h1>
+<h1>
+    <div class="row">
+        <div class="col-8">
+            Modification de votre compte
+        </div>
+        <div class="col-4">
+            <a href="@Url.Action("ChangePassword", "Account")" class="btn btn-lg btn-secondary btn-block">Changer votre mot de passe</a>
+        </div>
+    </div>
+</h1>
 <hr />
 
 <form asp-action="Edit" id="rsForm" method="post">

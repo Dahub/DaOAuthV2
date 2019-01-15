@@ -33,4 +33,11 @@ namespace DaOAuthV2.Gui.Front.Models
         [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}", ApplyFormatInEditMode = true)]
         public DateTime? BirthDate { get; set; }
     }
+
+    public class ChangePasswordModel : AbstractModel
+    {
+        public string OldPassword { get; set; }
+        public string NewPassword { get; set; }
+        public string NewPasswordRepeat { get; set; }
+    }
 }

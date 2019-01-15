@@ -12,6 +12,8 @@ namespace DaOAuthV2.Service
 {
     public class RessourceServerService : ServiceBase, IRessourceServerService
     {
+        public IEncryptionService EncryptonService { get; set; }
+
         public int CreateRessourceServer(CreateRessourceServerDto toCreate)
         {
             int rsId = 0;
@@ -75,7 +77,7 @@ namespace DaOAuthV2.Service
                     IsValid = true,
                     Login = toCreate.Login,
                     Name = toCreate.Name,
-                    ServerSecret = Sha256Hash(string.Concat(Configuration.PasswordSalt, toCreate.Password))
+                    ServerSecret = EncryptonService.Sha256Hash(string.Concat(Configuration.PasswordSalt, toCreate.Password))
                 };
                 rsId = rsRepo.Add(myRs);
 

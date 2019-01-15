@@ -333,4 +333,16 @@
   <data name="ValidateUserNoUserFound" xml:space="preserve">
     <value>Utilisateur inconnu</value>
   </data>
+  <data name="ChangeUserPasswordDifferentsNewPasswords" xml:space="preserve">
+    <value>Les deux mots de passe ne correspondent pas</value>
+  </data>
+  <data name="ChangeUserPasswordNewPasswordDontMatchPolicy" xml:space="preserve">
+    <value>Le mot de passe ne rempli pas les critères requis</value>
+  </data>
+  <data name="ChangeUserPasswordPasswordInvalid" xml:space="preserve">
+    <value>Mot de passe invalide</value>
+  </data>
+  <data name="ChangeUserPasswordUserInvalid" xml:space="preserve">
+    <value>Utilisateur inconnu ou invalide</value>
+  </data>
 </root>

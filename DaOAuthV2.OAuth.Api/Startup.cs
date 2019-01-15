@@ -67,7 +67,8 @@ namespace DaOAuthV2.OAuth.Api
                     Configuration = conf,
                     StringLocalizerFactory = localizationServiceFactory,
                     Logger = loggerServiceFactory.CreateLogger<JwtService>()
-                }
+                },
+                EncryptonService = new EncryptionService()
             });
 
             services.AddMvc(options =>

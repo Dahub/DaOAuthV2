@@ -259,7 +259,8 @@ namespace DaOAuthV2.Service.Test
                     Scope = String.Empty,
                     Token = "abcdef",
                     UserName = _validUser.UserName
-                })
+                }),
+                EncryptonService = new FakeEncryptionService()
             };
         }
 
@@ -1373,7 +1374,8 @@ namespace DaOAuthV2.Service.Test
                     Scope = "scp_vc",
                     Token = token,
                     UserName = _validUser.UserName
-                })
+                }),
+                EncryptonService = new FakeEncryptionService()
             };
 
             var tokenInfo = _service.GenerateToken(new AskTokenDto()
@@ -1520,7 +1522,8 @@ namespace DaOAuthV2.Service.Test
                     Expire = long.MaxValue,
                     IsValid = true,
                     Token = token
-                })
+                }),
+                EncryptonService = new FakeEncryptionService()
             };
 
             var introspectInfo = _service.Introspect(new AskIntrospectDto()
@@ -1551,7 +1554,8 @@ namespace DaOAuthV2.Service.Test
                     Expire = long.MaxValue,
                     IsValid = true,
                     Token = token
-                })
+                }),
+                EncryptonService = new FakeEncryptionService()
             };
 
             var introspectInfo = _service.Introspect(new AskIntrospectDto()
@@ -1582,7 +1586,8 @@ namespace DaOAuthV2.Service.Test
                     Expire = long.MaxValue,
                     IsValid = false,
                     Token = token
-                })
+                }),
+                EncryptonService = new FakeEncryptionService()
             };
 
             var introspectInfo = _service.Introspect(new AskIntrospectDto()
@@ -1616,7 +1621,8 @@ namespace DaOAuthV2.Service.Test
                     ClientId = "clid",
                     Scope = "sc1 sc2",
                     UserName = "Sammy"
-                })
+                }),
+                EncryptonService = new FakeEncryptionService()
             };
 
             var introspectInfo = _service.Introspect(new AskIntrospectDto()

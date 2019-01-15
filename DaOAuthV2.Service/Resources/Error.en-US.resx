@@ -324,4 +324,16 @@
   <data name="ValidateUserNoUserFound" xml:space="preserve">
     <value>Unknow user</value>
   </data>
+  <data name="ChangeUserPasswordDifferentsNewPasswords" xml:space="preserve">
+    <value>Mismatching new passwords</value>
+  </data>
+  <data name="ChangeUserPasswordNewPasswordDontMatchPolicy" xml:space="preserve">
+    <value>Password don't match policy</value>
+  </data>
+  <data name="ChangeUserPasswordPasswordInvalid" xml:space="preserve">
+    <value>Invalid password</value>
+  </data>
+  <data name="ChangeUserPasswordUserInvalid" xml:space="preserve">
+    <value>User don't exist or ban</value>
+  </data>
 </root>

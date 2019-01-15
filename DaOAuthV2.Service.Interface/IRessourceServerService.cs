@@ -5,6 +5,8 @@ namespace DaOAuthV2.Service.Interface
 {
     public interface IRessourceServerService
     {
+        IEncryptionService EncryptonService { get; set; }
+
         int CreateRessourceServer(CreateRessourceServerDto toCreate);
         int SearchCount(RessourceServerSearchDto criterias);
         IEnumerable<RessourceServerDto> Search(RessourceServerSearchDto criterias);

@@ -89,5 +89,15 @@ namespace DaOAuthV2.Gui.Api.Controllers
         {
             return Ok(_service.ValidateUser(model));
         }
+
+        [HttpPut]
+        [Route("password")]
+        [Authorize]
+        public IActionResult ChangePassword(ChangePasswordDto model)
+        {
+            model.UserName = User.Identity.Name;
+            _service.ChangeUserPassword(model);
+            return Ok();
+        }
     }
 }

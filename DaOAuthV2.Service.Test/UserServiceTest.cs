@@ -29,7 +29,8 @@ namespace DaOAuthV2.Service.Test
                 StringLocalizerFactory = new FakeStringLocalizerFactory(),
                 Logger = new FakeLogger(),
                 MailService = new FakeMailService(),
-                RandomService = new FakeRandomService(123, "returnString")
+                RandomService = new FakeRandomService(123, "returnString"),
+                EncryptionService = new FakeEncryptionService()
             };
         }
 
@@ -631,7 +632,7 @@ namespace DaOAuthV2.Service.Test
 
         [TestMethod]
         [ExpectedException(typeof(DaOAuthServiceException))]
-        public void Validate_User_With_Empty_User_Name_Throw_Exception()
+        public void Validate_User_With_Empty_User_Name_Should_Throw_Exception()
         {
             FakeDataBase.Instance.Users.Clear();
             FakeDataBase.Instance.Users.Add(new Domain.User()
@@ -652,6 +653,263 @@ namespace DaOAuthV2.Service.Test
                 UserName = String.Empty,
                 Token = "validateToken"
             });
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(DaOAuthServiceException))]
+        public void Change_User_Password_With_Empty_User_Name_Should_Throw_Exception()
+        {
+            FakeDataBase.Instance.Users.Clear();
+            FakeDataBase.Instance.Users.Add(new Domain.User()
+            {
+                BirthDate = DateTime.Now,
+                CreationDate = DateTime.Now,
+                EMail = "test@test.com",
+                FullName = "I am testeur",
+                Id = 3566,
+                IsValid = true,
+                Password = _service.EncryptionService.Sha256Hash(
+                    String.Concat(FakeConfigurationHelper.GetFakeConf().PasswordSalt, "abcdefghij")),
+                UserName = "validate_test",
+                ValidationToken = "validateToken"
+            });
+
+            _service.ChangeUserPassword(new DTO.ChangePasswordDto()
+            {
+                NewPassword = "i_am_a_new_password",
+                NewPasswordRepeat = "i_am_a_new_password",
+                OldPassword = "abcdefghij",
+                UserName = String.Empty
+            });
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(DaOAuthServiceException))]
+        public void Change_User_Password_With_Empty_Old_Password_Should_Throw_Exception()
+        {
+            FakeDataBase.Instance.Users.Clear();
+            FakeDataBase.Instance.Users.Add(new Domain.User()
+            {
+                BirthDate = DateTime.Now,
+                CreationDate = DateTime.Now,
+                EMail = "test@test.com",
+                FullName = "I am testeur",
+                Id = 3566,
+                IsValid = true,
+                Password = _service.EncryptionService.Sha256Hash(
+                    String.Concat(FakeConfigurationHelper.GetFakeConf().PasswordSalt, "abcdefghij")),
+                UserName = "validate_test",
+                ValidationToken = "validateToken"
+            });
+
+            _service.ChangeUserPassword(new DTO.ChangePasswordDto()
+            {
+                NewPassword = "i_am_a_new_password",
+                NewPasswordRepeat = "i_am_a_new_password",
+                OldPassword = String.Empty,
+                UserName = "validate_test"
+            });
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(DaOAuthServiceException))]
+        public void Change_User_Password_With_Empty_New_Password_Should_Throw_Exception()
+        {
+            FakeDataBase.Instance.Users.Clear();
+            FakeDataBase.Instance.Users.Add(new Domain.User()
+            {
+                BirthDate = DateTime.Now,
+                CreationDate = DateTime.Now,
+                EMail = "test@test.com",
+                FullName = "I am testeur",
+                Id = 3566,
+                IsValid = true,
+                Password = _service.EncryptionService.Sha256Hash(
+                    String.Concat(FakeConfigurationHelper.GetFakeConf().PasswordSalt, "abcdefghij")),
+                UserName = "validate_test",
+                ValidationToken = "validateToken"
+            });
+
+            _service.ChangeUserPassword(new DTO.ChangePasswordDto()
+            {
+                NewPassword = String.Empty,
+                NewPasswordRepeat = String.Empty,
+                OldPassword = "abcdefghij",
+                UserName = "validate_test"
+            });
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(DaOAuthServiceException))]
+        public void Change_User_Password_With_Differents_New_Password_Should_Throw_Exception()
+        {
+            FakeDataBase.Instance.Users.Clear();
+            FakeDataBase.Instance.Users.Add(new Domain.User()
+            {
+                BirthDate = DateTime.Now,
+                CreationDate = DateTime.Now,
+                EMail = "test@test.com",
+                FullName = "I am testeur",
+                Id = 3566,
+                IsValid = true,
+                Password = _service.EncryptionService.Sha256Hash(
+                    String.Concat(FakeConfigurationHelper.GetFakeConf().PasswordSalt, "abcdefghij")),
+                UserName = "validate_test",
+                ValidationToken = "validateToken"
+            });
+
+            _service.ChangeUserPassword(new DTO.ChangePasswordDto()
+            {
+                NewPassword = "i_am_a_new_password",
+                NewPasswordRepeat = "i_am_a_new_password_different",
+                OldPassword = "abcdefghij",
+                UserName = "validate_test"
+            });
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(DaOAuthServiceException))]
+        public void Change_User_Password_With_Invalid_User_Should_Throw_Exception()
+        {
+            FakeDataBase.Instance.Users.Clear();
+            FakeDataBase.Instance.Users.Add(new Domain.User()
+            {
+                BirthDate = DateTime.Now,
+                CreationDate = DateTime.Now,
+                EMail = "test@test.com",
+                FullName = "I am testeur",
+                Id = 3566,
+                IsValid = false,
+                Password = _service.EncryptionService.Sha256Hash(
+                    String.Concat(FakeConfigurationHelper.GetFakeConf().PasswordSalt, "abcdefghij")),
+                UserName = "validate_test",
+                ValidationToken = "validateToken"
+            });
+
+            _service.ChangeUserPassword(new DTO.ChangePasswordDto()
+            {
+                NewPassword = "i_am_a_new_password",
+                NewPasswordRepeat = "i_am_a_new_password",
+                OldPassword = "abcdefghij",
+                UserName = "validate_test"
+            });
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(DaOAuthServiceException))]
+        public void Change_User_Password_With_Unknow_User_Should_Throw_Exception()
+        {
+            FakeDataBase.Instance.Users.Clear();
+            FakeDataBase.Instance.Users.Add(new Domain.User()
+            {
+                BirthDate = DateTime.Now,
+                CreationDate = DateTime.Now,
+                EMail = "test@test.com",
+                FullName = "I am testeur",
+                Id = 3566,
+                IsValid = true,
+                Password = _service.EncryptionService.Sha256Hash(
+                    String.Concat(FakeConfigurationHelper.GetFakeConf().PasswordSalt, "abcdefghij")),
+                UserName = "validate_test",
+                ValidationToken = "validateToken"
+            });
+
+            _service.ChangeUserPassword(new DTO.ChangePasswordDto()
+            {
+                NewPassword = "i_am_a_new_password",
+                NewPasswordRepeat = "i_am_a_new_password",
+                OldPassword = "abcdefghij",
+                UserName = "validate_test_unknow"
+            });
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(DaOAuthServiceException))]
+        public void Change_User_Password_With_Incorrect_Old_Password_User_Should_Throw_Exception()
+        {
+            FakeDataBase.Instance.Users.Clear();
+            FakeDataBase.Instance.Users.Add(new Domain.User()
+            {
+                BirthDate = DateTime.Now,
+                CreationDate = DateTime.Now,
+                EMail = "test@test.com",
+                FullName = "I am testeur",
+                Id = 3566,
+                IsValid = true,
+                Password = _service.EncryptionService.Sha256Hash(
+                    String.Concat(FakeConfigurationHelper.GetFakeConf().PasswordSalt, "abcdefghij")),
+                UserName = "validate_test",
+                ValidationToken = "validateToken"
+            });
+
+            _service.ChangeUserPassword(new DTO.ChangePasswordDto()
+            {
+                NewPassword = "i_am_a_new_password",
+                NewPasswordRepeat = "i_am_a_new_password",
+                OldPassword = "abcdefghijklm",
+                UserName = "validate_test"
+            });
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(DaOAuthServiceException))]
+        public void Change_User_Password_With_Too_Short_New_Password_User_Should_Throw_Exception()
+        {
+            FakeDataBase.Instance.Users.Clear();
+            FakeDataBase.Instance.Users.Add(new Domain.User()
+            {
+                BirthDate = DateTime.Now,
+                CreationDate = DateTime.Now,
+                EMail = "test@test.com",
+                FullName = "I am testeur",
+                Id = 3566,
+                IsValid = true,
+                Password = _service.EncryptionService.Sha256Hash(
+                    String.Concat(FakeConfigurationHelper.GetFakeConf().PasswordSalt, "abcdefghij")),
+                UserName = "validate_test",
+                ValidationToken = "validateToken"
+            });
+
+            _service.ChangeUserPassword(new DTO.ChangePasswordDto()
+            {
+                NewPassword = "short",
+                NewPasswordRepeat = "short",
+                OldPassword = "abcdefghij",
+                UserName = "validate_test"
+            });
+        }
+
+        [TestMethod]
+        public void Change_User_Password_Should_Change_Password()
+        {
+            FakeDataBase.Instance.Users.Clear();
+            FakeDataBase.Instance.Users.Add(new Domain.User()
+            {
+                BirthDate = DateTime.Now,
+                CreationDate = DateTime.Now,
+                EMail = "test@test.com",
+                FullName = "I am testeur",
+                Id = 3566,
+                IsValid = true,
+                Password = _service.EncryptionService.Sha256Hash(
+                    String.Concat(FakeConfigurationHelper.GetFakeConf().PasswordSalt, "abcdefghij")),
+                UserName = "validate_test",
+                ValidationToken = "validateToken"
+            });
+
+            _service.ChangeUserPassword(new DTO.ChangePasswordDto()
+            {
+                NewPassword = "long_enought",
+                NewPasswordRepeat = "long_enought",
+                OldPassword = "abcdefghij",
+                UserName = "validate_test"
+            });
+
+            var user = FakeDataBase.Instance.Users.FirstOrDefault(u => u.Id.Equals(3566));
+
+            Assert.IsNotNull(user);
+            Assert.IsTrue(_service.EncryptionService.AreEqualsSha256(
+                    String.Concat(FakeConfigurationHelper.GetFakeConf().PasswordSalt, "long_enought"), user.Password));
         }
     }
 }
