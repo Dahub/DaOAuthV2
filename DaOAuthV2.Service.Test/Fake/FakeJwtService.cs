@@ -8,9 +8,9 @@ namespace DaOAuthV2.Service.Test.Fake
     public class FakeJwtService : IJwtService
     {
         private JwtTokenDto _token;
-        private ChangeMailJwtTokenDto _mailToken;
+        private MailJwtTokenDto _mailToken;
 
-        public FakeJwtService(ChangeMailJwtTokenDto mailToken)
+        public FakeJwtService(MailJwtTokenDto mailToken)
         {
             _mailToken = mailToken;
         }
@@ -52,13 +52,13 @@ namespace DaOAuthV2.Service.Test.Fake
             return s;
         }
 
-        public ChangeMailJwtTokenDto GenerateMailToken()
+        public MailJwtTokenDto GenerateMailToken(string userName)
         {
             _mailToken.Token = GenerateRandomString(20);
             return _mailToken;
         }
 
-        public ChangeMailJwtTokenDto ExtractMailToken(string token)
+        public MailJwtTokenDto ExtractMailToken(string token)
         {
             return _mailToken;
         }

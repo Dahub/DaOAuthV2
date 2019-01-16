@@ -1,4 +1,5 @@
 using DaOAuthV2.Dal.Interface;
+using DaOAuthV2.Service.DTO;
 using DaOAuthV2.Service.Interface;
 using DaOAuthV2.Service.Test.Fake;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -12,6 +13,7 @@ namespace DaOAuthV2.Service.Test
     {
         private IUserService _service;
         private IUserRepository _repo;
+        private FakeMailService _fakeMailService;
 
         [TestInitialize]
         public void Init()
@@ -21,6 +23,8 @@ namespace DaOAuthV2.Service.Test
                 Context = new FakeContext()
             };
 
+            _fakeMailService = new FakeMailService();
+
             _service = new UserService()
             {
                 Configuration = FakeConfigurationHelper.GetFakeConf(),
@@ -28,9 +32,14 @@ namespace DaOAuthV2.Service.Test
                 RepositoriesFactory = new FakeRepositoriesFactory(),
                 StringLocalizerFactory = new FakeStringLocalizerFactory(),
                 Logger = new FakeLogger(),
-                MailService = new FakeMailService(),
+                MailService = _fakeMailService,
                 RandomService = new FakeRandomService(123, "returnString"),
-                EncryptionService = new FakeEncryptionService()
+                EncryptionService = new FakeEncryptionService(),
+                JwtService = new FakeJwtService(new MailJwtTokenDto()
+                {
+                    Expire = Int64.MaxValue,
+                    IsValid = true                    
+                })
             };
         }
 
@@ -144,6 +153,7 @@ namespace DaOAuthV2.Service.Test
             Assert.IsFalse(user.IsValid);
             Assert.IsTrue(!String.IsNullOrWhiteSpace(user.ValidationToken));
             Assert.AreEqual("returnString", user.ValidationToken);
+            Assert.IsTrue(_fakeMailService.HaveBeenCalled);
         }
 
         [TestMethod]
@@ -910,6 +920,59 @@ namespace DaOAuthV2.Service.Test
             Assert.IsNotNull(user);
             Assert.IsTrue(_service.EncryptionService.AreEqualsSha256(
                     String.Concat(FakeConfigurationHelper.GetFakeConf().PasswordSalt, "long_enought"), user.Password));
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(DaOAuthServiceException))]
+        public void Send_Mail_Password_Lost_Without_Email_Should_Throw_Exception()
+        {
+            _service.SendMailLostPassword(new DTO.LostPawwordDto()
+            {
+                Email = null
+            });
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(DaOAuthServiceException))]
+        public void Send_Mail_Password_Lost_With_Unknow_Email_Should_Throw_Exception()
+        {
+            _service.SendMailLostPassword(new DTO.LostPawwordDto()
+            {
+                Email = "unknow@test.com"
+            });
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(DaOAuthServiceException))]
+        public void Send_Mail_Password_Lost_With_Invalid_User_Maiil_Should_Throw_Exception()
+        {
+            var user = FakeDataBase.Instance.Users.
+                FirstOrDefault(u => u.IsValid.Equals(false));
+
+            Assert.IsNotNull(user);
+            Assert.IsFalse(String.IsNullOrWhiteSpace(user.EMail));
+
+            _service.SendMailLostPassword(new DTO.LostPawwordDto()
+            {
+                Email = user.EMail
+            });
+        }
+
+        [TestMethod]
+        public void Send_Mail_Password_Lost_Should_Send_Mail()
+        {
+            var user = FakeDataBase.Instance.Users.
+              FirstOrDefault(u => u.IsValid.Equals(true));
+
+            Assert.IsNotNull(user);
+            Assert.IsFalse(String.IsNullOrWhiteSpace(user.EMail));
+
+            _service.SendMailLostPassword(new DTO.LostPawwordDto()
+            {
+                Email = user.EMail
+            });
+
+            Assert.IsTrue(_fakeMailService.HaveBeenCalled);
         }
     }
 }

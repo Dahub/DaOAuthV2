@@ -336,4 +336,7 @@
   <data name="ChangeUserPasswordUserInvalid" xml:space="preserve">
     <value>User don't exist or ban</value>
   </data>
+  <data name="SendMailLostPasswordUserNoUserFound" xml:space="preserve">
+    <value>Unknow email</value>
+  </data>
 </root>

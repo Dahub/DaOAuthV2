@@ -5,7 +5,6 @@ namespace DaOAuthV2.Service.Interface
 {
     public interface IMailService
     {
-        string SendGridApiKey { get; }
         Task<bool> SendEmail(SendEmailDto mailInfo);
     }
 }

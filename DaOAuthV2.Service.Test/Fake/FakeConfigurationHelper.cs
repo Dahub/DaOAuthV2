@@ -11,7 +11,8 @@ namespace DaOAuthV2.Service.Test.Fake
                 PasswordSalt = "SALT",
                 SecurityKey = "KEY",
                 AuthorizeClientPageUrl = new Uri("http://www.perdu.com"),
-                ValidateAccountPageUrl = "http://test.com/{0}/{1}"
+                ValidateAccountPageUrl = "http://test.com/{0}/{1}",
+                GetNewPasswordPageUrl = "http://test.com/{0}"
             };
         }
     }

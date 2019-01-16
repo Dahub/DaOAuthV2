@@ -345,4 +345,7 @@
   <data name="ChangeUserPasswordUserInvalid" xml:space="preserve">
     <value>Utilisateur inconnu ou invalide</value>
   </data>
+  <data name="SendMailLostPasswordUserNoUserFound" xml:space="preserve">
+    <value>Email inconnu</value>
+  </data>
 </root>

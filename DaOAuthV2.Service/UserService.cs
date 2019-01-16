@@ -14,6 +14,7 @@ namespace DaOAuthV2.Service
         public IMailService MailService { get; set; }
         public IRandomService RandomService { get; set; }
         public IEncryptionService EncryptionService { get; set; }
+        public IJwtService JwtService { get; set; }
 
         public void ChangeUserPassword(ChangePasswordDto infos)
         {
@@ -192,6 +193,38 @@ namespace DaOAuthV2.Service
             }
 
             return result;
+        }
+
+        public void SendMailLostPassword(LostPawwordDto infos)
+        {
+            Validate(infos);
+
+            using (var context = RepositoriesFactory.CreateContext(ConnexionString))
+            {
+                var errorResource = this.GetErrorStringLocalizer();
+                var mailResource = this.GetMailStringLocalizer();
+                var userRepo = RepositoriesFactory.GetUserRepository(context);
+
+                var user = userRepo.GetByEmail(infos.Email);
+
+                if(user == null || !user.IsValid)
+                    throw new DaOAuthServiceException(errorResource["SendMailLostPasswordUserNoUserFound"]);
+
+                var myToken = JwtService.GenerateMailToken(user.UserName);
+                Uri link = new Uri(String.Format(Configuration.GetNewPasswordPageUrl, myToken.Token));
+
+                MailService.SendEmail(new SendEmailDto()
+                {
+                    Body = String.Format(mailResource["MailLostPasswordBody"], link.AbsoluteUri),
+                    IsHtml = true,
+                    Receviers = new Dictionary<string, string>()
+                    {
+                        { user.EMail, user.EMail }
+                    },
+                    Sender = new KeyValuePair<string, string>("no-reply@daOauth.fr", "no reply"),
+                    Subject = mailResource["MailLostPasswordSubject"]
+                });
+            }
         }
 
         public void UpdateUser(UpdateUserDto toUpdate)

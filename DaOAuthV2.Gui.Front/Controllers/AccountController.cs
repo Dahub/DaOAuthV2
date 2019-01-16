@@ -256,6 +256,14 @@ namespace DaOAuthV2.Gui.Front.Controllers
             return View(new ChangePasswordModel());
         }
 
+        [HttpGet]
+        [Route("{culture}/Account/NewPassword/{token}")]
+        [AllowAnonymous]
+        public IActionResult NewPassword(string token)
+        {
+            return View();
+        }
+
         [HttpPost]
         public async Task<IActionResult> ChangePassword(ChangePasswordModel model)
         {

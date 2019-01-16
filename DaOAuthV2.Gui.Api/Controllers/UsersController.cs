@@ -99,5 +99,18 @@ namespace DaOAuthV2.Gui.Api.Controllers
             _service.ChangeUserPassword(model);
             return Ok();
         }
+
+        [HttpGet]
+        [Route("password")]
+        public IActionResult GetNewPassword(string email)
+        {
+            var model = new LostPawwordDto()
+            {
+                Email = email
+            };
+                
+            _service.SendMailLostPassword(model);
+            return Ok();
+        }
     }
 }

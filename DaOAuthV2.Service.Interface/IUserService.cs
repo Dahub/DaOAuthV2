@@ -15,5 +15,6 @@ namespace DaOAuthV2.Service.Interface
         UserDto GetUser(string userName);
         UserDto ValidateUser(ValidateUserDto infos);
         void ChangeUserPassword(ChangePasswordDto infos);
+        void SendMailLostPassword(LostPawwordDto infos);
     }
 }

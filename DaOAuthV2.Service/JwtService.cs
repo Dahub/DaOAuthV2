@@ -119,7 +119,7 @@ namespace DaOAuthV2.Service
             return claim.Value;
         }
 
-        public ChangeMailJwtTokenDto GenerateMailToken()
+        public MailJwtTokenDto GenerateMailToken(string userName)
         {
             Logger.LogInformation("Try to generate mail token");
 
@@ -129,6 +129,7 @@ namespace DaOAuthV2.Service
 
             IList<Claim> claims = new List<Claim>();
             claims.Add(new Claim(ClaimName.Issued, utcNow.ToUnixTimeSeconds().ToString(CultureInfo.InvariantCulture)));
+            claims.Add(new Claim(ClaimName.Name, !String.IsNullOrEmpty(userName) ? userName : String.Empty));
 
             var token = new JwtSecurityToken(
                 issuer: Configuration.Issuer,
@@ -137,7 +138,7 @@ namespace DaOAuthV2.Service
                 claims: claims,
                 expires: utcNow.AddSeconds(MAIL_TOKEN_LIFETIME_IN_SECONDS).UtcDateTime);
 
-            return new ChangeMailJwtTokenDto()
+            return new MailJwtTokenDto()
             {
                 Expire = utcNow.AddSeconds(MAIL_TOKEN_LIFETIME_IN_SECONDS).ToUnixTimeSeconds(),
                 IsValid = true,
@@ -145,11 +146,11 @@ namespace DaOAuthV2.Service
             };
         }
 
-        public ChangeMailJwtTokenDto ExtractMailToken(string token)
+        public MailJwtTokenDto ExtractMailToken(string token)
         {
             Logger.LogInformation("Try to extract mail token");
 
-            var toReturn = new ChangeMailJwtTokenDto()
+            var toReturn = new MailJwtTokenDto()
             {
                 IsValid = false,
                 Token = token
@@ -185,6 +186,7 @@ namespace DaOAuthV2.Service
                 return toReturn;
 
             toReturn.Expire = expire;
+            toReturn.UserName = GetValueFromClaim(pClaim.Claims, ClaimName.Name);
 
             if (expire < DateTimeOffset.Now.ToUnixTimeSeconds())
                 return toReturn;

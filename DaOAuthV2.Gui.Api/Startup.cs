@@ -73,7 +73,13 @@ namespace DaOAuthV2.Gui.Api
                 Logger = loggerServiceFactory.CreateLogger<UserService>(),
                 MailService = new SendGridMailService(conf.SendGridKey),
                 RandomService = new RandomService(),
-                EncryptionService = new EncryptionService()
+                EncryptionService = new EncryptionService(),
+                JwtService = new JwtService()
+                {
+                    Configuration = conf,
+                    StringLocalizerFactory = localizationServiceFactory,
+                    Logger = loggerServiceFactory.CreateLogger<JwtService>()
+                }
             });
 
             services.AddTransient<IJwtService>(u => new JwtService()

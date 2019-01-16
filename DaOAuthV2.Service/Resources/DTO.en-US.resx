@@ -234,6 +234,9 @@
   <data name="LoginUserDtoUserNameRequired" xml:space="preserve">
     <value>User name is mandatory</value>
   </data>
+  <data name="LostPasswordDtoPasswordRequired" xml:space="preserve">
+    <value>Email is mandatory</value>
+  </data>
   <data name="UpdateClientDtoClientSecretDontMatchPolicy" xml:space="preserve">
     <value>Client secret don't match policy (12 characters)</value>
   </data>
