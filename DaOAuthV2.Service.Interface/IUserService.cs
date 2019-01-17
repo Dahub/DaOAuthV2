@@ -7,6 +7,7 @@ namespace DaOAuthV2.Service.Interface
         IMailService MailService { get; set; }
         IEncryptionService EncryptionService { get; set; }
         IRandomService RandomService { get; set; }
+        IJwtService JwtService { get; set; }
 
         int CreateUser(CreateUserDto toCreate);
         void UpdateUser(UpdateUserDto toUpdate);
@@ -16,5 +17,6 @@ namespace DaOAuthV2.Service.Interface
         UserDto ValidateUser(ValidateUserDto infos);
         void ChangeUserPassword(ChangePasswordDto infos);
         void SendMailLostPassword(LostPawwordDto infos);
+        void SetNewUserPassword(NewPasswordDto infos);
     }
 }

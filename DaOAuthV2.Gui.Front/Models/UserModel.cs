@@ -40,4 +40,16 @@ namespace DaOAuthV2.Gui.Front.Models
         public string NewPassword { get; set; }
         public string NewPasswordRepeat { get; set; }
     }
+
+    public class NewPasswordModel : AbstractModel
+    {
+        public string Token { get; set; }
+        public string NewPassword { get; set; }
+        public string NewPasswordRepeat { get; set; }
+    }
+
+    public class AskNewPasswordModel : AbstractModel
+    {
+        public string Email { get; set; }
+    }
 }

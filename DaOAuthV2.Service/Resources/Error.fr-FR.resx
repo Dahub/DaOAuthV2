@@ -348,4 +348,13 @@
   <data name="SendMailLostPasswordUserNoUserFound" xml:space="preserve">
     <value>Email inconnu</value>
   </data>
+  <data name="SetNewUserPasswordDifferentsNewPasswords" xml:space="preserve">
+    <value>Les deux mots de passe ne correspondent pas</value>
+  </data>
+  <data name="SetNewUserPasswordInvalidToken" xml:space="preserve">
+    <value>Token invalide</value>
+  </data>
+  <data name="SetNewUserPasswordNewPasswordDontMatchPolicy" xml:space="preserve">
+    <value>Le mot de passe ne rempli pas les critères requis</value>
+  </data>
 </root>

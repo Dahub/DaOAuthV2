@@ -339,4 +339,13 @@
   <data name="SendMailLostPasswordUserNoUserFound" xml:space="preserve">
     <value>Unknow email</value>
   </data>
+  <data name="SetNewUserPasswordDifferentsNewPasswords" xml:space="preserve">
+    <value>Mismatching new passwords</value>
+  </data>
+  <data name="SetNewUserPasswordInvalidToken" xml:space="preserve">
+    <value>Invalid token</value>
+  </data>
+  <data name="SetNewUserPasswordNewPasswordDontMatchPolicy" xml:space="preserve">
+    <value>Password don't match policy</value>
+  </data>
 </root>

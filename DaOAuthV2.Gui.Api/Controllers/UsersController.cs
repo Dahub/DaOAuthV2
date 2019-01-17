@@ -101,7 +101,7 @@ namespace DaOAuthV2.Gui.Api.Controllers
         }
 
         [HttpGet]
-        [Route("password")]
+        [Route("password/{email}")]
         public IActionResult GetNewPassword(string email)
         {
             var model = new LostPawwordDto()
@@ -110,6 +110,14 @@ namespace DaOAuthV2.Gui.Api.Controllers
             };
                 
             _service.SendMailLostPassword(model);
+            return Ok();
+        }
+
+        [HttpPost]
+        [Route("password")]
+        public IActionResult SetNewPassword(NewPasswordDto model)
+        {
+            _service.SetNewUserPassword(model);
             return Ok();
         }
     }

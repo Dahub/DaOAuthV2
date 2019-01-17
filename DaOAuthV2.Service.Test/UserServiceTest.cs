@@ -974,5 +974,126 @@ namespace DaOAuthV2.Service.Test
 
             Assert.IsTrue(_fakeMailService.HaveBeenCalled);
         }
+
+        [TestMethod]
+        [ExpectedException(typeof(DaOAuthServiceException))]
+        public void Set_New_User_Password_Should_Throw_Exception_When_Token_Is_Empty()
+        {
+            _service.SetNewUserPassword(new NewPasswordDto()
+            {
+                NewPassword = "new_password",
+                NewPasswordRepeat = "new_password",
+                Token = String.Empty
+            });
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(DaOAuthServiceException))]
+        public void Set_New_User_Password_Should_Throw_Exception_When_Token_Is_Invalid()
+        {
+            _service.JwtService = new FakeJwtService(
+                new MailJwtTokenDto()
+                {
+                    Expire = 0,
+                    IsValid = false,
+                    Token = "abc",
+                    UserName = FakeDataBase.Instance.Users.First(u => u.IsValid.Equals(true)).UserName
+                });
+
+            _service.SetNewUserPassword(new NewPasswordDto()
+            {
+                NewPassword = "new_password",
+                NewPasswordRepeat = "new_password",
+                Token = "abc"
+            });
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(DaOAuthServiceException))]
+        public void Set_New_User_Password_Should_Throw_Exception_When_Password_Is_Empty()
+        {
+            _service.JwtService = new FakeJwtService(
+                new MailJwtTokenDto()
+                {
+                    Expire = Int64.MaxValue,
+                    IsValid = true,
+                    Token = "abc",
+                    UserName = FakeDataBase.Instance.Users.First(u => u.IsValid.Equals(true)).UserName
+                });
+
+            _service.SetNewUserPassword(new NewPasswordDto()
+            {
+                NewPassword = String.Empty,
+                NewPasswordRepeat = "new_password",
+                Token = "abc"
+            });
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(DaOAuthServiceException))]
+        public void Set_New_User_Password_Should_Throw_Exception_When_Password_Is_Too_Short()
+        {
+            _service.JwtService = new FakeJwtService(
+                new MailJwtTokenDto()
+                {
+                    Expire = Int64.MaxValue,
+                    IsValid = true,
+                    Token = "abc",
+                    UserName = FakeDataBase.Instance.Users.First(u => u.IsValid.Equals(true)).UserName
+                });
+
+            _service.SetNewUserPassword(new NewPasswordDto()
+            {
+                NewPassword = "short",
+                NewPasswordRepeat = "short",
+                Token = "abc"
+            });
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(DaOAuthServiceException))]
+        public void Set_New_User_Password_Should_Throw_Exception_When_Passwords_Are_Differents()
+        {
+            _service.JwtService = new FakeJwtService(
+                new MailJwtTokenDto()
+                {
+                    Expire = Int64.MaxValue,
+                    IsValid = true,
+                    Token = "abc",
+                    UserName = FakeDataBase.Instance.Users.First(u => u.IsValid.Equals(true)).UserName
+                });
+
+            _service.SetNewUserPassword(new NewPasswordDto()
+            {
+                NewPassword = "new_password",
+                NewPasswordRepeat = "different_new_password",
+                Token = "abc"
+            });
+        }
+
+        [TestMethod]
+        public void Set_New_User_Password_Should_Update_Passwords()
+        {
+            var user = FakeDataBase.Instance.Users.First(u => u.IsValid.Equals(true));
+            var password = user.Password;
+
+            _service.JwtService = new FakeJwtService(
+                new MailJwtTokenDto()
+                {
+                    Expire = Int64.MaxValue,
+                    IsValid = true,
+                    Token = "abc",
+                    UserName = user.UserName
+                });
+
+            _service.SetNewUserPassword(new NewPasswordDto()
+            {
+                NewPassword = "new_password",
+                NewPasswordRepeat = "new_password",
+                Token = "abc"
+            });
+
+            Assert.AreNotEqual(password, user.Password);
+        }
     }
 }

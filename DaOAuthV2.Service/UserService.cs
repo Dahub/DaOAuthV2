@@ -27,17 +27,17 @@ namespace DaOAuthV2.Service
 
                 var user = userRepo.GetByUserName(infos.UserName);
 
-                if(user == null || !user.IsValid)
+                if (user == null || !user.IsValid)
                     throw new DaOAuthServiceException(local["ChangeUserPasswordUserInvalid"]);
 
-                if(!EncryptionService.AreEqualsSha256(
+                if (!EncryptionService.AreEqualsSha256(
                         String.Concat(Configuration.PasswordSalt, infos.OldPassword), user.Password))
                     throw new DaOAuthServiceException(local["ChangeUserPasswordPasswordInvalid"]);
 
-                if(!infos.NewPassword.Equals(infos.NewPasswordRepeat, StringComparison.Ordinal))
+                if (!infos.NewPassword.Equals(infos.NewPasswordRepeat, StringComparison.Ordinal))
                     throw new DaOAuthServiceException(local["ChangeUserPasswordDifferentsNewPasswords"]);
 
-                if(!infos.NewPassword.IsMatchPasswordPolicy())
+                if (!infos.NewPassword.IsMatchPasswordPolicy())
                     throw new DaOAuthServiceException(local["ChangeUserPasswordNewPasswordDontMatchPolicy"]);
 
                 user.Password = EncryptionService.Sha256Hash(String.Concat(Configuration.PasswordSalt, infos.NewPassword));
@@ -45,7 +45,7 @@ namespace DaOAuthV2.Service
                 userRepo.Update(user);
 
                 context.Commit();
-            }           
+            }
         }
 
         public int CreateUser(CreateUserDto toCreate)
@@ -207,7 +207,7 @@ namespace DaOAuthV2.Service
 
                 var user = userRepo.GetByEmail(infos.Email);
 
-                if(user == null || !user.IsValid)
+                if (user == null || !user.IsValid)
                     throw new DaOAuthServiceException(errorResource["SendMailLostPasswordUserNoUserFound"]);
 
                 var myToken = JwtService.GenerateMailToken(user.UserName);
@@ -224,6 +224,36 @@ namespace DaOAuthV2.Service
                     Sender = new KeyValuePair<string, string>("no-reply@daOauth.fr", "no reply"),
                     Subject = mailResource["MailLostPasswordSubject"]
                 });
+            }
+        }
+
+        public void SetNewUserPassword(NewPasswordDto infos)
+        {
+            Validate(infos);
+
+            var local = this.GetErrorStringLocalizer();
+
+            var tokenInfos = JwtService.ExtractMailToken(infos.Token);
+
+            if (!tokenInfos.IsValid)
+                throw new DaOAuthServiceException(local["SetNewUserPasswordInvalidToken"]);
+
+            if (!infos.NewPassword.IsMatchPasswordPolicy())
+                throw new DaOAuthServiceException(local["SetNewUserPasswordNewPasswordDontMatchPolicy"]);
+
+            if (!infos.NewPassword.Equals(infos.NewPasswordRepeat, StringComparison.Ordinal))
+                throw new DaOAuthServiceException(local["SetNewUserPasswordDifferentsNewPasswords"]);
+
+            using (var context = RepositoriesFactory.CreateContext(ConnexionString))
+            {
+                var userRepo = RepositoriesFactory.GetUserRepository(context);
+                var user = userRepo.GetByUserName(tokenInfos.UserName);
+
+                user.Password = EncryptionService.Sha256Hash(String.Concat(Configuration.PasswordSalt, infos.NewPassword));
+
+                userRepo.Update(user);
+
+                context.Commit();
             }
         }
 

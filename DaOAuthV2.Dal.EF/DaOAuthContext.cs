@@ -58,6 +58,7 @@ namespace DaOAuthV2.Dal.EF
             modelBuilder.Entity<User>().HasMany<UserClient>(p => p.UsersClients).WithOne(uc => uc.User).OnDelete(DeleteBehavior.Cascade);
             modelBuilder.Entity<User>().HasMany<UserRole>(u => u.UsersRoles).WithOne(uc => uc.User).OnDelete(DeleteBehavior.Cascade);
             modelBuilder.Entity<User>().HasIndex(u => u.UserName).IsUnique();
+            modelBuilder.Entity<User>().HasIndex(u => u.EMail).IsUnique();
 
             modelBuilder.Entity<ClientType>().ToTable("ClientType");
             modelBuilder.Entity<ClientType>().HasKey(c => c.Id);

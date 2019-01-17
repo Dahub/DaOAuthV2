@@ -261,7 +261,46 @@ namespace DaOAuthV2.Gui.Front.Controllers
         [AllowAnonymous]
         public IActionResult NewPassword(string token)
         {
-            return View();
+            return View(new NewPasswordModel()
+            {
+                Token = token
+            });
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        public async Task<IActionResult> NewPassword(NewPasswordModel model)
+        {
+            var response = await PostToApi("users/password", new NewPasswordDto()
+            {
+                NewPassword = model.NewPassword,
+                NewPasswordRepeat = model.NewPasswordRepeat,
+                Token = model.Token
+            });
+
+            if (!await model.ValidateAsync(response))
+                return View(model);
+
+            return View("SetPasswordOk");
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult AskNewPassword()
+        {
+            return View(new AskNewPasswordModel());
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        public async Task<IActionResult> AskNewPassword(AskNewPasswordModel model)
+        {
+            var response = await GetToApi($"users/password/{model.Email}");
+
+            if (!await model.ValidateAsync(response))
+                return View(model);
+
+            return View("AskNewPasswordOk");
         }
 
         [HttpPost]

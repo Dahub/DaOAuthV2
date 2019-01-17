@@ -6,7 +6,6 @@ A personnal OAuth2 server
 
 - Add administration page
 - Add documentation
-- Add recover your password
 - Add suppress my account
 
 - Log services calls
