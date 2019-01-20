@@ -4,17 +4,13 @@
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta charset="utf-8">
-    <meta name="description" content="">
-    <meta name="author" content="">
+    <meta name="description" content="Custom OAuth2 server front">
+    <meta name="author" content="Dahub">
     <title>DaOAuth</title>
     @await Html.PartialAsync("_css")
     @RenderSection("Css", required: false)
 </head>
 <body>
-
-    @*<nav class="navbar fixed-top navbar-dark bg-dark">
-            <a class="navbar-brand" href="#">DaOAuth</a>
-        </nav>*@
 
     <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
         <a class="navbar-brand" href="/en/Home/Dashboard">DaOAuth</a>
@@ -53,6 +49,8 @@
 
     <br />
     <hr />
+
+    @await Html.PartialAsync("_footer")
 
     @await Html.PartialAsync("_scripts")
     @RenderSection("PageScript", required: false)

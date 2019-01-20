@@ -4,6 +4,8 @@
     Layout = "_fr.layout";
 }
 
+@await Html.PartialAsync("_fr.modelErrors")
+
 <h1>Administration</h1>
 
 <table class="table">
@@ -66,7 +68,7 @@
         function doConfirm(id) {
             $.bsAlert.confirm("Etes vous sûr de vouloir supprimer cet utilisateur ?", function () {
                 $(location).attr('href', '/fr/Administration/UserDelete/' + id);
-             });
+            });
         }
     </script>
 }
