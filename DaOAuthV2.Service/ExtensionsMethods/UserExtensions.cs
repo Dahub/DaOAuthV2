@@ -20,6 +20,23 @@ namespace DaOAuthV2.Service.ExtensionsMethods
             };
         }
 
+        internal static IList<AdminUsrDto> ToAdminDto(this IList<User> values)
+        {
+            return values.Select(u => u.ToAdminDto()).ToList();
+        }
+
+        internal static AdminUsrDto ToAdminDto(this User value)
+        {
+            return new AdminUsrDto()
+            {
+                ClientCount = value.UsersClients.Count(),
+                Email = value.EMail,
+                Id = value.Id,
+                IsValid = value.IsValid,
+                UserName = value.UserName
+            };
+        }
+
         private static IEnumerable<string> ExtractRoles(ICollection<UserRole> usersRoles)
         {
             IEnumerable<string> result = new List<string>();

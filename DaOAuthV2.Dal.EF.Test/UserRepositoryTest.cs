@@ -182,5 +182,128 @@ namespace DaOAuthV2.Dal.EF.Test
                 Assert.IsNull(u);
             }
         }
+
+        [TestMethod]
+        public void Get_All_By_Criterias_Count_Should_Return_All_User_Count()
+        {
+            var options = new DbContextOptionsBuilder<DaOAuthContext>()
+                       .UseInMemoryDatabase(databaseName: _dbName)
+                       .Options;
+
+            using (var context = new DaOAuthContext(options))
+            {
+                context.Users.Add(new User()
+                {
+                    BirthDate = DateTime.Now,
+                    CreationDate = DateTime.Now,
+                    EMail = "Test@test.com",
+                    FullName = "testeur",
+                    Id = 2,
+                    IsValid = false,
+                    Password = new byte[] { 0 },
+                    UserName = "testeur2"
+                });
+
+                context.Commit();
+            }
+
+            using (var context = new DaOAuthContext(options))
+            {
+                var repo = _repoFactory.GetUserRepository(context);
+                int nbr = repo.GetAllByCriteriasCount(null, null, null);
+
+                Assert.AreEqual(2, nbr);
+            }
+        }
+
+        [TestMethod]
+        public void Get_All_By_Criterias_Should_Return_All_Users()
+        {
+            var options = new DbContextOptionsBuilder<DaOAuthContext>()
+                       .UseInMemoryDatabase(databaseName: _dbName)
+                       .Options;
+
+            using (var context = new DaOAuthContext(options))
+            {
+                context.Users.Add(new User()
+                {
+                    BirthDate = DateTime.Now,
+                    CreationDate = DateTime.Now,
+                    EMail = "Test@test.com",
+                    FullName = "testeur",
+                    Id = 2,
+                    IsValid = false,
+                    Password = new byte[] { 0 },
+                    UserName = "testeur2"
+                });
+
+                context.Commit();
+            }
+
+            using (var context = new DaOAuthContext(options))
+            {
+                var repo = _repoFactory.GetUserRepository(context);
+                var users= repo.GetAllByCriterias(null, null, null, 0, Int32.MaxValue);
+
+                Assert.IsNotNull(users);
+                Assert.AreEqual(2, users.Count());
+            }
+        }
+
+        [TestMethod]
+        public void Get_All_By_Criterias_Should_Return_Users_With_Users_Clients()
+        {
+            var options = new DbContextOptionsBuilder<DaOAuthContext>()
+                       .UseInMemoryDatabase(databaseName: _dbName)
+                       .Options;
+
+            using (var context = new DaOAuthContext(options))
+            {
+                context.Users.Add(new User()
+                {
+                    BirthDate = DateTime.Now,
+                    CreationDate = DateTime.Now,
+                    EMail = "Test@test.com",
+                    FullName = "testeur",
+                    Id = 2,
+                    IsValid = false,
+                    Password = new byte[] { 0 },
+                    UserName = "testeur2"
+                });
+
+                context.Clients.Add(new Client()
+                {
+                    ClientSecret = "abc",
+                    ClientTypeId = 1,
+                    CreationDate = DateTime.Now,
+                    Id = 1,
+                    IsValid = true,
+                    Name = "client test",
+                    PublicId = "abc"
+                });
+
+                context.UsersClients.Add(new UserClient()
+                {
+                    Id = 1,
+                    ClientId = 1,
+                    UserId = 2,
+                    IsActif = true,
+                    CreationDate = DateTime.Now
+                });
+
+                context.Commit();
+            }
+
+            using (var context = new DaOAuthContext(options))
+            {
+                var repo = _repoFactory.GetUserRepository(context);
+                var users = repo.GetAllByCriterias("testeur2", null, null, 0, Int32.MaxValue);
+
+                Assert.IsNotNull(users);
+                Assert.AreEqual(1, users.Count());
+                Assert.IsNotNull(users.First().UsersClients);
+                Assert.AreEqual(1, users.First().UsersClients.Count());
+            }
+        }
     }
 }

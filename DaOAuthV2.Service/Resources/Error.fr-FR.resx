@@ -357,4 +357,7 @@
   <data name="SetNewUserPasswordNewPasswordDontMatchPolicy" xml:space="preserve">
     <value>Le mot de passe ne rempli pas les critères requis</value>
   </data>
+  <data name="SearchAdministrationAskTooMuch" xml:space="preserve">
+    <value>Vous ne pouvez demander plus de 50 résultats</value>
+  </data>
 </root>

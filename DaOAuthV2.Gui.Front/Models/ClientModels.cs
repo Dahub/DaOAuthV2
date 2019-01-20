@@ -30,4 +30,9 @@ namespace DaOAuthV2.Gui.Front.Models
         public string NiceWording { get; set; }
         public bool Selected { get; set; }
     }
+
+    public class RevokeOrAcceptClientModel : AbstractModel
+    {
+        public string ClientPublicId { get; set; }
+    }
 }

@@ -7,5 +7,6 @@ A personnal OAuth2 server
 - Add administration page
 - Add documentation
 - Add suppress my account
+- Implement pagination to ressource server and client pages
 
 - Log services calls

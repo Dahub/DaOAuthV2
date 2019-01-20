@@ -64,6 +64,15 @@ namespace DaOAuthV2.Gui.Api
                 options.SuppressModelStateInvalidFilter = true;
             });
 
+            services.AddTransient<IAdministrationService>(a => new AdministrationService()
+            {
+                Configuration = conf,
+                RepositoriesFactory = new EfRepositoriesFactory(),
+                ConnexionString = Configuration.GetConnectionString("DaOAuthConnexionString"),
+                StringLocalizerFactory = localizationServiceFactory,
+                Logger = loggerServiceFactory.CreateLogger<AdministrationService>(),
+            });
+
             services.AddTransient<IUserService>(u => new UserService()
             {
                 Configuration = conf,

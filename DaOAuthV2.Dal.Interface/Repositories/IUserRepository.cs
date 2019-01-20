@@ -1,4 +1,5 @@
 ﻿using DaOAuthV2.Domain;
+using System.Collections.Generic;
 
 namespace DaOAuthV2.Dal.Interface
 {
@@ -6,5 +7,7 @@ namespace DaOAuthV2.Dal.Interface
     {
         User GetByUserName(string userName);
         User GetByEmail(string email);
+        int GetAllByCriteriasCount(string userName, string userMail, bool? isValid);
+        IEnumerable<User> GetAllByCriterias(string userName, string userMail, bool? isValid, uint skip, uint take);
     }
 }

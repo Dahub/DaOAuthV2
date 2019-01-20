@@ -1,0 +1,72 @@
+﻿@model DaOAuthV2.Gui.Front.Models.AdministrationDashboardModel
+
+@{
+    Layout = "_fr.layout";
+}
+
+<h1>Administration</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Nom d'utilisateur
+            </th>
+            <th>
+                Email
+            </th>
+            <th>
+                Est valide
+            </th>
+            <th>
+                Nombre de clients
+            </th>
+            <th></th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Users)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.UserName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.UserMail)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.IsValid)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ClientCount)
+                </td>
+                <td>
+                    <a href="@Url.Action("UserDetails", "Administration", new { id = @item.UserId })"><i class="fas fa-2x fa-search"></i></a>
+                    <span onclick="return doConfirm(@item.UserId);" style="cursor: pointer;"><i class="fas fa-2x fa-trash-alt"></i></span>
+                </td>
+                <td>
+                    @if (item.IsValid)
+                    {
+                        <a href="@Url.Action("BlockUSer", "Administration", new { userId = item.UserId })" class="btn btn-lg btn-danger">Bloquer</a>
+                    }
+                    else
+                    {
+                        <a href="@Url.Action("AllowUser", "Administration", new { userId = item.UserId })" class="btn btn-lg btn-success">Authoriser</a>
+                    }
+                </td>
+            </tr>
+        }
+
+    </tbody>
+</table>
+
+@section PageScript {
+    <script type="text/javascript">
+        function doConfirm(id) {
+            $.bsAlert.confirm("Etes vous sûr de vouloir supprimer cet utilisateur ?", function () {
+                $(location).attr('href', '/fr/Administration/UserDelete/' + id);
+             });
+        }
+    </script>
+}

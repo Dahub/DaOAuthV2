@@ -29,6 +29,30 @@ namespace DaOAuthV2.Service.Test.Fake
             throw new NotImplementedException();
         }
 
+        public IEnumerable<User> GetAllByCriterias(string userName, string userMail, bool? isValid, uint skip, uint take)
+        {
+            var users = FakeDataBase.Instance.Users.Where(c =>
+               (String.IsNullOrEmpty(userName) || c.UserName.Equals(userName))
+               && (String.IsNullOrEmpty(userMail) || c.EMail.Equals(userMail))
+               && (!isValid.HasValue || c.IsValid.Equals(isValid.Value))
+               ).Skip((int)skip).Take((int)take);
+            foreach(var u in users)
+            {
+                u.UsersClients = FakeDataBase.Instance.UsersClient.Where(uc => uc.UserId.Equals(u.Id)).ToList();
+            }
+
+            return users;
+        }
+
+        public int GetAllByCriteriasCount(string userName, string userMail, bool? isValid)
+        {
+            return FakeDataBase.Instance.Users.Where(c =>
+               (String.IsNullOrEmpty(userName) || c.UserName.Equals(userName))
+               && (String.IsNullOrEmpty(userMail) || c.EMail.Equals(userMail))
+               && (!isValid.HasValue || c.IsValid.Equals(isValid.Value))
+               ).Count();
+        }
+
         public User GetByEmail(string email)
         {
             return FakeDataBase.Instance.Users.Where(u => u.EMail.Equals(email, StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
