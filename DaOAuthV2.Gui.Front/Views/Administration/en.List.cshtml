@@ -43,20 +43,27 @@
                 <td>
                     @Html.DisplayFor(modelItem => item.ClientCount)
                 </td>
-                <td>
-                    <a href="@Url.Action("UserDetails", "Administration", new { id = @item.UserId })"><i class="fas fa-2x fa-search"></i></a>
-                    <span onclick="return doConfirm(@item.UserId);" style="cursor: pointer;"><i class="fas fa-2x fa-trash-alt"></i></span>
-                </td>
-                <td>
-                    @if (item.IsValid)
-                    {
-                        <a href="@Url.Action("Desactivate", "Administration", new { userName = item.UserName })" class="btn btn-lg btn-danger">Desactivate</a>
-                    }
-                    else
-                    {
-                        <a href="@Url.Action("Activate", "Administration", new { userName = item.UserName })" class="btn btn-lg btn-success">Allow</a>
-                    }
-                </td>
+                @if (User.Identity.Name.Equals(item.UserName, StringComparison.OrdinalIgnoreCase))
+                {
+                    <td></td><td></td>
+                }
+                else
+                {
+                    <td>
+                        <a href="@Url.Action("UserDetails", "Administration", new { id = @item.UserId })"><i class="fas fa-2x fa-search"></i></a>
+                        <span onclick="return doConfirm(@item.UserId);" style="cursor: pointer;"><i class="fas fa-2x fa-trash-alt"></i></span>
+                    </td>
+                    <td>
+                        @if (item.IsValid)
+                        {
+                            <a href="@Url.Action("Desactivate", "Administration", new { userName = item.UserName })" class="btn btn-lg btn-danger">Desactivate</a>
+                        }
+                        else
+                        {
+                            <a href="@Url.Action("Activate", "Administration", new { userName = item.UserName })" class="btn btn-lg btn-success">Activate</a>
+                        }
+                    </td>
+                }
             </tr>
         }
 
