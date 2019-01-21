@@ -8,6 +8,9 @@ using System;
 
 namespace DaOAuthV2.Gui.Api.Controllers
 {
+    /// <summary>
+    /// User client controllr
+    /// </summary>
     [Route("[controller]")]
     [ApiController]
     [Authorize]
@@ -15,6 +18,10 @@ namespace DaOAuthV2.Gui.Api.Controllers
     {
         private IUserClientService _service;
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="service">Injected User client service</param>
         public UsersClientsController([FromServices] IUserClientService service)
         {
             _service = service;

@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace DaOAuthV2.Gui.Api.Migrations
 {
-#pragma warning disable 1591
     public partial class move_code_from_client_to_userClient : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -93,5 +92,4 @@ namespace DaOAuthV2.Gui.Api.Migrations
                 onDelete: ReferentialAction.Cascade);
         }
     }
-#pragma warning restore 1591
 }

@@ -9,14 +9,12 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace DaOAuthV2.Gui.Api.Migrations
 {
-#pragma warning disable 1591
     [DbContext(typeof(DaOAuthContext))]
     [Migration("20181211212141_move_code_from_client_to_userClient")]
     partial class move_code_from_client_to_userClient
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
-#pragma warning disable 612, 618
             modelBuilder
                 .HasDefaultSchema("auth")
                 .HasAnnotation("ProductVersion", "2.1.4-rtm-31024")
@@ -370,8 +368,6 @@ namespace DaOAuthV2.Gui.Api.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
-#pragma warning restore 612, 618
         }
     }
-#pragma warning restore 1591
 }

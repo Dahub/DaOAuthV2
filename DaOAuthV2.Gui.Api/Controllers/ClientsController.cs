@@ -9,6 +9,9 @@ using System;
 
 namespace DaOAuthV2.Gui.Api.Controllers
 {
+    /// <summary>
+    /// Client controller
+    /// </summary>
     [Route("[controller]")]
     [ApiController]
     [Authorize(Roles = RoleName.User)]
@@ -21,6 +24,11 @@ namespace DaOAuthV2.Gui.Api.Controllers
             _service = service;
         }
 
+        /// <summary>
+        /// Create a new client
+        /// </summary>
+        /// <param name="infos">Dto infos</param>
+        /// <returns>An 201 Http code with get client by id url</returns>
         [HttpPost]
         [Route("")]
         public IActionResult Post(CreateClientDto infos)
@@ -31,6 +39,11 @@ namespace DaOAuthV2.Gui.Api.Controllers
             return Created($"{currentUrl}/{createdId}", null);
         }
 
+        /// <summary>
+        /// Get a client
+        /// </summary>
+        /// <param name="id">id of the client</param>
+        /// <returns>a client</returns>
         [HttpGet]
         [Route("{id}")]
         public IActionResult Get(int id)
@@ -38,6 +51,11 @@ namespace DaOAuthV2.Gui.Api.Controllers
             return Ok(_service.GetById(id));
         }
 
+        /// <summary>
+        /// Delete a client
+        /// </summary>
+        /// <param name="id">id of the client</param>
+        /// <returns>an 200 Http code</returns>
         [HttpDelete]
         [Route("{id}")]
         public IActionResult Delete(int id)
@@ -50,6 +68,11 @@ namespace DaOAuthV2.Gui.Api.Controllers
             return Ok();
         }
 
+        /// <summary>
+        /// Update a client
+        /// </summary>
+        /// <param name="toUpdate">Dto infos</param>
+        /// <returns>A 200 Http code</returns>
         [HttpPut]
         [Route("")]
         public IActionResult Put(UpdateClientDto toUpdate)
@@ -59,6 +82,16 @@ namespace DaOAuthV2.Gui.Api.Controllers
             return Ok();
         }
 
+        /// <summary>
+        /// Search clients
+        /// Results are limited to 50
+        /// </summary>
+        /// <param name="name">client name</param>
+        /// <param name="publicId">client public id</param>
+        /// <param name="clientType">client type : confidential or public</param>
+        /// <param name="skip">skip n clients</param>
+        /// <param name="limit">limit to n clients</param>
+        /// <returns>A clients list</returns>
         [HttpGet]
         [HttpHead]
         [Route("")]

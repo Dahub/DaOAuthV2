@@ -2,7 +2,6 @@
 
 namespace DaOAuthV2.Gui.Api.Migrations
 {
-#pragma warning disable 1591
     public partial class change_user_client_is_valid_to_is_actif : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -23,5 +22,4 @@ namespace DaOAuthV2.Gui.Api.Migrations
                 newName: "IsValid");
         }
     }
-#pragma warning restore 1591
 }

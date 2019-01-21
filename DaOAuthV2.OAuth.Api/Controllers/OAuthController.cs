@@ -7,17 +7,33 @@ using System;
 
 namespace DaOAuthV2.OAuth.Api.Controllers
 {
+    /// <summary>
+    /// OAuth controller
+    /// </summary>
     [Route("")]
     [ApiController]
     public class OAuthController : ControllerBase
     {
         private IOAuthService _authorizeService;
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="authorizeService">Injected Authorize service</param>
         public OAuthController([FromServices] IOAuthService authorizeService)
         {
             _authorizeService = authorizeService;
         }
 
+        /// <summary>
+        /// The authorize endpoint
+        /// </summary>
+        /// <param name="responseType">response type, mandatory</param>
+        /// <param name="clientId">id of the client calling the endpoint, mandatory</param>
+        /// <param name="state">a state parameter, will be returned by server</param>
+        /// <param name="redirectUri">url on wich redirect the response, mandatory</param>
+        /// <param name="scope">scopes askings by the client</param>
+        /// <returns>Redirect to redirect url, with an authorization code</returns>
         [Authorize]
         [HttpGet]
         [Route("authorize")]
@@ -39,6 +55,12 @@ namespace DaOAuthV2.OAuth.Api.Controllers
             return Redirect(uri.AbsoluteUri);
         }
 
+        /// <summary>
+        /// The token endpoint
+        /// </summary>
+        /// <param name="model">infos</param>
+        /// <param name="authorization">header : contains client credentials</param>
+        /// <returns>a JWT token</returns>
         [HttpPost]
         [Route("token")]
         public JsonResult Token([FromForm] TokenModel model, [FromHeader(Name = "Authorization")] string authorization)
@@ -79,6 +101,12 @@ namespace DaOAuthV2.OAuth.Api.Controllers
             }
         }
 
+        /// <summary>
+        /// the introspect endpoint
+        /// </summary>
+        /// <param name="model">infos, contains token to introspect</param>
+        /// <param name="authorization">ressource server credentials</param>
+        /// <returns>a json with a boolean, true if token is valid, else false</returns>
         [HttpPost]
         [Route("/introspect")]
         public JsonResult Introspect([FromForm] IntrospectTokenModel model, [FromHeader(Name = "Authorization")] string authorization)

@@ -5,7 +5,6 @@ using NLog.Web;
 
 namespace DaOAuthV2.Gui.Api
 {
-#pragma warning disable 1591
     public class Program
     {
         public static void Main(string[] args)
@@ -23,5 +22,4 @@ namespace DaOAuthV2.Gui.Api
             })
             .UseNLog();
     }
-#pragma warning restore 1591
 }

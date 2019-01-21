@@ -15,7 +15,6 @@ namespace DaOAuthV2.Gui.Api.Migrations
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
-#pragma warning disable 612, 618
             modelBuilder
                 .HasDefaultSchema("auth")
                 .HasAnnotation("ProductVersion", "2.1.4-rtm-31024")
@@ -473,7 +472,6 @@ namespace DaOAuthV2.Gui.Api.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
-#pragma warning restore 612, 618
         }
     }
 }

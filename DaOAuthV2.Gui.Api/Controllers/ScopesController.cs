@@ -11,6 +11,9 @@ using DaOAuthV2.ApiTools;
 
 namespace DaOAuthV2.Gui.Api.Controllers
 {
+    /// <summary>
+    /// Scope controller
+    /// </summary>
     [Route("[controller]")]
     [ApiController]
     [Authorize(Roles = RoleName.User)]
@@ -18,11 +21,19 @@ namespace DaOAuthV2.Gui.Api.Controllers
     {
         private IScopeService _service;
 
+        /// <summary>
+        /// Constructor with scope service injected
+        /// </summary>
+        /// <param name="service">injcted scope service</param>
         public ScopesController([FromServices] IScopeService service)
         {
             _service = service;
         }
 
+        /// <summary>
+        /// Get all scopes from valids ressources servers
+        /// </summary>
+        /// <returns>List of all scopes</returns>
         [HttpGet]
         [HttpHead]
         [Route("")]

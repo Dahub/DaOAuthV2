@@ -51,7 +51,7 @@ namespace DaOAuthV2.Service
                 return result;
             }
 
-            Logger.LogInformation(String.Format("Try to create client for user {0}", toCreate != null ? toCreate.UserName : String.Empty));
+            Logger.LogInformation(String.Format("Try to create client by user {0}", toCreate != null ? toCreate.UserName : String.Empty));
 
             this.Validate(toCreate, ExtendValidation);
 
@@ -121,7 +121,7 @@ namespace DaOAuthV2.Service
 
         public void Delete(DeleteClientDto toDelete)
         {
-            Logger.LogInformation(String.Format("Try to create delete for user {0}", toDelete != null ? toDelete.UserName : String.Empty));
+            Logger.LogInformation(String.Format("Try to create delete by user {0}", toDelete != null ? toDelete.UserName : String.Empty));
 
             Validate(toDelete);
 

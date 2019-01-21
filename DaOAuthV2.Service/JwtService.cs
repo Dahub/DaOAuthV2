@@ -19,7 +19,7 @@ namespace DaOAuthV2.Service
 
         public JwtTokenDto GenerateToken(CreateTokenDto value)
         {
-            Logger.LogInformation("Try to generate token");
+            Logger.LogInformation($"Try to generate token for user {value.UserName}");
 
             Validate(value);
 
@@ -121,7 +121,7 @@ namespace DaOAuthV2.Service
 
         public MailJwtTokenDto GenerateMailToken(string userName)
         {
-            Logger.LogInformation("Try to generate mail token");
+            Logger.LogInformation($"Try to generate mail token for user {userName}");
 
             var utcNow = DateTimeOffset.UtcNow;
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration.SecurityKey));

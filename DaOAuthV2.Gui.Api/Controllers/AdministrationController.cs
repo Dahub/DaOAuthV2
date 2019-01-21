@@ -9,6 +9,9 @@ using System;
 
 namespace DaOAuthV2.Gui.Api.Controllers
 {
+    /// <summary>
+    /// Controller used to administration tasks
+    /// </summary>
     [Route("[controller]")]
     [ApiController]
     [Authorize(Roles = RoleName.Administrator)]
@@ -16,11 +19,25 @@ namespace DaOAuthV2.Gui.Api.Controllers
     {
         private IAdministrationService _service;
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="service">Inject an administration service</param>
         public AdministrationController([FromServices] IAdministrationService service)
         {
             _service = service;
         }
 
+        /// <summary>
+        /// Return all users
+        /// Results are limited to 50
+        /// </summary>
+        /// <param name="userName">search for a specific user</param>
+        /// <param name="userMail">search for a specific user mail</param>
+        /// <param name="isValid">search for valid or invalid user only</param>
+        /// <param name="skip">skip n results</param>
+        /// <param name="limit">get n results</param>
+        /// <returns>ùUsers</returns>
         [HttpGet]
         [HttpHead]
         [Route("")]

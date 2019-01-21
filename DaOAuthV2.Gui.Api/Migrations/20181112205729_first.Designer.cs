@@ -9,7 +9,6 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace DaOAuthV2.Gui.Api.Migrations
 {
-#pragma warning disable 612, 618
     [DbContext(typeof(DaOAuthContext))]
     [Migration("20181112205729_first")]
     partial class first
@@ -382,5 +381,4 @@ namespace DaOAuthV2.Gui.Api.Migrations
                 });
         }
     }
-#pragma warning restore 612, 618
 }

@@ -18,6 +18,8 @@ namespace DaOAuthV2.Service
 
         public void ChangeUserPassword(ChangePasswordDto infos)
         {
+            Logger.LogInformation($"Change password from user {infos.UserName}");
+
             Validate(infos);
 
             using (var context = RepositoriesFactory.CreateContext(ConnexionString))
@@ -50,6 +52,8 @@ namespace DaOAuthV2.Service
 
         public int CreateUser(CreateUserDto toCreate)
         {
+            Logger.LogInformation($"Try creating a new user {toCreate.UserName}");
+
             IList<ValidationResult> ExtendValidation(CreateUserDto toValidate)
             {
                 var errorResource = this.GetErrorStringLocalizer();
@@ -184,7 +188,7 @@ namespace DaOAuthV2.Service
 
         public UserDto GetUser(LoginUserDto credentials)
         {
-            Logger.LogInformation($"Try to get user {credentials.UserName}");
+            Logger.LogInformation($"Try to log user {credentials.UserName}");
 
             Validate(credentials);
 
@@ -199,6 +203,7 @@ namespace DaOAuthV2.Service
                     String.Concat(Configuration.PasswordSalt, credentials.Password), user.Password))
                 {
                     result = user.ToDto();
+                    Logger.LogInformation($"Log successfull for user {credentials.UserName}");
                 }
             }
 
@@ -207,6 +212,8 @@ namespace DaOAuthV2.Service
 
         public UserDto GetUser(string userName)
         {
+            Logger.LogInformation($"Try get user {userName}");
+
             UserDto result = null;
 
             using (var c = RepositoriesFactory.CreateContext(ConnexionString))
@@ -225,6 +232,8 @@ namespace DaOAuthV2.Service
 
         public void SendMailLostPassword(LostPawwordDto infos)
         {
+            Logger.LogInformation($"Send a mail password lost to {infos.Email}");
+
             Validate(infos);
 
             using (var context = RepositoriesFactory.CreateContext(ConnexionString))
@@ -257,6 +266,8 @@ namespace DaOAuthV2.Service
 
         public void SetNewUserPassword(NewPasswordDto infos)
         {
+            Logger.LogInformation($"Define a new password using JWT token {infos.Token}");
+
             Validate(infos);
 
             var local = this.GetErrorStringLocalizer();
@@ -286,7 +297,7 @@ namespace DaOAuthV2.Service
         }
 
         public void UpdateUser(UpdateUserDto toUpdate)
-        {
+        {            
             IList<ValidationResult> ExtendValidation(UpdateUserDto toValidate)
             {
                 var resource = this.GetErrorStringLocalizer();
@@ -325,6 +336,8 @@ namespace DaOAuthV2.Service
 
         public UserDto ValidateUser(ValidateUserDto infos)
         {
+            Logger.LogInformation($"Validate user {infos.UserName}");
+
             Validate(infos);
 
             using (var context = RepositoriesFactory.CreateContext(ConnexionString))

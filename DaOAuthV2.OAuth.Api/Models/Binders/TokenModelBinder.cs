@@ -3,8 +3,16 @@ using System.Threading.Tasks;
 
 namespace DaOAuthV2.OAuth.Api.Models.Binders
 {
+    /// <summary>
+    /// Binder of token endpoint
+    /// </summary>
     public class TokenModelBinder : IModelBinder
     {
+        /// <summary>
+        /// Use to bind json type parameters to csharp type parameters
+        /// </summary>
+        /// <param name="bindingContext">context</param>
+        /// <returns>A Csharp Style Model</returns>
         public Task BindModelAsync(ModelBindingContext bindingContext)
         {
             var result = new TokenModel()

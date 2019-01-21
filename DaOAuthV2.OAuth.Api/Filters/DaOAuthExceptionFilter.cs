@@ -23,6 +23,10 @@ namespace DaOAuthV2.OAuth.Api.Filters
             _loggerFactory = loggerFactory;
         }
 
+        /// <summary>
+        /// Check the exception type, to specify the correct http code to the context
+        /// </summary>
+        /// <param name="context">http context in wich exception occur</param>
         public override void OnException(ExceptionContext context)
         {
             if (context.Exception is DaOAuthServiceException)
