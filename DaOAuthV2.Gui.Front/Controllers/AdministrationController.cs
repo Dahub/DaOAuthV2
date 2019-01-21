@@ -20,13 +20,42 @@ namespace DaOAuthV2.Gui.Front.Controllers
         {
         }
 
+        [Route("{culture}/Administration/Activate/{userName}")]
+        public async Task<IActionResult> Activate(string userName)
+        {
+            NameValueCollection nv = new NameValueCollection
+            {
+                { "userName", userName }
+            };
+
+            await PutToApi("users/activate", new ActivateOrDesactivateUserDto()
+            {
+                UserName = userName
+            });
+
+            return RedirectToAction("List");
+        }
+
+        [Route("{culture}/Administration/Desactivate/{userName}")]
+        public async Task<IActionResult> Desactivate(string userName)
+        {          
+            await PutToApi("users/desactivate", new ActivateOrDesactivateUserDto()
+            {
+                UserName = userName
+            });
+
+            return RedirectToAction("List");
+        }
+
         public async Task<IActionResult> List()
         {
             AdministrationDashboardModel model = new AdministrationDashboardModel();
 
-            NameValueCollection nv = new NameValueCollection();
-            nv.Add("skip", "0");
-            nv.Add("limit", "50");
+            NameValueCollection nv = new NameValueCollection
+            {
+                { "skip", "0" },
+                { "limit", "50" }
+            };
 
             var response = await GetToApi($"administration", nv);
 

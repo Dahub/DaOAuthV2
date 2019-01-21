@@ -409,26 +409,84 @@ namespace DaOAuthV2.Service.Test
 
         [TestMethod]
         [ExpectedException(typeof(DaOAuthServiceException))]
-        public void Delete_Non_Existing_User_Should_Throw_Exception()
+        public void Desactivate_Non_Existing_User_Should_Throw_Exception()
         {
-            _service.DeleteUser("john");
+            _service.DesactivateUser("john");
         }
 
         [TestMethod]
         [ExpectedException(typeof(DaOAuthServiceException))]
-        public void Delete_Desactivate_User_Should_Throw_Exception()
+        public void Desactivate_Desactivate_User_Should_Throw_Exception()
         {
-            _service.DeleteUser("Johnny");
+            _service.DesactivateUser("Johnny");
         }
 
         [TestMethod]
-        public void Delete_User_Shoud_Logicaly_Delete_User()
+        public void Desactivate_User_Shoud_Logicaly_Delete_User()
         {
-            _service.DeleteUser("Sammy");
+            _service.DesactivateUser("Sammy");
 
             var user = _repo.GetByUserName("Sammy");
 
             Assert.IsFalse(user.IsValid);
+        }
+
+        [TestMethod]
+        public void Desactivate_User_Shoud_Revoke_User_Refresh_Tokens()
+        {
+            var user = FakeDataBase.Instance.Users.Where(u => u.IsValid).FirstOrDefault();
+            Assert.IsNotNull(user);
+
+            var client = FakeDataBase.Instance.Clients.Where(c => c.IsValid).FirstOrDefault();
+            Assert.IsNotNull(client);
+
+            var userClient = FakeDataBase.Instance.UsersClient.Where(uc =>
+                                            uc.UserId.Equals(user.Id)
+                                            && uc.ClientId.Equals(client.Id)).FirstOrDefault();
+
+            if(userClient == null)
+            {
+                userClient = new Domain.UserClient()
+                {
+                    Id = 999,
+                    ClientId = client.Id,
+                    UserId = user.Id,
+                    CreationDate = DateTime.Now                   
+                };
+                FakeDataBase.Instance.UsersClient.Add(userClient);
+            }
+
+            userClient.IsActif = true;
+            userClient.RefreshToken = "abcdef";
+
+            _service.DesactivateUser(user.UserName);
+
+            Assert.IsFalse(user.IsValid);
+            Assert.IsTrue(String.IsNullOrWhiteSpace(userClient.RefreshToken));
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(DaOAuthServiceException))]
+        public void Activate_Non_Existing_User_Should_Throw_Exception()
+        {
+            _service.ActivateUser("john");
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(DaOAuthServiceException))]
+        public void Activate_Activate_User_Should_Throw_Exception()
+        {
+            _service.ActivateUser("Sammy");
+        }
+
+        [TestMethod]
+        public void Activate_User_Shoud_Logicaly_Activate_User()
+        {
+            _service.ActivateUser("Johnny");
+
+            var user = _repo.GetByUserName("Johnny");
+
+            Assert.IsTrue(user.IsValid);
         }
 
         [TestMethod]

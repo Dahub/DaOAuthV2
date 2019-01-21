@@ -134,9 +134,9 @@ namespace DaOAuthV2.Service
             return idCreated;
         }
 
-        public void DeleteUser(string userName)
+        public void DesactivateUser(string userName)
         {
-            Logger.LogInformation($"Try to delete user {userName}");
+            Logger.LogInformation($"Try to desactivate user {userName}");
 
             using (var c = RepositoriesFactory.CreateContext(ConnexionString))
             {
@@ -148,6 +148,34 @@ namespace DaOAuthV2.Service
                     throw new DaOAuthServiceException(local["DeleteUserNoUserFound"]);
 
                 user.IsValid = false;
+                repo.Update(user);
+
+                var ucRepo = RepositoriesFactory.GetUserClientRepository(c);
+
+                foreach(var uc in ucRepo.GetAllByCriterias(user.UserName, null, null, null, 0, Int32.MaxValue))
+                {
+                    uc.RefreshToken = String.Empty;
+                    ucRepo.Update(uc);
+                }
+
+                c.Commit();
+            }
+        }
+
+        public void ActivateUser(string userName)
+        {
+            Logger.LogInformation($"Try to activate user {userName}");
+
+            using (var c = RepositoriesFactory.CreateContext(ConnexionString))
+            {
+                var repo = RepositoriesFactory.GetUserRepository(c);
+                var user = repo.GetByUserName(userName);
+                var local = this.GetErrorStringLocalizer();
+
+                if (user == null || user.IsValid)
+                    throw new DaOAuthServiceException(local["DeleteUserNoUserFound"]);
+
+                user.IsValid = true;
                 repo.Update(user);
 
                 c.Commit();
@@ -323,6 +351,11 @@ namespace DaOAuthV2.Service
 
                 return myUser.ToDto();
             }
+        }
+
+        public void DeleteUser(string userName)
+        {
+            throw new NotImplementedException();
         }
     }
 }

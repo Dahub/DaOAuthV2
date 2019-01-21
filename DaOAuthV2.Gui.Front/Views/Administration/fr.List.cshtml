@@ -50,11 +50,11 @@
                 <td>
                     @if (item.IsValid)
                     {
-                        <a href="@Url.Action("BlockUSer", "Administration", new { userId = item.UserId })" class="btn btn-lg btn-danger">Bloquer</a>
+                        <a href="@Url.Action("Desactivate", "Administration", new { userName = item.UserName })" class="btn btn-lg btn-danger">Bloquer</a>
                     }
                     else
                     {
-                        <a href="@Url.Action("AllowUser", "Administration", new { userId = item.UserId })" class="btn btn-lg btn-success">Authoriser</a>
+                        <a href="@Url.Action("Activate", "Administration", new { userName = item.UserName })" class="btn btn-lg btn-success">Authoriser</a>
                     }
                 </td>
             </tr>

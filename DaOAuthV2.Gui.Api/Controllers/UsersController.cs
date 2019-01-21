@@ -5,6 +5,7 @@ using DaOAuthV2.Service.Interface;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
+using System;
 
 namespace DaOAuthV2.Gui.Api.Controllers
 {
@@ -100,6 +101,24 @@ namespace DaOAuthV2.Gui.Api.Controllers
             return Ok();
         }
 
+        [HttpPut]
+        [Route("desactivate")]
+        [Authorize(Roles = RoleName.Administrator)]
+        public IActionResult DesactivateUser(ActivateOrDesactivateUserDto model)
+        {
+            _service.DesactivateUser(model.UserName);
+            return Ok();
+        }
+
+        [HttpPut]
+        [Route("activate")]
+        [Authorize(Roles = RoleName.Administrator)]
+        public IActionResult ActivateUser(ActivateOrDesactivateUserDto model)
+        {
+            _service.ActivateUser(model.UserName);
+            return Ok();
+        }
+
         [HttpGet]
         [Route("password/{email}")]
         public IActionResult GetNewPassword(string email)
@@ -108,7 +127,7 @@ namespace DaOAuthV2.Gui.Api.Controllers
             {
                 Email = email
             };
-                
+
             _service.SendMailLostPassword(model);
             return Ok();
         }
@@ -118,6 +137,20 @@ namespace DaOAuthV2.Gui.Api.Controllers
         public IActionResult SetNewPassword(NewPasswordDto model)
         {
             _service.SetNewUserPassword(model);
+            return Ok();
+        }
+
+        [HttpDelete]
+        [Authorize]
+        public IActionResult Delete(string userName)
+        {
+            if (!(User.Identity.Name.Equals(userName, StringComparison.OrdinalIgnoreCase) ||
+                User.IsInRole(RoleName.Administrator)))
+            {
+                throw new DaOauthUnauthorizeException();
+            }
+           
+            _service.DeleteUser(userName);
             return Ok();
         }
     }

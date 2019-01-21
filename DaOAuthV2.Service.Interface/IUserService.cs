@@ -11,12 +11,14 @@ namespace DaOAuthV2.Service.Interface
 
         int CreateUser(CreateUserDto toCreate);
         void UpdateUser(UpdateUserDto toUpdate);
-        void DeleteUser(string userName);
+        void DesactivateUser(string userName);
+        void ActivateUser(string userName);
         UserDto GetUser(LoginUserDto credentials);
         UserDto GetUser(string userName);
         UserDto ValidateUser(ValidateUserDto infos);
         void ChangeUserPassword(ChangePasswordDto infos);
         void SendMailLostPassword(LostPawwordDto infos);
         void SetNewUserPassword(NewPasswordDto infos);
+        void DeleteUser(string userName);
     }
 }
