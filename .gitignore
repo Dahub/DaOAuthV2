@@ -264,3 +264,4 @@ __pycache__/
 *.local.json
 *.release.json
 *.production.json
+*.pubxml
