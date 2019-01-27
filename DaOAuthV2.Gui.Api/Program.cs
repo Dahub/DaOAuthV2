@@ -15,6 +15,8 @@ namespace DaOAuthV2.Gui.Api
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
             .UseStartup<Startup>()
+            .UseKestrel()
+            .UseIISIntegration()
             .ConfigureLogging(logging =>
             {
                 logging.ClearProviders();
