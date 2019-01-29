@@ -29,9 +29,9 @@ namespace DaOAuthV2.Service.ExtensionsMethods
             return values.Select(v => v.ToDto(userName));
         }
 
-        internal static AdminUserDetail ToAdminDto(this IEnumerable<UserClient> values)
+        internal static AdminUserDetailDto ToAdminDto(this IEnumerable<UserClient> values)
         {
-            var toReturn = new AdminUserDetail();
+            var toReturn = new AdminUserDetailDto();
 
             var myUsr = values.First().User;
 
@@ -40,7 +40,7 @@ namespace DaOAuthV2.Service.ExtensionsMethods
             toReturn.FullName = myUsr.FullName;
             toReturn.Id = myUsr.Id;
             toReturn.UserName = myUsr.UserName;
-            toReturn.Clients = values.Select(uc => new AdminUserDetailClient()
+            toReturn.Clients = values.Select(uc => new AdminUserDetailClientDto()
             {
                 Id = uc.Client.Id,
                 ClientName = uc.Client.Name,

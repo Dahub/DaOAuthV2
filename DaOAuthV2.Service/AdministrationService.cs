@@ -56,7 +56,7 @@ namespace DaOAuthV2.Service
             return result;
         }
 
-        public AdminUserDetail GetByIdUser(int idUser)
+        public AdminUserDetailDto GetByIdUser(int idUser)
         {
             using (var context = RepositoriesFactory.CreateContext(ConnexionString))
             {

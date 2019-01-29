@@ -3,11 +3,11 @@ using System.Collections.Generic;
 
 namespace DaOAuthV2.Service.DTO
 {
-    public class AdminUserDetail
+    public class AdminUserDetailDto
     {
-        public AdminUserDetail()
+        public AdminUserDetailDto()
         {
-            Clients = new List<AdminUserDetailClient>();
+            Clients = new List<AdminUserDetailClientDto>();
         }
 
         public int Id { get; set; }
@@ -15,10 +15,10 @@ namespace DaOAuthV2.Service.DTO
         public DateTime? BirthDate { get; set; }
         public string FullName { get; set; }
         public string Email { get; set; }
-        public IList<AdminUserDetailClient> Clients { get; set; }
+        public IList<AdminUserDetailClientDto> Clients { get; set; }
     }
 
-    public class AdminUserDetailClient
+    public class AdminUserDetailClientDto
     {
         public int Id { get; set; }
         public string RefreshToken { get; set; }

@@ -20,6 +20,35 @@ namespace DaOAuthV2.Gui.Front.Controllers
         {
         }
 
+        public async Task<IActionResult> UserDetails(int id)
+        {
+            AdministrationUserDetailsModel model = new AdministrationUserDetailsModel();
+
+            var response = await GetToApi(string.Concat("administration/", id));
+
+            if (!await model.ValidateAsync(response))
+                return View(model);
+
+            var userDetail = JsonConvert.DeserializeObject<AdminUserDetailDto>(
+             await response.Content.ReadAsStringAsync());
+
+            model.BirthDate = userDetail.BirthDate;
+            model.Email = userDetail.Email;
+            model.FullName = userDetail.FullName;
+            model.Id = userDetail.Id;
+            model.UserName = userDetail.UserName;
+            model.Clients = userDetail.Clients.Select(c => new AdministrationUserDetailsClientsModel()
+            {
+                Id = c.Id,
+                ClientName = c.ClientName,
+                IsActif = c.IsActif,
+                IsCreator = c.IsCreator,
+                RefreshToken = c.RefreshToken
+            }).ToList();
+
+            return View(model);
+        }
+
         [Route("{culture}/Administration/Activate/{userName}")]
         public async Task<IActionResult> Activate(string userName)
         {

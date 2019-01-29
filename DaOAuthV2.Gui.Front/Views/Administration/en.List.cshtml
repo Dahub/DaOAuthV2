@@ -45,12 +45,16 @@
                 </td>
                 @if (User.Identity.Name.Equals(item.UserName, StringComparison.OrdinalIgnoreCase))
                 {
-                    <td></td><td></td>
+                    <td></td>
+                    <td></td>
                 }
                 else
                 {
                     <td>
-                        <a href="@Url.Action("UserDetails", "Administration", new { id = @item.UserId })"><i class="fas fa-2x fa-search"></i></a>
+                        @if (item.ClientCount > 0)
+                        {
+                            <a href="@Url.Action("UserDetails", "Administration", new { id = @item.UserId })"><i class="fas fa-2x fa-search"></i></a>
+                        }
                         <span onclick="return doConfirm(@item.UserId);" style="cursor: pointer;"><i class="fas fa-2x fa-trash-alt"></i></span>
                     </td>
                     <td>
