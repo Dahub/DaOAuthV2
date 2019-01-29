@@ -65,5 +65,17 @@ namespace DaOAuthV2.Gui.Api.Controllers
                 return Ok(clients.ToSearchResult<AdminUsrDto>(currentUrl, count, criterias));
             }
         }
+
+        /// <summary>
+        /// Return details for an user
+        /// </summary>
+        /// <param name="idUser">id of the user</param>
+        /// <returns>user details infos</returns>
+        [HttpGet]
+        [Route("{idUser}")]
+        public IActionResult Get(int idUser)
+        {
+            return Ok(_service.GetByIdUser(idUser));
+        }
     }
 }

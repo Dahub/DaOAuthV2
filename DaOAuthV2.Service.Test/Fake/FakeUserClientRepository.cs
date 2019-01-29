@@ -111,6 +111,21 @@ namespace DaOAuthV2.Service.Test.Fake
             return list.Count();
         }
 
+        public IEnumerable<UserClient> GetAllByUserId(int userId)
+        {
+            var ucs = FakeDataBase.Instance.UsersClient.Where(uc => uc.UserId.Equals(userId));
+            if (ucs == null)
+                new List<UserClient>();
+
+            foreach(var uc in ucs)
+            {
+                uc.Client = FakeDataBase.Instance.Clients.Where(c => c.Id.Equals(uc.ClientId)).FirstOrDefault();
+                uc.User = FakeDataBase.Instance.Users.Where(u => u.Id.Equals(uc.UserId)).FirstOrDefault();
+            }
+
+            return ucs;
+        }
+
         public UserClient GetById(int id)
         {
             return FakeDataBase.Instance.UsersClient.Where(uc => uc.Id.Equals(id)).FirstOrDefault();

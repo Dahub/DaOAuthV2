@@ -128,5 +128,29 @@ namespace DaOAuthV2.Service.Test
                 Limit = 51
             });
         }
+
+        [TestMethod]
+        [ExpectedException(typeof(DaOAuthNotFoundException))]
+        public void Get_By_Is_User_Should_Throw_DaOAuthNotFoundException_For_Non_Existing_Id()
+        {
+            _service.GetByIdUser(Int32.MaxValue);
+        }
+
+        [TestMethod]
+        public void Get_By_Id_User_Should_Return_User_With_Clients()
+        {
+            var user = FakeDataBase.Instance.Users.First();
+            Assert.IsNotNull(user);
+            var userClients = FakeDataBase.Instance.UsersClient.Where(uc => uc.UserId.Equals(user.Id));
+            Assert.IsNotNull(userClients);
+            Assert.IsTrue(userClients.Count() > 0);
+
+            var myUserInfos = _service.GetByIdUser(user.Id);
+
+            Assert.IsNotNull(myUserInfos);
+            Assert.AreEqual(myUserInfos.Clients.Count(), userClients.Count());
+            Assert.AreEqual(myUserInfos.FullName, user.FullName);
+            Assert.AreEqual(myUserInfos.UserName, user.UserName);
+        }
     }
 }

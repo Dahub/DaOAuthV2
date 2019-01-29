@@ -360,4 +360,7 @@
   <data name="SearchAdministrationAskTooMuch" xml:space="preserve">
     <value>Vous ne pouvez demander plus de 50 résultats</value>
   </data>
+  <data name="GetByIdUserUserNotFound" xml:space="preserve">
+    <value>Impossible de trouver l'utilisateur</value>
+  </data>
 </root>

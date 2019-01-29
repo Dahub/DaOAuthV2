@@ -58,5 +58,13 @@ namespace DaOAuthV2.Dal.EF
             return Context.UsersClients.
                Where(c => c.ClientId.Equals(clientId));
         }
+
+        public IEnumerable<UserClient> GetAllByUserId(int userId)
+        {
+            return Context.UsersClients.
+                Include(uc => uc.User).
+                Include(uc => uc.Client).
+                Where(uc => uc.UserId.Equals(userId));
+        }
     }
 }

@@ -9,5 +9,6 @@ namespace DaOAuthV2.Dal.Interface
         IEnumerable<UserClient> GetAllByCriterias(string userName, string name, bool? isValid, int? clientTypeId, uint skip, uint take);
         int GetAllByCriteriasCount(string userName, string name, bool? isValid, int? clientTypeId);
         IEnumerable<UserClient> GetAllByClientId(int clientId);
+        IEnumerable<UserClient> GetAllByUserId(int userId);
     }
 }

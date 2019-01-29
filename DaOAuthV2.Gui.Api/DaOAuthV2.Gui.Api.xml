@@ -27,6 +27,13 @@
             <param name="limit">get n results</param>
             <returns>ùUsers</returns>
         </member>
+        <member name="M:DaOAuthV2.Gui.Api.Controllers.AdministrationController.Get(System.Int32)">
+            <summary>
+            Return details for an user
+            </summary>
+            <param name="idUser">id of the user</param>
+            <returns>user details infos</returns>
+        </member>
         <member name="T:DaOAuthV2.Gui.Api.Controllers.ClientsController">
             <summary>
             Client controller

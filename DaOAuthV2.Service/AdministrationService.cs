@@ -55,5 +55,20 @@ namespace DaOAuthV2.Service
 
             return result;
         }
+
+        public AdminUserDetail GetByIdUser(int idUser)
+        {
+            using (var context = RepositoriesFactory.CreateContext(ConnexionString))
+            {
+                var userClientRepo = RepositoriesFactory.GetUserClientRepository(context);
+
+                var ucs = userClientRepo.GetAllByUserId(idUser);
+
+                if (ucs == null || ucs.Count() == 0)
+                    throw new DaOAuthNotFoundException("GetByIdUserUserNotFound");
+
+                return ucs.ToAdminDto();
+            }
+        }
     }
 }
