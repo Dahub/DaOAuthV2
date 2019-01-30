@@ -73,7 +73,8 @@ namespace DaOAuthV2.Service
                     Description = toCreate.Description,
                     IsValid = true,
                     Name = toCreate.Name,
-                    PublicId = RandomService.GenerateRandomString(16)
+                    PublicId = RandomService.GenerateRandomString(16),
+                    UserCreatorId = user.Id
                 };
 
                 clientRepo.Add(client);
@@ -95,8 +96,7 @@ namespace DaOAuthV2.Service
                     CreationDate = DateTime.Now,
                     IsActif = true,
                     RefreshToken = String.Empty,
-                    UserId = user.Id,
-                    IsCreator = true
+                    UserId = user.Id
                 };
 
                 userClientRepo.Add(userClient);
@@ -150,7 +150,7 @@ namespace DaOAuthV2.Service
                 var myUserClient = userClientRepo
                     .GetUserClientByUserNameAndClientPublicId(myClient.PublicId, toDelete.UserName);
 
-                if (myUserClient == null || myUserClient.IsCreator == false)
+                if (myUserClient == null || !myUserClient.Client.UserCreator.UserName.Equals(toDelete.UserName, StringComparison.OrdinalIgnoreCase))
                 {
                     throw new DaOAuthServiceException("DeleteClientWrongUser");
                 }
@@ -340,7 +340,7 @@ namespace DaOAuthV2.Service
                 var myUserClient = userClientRepo.
                     GetUserClientByUserNameAndClientPublicId(myClient.PublicId, toUpdate.UserName);
 
-                if (myUserClient == null || !myUserClient.IsCreator)
+                if (myUserClient == null || !myUserClient.Client.UserCreator.UserName.Equals(toUpdate.UserName, StringComparison.OrdinalIgnoreCase))
                 {
                     throw new DaOAuthServiceException("UpdateClientInvalidUser");
                 }

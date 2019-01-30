@@ -3,6 +3,7 @@ using DaOAuthV2.Dal.Interface;
 using DaOAuthV2.Domain;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Linq;
 
 namespace DaOAuthV2.Dal.EF
 {
@@ -41,7 +42,7 @@ namespace DaOAuthV2.Dal.EF
             modelBuilder.Entity<RessourceServer>().Property(rs => rs.Login).HasColumnName("Login").HasColumnType("nvarchar(256)").HasMaxLength(256).IsRequired();
             modelBuilder.Entity<RessourceServer>().Property(rs => rs.ServerSecret).HasColumnName("ServerSecret").HasColumnType("varbinary(50)").HasMaxLength(50);
             modelBuilder.Entity<RessourceServer>().Property(rs => rs.IsValid).HasColumnName("IsValid").HasColumnType("bit").IsRequired();
-            modelBuilder.Entity<RessourceServer>().HasMany<Scope>(c => c.Scopes).WithOne(c => c.RessourceServer).OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<RessourceServer>().HasMany<Scope>(c => c.Scopes).WithOne(c => c.RessourceServer);
             modelBuilder.Entity<RessourceServer>().HasIndex(rs => rs.Login).IsUnique();
 
             modelBuilder.Entity<User>().ToTable("User");
@@ -55,8 +56,8 @@ namespace DaOAuthV2.Dal.EF
             modelBuilder.Entity<User>().Property(p => p.Password).HasColumnName("Password").HasColumnType("varbinary(50)").HasMaxLength(50);
             modelBuilder.Entity<User>().Property(p => p.UserName).HasColumnName("UserName").HasColumnType("nvarchar(32)").HasMaxLength(32).IsRequired();
             modelBuilder.Entity<User>().Property(p => p.ValidationToken).HasColumnName("ValidationToken").HasColumnType("nvarchar(256)").HasMaxLength(256);
-            modelBuilder.Entity<User>().HasMany<UserClient>(p => p.UsersClients).WithOne(uc => uc.User).OnDelete(DeleteBehavior.Cascade);
-            modelBuilder.Entity<User>().HasMany<UserRole>(u => u.UsersRoles).WithOne(uc => uc.User).OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<User>().HasMany<UserClient>(p => p.UsersClients).WithOne(uc => uc.User);
+            modelBuilder.Entity<User>().HasMany<UserRole>(u => u.UsersRoles).WithOne(uc => uc.User);
             modelBuilder.Entity<User>().HasIndex(u => u.UserName).IsUnique();
             modelBuilder.Entity<User>().HasIndex(u => u.EMail).IsUnique();
 
@@ -77,10 +78,13 @@ namespace DaOAuthV2.Dal.EF
             modelBuilder.Entity<Client>().Property(p => p.Name).HasColumnName("Name").HasColumnType("nvarchar(256)").HasMaxLength(256).IsRequired();
             modelBuilder.Entity<Client>().Property(p => p.PublicId).HasColumnName("PublicId").HasColumnType("nvarchar(256)").HasMaxLength(256).IsRequired();
             modelBuilder.Entity<Client>().Property(p => p.ClientSecret).HasColumnName("ClientSecret").HasColumnType("nvarchar(256)").HasMaxLength(256);
-            modelBuilder.Entity<Client>().HasMany<ClientScope>(c => c.ClientsScopes).WithOne(c => c.Client).OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<Client>().HasMany<ClientScope>(c => c.ClientsScopes).WithOne(c => c.Client);
             modelBuilder.Entity<Client>().Property(p => p.ClientTypeId).HasColumnName("FK_ClientType").HasColumnType("int").IsRequired();
             modelBuilder.Entity<Client>().HasOne<ClientType>(c => c.ClientType).WithMany(ct => ct.Clients).HasForeignKey(ct => ct.ClientTypeId);
-            modelBuilder.Entity<Client>().HasMany<ClientReturnUrl>(c => c.ClientReturnUrls).WithOne(c => c.Client).OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<Client>().HasMany<ClientReturnUrl>(c => c.ClientReturnUrls).WithOne(c => c.Client);
+            modelBuilder.Entity<Client>().Property(p => p.UserCreatorId).HasColumnName("FK_UserCreator").HasColumnType("int").IsRequired();
+            modelBuilder.Entity<Client>().HasOne<User>(c => c.UserCreator).WithMany(u => u.CreatedClients).HasForeignKey(c => c.UserCreatorId).OnDelete(DeleteBehavior.Restrict);
+
             modelBuilder.Entity<Client>().HasIndex(c => c.PublicId).IsUnique();
 
             modelBuilder.Entity<Scope>().ToTable("Scope");
@@ -88,7 +92,7 @@ namespace DaOAuthV2.Dal.EF
             modelBuilder.Entity<Scope>().Property(p => p.Id).HasColumnName("Id").HasColumnType("int").IsRequired();
             modelBuilder.Entity<Scope>().Property(p => p.Wording).HasColumnName("Wording").HasColumnType("nvarchar(max)");
             modelBuilder.Entity<Scope>().Property(p => p.NiceWording).HasColumnName("NiceWording").HasColumnType("nvarchar(512)").HasMaxLength(512);
-            modelBuilder.Entity<Scope>().HasMany<ClientScope>(c => c.ClientsScopes).WithOne(c => c.Scope).OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<Scope>().HasMany<ClientScope>(c => c.ClientsScopes).WithOne(c => c.Scope);
             modelBuilder.Entity<Scope>().Property(p => p.RessourceServerId).HasColumnName("FK_RessourceServer").HasColumnType("int").IsRequired();
             modelBuilder.Entity<Scope>().HasOne<RessourceServer>(c => c.RessourceServer).WithMany(ct => ct.Scopes).HasForeignKey(ct => ct.RessourceServerId);
    
@@ -113,8 +117,7 @@ namespace DaOAuthV2.Dal.EF
             modelBuilder.Entity<UserClient>().Property(p => p.CreationDate).HasColumnName("CreationDate").HasColumnType("datetime").IsRequired();
             modelBuilder.Entity<UserClient>().Property(p => p.IsActif).HasColumnName("IsActif").HasColumnType("bit").IsRequired();
             modelBuilder.Entity<UserClient>().Property(p => p.RefreshToken).HasColumnName("RefreshToken").HasColumnType("nvarchar(max)").HasMaxLength(Int32.MaxValue);
-            modelBuilder.Entity<UserClient>().HasMany<Code>(c => c.Codes).WithOne(c => c.UserClient).OnDelete(DeleteBehavior.Cascade);
-            modelBuilder.Entity<UserClient>().Property(p => p.IsCreator).HasColumnName("IsCreator").HasColumnType("bit").IsRequired().HasDefaultValue(false);
+            modelBuilder.Entity<UserClient>().HasMany<Code>(c => c.Codes).WithOne(c => c.UserClient);
 
             modelBuilder.Entity<ClientScope>().ToTable("ClientScope");
             modelBuilder.Entity<ClientScope>().HasKey(c => c.Id);
@@ -127,7 +130,7 @@ namespace DaOAuthV2.Dal.EF
             modelBuilder.Entity<Role>().HasKey(r => r.Id);
             modelBuilder.Entity<Role>().Property(r => r.Id).HasColumnName("Id").HasColumnType("int").IsRequired();
             modelBuilder.Entity<Role>().Property(r => r.Wording).HasColumnName("Wording").HasColumnType("nvarchar(256)").HasMaxLength(256).IsRequired();
-            modelBuilder.Entity<Role>().HasMany<UserRole>(u => u.UsersRoles).WithOne(uc => uc.Role).OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<Role>().HasMany<UserRole>(u => u.UsersRoles).WithOne(uc => uc.Role);
             modelBuilder.Entity<Role>().HasData(
                 new Role() { Id = 1, Wording = RoleName.User },
                 new Role() { Id = 2, Wording = RoleName.Administrator });

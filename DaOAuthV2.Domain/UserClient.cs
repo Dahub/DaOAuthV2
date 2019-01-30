@@ -15,6 +15,5 @@ namespace DaOAuthV2.Domain
         public string RefreshToken { get; set; }
         public bool IsActif { get; set; }
         public ICollection<Code> Codes { get; set; }
-        public bool IsCreator { get; set; }
     }
 }

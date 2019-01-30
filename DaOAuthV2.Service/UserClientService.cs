@@ -79,8 +79,7 @@ namespace DaOAuthV2.Service
                     ClientId = client.Id,
                     CreationDate = DateTime.Now,
                     IsActif = toCreate.IsActif,
-                    UserId = user.Id,
-                    IsCreator = true
+                    UserId = user.Id
                 });
 
                 context.Commit();

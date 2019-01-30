@@ -20,7 +20,8 @@ namespace DaOAuthV2.Dal.EF
                 Include(c => c.ClientType).
                 Include(c => c.ClientReturnUrls).
                 Include(c => c.ClientsScopes).
-                ThenInclude(cs => cs.Scope);
+                ThenInclude(cs => cs.Scope).
+                Include(c => c.UserCreator);
         }
 
         public int GetAllByCriteriasCount(string name, string publicId, bool? isValid, int? clientTypeId)

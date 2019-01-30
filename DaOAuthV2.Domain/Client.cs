@@ -15,6 +15,8 @@ namespace DaOAuthV2.Domain
         public bool IsValid { get; set; }
         public int ClientTypeId { get; set; }
         public ClientType ClientType { get; set; }
+        public int UserCreatorId { get; set; }
+        public User UserCreator { get; set; }
         public ICollection<UserClient> UsersClients { get; set; }
         public ICollection<ClientScope> ClientsScopes { get; set; }
         public ICollection<ClientReturnUrl> ClientReturnUrls { get; set; }
