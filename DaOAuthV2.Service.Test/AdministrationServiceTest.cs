@@ -74,7 +74,6 @@ namespace DaOAuthV2.Service.Test
                             CreationDate = DateTime.Now,
                             Id = i * 1000 + j,
                             IsActif = i % 7 == 0,
-                            IsCreator = i % 9 == 0,
                             RefreshToken = i % 3 == 0 ? $"refresh_token_{i}-{j}" : null
                         });
                     }

@@ -158,7 +158,6 @@ namespace DaOAuthV2.Service.Test
                 CreationDate = DateTime.Now,
                 IsActif = true,
                 Id = 500,
-                IsCreator = true,
                 UserId = _validUser.Id,
                 RefreshToken = "first refresh token"
             };

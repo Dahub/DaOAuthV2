@@ -1,5 +1,6 @@
 ﻿using DaOAuthV2.Domain;
 using DaOAuthV2.Service.DTO;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -18,7 +19,7 @@ namespace DaOAuthV2.Service.ExtensionsMethods
                 ClientType = value.Client.ClientType.Wording,
                 DefaultReturnUri = value.Client.ClientReturnUrls.Select(u => u.ReturnUrl).FirstOrDefault(),
                 IsActif = value.IsActif,
-                IsCreator = value.IsCreator
+                IsCreator = value.Client.UserCreator.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase)
             };
         }
 
@@ -45,7 +46,7 @@ namespace DaOAuthV2.Service.ExtensionsMethods
                 Id = uc.Client.Id,
                 ClientName = uc.Client.Name,
                 IsActif = uc.IsActif,
-                IsCreator = uc.IsCreator,
+                IsCreator = uc.Client.UserCreatorId.Equals(myUsr.Id),
                 RefreshToken = uc.RefreshToken
             }).ToList();
 

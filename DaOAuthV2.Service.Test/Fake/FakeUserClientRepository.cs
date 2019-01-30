@@ -55,6 +55,7 @@ namespace DaOAuthV2.Service.Test.Fake
                     uc.Client.ClientType = FakeDataBase.Instance.ClientTypes.FirstOrDefault(ct => ct.Id.Equals(uc.Client.ClientTypeId));
                     uc.Client.ClientReturnUrls = FakeDataBase.Instance.ClientReturnUrls.Where(cru => cru.ClientId.Equals(uc.Client.Id)).ToList();
                     uc.Client.ClientsScopes = FakeDataBase.Instance.ClientsScopes.Where(cs => cs.ClientId.Equals(uc.Client.Id)).ToList();
+                    uc.Client.UserCreator = FakeDataBase.Instance.Users.FirstOrDefault(u => u.Id.Equals(uc.Client.UserCreatorId));
                     if (uc.Client.ClientsScopes != null)
                     {
                         foreach (var cs in uc.Client.ClientsScopes)
@@ -148,6 +149,8 @@ namespace DaOAuthV2.Service.Test.Fake
 
             toReturn.Client = cl;
             toReturn.User = us;
+
+            toReturn.Client.UserCreator = FakeDataBase.Instance.Users.FirstOrDefault(u => u.Id.Equals(cl.UserCreatorId));
             
             return toReturn;
         }
@@ -157,7 +160,6 @@ namespace DaOAuthV2.Service.Test.Fake
             var uc = FakeDataBase.Instance.UsersClient.Where(u => u.Id.Equals(toUpdate.Id)).First();
             uc.Id = toUpdate.Id;
             uc.IsActif = toUpdate.IsActif;
-            uc.IsCreator = toUpdate.IsCreator;
             uc.RefreshToken = toUpdate.RefreshToken;
             uc.UserId = toUpdate.UserId;      
         }

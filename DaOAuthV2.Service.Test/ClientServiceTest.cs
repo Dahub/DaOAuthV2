@@ -27,30 +27,6 @@ namespace DaOAuthV2.Service.Test
         [TestInitialize]
         public void Init()
         {
-            _validClient = new Client()
-            {
-                ClientSecret = "abcdefghijklmnopqrstuv",
-                ClientTypeId = 1,
-                CreationDate = DateTime.Now,
-                Description = "test",
-                Id = 777,
-                IsValid = true,
-                Name = "test",
-                PublicId = "abc"
-            };
-
-            _invalidClient = new Client()
-            {
-                ClientSecret = "abcdefghijklmnopqrstuv",
-                ClientTypeId = 1,
-                CreationDate = DateTime.Now,
-                Description = "test_invalid",
-                Id = 776,
-                IsValid = false,
-                Name = "test_invalid",
-                PublicId = "abc_invalid"
-            };
-
             _validUserCreator = new User()
             {
                 CreationDate = DateTime.Now,
@@ -83,6 +59,32 @@ namespace DaOAuthV2.Service.Test
                 Password = new byte[] { 0 },
                 UserName = "Nop_Crab"
             };
+
+            _validClient = new Client()
+            {
+                ClientSecret = "abcdefghijklmnopqrstuv",
+                ClientTypeId = 1,
+                CreationDate = DateTime.Now,
+                Description = "test",
+                Id = 777,
+                IsValid = true,
+                Name = "test",
+                PublicId = "abc",
+                UserCreatorId = _validUserCreator.Id
+            };
+
+            _invalidClient = new Client()
+            {
+                ClientSecret = "abcdefghijklmnopqrstuv",
+                ClientTypeId = 1,
+                CreationDate = DateTime.Now,
+                Description = "test_invalid",
+                Id = 776,
+                IsValid = false,
+                Name = "test_invalid",
+                PublicId = "abc_invalid",
+                UserCreatorId = _invalidUser.Id
+            };           
 
             FakeDataBase.Instance.Clients.Add(_validClient);
             FakeDataBase.Instance.Clients.Add(_invalidClient);
@@ -122,7 +124,6 @@ namespace DaOAuthV2.Service.Test
                 CreationDate = DateTime.Now,
                 Id = 9595,
                 IsActif = true,
-                IsCreator = true,
                 UserId = _validUserCreator.Id
             });
             FakeDataBase.Instance.UsersClient.Add(new UserClient()
@@ -131,7 +132,6 @@ namespace DaOAuthV2.Service.Test
                 CreationDate = DateTime.Now,
                 Id = 378,
                 IsActif = true,
-                IsCreator = true,
                 UserId = _validUserCreator.Id
             });
             FakeDataBase.Instance.UsersClient.Add(new UserClient()
@@ -140,7 +140,6 @@ namespace DaOAuthV2.Service.Test
                 CreationDate = DateTime.Now,
                 Id = 3784,
                 IsActif = true,
-                IsCreator = false,
                 UserId = _validUserNonCreator.Id
             });
             FakeDataBase.Instance.UsersClient.Add(new UserClient()
@@ -149,7 +148,6 @@ namespace DaOAuthV2.Service.Test
                 CreationDate = DateTime.Now,
                 Id = 3785,
                 IsActif = true,
-                IsCreator = true,
                 UserId = _invalidUser.Id
             });
 
@@ -198,7 +196,7 @@ namespace DaOAuthV2.Service.Test
             var myUc = ucrepo.GetUserClientByUserNameAndClientPublicId(client.PublicId, "Sammy");
 
             Assert.IsNotNull(myUc);
-            Assert.IsTrue(myUc.IsCreator);
+            Assert.IsTrue(myUc.Client.UserCreator.UserName.Equals("Sammy"));
         }
 
         [TestMethod]

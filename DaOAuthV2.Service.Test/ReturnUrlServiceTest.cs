@@ -92,7 +92,6 @@ namespace DaOAuthV2.Service.Test
                 CreationDate = DateTime.Now,
                 Id = 400,
                 IsActif = true,
-                IsCreator = true,
                 UserId = _validUser.Id
             });
 
@@ -102,7 +101,6 @@ namespace DaOAuthV2.Service.Test
                 CreationDate = DateTime.Now,
                 Id = 401,
                 IsActif = true,
-                IsCreator = true,
                 UserId = _invalidUser.Id
             });
 
@@ -112,7 +110,6 @@ namespace DaOAuthV2.Service.Test
                 CreationDate = DateTime.Now,
                 Id = 402,
                 IsActif = true,
-                IsCreator = true,
                 UserId = _validUser.Id
             });
 
@@ -122,7 +119,6 @@ namespace DaOAuthV2.Service.Test
                 CreationDate = DateTime.Now,
                 Id = 403,
                 IsActif = true,
-                IsCreator = true,
                 UserId = _invalidUser.Id
             });
         }

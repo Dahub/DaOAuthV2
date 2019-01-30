@@ -61,7 +61,8 @@ namespace DaOAuthV2.Service.Test.Fake
                 Id = 1,
                 IsValid = true,
                 Name = "client_1",
-                PublicId = "public_id_1"
+                PublicId = "public_id_1",
+                UserCreatorId = 1
             },
             new Client()
             {
@@ -72,7 +73,8 @@ namespace DaOAuthV2.Service.Test.Fake
                 Id = 2,
                 IsValid = true,
                 Name = "client_2",
-                PublicId = "public_id_2"
+                PublicId = "public_id_2",
+                UserCreatorId = 1
 
             },
             new Client()
@@ -84,7 +86,8 @@ namespace DaOAuthV2.Service.Test.Fake
                 Id = 3,
                 IsValid = false,
                 Name = "client_3",
-                PublicId = "public_id_3"
+                PublicId = "public_id_3",
+                UserCreatorId = 1
             },
             new Client()
             {
@@ -95,7 +98,8 @@ namespace DaOAuthV2.Service.Test.Fake
                 Id = 4,
                 IsValid = true,
                 Name = "client_4",
-                PublicId = "public_id_4"
+                PublicId = "public_id_4",
+                UserCreatorId = 1
             },
             new Client()
             {
@@ -106,7 +110,8 @@ namespace DaOAuthV2.Service.Test.Fake
                 Id = 5,
                 IsValid = false,
                 Name = "client_5",
-                PublicId = "public_id_5"
+                PublicId = "public_id_5",
+                UserCreatorId = 1
             }
         };
 

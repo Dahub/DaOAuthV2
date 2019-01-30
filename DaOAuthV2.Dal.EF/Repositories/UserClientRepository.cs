@@ -15,6 +15,7 @@ namespace DaOAuthV2.Dal.EF
                 uc => uc.Client.PublicId.Equals(clientPublicId, StringComparison.Ordinal)
                 && uc.User.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase)).
                 Include(uc => uc.Client).
+                Include(uc => uc.Client.UserCreator).
                 Include(uc => uc.User).
                 FirstOrDefault();
         }
@@ -32,6 +33,7 @@ namespace DaOAuthV2.Dal.EF
                 Include(c => c.Client).
                 Include(c => c.Client.ClientType).
                 Include(c => c.Client.ClientReturnUrls).
+                Include(c => c.Client.UserCreator).
                 Include(c => c.Client.ClientsScopes).ThenInclude(cs => cs.Scope)).
                 Include(c => c.User).Skip((int)skip).Take((int)take);
         }
@@ -64,6 +66,7 @@ namespace DaOAuthV2.Dal.EF
             return Context.UsersClients.
                 Include(uc => uc.User).
                 Include(uc => uc.Client).
+                Include(c => c.Client.UserCreator).
                 Where(uc => uc.UserId.Equals(userId));
         }
     }

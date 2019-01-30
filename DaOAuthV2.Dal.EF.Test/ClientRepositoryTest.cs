@@ -65,7 +65,8 @@ namespace DaOAuthV2.Dal.EF.Test
                     Id = 100,
                     IsValid = true,
                     Name = "CT1",
-                    PublicId = "CT1_id"
+                    PublicId = "CT1_id",
+                    UserCreatorId = 100
                 });
                 context.Clients.Add(new Client()
                 {
@@ -76,7 +77,8 @@ namespace DaOAuthV2.Dal.EF.Test
                     Id = 101,
                     IsValid = true,
                     Name = "CT2",
-                    PublicId = "CT2_id"
+                    PublicId = "CT2_id",
+                    UserCreatorId = 100
                 });
 
                 context.ClientsScopes.Add(new ClientScope()
@@ -375,6 +377,26 @@ namespace DaOAuthV2.Dal.EF.Test
                 Assert.IsNotNull(cs);
                 Assert.AreEqual(2, cs.Count());
                 Assert.IsNotNull(cs.First().ClientType);
+            }
+        }
+
+        [TestMethod]
+        public void Get_All_By_Criterias_Should_Return_2_With_User_Creator()
+        {
+            var options = new DbContextOptionsBuilder<DaOAuthContext>()
+                      .UseInMemoryDatabase(databaseName: _dbName)
+                      .Options;
+
+            IEnumerable<Client> cs = null;
+
+            using (var context = new DaOAuthContext(options))
+            {
+                var clientRepo = _repoFactory.GetClientRepository(context);
+                cs = clientRepo.GetAllByCriterias(null, null, null, 1, 0, 50);
+
+                Assert.IsNotNull(cs);
+                Assert.AreEqual(2, cs.Count());
+                Assert.IsNotNull(cs.First().UserCreator);
             }
         }
 

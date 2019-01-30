@@ -21,6 +21,8 @@ namespace DaOAuthV2.Service.Test
         [TestInitialize]
         public void Init()
         {
+            _validUser = FakeDataBase.Instance.Users.Where(u => u.UserName.Equals("Sammy")).First();
+
             _repo = new FakeUserClientRepository();
             _service = new UserClientService()
             {
@@ -40,7 +42,8 @@ namespace DaOAuthV2.Service.Test
                 Description = "Démo client",
                 IsValid = true,
                 Name = "C-500",
-                PublicId = "pub-c-500"
+                PublicId = "pub-c-500",
+                UserCreatorId = _validUser.Id
             };
             _invalidClient = new Client()
             {
@@ -51,12 +54,12 @@ namespace DaOAuthV2.Service.Test
                 Description = "Démo client invalid",
                 IsValid = false,
                 Name = "C-501",
-                PublicId = "pub-c-501"
+                PublicId = "pub-c-501",
+                UserCreatorId = _validUser.Id
             };
 
             FakeDataBase.Instance.Clients.Add(_validClient);
-
-            _validUser = FakeDataBase.Instance.Users.Where(u => u.UserName.Equals("Sammy")).First();
+            FakeDataBase.Instance.Clients.Add(_invalidClient);
         }
 
         [TestCleanup]
@@ -237,21 +240,6 @@ namespace DaOAuthV2.Service.Test
                 UserName = _validUser.UserName,
                 IsActif = true
             });
-        }
-
-        [TestMethod]
-        public void Create_New_User_Client_Should_Set_Is_Creator_To_True()
-        {
-            int id = _service.CreateUserClient(new DTO.CreateUserClientDto()
-            {
-                ClientPublicId = "pub-c-500",
-                UserName = _validUser.UserName,
-                IsActif = true
-            });
-
-            var uc = _repo.GetById(id);
-
-            Assert.AreEqual(true, uc.IsCreator);
         }
 
         [TestMethod]
