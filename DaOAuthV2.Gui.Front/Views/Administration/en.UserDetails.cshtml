@@ -1,0 +1,68 @@
+﻿@model DaOAuthV2.Gui.Front.Models.AdministrationUserDetailsModel
+
+@{
+    Layout = "_en.layout";
+}
+
+@await Html.PartialAsync("_en.modelErrors")
+
+<h1>User <em>@Model.UserName</em> Details</h1>
+<hr />
+<div class="row justify-content-md-center">
+    <div class="col-8">
+        <h4>Informations</h4>
+        <strong>User name : </strong>@Model.UserName<br />
+        <strong>Full name : </strong>@Model.FullName<br />
+        <strong>Email : </strong>@Model.Email<br />
+        <strong>Birth date : </strong>@(Model.BirthDate.HasValue?Model.BirthDate.Value.ToLongDateString():String.Empty)<br />
+
+        @if (Model.Clients != null && Model.Clients.Count > 0)
+        {
+            <hr />
+            <h4>Clients</h4>
+
+            <br />
+            <table class="table">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>
+                            Name
+                        </th>
+                        <th>
+                            Is actif
+                        </th>
+                        <th>
+                            Is creator
+                        </th>
+                        <th>
+                            Refresh token
+                        </th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var c in Model.Clients)
+                    {
+                    <tr>
+                        <td>
+                            @c.ClientName
+                        </td>
+                        <td>
+                            @c.IsActif
+                        </td>
+                        <td>
+                            @c.IsCreator
+                        </td>
+                        <td>
+                            @c.RefreshToken
+                        </td>
+                        <td>
+
+                        </td>
+                    </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </div>
+</div>

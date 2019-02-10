@@ -3,7 +3,6 @@ using DaOAuthV2.Dal.Interface;
 using DaOAuthV2.Domain;
 using Microsoft.EntityFrameworkCore;
 using System;
-using System.Linq;
 
 namespace DaOAuthV2.Dal.EF
 {
