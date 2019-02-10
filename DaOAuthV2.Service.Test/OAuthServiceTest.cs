@@ -609,6 +609,31 @@ namespace DaOAuthV2.Service.Test
         }
 
         [TestMethod]
+        public void Genererate_Uri_For_Authorize_Should_Contains_Correct_Redirect_Url_When_User_Ask_Code_Without_Scope()
+        {
+            var url = _service.GenererateUriForAuthorize(new AskAuthorizeDto()
+            {
+                ClientPublicId = _validClientConfidential.PublicId,
+                RedirectUri = "http://www.perdu.com",
+                ResponseType = "code",
+                State = "test",
+                UserName = _validUser.UserName
+            });
+
+
+            Assert.IsNotNull(url);
+            Assert.IsTrue(!String.IsNullOrEmpty(url.AbsoluteUri));
+            Assert.IsTrue(url.AbsoluteUri.StartsWith("http://www.perdu.com"));
+            Assert.IsTrue(url.AbsoluteUri.Contains("state=test"));
+            Assert.IsTrue(url.AbsoluteUri.Contains("code=abc"));
+
+            var code = FakeDataBase.Instance.Codes.Where(c => c.IsValid.Equals(true)
+                && c.UserClientId.Equals(_validUserClientConfidential.Id) && c.CodeValue.Equals("abc")).FirstOrDefault();
+
+            Assert.IsNotNull(code);
+        }
+
+        [TestMethod]
         public void Genererate_Uri_For_Authorize_Should_Contains_Correct_Redirect_Url_When_User_Ask_Token()
         {
             UserClient ucToAdd = new UserClient()

@@ -595,6 +595,8 @@ namespace DaOAuthV2.Service
             string[] scopes = null;
             if (!String.IsNullOrEmpty(scope))
                 scopes = scope.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            else
+                return true; 
 
             using (var context = RepositoriesFactory.CreateContext(ConnexionString))
             {

@@ -14,7 +14,7 @@
         <strong>User name : </strong>@Model.UserName<br />
         <strong>Full name : </strong>@Model.FullName<br />
         <strong>Email : </strong>@Model.Email<br />
-        <strong>Birth date : </strong>@Model.BirthDate<br />
+        <strong>Birth date : </strong>@(Model.BirthDate.HasValue?Model.BirthDate.Value.ToLongDateString():String.Empty)<br />
 
         @if (Model.Clients != null && Model.Clients.Count > 0)
         {
