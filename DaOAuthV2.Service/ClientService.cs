@@ -289,6 +289,8 @@ namespace DaOAuthV2.Service
 
             using (var context = RepositoriesFactory.CreateContext(ConnexionString))
             {
+                var resource = this.GetErrorStringLocalizer();
+
                 var clientRepo = RepositoriesFactory.GetClientRepository(context);
                 var userClientRepo = RepositoriesFactory.GetUserClientRepository(context);
                 var scopeRepo = RepositoriesFactory.GetScopeRepository(context);
@@ -300,7 +302,7 @@ namespace DaOAuthV2.Service
 
                 if (myClient == null || !myClient.IsValid)
                 {
-                    throw new DaOAuthServiceException("UpdateClientInvalidClient");
+                    throw new DaOAuthServiceException(resource["UpdateClientInvalidClient"]);
                 }
 
                 var ucs = userClientRepo.GetAllByCriterias(toUpdate.UserName, toUpdate.Name, null, null, 0, 50);
@@ -308,13 +310,13 @@ namespace DaOAuthV2.Service
                 {
                     var myUc = ucs.First();
                     if (myUc.ClientId != myClient.Id)
-                        throw new DaOAuthServiceException("UpdateClientNameAlreadyUsed");
+                        throw new DaOAuthServiceException(resource["UpdateClientNameAlreadyUsed"]);
                 }
 
                 var cl = clientRepo.GetByPublicId(toUpdate.PublicId);
                 if (cl != null && cl.Id != myClient.Id)
                 {
-                    throw new DaOAuthServiceException("UpdateClientpublicIdAlreadyUsed");
+                    throw new DaOAuthServiceException(resource["UpdateClientpublicIdAlreadyUsed"]);
                 }
 
                 var scopes = scopeRepo.GetAll();
@@ -325,7 +327,7 @@ namespace DaOAuthV2.Service
                     {
                         if (!ids.Contains(scopeId))
                         {
-                            throw new DaOAuthServiceException("UpdateClientScopeDontExists");
+                            throw new DaOAuthServiceException(resource["UpdateClientScopeDontExists"]);
                         }
                     }
                 }
@@ -334,7 +336,7 @@ namespace DaOAuthV2.Service
 
                 if (myUser == null || !myUser.IsValid)
                 {
-                    throw new DaOAuthServiceException("UpdateClientInvalidUser");
+                    throw new DaOAuthServiceException(resource["UpdateClientInvalidUser"]);
                 }
 
                 var myUserClient = userClientRepo.
@@ -342,7 +344,7 @@ namespace DaOAuthV2.Service
 
                 if (myUserClient == null || !myUserClient.Client.UserCreator.UserName.Equals(toUpdate.UserName, StringComparison.OrdinalIgnoreCase))
                 {
-                    throw new DaOAuthServiceException("UpdateClientInvalidUser");
+                    throw new DaOAuthServiceException(resource["UpdateClientInvalidUser"]);
                 }
 
                 // update returns urls
