@@ -85,9 +85,9 @@ namespace DaOAuthV2.Gui.Front.Controllers
                 ReturnUrls = model.ReturnUrls.Where(ru => !String.IsNullOrWhiteSpace(ru)).ToList(),
                 Description = model.Description,
                 Name = model.Name,
-                ScopesIds = model.Scopes.SelectMany(s => s.Value)
+                ScopesIds = model.Scopes != null?model.Scopes.SelectMany(s => s.Value)
                                 .Where(sv => sv.Selected)
-                                .Select(sv => sv.Id).ToList()
+                                .Select(sv => sv.Id).ToList():new List<int>()
             });
 
             if (!await model.ValidateAsync(response))
