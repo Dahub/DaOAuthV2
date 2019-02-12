@@ -50,6 +50,7 @@ namespace DaOAuthV2.Dal.EF
              ThenInclude(cs => cs.Scope).
              Include(c => c.ClientType).
              Include(c => c.ClientReturnUrls).
+             Include(c => c.UserCreator).
              Where(c => c.Id.Equals(id)).FirstOrDefault();
         }
     }

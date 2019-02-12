@@ -204,6 +204,23 @@ namespace DaOAuthV2.Dal.EF.Test
         }
 
         [TestMethod]
+        public void Get_By_Id_Should_Return_User_Creator()
+        {
+            var options = new DbContextOptionsBuilder<DaOAuthContext>()
+                    .UseInMemoryDatabase(databaseName: _dbName)
+                    .Options;
+
+            using (var context = new DaOAuthContext(options))
+            {
+                var clientRepo = _repoFactory.GetClientRepository(context);
+                var c = clientRepo.GetById(100);
+
+                Assert.IsNotNull(c);
+                Assert.IsNotNull(c.UserCreator);
+            }
+        }
+
+        [TestMethod]
         public void Get_By_Id_Should_Return_Return_Urls()
         {
             var options = new DbContextOptionsBuilder<DaOAuthContext>()

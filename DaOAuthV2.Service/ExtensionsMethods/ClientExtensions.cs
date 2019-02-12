@@ -7,22 +7,22 @@ namespace DaOAuthV2.Service.ExtensionsMethods
 {
     internal static class ClientExtensions
     {
-        internal static ClientDto ToDto(this Client value)
+        internal static ClientDto ToDto(this Client value, bool isCreator)
         {
             var c = new ClientDto()
             {
-                Id = value.Id,               
+                Id = value.Id,
                 Name = value.Name,
                 ClientType = value.ClientType.Wording,
                 CreationDate = value.CreationDate,
                 Description = value.Description,
-                ClientSecret = value.ClientSecret,
-                PublicId = value.PublicId
+                ClientSecret = isCreator ? value.ClientSecret : string.Empty,
+                PublicId = isCreator ? value.PublicId : string.Empty
             };
 
             c.ReturnUrls = value.ClientReturnUrls.ToDictionary(k => k.Id, v => v.ReturnUrl);
 
-            c.Scopes = value.ClientsScopes.Select(s => 
+            c.Scopes = value.ClientsScopes.Select(s =>
                 new ClientScopeDto()
                 {
                     Id = s.Scope.Id,
@@ -35,7 +35,7 @@ namespace DaOAuthV2.Service.ExtensionsMethods
 
         internal static IEnumerable<ClientDto> ToDto(this IEnumerable<Client> values)
         {
-            return values.Select(v => v.ToDto());
+            return values.Select(v => v.ToDto(false));
         }
     }
 }

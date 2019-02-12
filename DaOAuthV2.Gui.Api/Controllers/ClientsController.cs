@@ -48,7 +48,7 @@ namespace DaOAuthV2.Gui.Api.Controllers
         [Route("{id}")]
         public IActionResult Get(int id)
         {
-            return Ok(_service.GetById(id));
+            return Ok(_service.GetById(id, User.Identity.Name));
         }
 
         /// <summary>
