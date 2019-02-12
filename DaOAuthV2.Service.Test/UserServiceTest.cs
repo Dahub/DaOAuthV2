@@ -535,6 +535,33 @@ namespace DaOAuthV2.Service.Test
 
         [TestMethod]
         [ExpectedException(typeof(DaOAuthServiceException))]
+        public void Update_With_Existing_Email_Should_Throw_Exception()
+        {
+            string email = "existing@test.com";
+
+            FakeDataBase.Instance.Users.Add(new Domain.User()
+            {
+                BirthDate = DateTime.Now,
+                EMail = email,
+                CreationDate  = DateTime.Now,
+                FullName = "test",
+                Id = 5632,
+                IsValid = true,
+                UserName = "testtest",
+                Password = new byte[] { 0 }
+            });
+
+            _service.UpdateUser(new DTO.UpdateUserDto()
+            {
+                UserName = "Sammy",
+                BirthDate = new DateTime(1918, 11, 11),
+                FullName = "new sam",
+                EMail = email
+            });
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(DaOAuthServiceException))]
         public void Update_With_Invalid_Email_Should_Throw_Exception()
         {
             _service.UpdateUser(new DTO.UpdateUserDto()
