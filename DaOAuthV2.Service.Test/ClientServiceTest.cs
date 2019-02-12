@@ -520,7 +520,6 @@ namespace DaOAuthV2.Service.Test
 
             Assert.IsNotNull(clients);
             Assert.AreEqual(1, clients.Count());
-            Assert.AreEqual(pi, clients.First().PublicId);
         }
 
         [TestMethod]
@@ -544,15 +543,39 @@ namespace DaOAuthV2.Service.Test
         [TestMethod]
         public void Get_By_Id_Should_Return_Client_For_Existing_Id()
         {
-            var c = _service.GetById(1);
+            var c = _service.GetById(_validClient.Id, _validUserCreator.UserName);
             Assert.IsNotNull(c);
+        }
+
+        [TestMethod]
+        public void Get_By_Id_Should_Return_Client_With_Secret_For_Existing_Id_And_Creator()
+        {
+            var c = _service.GetById(_validClient.Id, _validUserCreator.UserName);
+            Assert.IsNotNull(c);
+            Assert.IsFalse(String.IsNullOrEmpty(c.ClientSecret));
+        }
+
+        [TestMethod]
+        public void Get_By_Id_Should_Return_Client_Without_Secret_For_Existing_Id_And_Non_Creator()
+        {
+            var c = _service.GetById(_validClient.Id, _validUserNonCreator.UserName);
+            Assert.IsNotNull(c);
+            Assert.IsTrue(String.IsNullOrEmpty(c.ClientSecret));
+        }
+
+        [TestMethod]
+        public void Get_By_Id_Should_Return_Client_Without_Public_Id_For_Existing_Id_And_Non_Creator()
+        {
+            var c = _service.GetById(1, _validUserNonCreator.UserName);
+            Assert.IsNotNull(c);
+            Assert.IsTrue(String.IsNullOrEmpty(c.PublicId));
         }
 
         [TestMethod]
         [ExpectedException(typeof(DaOAuthNotFoundException))]
         public void Get_By_Id_Should_Throw_DaOAuthNotFoundException_For_Non_Existing_Id()
         {
-            _service.GetById(85674);
+            _service.GetById(85674, _validUserCreator.UserName);
         }
 
         [TestMethod]
@@ -562,7 +585,7 @@ namespace DaOAuthV2.Service.Test
             Scope sc1, sc2, sc3;
             InitTestForInvalidRessourceServerScopes(out cl, out sc1, out sc2, out sc3);
 
-            var client = _service.GetById(cl.Id);
+            var client = _service.GetById(cl.Id, _validUserCreator.UserName);
 
             Assert.IsNotNull(client);
             Assert.IsNotNull(client.Scopes);
@@ -1011,7 +1034,7 @@ namespace DaOAuthV2.Service.Test
             Assert.AreEqual(999999, cScopes.First().ScopeId);
         }
 
-        private static void InitTestForInvalidRessourceServerScopes(out Client cl, out Scope sc1, out Scope sc2, out Scope sc3)
+        private void InitTestForInvalidRessourceServerScopes(out Client cl, out Scope sc1, out Scope sc2, out Scope sc3)
         {
             FakeDataBase.Instance.Clients.Clear();
             FakeDataBase.Instance.RessourceServers.Clear();
@@ -1026,7 +1049,8 @@ namespace DaOAuthV2.Service.Test
                 Id = 1,
                 IsValid = true,
                 Name = "cl",
-                PublicId = "abc"
+                PublicId = "abc",
+                UserCreatorId = _validUserCreator.Id
             };
             FakeDataBase.Instance.Clients.Add(cl);
 

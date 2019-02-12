@@ -177,9 +177,9 @@ namespace DaOAuthV2.Service
             }
         }
 
-        public ClientDto GetById(int id)
+        public ClientDto GetById(int id, string userName)
         {
-            Logger.LogInformation(String.Format("Try to create client by id {0}", id));
+            Logger.LogInformation(String.Format("Try to get client by id {0}", id));
 
             ClientDto toReturn = null;
 
@@ -200,7 +200,7 @@ namespace DaOAuthV2.Service
                     client.ClientsScopes = client.ClientsScopes.ToList().Where(cs => !invalidsRs.Contains(cs.Scope.RessourceServerId)).ToList();
                 }
 
-                toReturn = client.ToDto();
+                toReturn = client.ToDto(client.UserCreator.UserName.Equals(userName));
             }
 
             return toReturn;
@@ -392,7 +392,7 @@ namespace DaOAuthV2.Service
 
                 context.Commit();
 
-                return myClient.ToDto();
+                return myClient.ToDto(true);
             }            
         }
 
