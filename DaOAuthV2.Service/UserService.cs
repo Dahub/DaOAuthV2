@@ -310,6 +310,11 @@ namespace DaOAuthV2.Service
 
                     if (user == null || !user.IsValid)
                         result.Add(new ValidationResult(resource["UpdateUserNoUserFound"]));
+
+                    var errorResource = this.GetErrorStringLocalizer();
+                    var getByMailUser = repo.GetByEmail(toValidate.EMail);
+                    if(getByMailUser != null && getByMailUser.Id != user.Id)
+                        result.Add(new ValidationResult(String.Format(errorResource["CreateUserEmailExists"], toValidate.EMail)));
                 }
 
                 return result;

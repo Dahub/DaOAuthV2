@@ -354,4 +354,7 @@
   <data name="GetByIdUserUserNotFound" xml:space="preserve">
     <value>Cannot find the user</value>
   </data>
+  <data name="UpdateUserEmailExists" xml:space="preserve">
+    <value>Email address {0} already in use</value>
+  </data>
 </root>
