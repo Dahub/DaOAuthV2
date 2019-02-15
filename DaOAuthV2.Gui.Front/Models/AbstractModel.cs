@@ -38,6 +38,7 @@ namespace DaOAuthV2.Gui.Front.Models
                 }
                 catch
                 {
+                    Errors.Add($"{(int)response.StatusCode} {response.ReasonPhrase}");
                     return false;
                 }
             }
