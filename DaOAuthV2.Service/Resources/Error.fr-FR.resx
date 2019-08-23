@@ -253,7 +253,7 @@
     <value>Vous ne pouvez demander plus de 50 résultats</value>
   </data>
   <data name="UnauthorizedClient" xml:space="preserve">
-    <value>Le client ne possède pas l'authorisation</value>
+    <value>Le client ne possède pas l'autorisation</value>
   </data>
   <data name="UnauthorizedScope" xml:space="preserve">
     <value>Scope non authorisés</value>
