@@ -503,7 +503,7 @@ namespace DaOAuthV2.Service
             toReturn = new TokenInfoDto()
             {
                 AccessToken = accesToken.Token,
-                ExpireIn = accesToken.Expire,
+                ExpireIn = Configuration.AccesTokenLifeTimeInSeconds,
                 RefreshToken = newRefreshToken.Token,
                 Scope = tokenInfo.Scope,
                 TokenType = OAuthConvention.AccessToken
