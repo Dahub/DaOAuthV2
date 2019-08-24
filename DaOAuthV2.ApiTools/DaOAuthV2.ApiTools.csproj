@@ -5,4 +5,14 @@
     <Configurations>Debug;Release;Local</Configurations>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore" Version="2.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication" Version="2.2.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="2.2.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DaOAuthV2.Constants\DaOAuthV2.Constants.csproj" />
+  </ItemGroup>
+
 </Project>

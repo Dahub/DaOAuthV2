@@ -9,6 +9,14 @@ namespace DaOAuthV2.Dal.EF
 {
     internal class UserRepository : RepositoryBase<User>, IUserRepository
     {
+        public override User GetById(int id)
+        {
+            return Context.Users
+                .Include(u => u.UsersClients)
+                .ThenInclude(uc => uc.Client)
+                .Where(c => c.Id.Equals(id)).FirstOrDefault();
+        }
+
         public IEnumerable<User> GetAllByCriterias(string userName, string userMail, bool? isValid, uint skip, uint take)
         {
             return Context.Users

@@ -60,14 +60,14 @@ namespace DaOAuthV2.Service
         {
             using (var context = RepositoriesFactory.CreateContext())
             {
-                var userClientRepo = RepositoriesFactory.GetUserClientRepository(context);
+                var userClientRepo = RepositoriesFactory.GetUserRepository(context);
 
-                var ucs = userClientRepo.GetAllByUserId(idUser);
+                var user = userClientRepo.GetById(idUser);
 
-                if (ucs == null || ucs.Count() == 0)
+                if (user == null)
                     throw new DaOAuthNotFoundException("GetByIdUserUserNotFound");
 
-                return ucs.ToAdminDto();
+                return user.ToAdminDetailDto();
             }
         }
     }

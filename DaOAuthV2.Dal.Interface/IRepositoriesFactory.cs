@@ -2,8 +2,6 @@
 {
     public interface IRepositoriesFactory
     {
-        string ConnexionString { get; set; }
-
         IContext CreateContext();
 
         IClientRepository GetClientRepository(IContext context);

@@ -78,6 +78,19 @@ namespace DaOAuthV2.Service.Test.Fake
                 u.UsersRoles.Add(userRole);
             }
 
+            var uc = FakeDataBase.Instance.UsersClient.Where(x => x.UserId.Equals(u.Id));
+
+            if (uc == null)
+                return u;
+            u.UsersClients = new List<UserClient>();
+            foreach(var userClient in uc)
+            {
+                var c = FakeDataBase.Instance.Clients.Where(x => x.Id.Equals(userClient.ClientId)).FirstOrDefault();
+                if (c != null)
+                    userClient.Client = c;
+                u.UsersClients.Add(userClient);
+            }
+
             return u;
         }
 

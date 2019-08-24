@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
@@ -39,20 +40,9 @@ namespace DaOAuthV2.Gui.Api
             services.Configure<AppConfiguration>(Configuration.GetSection("AppConfiguration"));
 
             var conf = Configuration.GetSection("AppConfiguration").Get<AppConfiguration>();
-            var connexionString = Configuration.GetConnectionString("DaOAuthConnexionString");
+            var dbContextOptions = BuildDbContextOptions();
 
-            services.AddAuthentication(conf.DefaultScheme).AddCookie(conf.DefaultScheme,
-                options =>
-                {
-                    options.DataProtectionProvider = DataProtectionProvider.Create(
-                        new DirectoryInfo(conf.DataProtectionProviderDirectory));
-                    options.Cookie.Domain = string.Concat(".", conf.AppsDomain);
-                    options.Events.OnRedirectToLogin = (context) =>
-                    {
-                        context.Response.StatusCode = 401; // API : don't use redirect but unauthorize
-                        return Task.CompletedTask;
-                    };
-                });
+            BuildAuthentification(services, conf);
 
             // Build the intermediate service provider
             var sp = services.BuildServiceProvider();
@@ -69,7 +59,7 @@ namespace DaOAuthV2.Gui.Api
                 Configuration = conf,
                 RepositoriesFactory = new EfRepositoriesFactory()
                 {
-                    ConnexionString = connexionString
+                    DbContextOptions = dbContextOptions
                 },
                 StringLocalizerFactory = localizationServiceFactory,
                 Logger = loggerServiceFactory.CreateLogger<AdministrationService>(),
@@ -80,7 +70,7 @@ namespace DaOAuthV2.Gui.Api
                 Configuration = conf,
                 RepositoriesFactory = new EfRepositoriesFactory()
                 {
-                    ConnexionString = connexionString
+                    DbContextOptions = dbContextOptions
                 },
                 StringLocalizerFactory = localizationServiceFactory,
                 Logger = loggerServiceFactory.CreateLogger<UserService>(),
@@ -100,7 +90,7 @@ namespace DaOAuthV2.Gui.Api
                 Configuration = conf,
                 RepositoriesFactory = new EfRepositoriesFactory()
                 {
-                    ConnexionString = connexionString
+                    DbContextOptions = dbContextOptions
                 },
                 StringLocalizerFactory = localizationServiceFactory,
                 Logger = loggerServiceFactory.CreateLogger<JwtService>()
@@ -111,7 +101,7 @@ namespace DaOAuthV2.Gui.Api
                 Configuration = conf,
                 RepositoriesFactory = new EfRepositoriesFactory()
                 {
-                    ConnexionString = connexionString
+                    DbContextOptions = dbContextOptions
                 },
                 StringLocalizerFactory = localizationServiceFactory,
                 Logger = loggerServiceFactory.CreateLogger<UserClientService>()
@@ -122,7 +112,7 @@ namespace DaOAuthV2.Gui.Api
                 Configuration = conf,
                 RepositoriesFactory = new EfRepositoriesFactory()
                 {
-                    ConnexionString = connexionString
+                    DbContextOptions = dbContextOptions
                 },
                 StringLocalizerFactory = localizationServiceFactory,
                 Logger = loggerServiceFactory.CreateLogger<ClientService>(),
@@ -134,7 +124,7 @@ namespace DaOAuthV2.Gui.Api
                 Configuration = conf,
                 RepositoriesFactory = new EfRepositoriesFactory()
                 {
-                    ConnexionString = connexionString
+                    DbContextOptions = dbContextOptions
                 },
                 StringLocalizerFactory = localizationServiceFactory,
                 Logger = loggerServiceFactory.CreateLogger<ReturnUrlService>()
@@ -145,7 +135,7 @@ namespace DaOAuthV2.Gui.Api
                 Configuration = conf,
                 RepositoriesFactory = new EfRepositoriesFactory()
                 {
-                    ConnexionString = connexionString
+                    DbContextOptions = dbContextOptions
                 },
                 StringLocalizerFactory = localizationServiceFactory,
                 Logger = loggerServiceFactory.CreateLogger<RessourceServerService>(),
@@ -157,7 +147,7 @@ namespace DaOAuthV2.Gui.Api
                 Configuration = conf,
                 RepositoriesFactory = new EfRepositoriesFactory()
                 {
-                    ConnexionString = connexionString
+                    DbContextOptions = dbContextOptions
                 },
                 StringLocalizerFactory = localizationServiceFactory,
                 Logger = loggerServiceFactory.CreateLogger<ScopeService>()
@@ -167,12 +157,8 @@ namespace DaOAuthV2.Gui.Api
                 options.Filters.Add(new DaOAuthExceptionFilter(CurrentEnvironment, loggerServiceFactory)))
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
-            services.AddSwaggerGen(c =>
-            {
-                c.SwaggerDoc("v1", new Info { Title = "DaOAuth Gui API", Version = "v1" });
-                c.IncludeXmlComments(GetXmlCommentsPath());
-            });
-        }
+            UseSwagger(services);
+        }       
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, IStringLocalizerFactory stringLocalizerFactory, ILoggerFactory loggerFactory)
@@ -186,10 +172,10 @@ namespace DaOAuthV2.Gui.Api
                 app.UseHsts();
             }
 
-            app.UseAuthentication();
+            AddLogger(loggerFactory);
+            AddSwagger(app);
 
-            loggerFactory.AddNLog();
-            NLog.LogManager.LoadConfiguration("nlog.config");
+            app.UseAuthentication();
 
             var supportedCultures = new List<CultureInfo>
             {
@@ -206,19 +192,57 @@ namespace DaOAuthV2.Gui.Api
 
             app.UseRequestLocalization(options);
 
+            app.UseHttpsRedirection();
+            app.UseMvc();
+        }
+
+        protected virtual void BuildAuthentification(IServiceCollection services, AppConfiguration conf)
+        {
+            services.AddAuthentication(conf.DefaultScheme).AddCookie(conf.DefaultScheme,
+                options =>
+                {
+                    options.DataProtectionProvider = DataProtectionProvider.Create(
+                        new DirectoryInfo(conf.DataProtectionProviderDirectory));
+                    options.Cookie.Domain = string.Concat(".", conf.AppsDomain);
+                    options.Events.OnRedirectToLogin = (context) =>
+                    {
+                        context.Response.StatusCode = 401; // API : don't use redirect but unauthorize
+                        return Task.CompletedTask;
+                    };
+                });
+        }
+
+        protected virtual void AddSwagger(IApplicationBuilder app)
+        {
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
                 c.SwaggerEndpoint("../swagger/v1/swagger.json", "DaOAuth Gui API");
             });
-
-            app.UseHttpsRedirection();
-            app.UseMvc();
         }
 
-        private string GetXmlCommentsPath()
+        protected virtual void AddLogger(ILoggerFactory loggerFactory)
         {
-            return Path.ChangeExtension(typeof(Startup).Assembly.Location, ".xml");
+            loggerFactory.AddNLog();
+            NLog.LogManager.LoadConfiguration("nlog.config");
+        }
+
+        protected virtual void UseSwagger(IServiceCollection services)
+        {
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new Info { Title = "DaOAuth Gui API", Version = "v1" });
+                var xmlPath = Path.ChangeExtension(typeof(Startup).Assembly.Location, ".xml");
+                c.IncludeXmlComments(xmlPath);
+            });
+        }
+
+        protected virtual DbContextOptions BuildDbContextOptions()
+        {
+            var connexionString = Configuration.GetConnectionString("DaOAuthConnexionString");
+            var builder = new DbContextOptionsBuilder<DaOAuthContext>();
+            builder.UseSqlServer(connexionString, b => b.MigrationsAssembly("DaOAuthV2.Dal.EF"));
+            return builder.Options;
         }
     }
 }

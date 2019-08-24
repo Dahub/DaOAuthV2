@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
@@ -35,7 +36,12 @@ namespace DaOAuthV2.OAuth.Api
             services.Configure<AppConfiguration>(Configuration.GetSection("AppConfiguration"));
 
             var conf = Configuration.GetSection("AppConfiguration").Get<AppConfiguration>();
+
             var connexionString = Configuration.GetConnectionString("DaOAuthConnexionString");
+            var builder = new DbContextOptionsBuilder<DaOAuthContext>();
+            builder.UseSqlServer(connexionString, b => b.MigrationsAssembly("DaOAuthV2.Dal.EF"));
+
+            var dbContextOptions = builder.Options;
 
             services.AddAuthentication(conf.DefaultScheme).AddCookie(conf.DefaultScheme,
                options =>
@@ -59,7 +65,7 @@ namespace DaOAuthV2.OAuth.Api
                 Configuration = conf,
                 RepositoriesFactory = new EfRepositoriesFactory()
                 {
-                    ConnexionString = connexionString
+                    DbContextOptions = dbContextOptions
                 },
                 StringLocalizerFactory = localizationServiceFactory,
                 Logger = loggerServiceFactory.CreateLogger<OAuthService>(),
