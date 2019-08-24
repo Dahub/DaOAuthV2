@@ -43,6 +43,7 @@ namespace DaOAuthV2.Gui.Api.Test
                 await httpResponseMessage.Content.ReadAsStringAsync());
 
             Assert.AreEqual(users.Count, totalUsers);
+            Assert.IsTrue(users.Count > 0);
             Assert.AreEqual(users.Datas.Count(), totalUsers);
 
             var sammy = users.Datas.Where(u => u.Id.Equals(_sammyUser.Id)).FirstOrDefault();

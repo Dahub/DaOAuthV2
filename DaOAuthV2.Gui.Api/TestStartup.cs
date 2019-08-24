@@ -14,6 +14,7 @@ namespace DaOAuthV2.Gui.Api
     {
         public const string TestDataBaseName = "inMemoryDatabase";
         public const string TestEnvironnementName = "test";
+        public const string LoggedUserName = "Sammy";
 
         public TestStartup(IConfiguration configuration, IHostingEnvironment env) : base(configuration, env)
         {
