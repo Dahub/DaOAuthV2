@@ -1,6 +1,7 @@
 ﻿using DaOAuthV2.Constants;
 using DaOAuthV2.Dal.EF;
 using DaOAuthV2.Domain;
+using DaOAuthV2.Service;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
@@ -124,13 +125,13 @@ namespace DaOAuthV2.Gui.Api.Test
 
         protected static ClientType _confidentialClientType = new ClientType()
         {
-            Id = 1001,
+            Id = (int)EClientType.CONFIDENTIAL,
             Wording = ClientTypeName.Confidential
         };
 
         protected static ClientType _publicClientType = new ClientType()
         {
-            Id = 1002,
+            Id = (int)EClientType.PUBLIC,
             Wording = ClientTypeName.Public
         };
 

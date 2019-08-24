@@ -1,6 +1,6 @@
 ﻿namespace DaOAuthV2.Service
 {
-    internal enum EClientType
+    public enum EClientType
     {
         PUBLIC = 1,
         CONFIDENTIAL = 2

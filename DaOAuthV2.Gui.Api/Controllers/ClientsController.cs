@@ -118,6 +118,6 @@ namespace DaOAuthV2.Gui.Api.Controllers
                 var currentUrl = UriHelper.GetDisplayUrl(Request);
                 return Ok(clients.ToSearchResult<ClientDto>(currentUrl, count, criterias));
             }
-        }
+        }      
     }
 }

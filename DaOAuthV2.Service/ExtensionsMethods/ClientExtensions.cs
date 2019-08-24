@@ -1,4 +1,5 @@
-﻿using DaOAuthV2.Domain;
+﻿using DaOAuthV2.Constants;
+using DaOAuthV2.Domain;
 using DaOAuthV2.Service.DTO;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,7 +14,7 @@ namespace DaOAuthV2.Service.ExtensionsMethods
             {
                 Id = value.Id,
                 Name = value.Name,
-                ClientType = value.ClientType.Wording,
+                ClientType = (int)EClientType.PUBLIC == value.ClientTypeId?ClientTypeName.Public:ClientTypeName.Confidential,
                 CreationDate = value.CreationDate,
                 Description = value.Description,
                 ClientSecret = isCreator ? value.ClientSecret : string.Empty,

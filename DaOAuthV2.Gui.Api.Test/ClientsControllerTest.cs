@@ -1,4 +1,5 @@
-﻿using DaOAuthV2.Constants;
+﻿using DaOAuthV2.ApiTools;
+using DaOAuthV2.Constants;
 using DaOAuthV2.Dal.EF;
 using DaOAuthV2.Domain;
 using DaOAuthV2.Service.DTO;
@@ -148,6 +149,190 @@ namespace DaOAuthV2.Gui.Api.Test
                 Assert.AreEqual(scopeFromDb.Wording, scope.Wording);
                 Assert.AreEqual(scopeFromDb.Id, scope.Id);
             }
+        }
+
+        [TestMethod]
+        public async Task Delete_Should_Delete_Client()
+        {
+            Client nonDeletedClient = null;
+            using (var context = new DaOAuthContext(_dbContextOptions))
+            {
+                nonDeletedClient = context.Clients.Where(c => c.Id.Equals(_sammyClient.Id)).FirstOrDefault();
+            }
+            Assert.IsNotNull(nonDeletedClient);
+
+            var httpResponseMessage = await _client.DeleteAsync($"clients/{_sammyClient.Id}");
+
+            Assert.IsTrue(httpResponseMessage.IsSuccessStatusCode);
+
+            Client deletedClient = null;
+            using (var context = new DaOAuthContext(_dbContextOptions))
+            {
+                deletedClient = context.Clients.Where(c => c.Id.Equals(_sammyClient.Id)).FirstOrDefault();
+            }
+            Assert.IsNull(deletedClient);
+        }
+
+        [TestMethod]
+        public async Task Put_Should_Update_Client()
+        {
+            Client toUpdateClient = null;
+            using (var context = new DaOAuthContext(_dbContextOptions))
+            {
+                toUpdateClient = context.Clients.Where(c => c.Id.Equals(_sammyClient.Id)).FirstOrDefault();
+            }
+            Assert.IsNotNull(toUpdateClient);
+
+            var updateClientDto = new UpdateClientDto()
+            {
+                Id = _sammyClient.Id,
+                ClientSecret = "new-secret-long-enought",
+                Description = "new description",
+                Name = "new name",
+                ClientType = ClientTypeName.Public,
+                PublicId = "new public id",
+                ReturnUrls = new List<string>()
+                {
+                    "http://new.com"
+                },
+                ScopesIds = new List<int>()
+                {
+                    _scope2.Id, _scope3.Id, _scope1.Id
+                }
+            };
+
+            var httpResponseMessage = await _client.PutAsJsonAsync("clients", updateClientDto);
+
+            Assert.IsTrue(httpResponseMessage.IsSuccessStatusCode);
+
+            Client updatedClient = null;
+            ClientType updatedClientType = null;
+            IList<ClientReturnUrl> updatedReturnUrls = null;
+            IList<ClientScope> updatedClientScopes = null;
+
+            using (var context = new DaOAuthContext(_dbContextOptions))
+            {
+                updatedClient = context.Clients.Where(c => c.Id.Equals(_sammyClient.Id)).SingleOrDefault();
+                Assert.IsNotNull(updatedClient);
+                updatedClientType = context.ClientsTypes.Where(c => c.Id.Equals(updatedClient.ClientTypeId)).SingleOrDefault();
+                updatedReturnUrls = context.ClientReturnUrls.Where(c => c.ClientId.Equals(_sammyClient.Id)).ToList();
+                updatedClientScopes = context.ClientsScopes.Where(c => c.ClientId.Equals(_sammyClient.Id)).ToList();
+            }
+
+            Assert.IsNotNull(updatedClientType);
+            Assert.IsNotNull(updatedReturnUrls);
+            Assert.IsNotNull(updatedClientScopes);
+
+            Assert.AreEqual(updateClientDto.Id, updatedClient.Id);
+            Assert.AreEqual(updateClientDto.ClientSecret, updatedClient.ClientSecret);
+            Assert.AreEqual(updateClientDto.Description, updatedClient.Description);
+            Assert.AreEqual(updateClientDto.Name, updatedClient.Name);
+            Assert.AreEqual(updateClientDto.ClientType, updatedClientType.Wording);
+            Assert.AreEqual(updateClientDto.PublicId, updatedClient.PublicId);
+
+            Assert.AreEqual(updateClientDto.ReturnUrls.Count(), updatedReturnUrls.Count());
+            Assert.IsTrue(updatedReturnUrls.Count() > 0);
+            foreach (var ru in updatedReturnUrls)
+            {
+                Assert.IsTrue(updateClientDto.ReturnUrls.Contains(ru.ReturnUrl));
+            }
+
+            Assert.AreEqual(updateClientDto.ScopesIds.Count(), updatedClientScopes.Count());
+            Assert.IsTrue(updatedClientScopes.Count() > 0);
+            foreach (var cs in updatedClientScopes)
+            {
+                Assert.IsTrue(updateClientDto.ScopesIds.Contains(cs.ScopeId));
+            }
+        }
+
+        [TestMethod]
+        public async Task Get_Clients_Should_Return_All_Clients()
+        {
+            int totalClients = 0;
+            ClientType sammyClientType = null;
+            IList<ClientReturnUrl> sammyClientReturnUrls = null;
+            IList<ClientScope> sammyClientScopes = null;
+            using (var context = new DaOAuthContext(_dbContextOptions))
+            {
+                totalClients = context.Clients.Count();
+                sammyClientType = context.ClientsTypes.Where(c => c.Id.Equals(_sammyClient.ClientTypeId)).SingleOrDefault();
+                sammyClientReturnUrls = context.ClientReturnUrls.Where(c => c.ClientId.Equals(_sammyClient.Id)).ToList();
+                sammyClientScopes = context.ClientsScopes.Where(c => c.ClientId.Equals(_sammyClient.Id)).ToList();
+            }
+
+            Assert.IsNotNull(sammyClientType);
+            Assert.IsNotNull(sammyClientReturnUrls);
+            Assert.IsNotNull(sammyClientScopes);
+
+            var httpResponseMessage = await _client.GetAsync("clients?skip=0&limit=50");
+
+            Assert.IsTrue(httpResponseMessage.IsSuccessStatusCode);
+
+            var clients = JsonConvert.DeserializeObject<SearchResult<ClientDto>>(
+                await httpResponseMessage.Content.ReadAsStringAsync());
+
+            Assert.AreEqual(clients.Count, totalClients);
+            Assert.IsTrue(clients.Count > 0);
+            Assert.AreEqual(clients.Datas.Count(), totalClients);
+
+            var sammyClient = clients.Datas.Where(u => u.Id.Equals(_sammyClient.Id)).FirstOrDefault();
+
+            Assert.IsNotNull(sammyClient);
+            Assert.AreEqual(_sammyClient.Name, sammyClient.Name);
+            Assert.AreEqual(_sammyClient.Id, sammyClient.Id);
+            Assert.AreEqual(_sammyClient.CreationDate, sammyClient.CreationDate);
+            Assert.AreEqual(String.Empty, sammyClient.PublicId);
+            Assert.AreEqual(String.Empty, sammyClient.ClientSecret);
+            Assert.AreEqual(sammyClientType.Wording, sammyClient.ClientType);
+
+            Assert.AreEqual(sammyClient.ReturnUrls.Count(), sammyClientReturnUrls.Count());
+            Assert.IsTrue(sammyClientReturnUrls.Count() > 0);
+            foreach (var ru in sammyClientReturnUrls)
+            {
+                Assert.IsTrue(sammyClient.ReturnUrls.ContainsKey(ru.Id));
+                Assert.IsTrue(sammyClient.ReturnUrls[ru.Id].Equals(ru.ReturnUrl));
+            }
+
+            Assert.AreEqual(sammyClient.Scopes.Count(), sammyClientScopes.Count());
+            Assert.IsTrue(sammyClientScopes.Count() > 0);
+            foreach (var cs in sammyClientScopes)
+            {
+                var myScope = sammyClient.Scopes.Where(s => s.Id.Equals(cs.ScopeId)).SingleOrDefault();
+                Assert.IsNotNull(myScope);
+
+                Scope scopeFromDb = null;
+                using (var context = new DaOAuthContext(_dbContextOptions))
+                {
+                    scopeFromDb = context.Scopes.Where(s => s.Id.Equals(myScope.Id)).FirstOrDefault();
+                }
+
+                Assert.IsNotNull(scopeFromDb);
+
+                Assert.AreEqual(scopeFromDb.NiceWording, myScope.NiceWording);
+                Assert.AreEqual(scopeFromDb.Wording, myScope.Wording);
+            }
+        }
+
+        [TestMethod]
+        public async Task Head_Client_Should_Return_All_Clients_Count()
+        {
+            int totalClients = 0;
+            using (var context = new DaOAuthContext(_dbContextOptions))
+            {
+                totalClients = context.Clients.Count();
+            }
+
+            var httpResponseMessage = await _client.SendAsync(new HttpRequestMessage()
+            {
+                Method = HttpMethod.Head,
+                RequestUri = new Uri("http://localhost/clients?skip=0&limit=50")
+            });
+
+            Assert.IsTrue(httpResponseMessage.IsSuccessStatusCode);
+            Assert.IsTrue(httpResponseMessage.Headers.Contains("X-Total-Count"));
+            httpResponseMessage.Headers.TryGetValues("X-Total-Count", out IEnumerable<string> values);
+            Assert.AreEqual(values.Count(), 1);
+            Assert.AreEqual(values.First(), totalClients.ToString());
         }
     }
 }
