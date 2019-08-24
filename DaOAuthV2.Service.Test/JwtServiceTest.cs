@@ -28,7 +28,6 @@ namespace DaOAuthV2.Service.Test
             _service = new JwtService()
             {
                 Configuration = conf,
-                ConnexionString = String.Empty,
                 RepositoriesFactory = new FakeRepositoriesFactory(),
                 StringLocalizerFactory = new FakeStringLocalizerFactory(),
                 Logger = new FakeLogger()

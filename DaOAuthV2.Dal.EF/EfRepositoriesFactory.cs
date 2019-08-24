@@ -5,10 +5,12 @@ namespace DaOAuthV2.Dal.EF
 {
     public class EfRepositoriesFactory : IRepositoriesFactory
     {
-        public IContext CreateContext(string connexion)
+        public string ConnexionString { get; set; }
+
+        public IContext CreateContext()
         {
             var builder = new DbContextOptionsBuilder<DaOAuthContext>();
-            builder.UseSqlServer(connexion, b => b.MigrationsAssembly("DaOAuthV2.Dal.EF"));
+            builder.UseSqlServer(ConnexionString, b => b.MigrationsAssembly("DaOAuthV2.Dal.EF"));
 
             return new DaOAuthContext(builder.Options);
         }

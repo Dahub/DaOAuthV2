@@ -19,7 +19,7 @@ namespace DaOAuthV2.Service
         {
             Validate(criterias, ExtendValidationSearchCriterias);
 
-            using (var c = RepositoriesFactory.CreateContext(ConnexionString))
+            using (var c = RepositoriesFactory.CreateContext())
             {
                 var userRepo = RepositoriesFactory.GetUserRepository(c);
                 return userRepo.GetAllByCriteriasCount(criterias.UserName, criterias.Email, criterias.IsValid);
@@ -32,7 +32,7 @@ namespace DaOAuthV2.Service
 
             IList<User> users = null;
 
-            using (var context = RepositoriesFactory.CreateContext(this.ConnexionString))
+            using (var context = RepositoriesFactory.CreateContext())
             {
                 var userRepo = RepositoriesFactory.GetUserRepository(context);
 
@@ -58,7 +58,7 @@ namespace DaOAuthV2.Service
 
         public AdminUserDetailDto GetByIdUser(int idUser)
         {
-            using (var context = RepositoriesFactory.CreateContext(ConnexionString))
+            using (var context = RepositoriesFactory.CreateContext())
             {
                 var userClientRepo = RepositoriesFactory.GetUserClientRepository(context);
 

@@ -20,7 +20,6 @@ namespace DaOAuthV2.Service.Test
             _service = new ScopeService()
             {
                 Configuration = FakeConfigurationHelper.GetFakeConf(),
-                ConnexionString = string.Empty,
                 RepositoriesFactory = new FakeRepositoriesFactory(),
                 StringLocalizerFactory = new FakeStringLocalizerFactory(),
                 Logger = new FakeLogger()

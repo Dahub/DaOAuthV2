@@ -15,7 +15,6 @@ namespace DaOAuthV2.Service
         public IRepositoriesFactory RepositoriesFactory { get; set; }
         public IStringLocalizerFactory StringLocalizerFactory { get; set; }
         public ILogger Logger { get; set; }
-        public string ConnexionString { get; set; }
 
         protected void Validate<T>(T toValidate, Func<T, IList<ValidationResult>> extendValidate)
         {

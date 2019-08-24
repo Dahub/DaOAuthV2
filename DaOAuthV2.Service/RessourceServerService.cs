@@ -47,7 +47,7 @@ namespace DaOAuthV2.Service
 
             Validate(toCreate, ExtendValidation);
 
-            using (var context = RepositoriesFactory.CreateContext(ConnexionString))
+            using (var context = RepositoriesFactory.CreateContext())
             {
                 var userRepo = RepositoriesFactory.GetUserRepository(context);
                 var rsRepo = RepositoriesFactory.GetRessourceServerRepository(context);
@@ -122,7 +122,7 @@ namespace DaOAuthV2.Service
 
             Validate(toDelete);
 
-            using (var context = RepositoriesFactory.CreateContext(ConnexionString))
+            using (var context = RepositoriesFactory.CreateContext())
             {
                 var userRepo = RepositoriesFactory.GetUserRepository(context);
                 var rsRepo = RepositoriesFactory.GetRessourceServerRepository(context);
@@ -166,7 +166,7 @@ namespace DaOAuthV2.Service
 
             RessourceServerDto toReturn = null;
 
-            using (var context = RepositoriesFactory.CreateContext(ConnexionString))
+            using (var context = RepositoriesFactory.CreateContext())
             {
                 var rsRepo = RepositoriesFactory.GetRessourceServerRepository(context);
                 var rs = rsRepo.GetById(id);
@@ -189,7 +189,7 @@ namespace DaOAuthV2.Service
             IList<RessourceServer> rs = null;
 
 
-            using (var context = RepositoriesFactory.CreateContext(this.ConnexionString))
+            using (var context = RepositoriesFactory.CreateContext())
             {
                 var rsRepo = RepositoriesFactory.GetRessourceServerRepository(context);
 
@@ -208,7 +208,7 @@ namespace DaOAuthV2.Service
 
             int count = 0;
 
-            using (var c = RepositoriesFactory.CreateContext(ConnexionString))
+            using (var c = RepositoriesFactory.CreateContext())
             {
                 var rsRepo = RepositoriesFactory.GetRessourceServerRepository(c);
                 count = rsRepo.GetAllByCriteriasCount(criterias.Name, criterias.Login, true);
@@ -223,7 +223,7 @@ namespace DaOAuthV2.Service
 
             Validate(toUpdate);
 
-            using (var context = RepositoriesFactory.CreateContext(ConnexionString))
+            using (var context = RepositoriesFactory.CreateContext())
             {
                 var userRepo = RepositoriesFactory.GetUserRepository(context);
                 var rsRepo = RepositoriesFactory.GetRessourceServerRepository(context);

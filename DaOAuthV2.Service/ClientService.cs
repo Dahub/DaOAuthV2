@@ -36,7 +36,7 @@ namespace DaOAuthV2.Service
                 if (toValidate.ClientType != ClientTypeName.Confidential && toValidate.ClientType != ClientTypeName.Public)
                     result.Add(new ValidationResult(resource["CreateClientDtoTypeIncorrect"]));
 
-                using (var context = RepositoriesFactory.CreateContext(ConnexionString))
+                using (var context = RepositoriesFactory.CreateContext())
                 {
                     var userRepo = RepositoriesFactory.GetUserRepository(context);
                     var user = userRepo.GetByUserName(toValidate.UserName);
@@ -55,7 +55,7 @@ namespace DaOAuthV2.Service
 
             this.Validate(toCreate, ExtendValidation);
 
-            using (var context = RepositoriesFactory.CreateContext(this.ConnexionString))
+            using (var context = RepositoriesFactory.CreateContext())
             {
                 var returnUrlRepo = RepositoriesFactory.GetClientReturnUrlRepository(context);
                 var clientRepo = RepositoriesFactory.GetClientRepository(context);
@@ -125,7 +125,7 @@ namespace DaOAuthV2.Service
 
             Validate(toDelete);
 
-            using (var context = RepositoriesFactory.CreateContext(ConnexionString))
+            using (var context = RepositoriesFactory.CreateContext())
             {
                 var clientRepo = RepositoriesFactory.GetClientRepository(context);
                 var userClientRepo = RepositoriesFactory.GetUserClientRepository(context);
@@ -183,7 +183,7 @@ namespace DaOAuthV2.Service
 
             ClientDto toReturn = null;
 
-            using (var context = RepositoriesFactory.CreateContext(ConnexionString))
+            using (var context = RepositoriesFactory.CreateContext())
             {
                 var clientRepo = RepositoriesFactory.GetClientRepository(context);
 
@@ -216,14 +216,21 @@ namespace DaOAuthV2.Service
 
             int? clientTypeId = GetClientTypeId(criterias.ClientType);
 
-            using (var context = RepositoriesFactory.CreateContext(this.ConnexionString))
+            using (var context = RepositoriesFactory.CreateContext())
             {
                 var clientRepo = RepositoriesFactory.GetClientRepository(context);
 
-                clients = clientRepo.GetAllByCriterias(criterias.Name, criterias.PublicId,
-                    true, clientTypeId, criterias.Skip, criterias.Limit).ToList();
+                clients = clientRepo.GetAllByCriterias(
+                                        criterias.Name,
+                                        criterias.PublicId,
+                                        true,
+                                        clientTypeId,
+                                        criterias.Skip,
+                                        criterias.Limit
+                                    ).ToList();
 
                 IList<int> invalidsRs = ExtractInvalidRessourceServerIds(context);
+
                 foreach (var c in clients)
                 {
                     if (c.ClientsScopes != null && c.ClientsScopes.Count() > 0)
@@ -233,9 +240,7 @@ namespace DaOAuthV2.Service
                 }
             }
 
-            if (clients != null)
-                return clients.ToDto();
-            return new List<ClientDto>();
+            return clients != null ? clients.ToDto() : new List<ClientDto>();
         }
 
         public int SearchCount(ClientSearchDto criterias)
@@ -244,7 +249,7 @@ namespace DaOAuthV2.Service
 
             int count = 0;
 
-            using (var c = RepositoriesFactory.CreateContext(ConnexionString))
+            using (var c = RepositoriesFactory.CreateContext())
             {
                 var userClientRepo = RepositoriesFactory.GetClientRepository(c);
                 count = userClientRepo.GetAllByCriteriasCount(criterias.Name, criterias.PublicId, true, GetClientTypeId(criterias.ClientType));
@@ -287,7 +292,7 @@ namespace DaOAuthV2.Service
 
             Validate(toUpdate, ExtendValidation);
 
-            using (var context = RepositoriesFactory.CreateContext(ConnexionString))
+            using (var context = RepositoriesFactory.CreateContext())
             {
                 var resource = this.GetErrorStringLocalizer();
 
@@ -363,7 +368,7 @@ namespace DaOAuthV2.Service
                 }
 
                 // updates clients scopes
-                foreach(var s in clientScopeRepo.GetAllByClientId(myClient.Id).ToList())
+                foreach (var s in clientScopeRepo.GetAllByClientId(myClient.Id).ToList())
                 {
                     clientScopeRepo.Delete(s);
                 }
@@ -382,7 +387,7 @@ namespace DaOAuthV2.Service
                 // update client
                 myClient.ClientSecret = toUpdate.ClientSecret;
                 myClient.ClientTypeId = toUpdate.ClientType.Equals(
-                        ClientTypeName.Confidential, StringComparison.OrdinalIgnoreCase) 
+                        ClientTypeName.Confidential, StringComparison.OrdinalIgnoreCase)
                         ? (int)EClientType.CONFIDENTIAL : (int)EClientType.PUBLIC;
                 myClient.Description = toUpdate.Description;
                 myClient.Name = toUpdate.Name;
@@ -393,7 +398,7 @@ namespace DaOAuthV2.Service
                 context.Commit();
 
                 return myClient.ToDto(true);
-            }            
+            }
         }
 
         private IList<ValidationResult> ExtendValidationSearchCriterias(ClientSearchDto c)

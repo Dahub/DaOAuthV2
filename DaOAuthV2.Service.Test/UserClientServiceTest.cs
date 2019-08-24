@@ -27,7 +27,6 @@ namespace DaOAuthV2.Service.Test
             _service = new UserClientService()
             {
                 Configuration = FakeConfigurationHelper.GetFakeConf(),
-                ConnexionString = string.Empty,
                 RepositoriesFactory = new FakeRepositoriesFactory(),
                 StringLocalizerFactory = new FakeStringLocalizerFactory(),
                 Logger = new FakeLogger()

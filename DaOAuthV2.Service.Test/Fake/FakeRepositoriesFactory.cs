@@ -4,7 +4,9 @@ namespace DaOAuthV2.Service.Test.Fake
 {
     internal class FakeRepositoriesFactory : IRepositoriesFactory
     {
-        public IContext CreateContext(string connexion)
+        public string ConnexionString { get; set; }
+
+        public IContext CreateContext()
         {
             return new FakeContext();
         }

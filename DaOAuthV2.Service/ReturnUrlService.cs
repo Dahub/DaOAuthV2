@@ -18,7 +18,7 @@ namespace DaOAuthV2.Service
             if (!Uri.TryCreate(toCreate.ReturnUrl, UriKind.Absolute, out Uri u))
                 throw new DaOAuthServiceException(resource["CreateReturnUrlReturnUrlIncorrect"]);
 
-            using (var context = RepositoriesFactory.CreateContext(ConnexionString))
+            using (var context = RepositoriesFactory.CreateContext())
             {
                 var userRepo = RepositoriesFactory.GetUserRepository(context);
                 var user = userRepo.GetByUserName(toCreate.UserName);
@@ -63,7 +63,7 @@ namespace DaOAuthV2.Service
 
             var resource = this.GetErrorStringLocalizer();
 
-            using (var context = RepositoriesFactory.CreateContext(ConnexionString))
+            using (var context = RepositoriesFactory.CreateContext())
             {
                 var returnUrlRepo = RepositoriesFactory.GetClientReturnUrlRepository(context);
                 var myReturnUrl = returnUrlRepo.GetById(toDelete.IdReturnUrl);
@@ -96,7 +96,7 @@ namespace DaOAuthV2.Service
             if (!Uri.TryCreate(toUpdate.ReturnUrl, UriKind.Absolute, out Uri u))
                 throw new DaOAuthServiceException(resource["UpdateReturnUrlReturnUrlIncorrect"]);
 
-            using (var context = RepositoriesFactory.CreateContext(ConnexionString))
+            using (var context = RepositoriesFactory.CreateContext())
             {
                 var returnUrlRepo = RepositoriesFactory.GetClientReturnUrlRepository(context);
                 var myReturnUrl = returnUrlRepo.GetById(toUpdate.IdReturnUrl);

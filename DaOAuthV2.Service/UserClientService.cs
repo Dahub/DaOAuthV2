@@ -18,7 +18,7 @@ namespace DaOAuthV2.Service
 
             int count = 0;
 
-            using (var c = RepositoriesFactory.CreateContext(ConnexionString))
+            using (var c = RepositoriesFactory.CreateContext())
             {
                 var userClientRepo = RepositoriesFactory.GetUserClientRepository(c);
                 count = userClientRepo.GetAllByCriteriasCount(criterias.UserName, criterias.Name, true, GetClientTypeId(criterias.ClientType));
@@ -35,7 +35,7 @@ namespace DaOAuthV2.Service
 
             int? clientTypeId = GetClientTypeId(criterias.ClientType);
 
-            using (var context = RepositoriesFactory.CreateContext(this.ConnexionString))
+            using (var context = RepositoriesFactory.CreateContext())
             {
                 var clientRepo = RepositoriesFactory.GetUserClientRepository(context);
 
@@ -56,7 +56,7 @@ namespace DaOAuthV2.Service
 
             IStringLocalizer local = GetErrorStringLocalizer();
 
-            using (var context = RepositoriesFactory.CreateContext(ConnexionString))
+            using (var context = RepositoriesFactory.CreateContext())
             {
                 var userClientRepo = RepositoriesFactory.GetUserClientRepository(context);
                 var clientRepo = RepositoriesFactory.GetClientRepository(context);
@@ -95,7 +95,7 @@ namespace DaOAuthV2.Service
                 var resource = this.GetErrorStringLocalizer();
                 IList<ValidationResult> result = new List<ValidationResult>();
 
-                using (var context = RepositoriesFactory.CreateContext(ConnexionString))
+                using (var context = RepositoriesFactory.CreateContext())
                 {
                     var ucRepo = RepositoriesFactory.GetUserClientRepository(context);
                     var myUc = ucRepo.GetUserClientByUserNameAndClientPublicId(toValidate.ClientPublicId, toValidate.UserName);
@@ -113,7 +113,7 @@ namespace DaOAuthV2.Service
 
             this.Validate(toUpdate, ExtendValidation);
 
-            using (var context = RepositoriesFactory.CreateContext(ConnexionString))
+            using (var context = RepositoriesFactory.CreateContext())
             {
                 var ucRepo = RepositoriesFactory.GetUserClientRepository(context);
                 var myUc = ucRepo.GetUserClientByUserNameAndClientPublicId(toUpdate.ClientPublicId, toUpdate.UserName);
@@ -128,7 +128,7 @@ namespace DaOAuthV2.Service
             var resource = this.GetErrorStringLocalizer();
             IList<ValidationResult> result = new List<ValidationResult>();
 
-            using (var context = RepositoriesFactory.CreateContext(ConnexionString))
+            using (var context = RepositoriesFactory.CreateContext())
             {
                 var userRepo = RepositoriesFactory.GetUserRepository(context);
                 var user = userRepo.GetByUserName(c.UserName);

@@ -35,8 +35,9 @@ namespace DaOAuthV2.OAuth.Api
             services.Configure<AppConfiguration>(Configuration.GetSection("AppConfiguration"));
 
             var conf = Configuration.GetSection("AppConfiguration").Get<AppConfiguration>();
+            var connexionString = Configuration.GetConnectionString("DaOAuthConnexionString");
 
-           services.AddAuthentication(conf.DefaultScheme).AddCookie(conf.DefaultScheme,
+            services.AddAuthentication(conf.DefaultScheme).AddCookie(conf.DefaultScheme,
                options =>
                 {
                     options.DataProtectionProvider = DataProtectionProvider.Create(
@@ -56,8 +57,10 @@ namespace DaOAuthV2.OAuth.Api
             services.AddTransient<IOAuthService>(u => new OAuthService()
             {
                 Configuration = conf,
-                RepositoriesFactory = new EfRepositoriesFactory(),
-                ConnexionString = Configuration.GetConnectionString("DaOAuthConnexionString"),
+                RepositoriesFactory = new EfRepositoriesFactory()
+                {
+                    ConnexionString = connexionString
+                },
                 StringLocalizerFactory = localizationServiceFactory,
                 Logger = loggerServiceFactory.CreateLogger<OAuthService>(),
                 RandomService = new RandomService(),

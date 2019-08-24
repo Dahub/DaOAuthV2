@@ -205,7 +205,7 @@ namespace DaOAuthV2.Service
             string rsLogin = credentials.Substring(0, separatorIndex);
             RessourceServer rs = null;
 
-            using (var context = RepositoriesFactory.CreateContext(ConnexionString))
+            using (var context = RepositoriesFactory.CreateContext())
             {
                 var rsRepo = RepositoriesFactory.GetRessourceServerRepository(context);
                 rs = rsRepo.GetByLogin(rsLogin);
@@ -252,7 +252,7 @@ namespace DaOAuthV2.Service
                     Description = errorLocal["ClientIdParameterError"]
                 };
 
-            using (var context = RepositoriesFactory.CreateContext(ConnexionString))
+            using (var context = RepositoriesFactory.CreateContext())
             {
                 var clientRepo = RepositoriesFactory.GetClientRepository(context);
                 Client myClient = clientRepo.GetByPublicId(tokenInfo.ClientPublicId);
@@ -311,7 +311,7 @@ namespace DaOAuthV2.Service
                     Description = errorLocal["RefreshTokenParameterError"]
                 };
 
-            using (var context = RepositoriesFactory.CreateContext(ConnexionString))
+            using (var context = RepositoriesFactory.CreateContext())
             {
                 var clientRepo = RepositoriesFactory.GetClientRepository(context);
                 Client myClient = clientRepo.GetByPublicId(tokenInfo.ClientPublicId);
@@ -367,7 +367,7 @@ namespace DaOAuthV2.Service
                     Description = errorLocal["PasswordParameterError"]
                 };
 
-            using (var context = RepositoriesFactory.CreateContext(ConnexionString))
+            using (var context = RepositoriesFactory.CreateContext())
             {
                 var clientRepo = RepositoriesFactory.GetClientRepository(context);
                 Client myClient = clientRepo.GetByPublicId(tokenInfo.ClientPublicId);
@@ -407,7 +407,7 @@ namespace DaOAuthV2.Service
         {
             TokenInfoDto toReturn = null;
 
-            using (var context = RepositoriesFactory.CreateContext(ConnexionString))
+            using (var context = RepositoriesFactory.CreateContext())
             {
                 var clientRepo = RepositoriesFactory.GetClientRepository(context);
                 Client myClient = clientRepo.GetByPublicId(tokenInfo.ClientPublicId);
@@ -452,7 +452,7 @@ namespace DaOAuthV2.Service
         {
             string codeValue = RandomService.GenerateRandomString(CodeLenght);
 
-            using (var context = RepositoriesFactory.CreateContext(ConnexionString))
+            using (var context = RepositoriesFactory.CreateContext())
             {
                 var userClientRepo = RepositoriesFactory.GetUserClientRepository(context);
                 var codeRepo = RepositoriesFactory.GetCodeRepository(context);
@@ -561,7 +561,7 @@ namespace DaOAuthV2.Service
 
         private bool CheckIfClientIsValid(string clientPublicId, Uri requestRedirectUri, EClientType clientType)
         {
-            using (var context = RepositoriesFactory.CreateContext(ConnexionString))
+            using (var context = RepositoriesFactory.CreateContext())
             {
                 var clientRepo = RepositoriesFactory.GetClientRepository(context);
                 var clientReturnUrlRepo = RepositoriesFactory.GetClientReturnUrlRepository(context);
@@ -598,7 +598,7 @@ namespace DaOAuthV2.Service
             else
                 return true; 
 
-            using (var context = RepositoriesFactory.CreateContext(ConnexionString))
+            using (var context = RepositoriesFactory.CreateContext())
             {
                 var scopeRepo = RepositoriesFactory.GetScopeRepository(context);
                 IEnumerable<string> clientScopes = scopeRepo.GetByClientPublicId(clientPublicId).Select(s => s.Wording.ToUpper(CultureInfo.CurrentCulture));
@@ -621,7 +621,7 @@ namespace DaOAuthV2.Service
 
         private bool CheckIfUserHasAuthorizeOrDeniedClientAccess(string clientPublicId, string userName)
         {
-            using (var context = RepositoriesFactory.CreateContext(ConnexionString))
+            using (var context = RepositoriesFactory.CreateContext())
             {
                 var clientUserRepo = RepositoriesFactory.GetUserClientRepository(context);
                 return clientUserRepo.GetUserClientByUserNameAndClientPublicId(clientPublicId, userName) != null;
@@ -630,7 +630,7 @@ namespace DaOAuthV2.Service
 
         private bool CheckIfUserHasAuthorizeClient(string clientPublicId, string userName)
         {
-            using (var context = RepositoriesFactory.CreateContext(ConnexionString))
+            using (var context = RepositoriesFactory.CreateContext())
             {
                 var clientUserRepo = RepositoriesFactory.GetUserClientRepository(context);
                 var uc = clientUserRepo.GetUserClientByUserNameAndClientPublicId(clientPublicId, userName);

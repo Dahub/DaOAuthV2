@@ -11,7 +11,7 @@ namespace DaOAuthV2.Service
     {
         public IEnumerable<ScopeDto> GetAll()
         {
-            using (var context = RepositoriesFactory.CreateContext(ConnexionString))
+            using (var context = RepositoriesFactory.CreateContext())
             {
                 List<Scope> scopes = new List<Scope>();
                 var rsRepo = RepositoriesFactory.GetRessourceServerRepository(context);

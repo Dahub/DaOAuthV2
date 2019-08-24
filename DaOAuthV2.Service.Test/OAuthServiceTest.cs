@@ -244,7 +244,6 @@ namespace DaOAuthV2.Service.Test
             _service = new OAuthService()
             {
                 Configuration = FakeConfigurationHelper.GetFakeConf(),
-                ConnexionString = String.Empty,
                 RepositoriesFactory = new FakeRepositoriesFactory(),
                 StringLocalizerFactory = new FakeStringLocalizerFactory(),
                 Logger = new FakeLogger(),
@@ -1100,8 +1099,7 @@ namespace DaOAuthV2.Service.Test
                     Configuration = new AppConfiguration()
                     {
                         AuthorizeClientPageUrl = new Uri("http://www.perdu.com")
-                    },
-                    ConnexionString = String.Empty,
+                    },                    
                     RepositoriesFactory = new FakeRepositoriesFactory(),
                     StringLocalizerFactory = new FakeStringLocalizerFactory(),
                     Logger = new FakeLogger(),
@@ -1202,8 +1200,7 @@ namespace DaOAuthV2.Service.Test
                 Configuration = new AppConfiguration()
                 {
                     AuthorizeClientPageUrl = new Uri("http://www.perdu.com")
-                },
-                ConnexionString = String.Empty,
+                },                
                 RepositoriesFactory = new FakeRepositoriesFactory(),
                 StringLocalizerFactory = new FakeStringLocalizerFactory(),
                 Logger = new FakeLogger(),
@@ -1384,7 +1381,6 @@ namespace DaOAuthV2.Service.Test
             _service = new OAuthService()
             {
                 Configuration = FakeConfigurationHelper.GetFakeConf(),
-                ConnexionString = String.Empty,
                 RepositoriesFactory = new FakeRepositoriesFactory(),
                 StringLocalizerFactory = new FakeStringLocalizerFactory(),
                 Logger = new FakeLogger(),
@@ -1476,7 +1472,6 @@ namespace DaOAuthV2.Service.Test
             _service = new OAuthService()
             {
                 Configuration = FakeConfigurationHelper.GetFakeConf(),
-                ConnexionString = String.Empty,
                 RepositoriesFactory = new FakeRepositoriesFactory(),
                 StringLocalizerFactory = new FakeStringLocalizerFactory(),
                 Logger = new FakeLogger(),
@@ -1536,7 +1531,6 @@ namespace DaOAuthV2.Service.Test
             _service = new OAuthService()
             {
                 Configuration = FakeConfigurationHelper.GetFakeConf(),
-                ConnexionString = String.Empty,
                 RepositoriesFactory = new FakeRepositoriesFactory(),
                 StringLocalizerFactory = new FakeStringLocalizerFactory(),
                 Logger = new FakeLogger(),
@@ -1568,7 +1562,6 @@ namespace DaOAuthV2.Service.Test
             _service = new OAuthService()
             {
                 Configuration = FakeConfigurationHelper.GetFakeConf(),
-                ConnexionString = String.Empty,
                 RepositoriesFactory = new FakeRepositoriesFactory(),
                 StringLocalizerFactory = new FakeStringLocalizerFactory(),
                 Logger = new FakeLogger(),
@@ -1600,7 +1593,6 @@ namespace DaOAuthV2.Service.Test
             _service = new OAuthService()
             {
                 Configuration = FakeConfigurationHelper.GetFakeConf(),
-                ConnexionString = String.Empty,
                 RepositoriesFactory = new FakeRepositoriesFactory(),
                 StringLocalizerFactory = new FakeStringLocalizerFactory(),
                 Logger = new FakeLogger(),
@@ -1632,7 +1624,6 @@ namespace DaOAuthV2.Service.Test
             _service = new OAuthService()
             {
                 Configuration = FakeConfigurationHelper.GetFakeConf(),
-                ConnexionString = String.Empty,
                 RepositoriesFactory = new FakeRepositoriesFactory(),
                 StringLocalizerFactory = new FakeStringLocalizerFactory(),
                 Logger = new FakeLogger(),

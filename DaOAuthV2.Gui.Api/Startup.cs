@@ -39,6 +39,7 @@ namespace DaOAuthV2.Gui.Api
             services.Configure<AppConfiguration>(Configuration.GetSection("AppConfiguration"));
 
             var conf = Configuration.GetSection("AppConfiguration").Get<AppConfiguration>();
+            var connexionString = Configuration.GetConnectionString("DaOAuthConnexionString");
 
             services.AddAuthentication(conf.DefaultScheme).AddCookie(conf.DefaultScheme,
                 options =>
@@ -66,8 +67,10 @@ namespace DaOAuthV2.Gui.Api
             services.AddTransient<IAdministrationService>(a => new AdministrationService()
             {
                 Configuration = conf,
-                RepositoriesFactory = new EfRepositoriesFactory(),
-                ConnexionString = Configuration.GetConnectionString("DaOAuthConnexionString"),
+                RepositoriesFactory = new EfRepositoriesFactory()
+                {
+                    ConnexionString = connexionString
+                },
                 StringLocalizerFactory = localizationServiceFactory,
                 Logger = loggerServiceFactory.CreateLogger<AdministrationService>(),
             });
@@ -75,8 +78,10 @@ namespace DaOAuthV2.Gui.Api
             services.AddTransient<IUserService>(u => new UserService()
             {
                 Configuration = conf,
-                RepositoriesFactory = new EfRepositoriesFactory(),
-                ConnexionString = Configuration.GetConnectionString("DaOAuthConnexionString"),
+                RepositoriesFactory = new EfRepositoriesFactory()
+                {
+                    ConnexionString = connexionString
+                },
                 StringLocalizerFactory = localizationServiceFactory,
                 Logger = loggerServiceFactory.CreateLogger<UserService>(),
                 MailService = new SendGridMailService(conf.SendGridKey),
@@ -93,8 +98,10 @@ namespace DaOAuthV2.Gui.Api
             services.AddTransient<IJwtService>(u => new JwtService()
             {
                 Configuration = conf,
-                RepositoriesFactory = new EfRepositoriesFactory(),
-                ConnexionString = Configuration.GetConnectionString("DaOAuthConnexionString"),
+                RepositoriesFactory = new EfRepositoriesFactory()
+                {
+                    ConnexionString = connexionString
+                },
                 StringLocalizerFactory = localizationServiceFactory,
                 Logger = loggerServiceFactory.CreateLogger<JwtService>()
             });
@@ -102,8 +109,10 @@ namespace DaOAuthV2.Gui.Api
             services.AddTransient<IUserClientService>(u => new UserClientService()
             {
                 Configuration = conf,
-                RepositoriesFactory = new EfRepositoriesFactory(),
-                ConnexionString = Configuration.GetConnectionString("DaOAuthConnexionString"),
+                RepositoriesFactory = new EfRepositoriesFactory()
+                {
+                    ConnexionString = connexionString
+                },
                 StringLocalizerFactory = localizationServiceFactory,
                 Logger = loggerServiceFactory.CreateLogger<UserClientService>()
             });
@@ -111,8 +120,10 @@ namespace DaOAuthV2.Gui.Api
             services.AddTransient<IClientService>(u => new ClientService()
             {
                 Configuration = conf,
-                RepositoriesFactory = new EfRepositoriesFactory(),
-                ConnexionString = Configuration.GetConnectionString("DaOAuthConnexionString"),
+                RepositoriesFactory = new EfRepositoriesFactory()
+                {
+                    ConnexionString = connexionString
+                },
                 StringLocalizerFactory = localizationServiceFactory,
                 Logger = loggerServiceFactory.CreateLogger<ClientService>(),
                 RandomService = new RandomService()
@@ -121,8 +132,10 @@ namespace DaOAuthV2.Gui.Api
             services.AddTransient<IReturnUrlService>(u => new ReturnUrlService()
             {
                 Configuration = conf,
-                RepositoriesFactory = new EfRepositoriesFactory(),
-                ConnexionString = Configuration.GetConnectionString("DaOAuthConnexionString"),
+                RepositoriesFactory = new EfRepositoriesFactory()
+                {
+                    ConnexionString = connexionString
+                },
                 StringLocalizerFactory = localizationServiceFactory,
                 Logger = loggerServiceFactory.CreateLogger<ReturnUrlService>()
             });
@@ -130,8 +143,10 @@ namespace DaOAuthV2.Gui.Api
             services.AddTransient<IRessourceServerService>(u => new RessourceServerService()
             {
                 Configuration = conf,
-                RepositoriesFactory = new EfRepositoriesFactory(),
-                ConnexionString = Configuration.GetConnectionString("DaOAuthConnexionString"),
+                RepositoriesFactory = new EfRepositoriesFactory()
+                {
+                    ConnexionString = connexionString
+                },
                 StringLocalizerFactory = localizationServiceFactory,
                 Logger = loggerServiceFactory.CreateLogger<RessourceServerService>(),
                 EncryptonService = new EncryptionService()
@@ -140,8 +155,10 @@ namespace DaOAuthV2.Gui.Api
             services.AddTransient<IScopeService>(u => new ScopeService()
             {
                 Configuration = conf,
-                RepositoriesFactory = new EfRepositoriesFactory(),
-                ConnexionString = Configuration.GetConnectionString("DaOAuthConnexionString"),
+                RepositoriesFactory = new EfRepositoriesFactory()
+                {
+                    ConnexionString = connexionString
+                },
                 StringLocalizerFactory = localizationServiceFactory,
                 Logger = loggerServiceFactory.CreateLogger<ScopeService>()
             });

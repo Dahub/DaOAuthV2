@@ -22,7 +22,7 @@ namespace DaOAuthV2.Service
 
             Validate(infos);
 
-            using (var context = RepositoriesFactory.CreateContext(ConnexionString))
+            using (var context = RepositoriesFactory.CreateContext())
             {
                 var local = this.GetErrorStringLocalizer();
                 var userRepo = RepositoriesFactory.GetUserRepository(context);
@@ -67,7 +67,7 @@ namespace DaOAuthV2.Service
                 if (!toValidate.Password.IsMatchPasswordPolicy())
                     result.Add(new ValidationResult(errorResource["CreateUserPasswordPolicyFailed"]));
 
-                using (var c = RepositoriesFactory.CreateContext(ConnexionString))
+                using (var c = RepositoriesFactory.CreateContext())
                 {
                     var repo = RepositoriesFactory.GetUserRepository(c);
 
@@ -99,7 +99,7 @@ namespace DaOAuthV2.Service
                 UserName = toCreate.UserName
             };
 
-            using (var c = RepositoriesFactory.CreateContext(ConnexionString))
+            using (var c = RepositoriesFactory.CreateContext())
             {
                 var repo = RepositoriesFactory.GetUserRepository(c);
                 repo.Add(u);
@@ -142,7 +142,7 @@ namespace DaOAuthV2.Service
         {
             Logger.LogInformation($"Try to desactivate user {userName}");
 
-            using (var c = RepositoriesFactory.CreateContext(ConnexionString))
+            using (var c = RepositoriesFactory.CreateContext())
             {
                 var repo = RepositoriesFactory.GetUserRepository(c);
                 var user = repo.GetByUserName(userName);
@@ -170,7 +170,7 @@ namespace DaOAuthV2.Service
         {
             Logger.LogInformation($"Try to activate user {userName}");
 
-            using (var c = RepositoriesFactory.CreateContext(ConnexionString))
+            using (var c = RepositoriesFactory.CreateContext())
             {
                 var repo = RepositoriesFactory.GetUserRepository(c);
                 var user = repo.GetByUserName(userName);
@@ -194,7 +194,7 @@ namespace DaOAuthV2.Service
 
             UserDto result = null;
 
-            using (var c = RepositoriesFactory.CreateContext(ConnexionString))
+            using (var c = RepositoriesFactory.CreateContext())
             {
                 var repo = RepositoriesFactory.GetUserRepository(c);
                 var user = repo.GetByUserName(credentials.UserName);
@@ -216,7 +216,7 @@ namespace DaOAuthV2.Service
 
             UserDto result = null;
 
-            using (var c = RepositoriesFactory.CreateContext(ConnexionString))
+            using (var c = RepositoriesFactory.CreateContext())
             {
                 var repo = RepositoriesFactory.GetUserRepository(c);
                 var user = repo.GetByUserName(userName);
@@ -236,7 +236,7 @@ namespace DaOAuthV2.Service
 
             Validate(infos);
 
-            using (var context = RepositoriesFactory.CreateContext(ConnexionString))
+            using (var context = RepositoriesFactory.CreateContext())
             {
                 var errorResource = this.GetErrorStringLocalizer();
                 var mailResource = this.GetMailStringLocalizer();
@@ -283,7 +283,7 @@ namespace DaOAuthV2.Service
             if (!infos.NewPassword.Equals(infos.NewPasswordRepeat, StringComparison.Ordinal))
                 throw new DaOAuthServiceException(local["SetNewUserPasswordDifferentsNewPasswords"]);
 
-            using (var context = RepositoriesFactory.CreateContext(ConnexionString))
+            using (var context = RepositoriesFactory.CreateContext())
             {
                 var userRepo = RepositoriesFactory.GetUserRepository(context);
                 var user = userRepo.GetByUserName(tokenInfos.UserName);
@@ -303,7 +303,7 @@ namespace DaOAuthV2.Service
                 var resource = this.GetErrorStringLocalizer();
                 IList<ValidationResult> result = new List<ValidationResult>();
 
-                using (var c = RepositoriesFactory.CreateContext(ConnexionString))
+                using (var c = RepositoriesFactory.CreateContext())
                 {
                     var repo = RepositoriesFactory.GetUserRepository(c);
                     var user = repo.GetByUserName(toUpdate.UserName);
@@ -324,7 +324,7 @@ namespace DaOAuthV2.Service
 
             Validate(toUpdate, ExtendValidation);
 
-            using (var c = RepositoriesFactory.CreateContext(ConnexionString))
+            using (var c = RepositoriesFactory.CreateContext())
             {
                 var repo = RepositoriesFactory.GetUserRepository(c);
                 var user = repo.GetByUserName(toUpdate.UserName);
@@ -345,7 +345,7 @@ namespace DaOAuthV2.Service
 
             Validate(infos);
 
-            using (var context = RepositoriesFactory.CreateContext(ConnexionString))
+            using (var context = RepositoriesFactory.CreateContext())
             {
                 var local = this.GetErrorStringLocalizer();
                 var userRepo = RepositoriesFactory.GetUserRepository(context);
