@@ -257,6 +257,8 @@ namespace DaOAuthV2.Service
                 if (myRs.Scopes == null)
                     myRs.Scopes = new List<Scope>();
 
+                IList<int> newScopesTempIds = new List<int>();
+
                 foreach (var toUpdateScope in toUpdate.Scopes)
                 {
                     if (toUpdateScope.IdScope.HasValue && myRs.Scopes.Select(s => s.Id).Contains(toUpdateScope.IdScope.Value))
@@ -268,15 +270,17 @@ namespace DaOAuthV2.Service
                     }
                     else if (!toUpdateScope.IdScope.HasValue)
                     {
-                        scopeRepo.Add(new Scope()
+                        var toAdd = new Scope()
                         {
                             NiceWording = toUpdateScope.NiceWording,
                             Wording = toUpdateScope.NiceWording.ToScopeWording(toUpdateScope.IsReadWrite),
                             RessourceServerId = myRs.Id
-                        });
+                        };
+                        scopeRepo.Add(toAdd);
+                        newScopesTempIds.Add(toAdd.Id);
                     }
                 }
-                foreach(var toDeleteScope in myRs.Scopes.Where(s => s.Id > 0)) // only existings scopes
+                foreach(var toDeleteScope in myRs.Scopes.Where(s => s.Id > 0 && !newScopesTempIds.Contains(s.Id))) // only existings scopes
                 {
                     if(!toUpdate.Scopes.Where(s => s.IdScope.HasValue).Select(s => s.IdScope.Value).Contains(toDeleteScope.Id))
                     {

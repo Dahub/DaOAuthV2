@@ -51,7 +51,6 @@ namespace DaOAuthV2.Gui.Api.Test
             var httpResponseMessage = await _client.PostAsJsonAsync("clients", toCreateClient);
 
             Assert.AreEqual(HttpStatusCode.Created, httpResponseMessage.StatusCode);
-
             Assert.IsTrue(httpResponseMessage.Headers.Contains("location"));
 
             var location = httpResponseMessage.Headers.GetValues("location").Single();

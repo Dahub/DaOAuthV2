@@ -158,6 +158,8 @@ namespace DaOAuthV2.Gui.Api
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
             UseSwagger(services);
+
+            ExecuteAfterConfigureServices();
         }       
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -194,6 +196,11 @@ namespace DaOAuthV2.Gui.Api
 
             app.UseHttpsRedirection();
             app.UseMvc();
+        }
+
+        protected virtual void ExecuteAfterConfigureServices()
+        {
+
         }
 
         protected virtual void BuildAuthentification(IServiceCollection services, AppConfiguration conf)

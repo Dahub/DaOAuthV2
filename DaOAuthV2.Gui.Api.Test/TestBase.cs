@@ -53,13 +53,13 @@ namespace DaOAuthV2.Gui.Api.Test
 
         protected static Role _roleAdmin = new Role()
         {
-            Id = 1001,
+            Id = (int)ERole.ADMIN,
             Wording = "Admin"
         };
 
         protected static Role _roleUser = new Role()
         {
-            Id = 1002,
+            Id = (int)ERole.USER,
             Wording = "User"
         };
 

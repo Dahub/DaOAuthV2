@@ -15,6 +15,7 @@ namespace DaOAuthV2.Gui.Api
         public const string TestDataBaseName = "inMemoryDatabase";
         public const string TestEnvironnementName = "test";
         public const string LoggedUserName = "Sammy";
+        public static AppConfiguration Configuration;
 
         public TestStartup(IConfiguration configuration, IHostingEnvironment env) : base(configuration, env)
         {
@@ -49,6 +50,11 @@ namespace DaOAuthV2.Gui.Api
                 options.DefaultAuthenticateScheme = "Test Scheme";
                 options.DefaultChallengeScheme = "Test Scheme";
             }).AddTestAuth(o => { });
+        }
+
+        protected override void ExecuteAfterConfigureServices()
+        {
+            Configuration = base.Configuration.GetSection("AppConfiguration").Get<AppConfiguration>();
         }
     }
 }
