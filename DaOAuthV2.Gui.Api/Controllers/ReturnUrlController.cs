@@ -39,11 +39,14 @@ namespace DaOAuthV2.Gui.Api.Controllers
         }
 
         [HttpDelete]
-        [Route("")]
-        public IActionResult Delete(DeleteReturnUrlDto toDelete)
+        [Route("{id}")]
+        public IActionResult Delete(int id)
         {
-            toDelete.UserName = User.Identity.Name;
-            _service.DeleteReturnUrl(toDelete);
+            _service.DeleteReturnUrl(new DeleteReturnUrlDto()
+            {
+                IdReturnUrl = id,
+                UserName = User.Identity.Name
+            });
             return Ok();
         }
     }
