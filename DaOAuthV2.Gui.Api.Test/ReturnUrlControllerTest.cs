@@ -1,12 +1,8 @@
-﻿using DaOAuthV2.ApiTools;
-using DaOAuthV2.Dal.EF;
+﻿using DaOAuthV2.Dal.EF;
 using DaOAuthV2.Domain;
-using DaOAuthV2.Service;
 using DaOAuthV2.Service.DTO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
