@@ -15,6 +15,9 @@ namespace DaOAuthV2.Gui.Api.Test
     {
         protected static HttpClient _client;
         protected static DbContextOptions _dbContextOptions;
+        protected static string _sammyPassword = "sammy-password-1123#";
+
+        private static EncryptionService _encryptService = new EncryptionService();
 
         protected static RessourceServer _validRessourceServer = new RessourceServer()
         {
@@ -71,7 +74,7 @@ namespace DaOAuthV2.Gui.Api.Test
             FullName = "Sammy LeCrabe",
             Id = 1001,
             IsValid = true,
-            Password = new byte[] { 0, 1 },
+            Password = _encryptService.Sha256Hash(String.Concat("saltNpepper", _sammyPassword)),
             UserName = TestStartup.LoggedUserName,
             ValidationToken = "abc"
         };

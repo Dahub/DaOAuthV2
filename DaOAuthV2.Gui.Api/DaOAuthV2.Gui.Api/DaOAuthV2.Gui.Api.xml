@@ -1,0 +1,152 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>DaOAuthV2.Gui.Api</name>
+    </assembly>
+    <members>
+        <member name="T:DaOAuthV2.Gui.Api.Controllers.AdministrationController">
+            <summary>
+            Controller used to administration tasks
+            </summary>
+        </member>
+        <member name="M:DaOAuthV2.Gui.Api.Controllers.AdministrationController.#ctor(DaOAuthV2.Service.Interface.IAdministrationService)">
+            <summary>
+            Constructor
+            </summary>
+            <param name="service">Inject an administration service</param>
+        </member>
+        <member name="M:DaOAuthV2.Gui.Api.Controllers.AdministrationController.GetAll(System.String,System.String,System.Nullable{System.Boolean},System.UInt32,System.UInt32)">
+            <summary>
+            Return all users
+            Results are limited to 50
+            </summary>
+            <param name="userName">search for a specific user</param>
+            <param name="userMail">search for a specific user mail</param>
+            <param name="isValid">search for valid or invalid user only</param>
+            <param name="skip">skip n results</param>
+            <param name="limit">get n results</param>
+            <returns>ùUsers</returns>
+        </member>
+        <member name="M:DaOAuthV2.Gui.Api.Controllers.AdministrationController.Get(System.Int32)">
+            <summary>
+            Return details for an user
+            </summary>
+            <param name="idUser">id of the user</param>
+            <returns>user details infos</returns>
+        </member>
+        <member name="T:DaOAuthV2.Gui.Api.Controllers.ClientsController">
+            <summary>
+            Client controller
+            </summary>
+        </member>
+        <member name="M:DaOAuthV2.Gui.Api.Controllers.ClientsController.Post(DaOAuthV2.Service.DTO.CreateClientDto)">
+            <summary>
+            Create a new client
+            </summary>
+            <param name="infos">Dto infos</param>
+            <returns>An 201 Http code with get client by id url</returns>
+        </member>
+        <member name="M:DaOAuthV2.Gui.Api.Controllers.ClientsController.Get(System.Int32)">
+            <summary>
+            Get a client
+            </summary>
+            <param name="id">id of the client</param>
+            <returns>a client</returns>
+        </member>
+        <member name="M:DaOAuthV2.Gui.Api.Controllers.ClientsController.Delete(System.Int32)">
+            <summary>
+            Delete a client
+            </summary>
+            <param name="id">id of the client</param>
+            <returns>an 200 Http code</returns>
+        </member>
+        <member name="M:DaOAuthV2.Gui.Api.Controllers.ClientsController.Put(DaOAuthV2.Service.DTO.UpdateClientDto)">
+            <summary>
+            Update a client
+            </summary>
+            <param name="toUpdate">Dto infos</param>
+            <returns>A 200 Http code</returns>
+        </member>
+        <member name="M:DaOAuthV2.Gui.Api.Controllers.ClientsController.GetAll(System.String,System.String,System.String,System.UInt32,System.UInt32)">
+            <summary>
+            Search clients
+            Results are limited to 50
+            </summary>
+            <param name="name">client name</param>
+            <param name="publicId">client public id</param>
+            <param name="clientType">client type : confidential or public</param>
+            <param name="skip">skip n clients</param>
+            <param name="limit">limit to n clients</param>
+            <returns>A clients list</returns>
+        </member>
+        <member name="T:DaOAuthV2.Gui.Api.Controllers.ScopesController">
+            <summary>
+            Scope controller
+            </summary>
+        </member>
+        <member name="M:DaOAuthV2.Gui.Api.Controllers.ScopesController.#ctor(DaOAuthV2.Service.Interface.IScopeService)">
+            <summary>
+            Constructor with scope service injected
+            </summary>
+            <param name="service">injcted scope service</param>
+        </member>
+        <member name="M:DaOAuthV2.Gui.Api.Controllers.ScopesController.GetAll">
+            <summary>
+            Get all scopes from valids ressources servers
+            </summary>
+            <returns>List of all scopes</returns>
+        </member>
+        <member name="T:DaOAuthV2.Gui.Api.Controllers.UsersClientsController">
+            <summary>
+            User client controllr
+            </summary>
+        </member>
+        <member name="M:DaOAuthV2.Gui.Api.Controllers.UsersClientsController.#ctor(DaOAuthV2.Service.Interface.IUserClientService)">
+            <summary>
+            Constructor
+            </summary>
+            <param name="service">Injected User client service</param>
+        </member>
+        <member name="M:DaOAuthV2.Gui.Api.Controllers.UsersController.#ctor(DaOAuthV2.Service.Interface.IUserService)">
+            <summary>
+            Contructor
+            </summary>
+            <param name="service">User service dependency injection</param>
+        </member>
+        <member name="M:DaOAuthV2.Gui.Api.Controllers.UsersController.FindUser(DaOAuthV2.Service.DTO.LoginUserDto,Microsoft.Extensions.Localization.IStringLocalizerFactory)">
+            <summary>
+            Try to find user with login and password
+            </summary>
+            <param name="credentials">User credentials</param>
+            <param name="localFactory">Localized string factory</param>
+            <response code="500">Server error</response>
+            <response code="401">Invalids credentials</response>
+            <response code="200">Valids credentials</response>
+            <returns>If correct, a User json object</returns>
+        </member>
+        <member name="M:DaOAuthV2.Gui.Api.Controllers.UsersController.Post(DaOAuthV2.Service.DTO.CreateUserDto)">
+            <summary>
+            Create an user
+            </summary>
+            <param name="model">JSon model</param>
+            <response code="500">Server error</response>
+            <response code="400">Invalid datas</response>
+            <response code="201">User created</response>
+            <returns>A 201 http code, with empty response
+            Since for users endpoint, this is not a REST API, there is not location header as
+            users/id route don't exists</returns>
+        </member>
+        <member name="T:DaOAuthV2.Gui.Api.DesignTimeDbContextFactory">
+            <summary>
+            Used for add migrations
+            </summary>
+        </member>
+        <member name="M:DaOAuthV2.Gui.Api.DesignTimeDbContextFactory.CreateDbContext(System.String[])">
+            <summary>
+            Create DB context
+            </summary>
+            <param name="args"></param>
+            <returns>DB context</returns>
+        </member>
+    </members>
+</doc>

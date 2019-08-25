@@ -123,7 +123,7 @@ namespace DaOAuthV2.Gui.Api.Controllers
         [Route("password/{email}")]
         public IActionResult GetNewPassword(string email)
         {
-            var model = new LostPawwordDto()
+            var model = new LostPasswordDto()
             {
                 Email = email
             };

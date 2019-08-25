@@ -230,7 +230,7 @@ namespace DaOAuthV2.Service
             return result;
         }
 
-        public void SendMailLostPassword(LostPawwordDto infos)
+        public void SendMailLostPassword(LostPasswordDto infos)
         {
             Logger.LogInformation($"Send a mail password lost to {infos.Email}");
 
@@ -353,13 +353,19 @@ namespace DaOAuthV2.Service
                 var myUser = userRepo.GetByUserName(infos.UserName);
 
                 if (myUser == null)
+                {
                     throw new DaOAuthServiceException(local["ValidateUserNoUserFound"]);
+                }
 
                 if (!infos.Token.Equals(myUser.ValidationToken, StringComparison.Ordinal))
+                {
                     throw new DaOAuthServiceException(local["ValidateUserInvalidToken"]);
+                }
 
                 if (myUser.IsValid)
+                {
                     throw new DaOAuthServiceException(local["ValidateUserEverValidated"]);
+                }
 
                 myUser.IsValid = true;
 

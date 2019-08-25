@@ -248,7 +248,7 @@ namespace DaOAuthV2.Gui.Api.Test
         [TestMethod]
         public async Task Get_Should_Return_All_Clients()
         {
-            int totalClients = 0;
+            var totalClients = 0;
             ClientType sammyClientType = null;
             IList<ClientReturnUrl> sammyClientReturnUrls = null;
             IList<ClientScope> sammyClientScopes = null;
@@ -316,7 +316,7 @@ namespace DaOAuthV2.Gui.Api.Test
         [TestMethod]
         public async Task Head_Should_Return_All_Clients_Count()
         {
-            int totalClients = 0;
+            var totalClients = 0;
             using (var context = new DaOAuthContext(_dbContextOptions))
             {
                 totalClients = context.Clients.Count();

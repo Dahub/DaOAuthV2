@@ -1010,7 +1010,7 @@ namespace DaOAuthV2.Service.Test
         [ExpectedException(typeof(DaOAuthServiceException))]
         public void Send_Mail_Password_Lost_Without_Email_Should_Throw_Exception()
         {
-            _service.SendMailLostPassword(new DTO.LostPawwordDto()
+            _service.SendMailLostPassword(new DTO.LostPasswordDto()
             {
                 Email = null
             });
@@ -1020,7 +1020,7 @@ namespace DaOAuthV2.Service.Test
         [ExpectedException(typeof(DaOAuthServiceException))]
         public void Send_Mail_Password_Lost_With_Unknow_Email_Should_Throw_Exception()
         {
-            _service.SendMailLostPassword(new DTO.LostPawwordDto()
+            _service.SendMailLostPassword(new DTO.LostPasswordDto()
             {
                 Email = "unknow@test.com"
             });
@@ -1036,7 +1036,7 @@ namespace DaOAuthV2.Service.Test
             Assert.IsNotNull(user);
             Assert.IsFalse(String.IsNullOrWhiteSpace(user.EMail));
 
-            _service.SendMailLostPassword(new DTO.LostPawwordDto()
+            _service.SendMailLostPassword(new DTO.LostPasswordDto()
             {
                 Email = user.EMail
             });
@@ -1051,7 +1051,7 @@ namespace DaOAuthV2.Service.Test
             Assert.IsNotNull(user);
             Assert.IsFalse(String.IsNullOrWhiteSpace(user.EMail));
 
-            _service.SendMailLostPassword(new DTO.LostPawwordDto()
+            _service.SendMailLostPassword(new DTO.LostPasswordDto()
             {
                 Email = user.EMail
             });
