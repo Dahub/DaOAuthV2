@@ -245,7 +245,7 @@ namespace DaOAuthV2.Gui.Api.Test
         }
 
         [TestMethod]
-        public async Task Get_Clients_Should_Return_All_Clients()
+        public async Task Get_Should_Return_All_Clients()
         {
             int totalClients = 0;
             ClientType sammyClientType = null;
@@ -274,7 +274,7 @@ namespace DaOAuthV2.Gui.Api.Test
             Assert.IsTrue(clients.Count > 0);
             Assert.AreEqual(clients.Datas.Count(), totalClients);
 
-            var sammyClient = clients.Datas.Where(u => u.Id.Equals(_sammyClient.Id)).FirstOrDefault();
+            var sammyClient = clients.Datas.Where(u => u.Id.Equals(_sammyClient.Id)).SingleOrDefault();
 
             Assert.IsNotNull(sammyClient);
             Assert.AreEqual(_sammyClient.Name, sammyClient.Name);
@@ -313,7 +313,7 @@ namespace DaOAuthV2.Gui.Api.Test
         }
 
         [TestMethod]
-        public async Task Head_Client_Should_Return_All_Clients_Count()
+        public async Task Head_Should_Return_All_Clients_Count()
         {
             int totalClients = 0;
             using (var context = new DaOAuthContext(_dbContextOptions))

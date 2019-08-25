@@ -268,6 +268,25 @@ namespace DaOAuthV2.Dal.EF.Test
         }
 
         [TestMethod]
+        public void Get_All_By_Criterias_Should_Return_Ressources_Servers_With_Scopes()
+        {
+            var options = new DbContextOptionsBuilder<DaOAuthContext>()
+                     .UseInMemoryDatabase(databaseName: _dbName)
+                     .Options;
+
+            using (var context = new DaOAuthContext(options))
+            {
+                var rsRepo = _repoFactory.GetRessourceServerRepository(context);
+                var result = rsRepo.GetAllByCriterias(null, null, null, 0, 5);
+
+                Assert.IsNotNull(result);
+                Assert.IsTrue(result.Count() > 0);
+                Assert.IsNotNull(result.First().Scopes);
+                Assert.IsTrue(result.First().Scopes.Count() > 0);
+            }
+        }
+
+        [TestMethod]
         public void Get_By_Id_Should_Return_Ressource_Server_With_Scopes()
         {
             var options = new DbContextOptionsBuilder<DaOAuthContext>()

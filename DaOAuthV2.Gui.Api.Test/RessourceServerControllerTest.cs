@@ -1,5 +1,4 @@
 ﻿using DaOAuthV2.ApiTools;
-using DaOAuthV2.Constants;
 using DaOAuthV2.Dal.EF;
 using DaOAuthV2.Domain;
 using DaOAuthV2.Service;
@@ -125,31 +124,7 @@ namespace DaOAuthV2.Gui.Api.Test
             Assert.IsNotNull(rsFromDb);
             Assert.IsNotNull(scopesFromDbs);
 
-            Assert.AreEqual(rsFromDb.Id, myRessourceServer.Id);
-            Assert.AreEqual(rsFromDb.CreationDate, myRessourceServer.CreationDate);
-            Assert.AreEqual(rsFromDb.Description, myRessourceServer.Description);
-            Assert.AreEqual(rsFromDb.Login, myRessourceServer.Login);
-            Assert.AreEqual(rsFromDb.Name, myRessourceServer.Name);
-
-            Assert.AreEqual(scopesFromDbs.Count(), myRessourceServer.Scopes.Count());
-            Assert.IsTrue(scopesFromDbs.Count() > 0);
-
-            foreach (var scope in scopesFromDbs)
-            {
-                var myScope = myRessourceServer.Scopes.Where(s => s.IdScope.Equals(scope.Id)).SingleOrDefault();
-                Assert.IsNotNull(myScope);
-                Assert.AreEqual(scope.Id, myScope.IdScope);
-                Assert.AreEqual(scope.NiceWording, myScope.NiceWording);
-                Assert.AreEqual(scope.Wording, myScope.Wording);
-                if (scope.Wording.StartsWith("RW_"))
-                {
-                    Assert.IsTrue(myScope.IsReadWrite);
-                }
-                else
-                {
-                    Assert.IsFalse(myScope.IsReadWrite);
-                }
-            }
+            CompareRessouceServerAndRessourceServerDto(scopesFromDbs, rsFromDb, myRessourceServer);
         }
 
         [TestMethod]
@@ -204,7 +179,7 @@ namespace DaOAuthV2.Gui.Api.Test
                         IsReadWrite = true,
                         NiceWording = "new scope"
                     }
-                }   
+                }
             };
 
             var httpResponseMessage = await _client.PutAsJsonAsync("ressourcesServers", updateRessourceServerDto);
@@ -231,7 +206,7 @@ namespace DaOAuthV2.Gui.Api.Test
             foreach (var scope in updatedScopes)
             {
                 var myScope = updateRessourceServerDto.Scopes.SingleOrDefault(s => s.IdScope.Equals(scope.Id));
-                if(myScope == null)
+                if (myScope == null)
                     myScope = updateRessourceServerDto.Scopes.SingleOrDefault(s => !s.IdScope.HasValue);
 
                 Assert.IsNotNull(myScope);
@@ -244,7 +219,90 @@ namespace DaOAuthV2.Gui.Api.Test
                     Assert.IsTrue(scope.Id > 0);
                 }
                 Assert.AreEqual(scope.NiceWording, myScope.NiceWording);
-                if(scope.Wording.StartsWith("RW_"))
+                if (scope.Wording.StartsWith("RW_"))
+                {
+                    Assert.IsTrue(myScope.IsReadWrite);
+                }
+                else
+                {
+                    Assert.IsFalse(myScope.IsReadWrite);
+                }
+            }
+        }
+
+        [TestMethod]
+        public async Task Head_Should_Return_All_Ressources_Servers_Count()
+        {
+            int totalRessourcesServers = 0;
+            using (var context = new DaOAuthContext(_dbContextOptions))
+            {
+                totalRessourcesServers = context.RessourceServers.Count();
+            }
+
+            var httpResponseMessage = await _client.SendAsync(new HttpRequestMessage()
+            {
+                Method = HttpMethod.Head,
+                RequestUri = new Uri("http://localhost/ressourcesServers?skip=0&limit=50")
+            });
+
+            Assert.IsTrue(httpResponseMessage.IsSuccessStatusCode);
+            Assert.IsTrue(httpResponseMessage.Headers.Contains("X-Total-Count"));
+            httpResponseMessage.Headers.TryGetValues("X-Total-Count", out IEnumerable<string> values);
+            Assert.AreEqual(values.Count(), 1);
+            Assert.AreEqual(values.First(), totalRessourcesServers.ToString());
+        }
+
+        [TestMethod]
+        public async Task Get_Should_Return_All_Ressources_Servers()
+        {
+            int totalRessourcesServers = 0;
+            IList<Scope> scopesFromDbs = null;
+            using (var context = new DaOAuthContext(_dbContextOptions))
+            {
+                totalRessourcesServers = context.RessourceServers.Count();
+                scopesFromDbs = context.Scopes.Where(s => s.RessourceServerId.Equals(_validRessourceServer.Id)).ToList();
+            }
+            Assert.IsNotNull(scopesFromDbs);
+
+            var httpResponseMessage = await _client.GetAsync("ressourcesServers?skip=0&limit=50");
+
+            Assert.IsTrue(httpResponseMessage.IsSuccessStatusCode);
+
+            var ressourcesServers = JsonConvert.DeserializeObject<SearchResult<RessourceServerDto>>(
+               await httpResponseMessage.Content.ReadAsStringAsync());
+
+            Assert.AreEqual(ressourcesServers.Count, totalRessourcesServers);
+            Assert.IsTrue(ressourcesServers.Count > 0);
+            Assert.AreEqual(ressourcesServers.Datas.Count(), totalRessourcesServers);
+
+            var validRessourceServer = ressourcesServers.Datas.Where(rs => rs.Id.Equals(_validRessourceServer.Id)).SingleOrDefault();
+
+            CompareRessouceServerAndRessourceServerDto(scopesFromDbs, _validRessourceServer, validRessourceServer);
+        }
+
+        private static void CompareRessouceServerAndRessourceServerDto(
+            IList<Scope> scopesFromDbs, 
+            RessourceServer sourceRessourceServer, 
+            RessourceServerDto validRessourceServer)
+        {
+            Assert.IsNotNull(validRessourceServer);
+            Assert.AreEqual(sourceRessourceServer.Id, validRessourceServer.Id);
+            Assert.AreEqual(sourceRessourceServer.CreationDate, validRessourceServer.CreationDate);
+            Assert.AreEqual(sourceRessourceServer.Description, validRessourceServer.Description);
+            Assert.AreEqual(sourceRessourceServer.Login, validRessourceServer.Login);
+            Assert.AreEqual(sourceRessourceServer.Name, validRessourceServer.Name);
+
+            Assert.AreEqual(scopesFromDbs.Count(), validRessourceServer.Scopes.Count());
+            Assert.IsTrue(scopesFromDbs.Count() > 0);
+
+            foreach (var scope in scopesFromDbs)
+            {
+                var myScope = validRessourceServer.Scopes.Where(s => s.IdScope.Equals(scope.Id)).SingleOrDefault();
+                Assert.IsNotNull(myScope);
+                Assert.AreEqual(scope.Id, myScope.IdScope);
+                Assert.AreEqual(scope.NiceWording, myScope.NiceWording);
+                Assert.AreEqual(scope.Wording, myScope.Wording);
+                if (scope.Wording.StartsWith("RW_"))
                 {
                     Assert.IsTrue(myScope.IsReadWrite);
                 }

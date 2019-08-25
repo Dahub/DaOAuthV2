@@ -15,7 +15,7 @@ namespace DaOAuthV2.Dal.EF
                (String.IsNullOrEmpty(name) || c.Name.Equals(name))
                && (String.IsNullOrEmpty(login) || c.Login.Equals(login))
                && (!isValid.HasValue || c.IsValid.Equals(isValid.Value))
-               ).Skip((int)skip).Take((int)take);
+               ).Include(rs => rs.Scopes).Skip((int)skip).Take((int)take);
         }
 
         public int GetAllByCriteriasCount(string name, string login, bool? isValid)
