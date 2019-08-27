@@ -52,6 +52,12 @@ namespace DaOAuthV2.Gui.Api.Test
         [TestMethod]
         public async Task Post_Should_Create_User()
         {
+            SendEmailDto mailSentInfos = null;
+            _fakeMailService.SendMailCalled += delegate (object sender, SendEmailDto e)
+            {
+                mailSentInfos = e;
+            };
+
             var createUserDto = new CreateUserDto()
             {
                 BirthDate = DateTime.Now.AddYears(-41),
@@ -65,6 +71,8 @@ namespace DaOAuthV2.Gui.Api.Test
             var httpResponseMessage = await _client.PostAsJsonAsync("users", createUserDto);
 
             Assert.AreEqual(HttpStatusCode.Created, httpResponseMessage.StatusCode);
+
+            Assert.IsNotNull(mailSentInfos);
         }
 
         [TestMethod]
@@ -182,6 +190,69 @@ namespace DaOAuthV2.Gui.Api.Test
             }
             Assert.IsNotNull(myUser);
             Assert.IsTrue(encodedNewPassword.SequenceEqual(myUser.Password));
+        }
+
+        [TestMethod]
+        public async Task Desactivate_User_Should_Desactivate_User()
+        {
+            var idUserTest = _jimmyUser.Id;
+
+            User myUserActivated = null;
+            using(var context = new DaOAuthContext(_dbContextOptions))
+            {
+                myUserActivated = context.Users.FirstOrDefault(u => u.Id.Equals(idUserTest));
+            }
+            Assert.IsNotNull(myUserActivated);
+            Assert.IsTrue(myUserActivated.IsValid);
+
+            var activateOrDesactivateUserDto = new ActivateOrDesactivateUserDto()
+            {
+                UserName = _jimmyUser.UserName
+            };
+
+            var httpResponseMessage = await _client.PutAsJsonAsync("users/desactivate", activateOrDesactivateUserDto);
+            Assert.IsTrue(httpResponseMessage.IsSuccessStatusCode);
+
+            User myUserDesactivated = null;
+            using (var context = new DaOAuthContext(_dbContextOptions))
+            {
+                myUserDesactivated = context.Users.FirstOrDefault(u => u.Id.Equals(idUserTest));
+            }
+            Assert.IsNotNull(myUserDesactivated);
+            Assert.IsFalse(myUserDesactivated.IsValid);
+        }
+
+        [TestMethod]
+        public async Task Activate_User_Should_Activate_User()
+        {
+            var idUserTest = _jimmyUser.Id;
+
+            User myUserDesactivated = null;
+            using (var context = new DaOAuthContext(_dbContextOptions))
+            {
+                myUserDesactivated = context.Users.FirstOrDefault(u => u.Id.Equals(idUserTest));
+                myUserDesactivated.IsValid = false;
+                context.Update(myUserDesactivated);
+                context.Commit();
+            }
+            Assert.IsNotNull(myUserDesactivated);
+            Assert.IsFalse(myUserDesactivated.IsValid);
+
+            var activateOrDesactivateUserDto = new ActivateOrDesactivateUserDto()
+            {
+                UserName = _jimmyUser.UserName
+            };
+
+            var httpResponseMessage = await _client.PutAsJsonAsync("users/activate", activateOrDesactivateUserDto);
+            Assert.IsTrue(httpResponseMessage.IsSuccessStatusCode);            
+
+            User myUserActivated = null;
+            using (var context = new DaOAuthContext(_dbContextOptions))
+            {
+                myUserActivated = context.Users.FirstOrDefault(u => u.Id.Equals(idUserTest));
+            }
+            Assert.IsNotNull(myUserActivated);
+            Assert.IsTrue(myUserActivated.IsValid);
         }
 
         private static void CompareUserDtoAndDbUser(UserDto myUser, User dbUser)

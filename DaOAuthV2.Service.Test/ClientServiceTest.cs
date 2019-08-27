@@ -1,4 +1,5 @@
-﻿using DaOAuthV2.Constants;
+﻿using DaOAuthV2.ApiTools;
+using DaOAuthV2.Constants;
 using DaOAuthV2.Dal.Interface;
 using DaOAuthV2.Domain;
 using DaOAuthV2.Service.DTO;
@@ -150,7 +151,6 @@ namespace DaOAuthV2.Service.Test
                 IsActif = true,
                 UserId = _invalidUser.Id
             });
-
 
             _service = new ClientService()
             {

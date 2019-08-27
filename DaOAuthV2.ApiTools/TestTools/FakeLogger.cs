@@ -1,8 +1,8 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
 
-namespace DaOAuthV2.Service.Test.Fake
-{
+namespace DaOAuthV2.ApiTools
+{ 
     public class FakeLogger : ILogger
     {
         public IDisposable BeginScope<TState>(TState state)

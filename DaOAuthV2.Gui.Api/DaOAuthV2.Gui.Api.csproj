@@ -9,7 +9,7 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile>DaOAuthV2.Gui.Api\DaOAuthV2.Gui.Api.xml</DocumentationFile>
+    <DocumentationFile>DaOAuthV2.Gui.Api.xml</DocumentationFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Local|AnyCPU'">

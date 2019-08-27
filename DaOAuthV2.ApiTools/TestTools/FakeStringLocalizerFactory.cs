@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 
-namespace DaOAuthV2.Service.Test.Fake
+namespace DaOAuthV2.ApiTools
 {
     public class FakeStringLocalizerFactory : IStringLocalizerFactory
     {

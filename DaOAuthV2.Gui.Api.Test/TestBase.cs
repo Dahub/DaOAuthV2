@@ -1,11 +1,14 @@
-﻿using DaOAuthV2.Constants;
+﻿using DaOAuthV2.ApiTools;
+using DaOAuthV2.Constants;
 using DaOAuthV2.Dal.EF;
 using DaOAuthV2.Domain;
 using DaOAuthV2.Service;
+using DaOAuthV2.Service.Interface;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Net.Http;
 
@@ -259,6 +262,8 @@ namespace DaOAuthV2.Gui.Api.Test
             }
         }
 
+        protected static readonly FakeMailService _fakeMailService = new FakeMailService();
+
         protected void InitDataBaseAndHttpClient()
         {
             _dbContextOptions = new DbContextOptionsBuilder<DaOAuthContext>()
@@ -310,12 +315,34 @@ namespace DaOAuthV2.Gui.Api.Test
             var builder = new WebHostBuilder();
 
             var config = new ConfigurationBuilder()
-                    .AddJsonFile("Configuration/appsettings.test.json")
+                    .AddJsonFile("Configuration/appsettings.test.json")                    
                     .Build();
 
             var server = new TestServer(builder
                 .UseConfiguration(config)
-                .UseEnvironment(TestStartup.TestEnvironnementName)
+                .ConfigureTestServices(services =>
+                {
+                    services.AddTransient<IUserService>(u => new UserService()
+                    {
+                        Configuration = TestStartup.Configuration,
+                        RepositoriesFactory = new EfRepositoriesFactory()
+                        {
+                            DbContextOptions = _dbContextOptions
+                        },
+                        StringLocalizerFactory = new FakeStringLocalizerFactory(),
+                        Logger = new FakeLogger(),
+                        MailService = _fakeMailService,
+                        RandomService = new RandomService(),
+                        EncryptionService = new EncryptionService(),
+                        JwtService = new JwtService()
+                        {
+                            Configuration = TestStartup.Configuration,
+                            StringLocalizerFactory = new FakeStringLocalizerFactory(),
+                            Logger = new FakeLogger()
+                        }
+                    });
+                })
+                .UseEnvironment(TestStartup.TestEnvironnementName)                
                 .UseStartup<TestStartup>());
 
             _client = server.CreateClient();
