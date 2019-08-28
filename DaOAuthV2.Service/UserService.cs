@@ -6,6 +6,7 @@ using DaOAuthV2.Service.ExtensionsMethods;
 using System.ComponentModel.DataAnnotations;
 using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
+using System.Linq;
 
 namespace DaOAuthV2.Service
 {
@@ -156,7 +157,7 @@ namespace DaOAuthV2.Service
 
                 var ucRepo = RepositoriesFactory.GetUserClientRepository(c);
 
-                foreach(var uc in ucRepo.GetAllByCriterias(user.UserName, null, null, null, 0, Int32.MaxValue))
+                foreach (var uc in ucRepo.GetAllByCriterias(user.UserName, null, null, null, 0, Int32.MaxValue))
                 {
                     uc.RefreshToken = String.Empty;
                     ucRepo.Update(uc);
@@ -297,7 +298,7 @@ namespace DaOAuthV2.Service
         }
 
         public void UpdateUser(UpdateUserDto toUpdate)
-        {            
+        {
             IList<ValidationResult> ExtendValidation(UpdateUserDto toValidate)
             {
                 var resource = this.GetErrorStringLocalizer();
@@ -313,7 +314,7 @@ namespace DaOAuthV2.Service
 
                     var errorResource = this.GetErrorStringLocalizer();
                     var getByMailUser = repo.GetByEmail(toValidate.EMail);
-                    if(getByMailUser != null && getByMailUser.Id != user.Id)
+                    if (getByMailUser != null && getByMailUser.Id != user.Id)
                         result.Add(new ValidationResult(String.Format(errorResource["CreateUserEmailExists"], toValidate.EMail)));
                 }
 
@@ -379,7 +380,49 @@ namespace DaOAuthV2.Service
 
         public void DeleteUser(string userName)
         {
-            throw new NotImplementedException();
+            Logger.LogInformation($"delete user {userName}");
+
+            using (var context = RepositoriesFactory.CreateContext())
+            {
+                var userRepository = RepositoriesFactory.GetUserRepository(context);
+                var clientRepository = RepositoriesFactory.GetClientRepository(context);
+                var userClientRepository = RepositoriesFactory.GetUserClientRepository(context);
+
+                var user = userRepository.GetByUserName(userName);
+                var local = this.GetErrorStringLocalizer();
+
+                if (user == null || !user.IsValid)
+                    throw new DaOAuthServiceException(local["DeleteUserNoUserFound"]);               
+
+                var clients = clientRepository.GetAllClientsByIdCreator(user.Id);
+
+                IList<Client> toDeleteClients = new List<Client>();
+                IList<UserClient> toDeleteUsersClients = new List<UserClient>();
+
+                foreach(var client in clients)
+                {
+                    foreach (var uc in userClientRepository.GetAllByClientId(client.Id))
+                    {
+                        toDeleteUsersClients.Add(uc);                        
+                    }
+
+                    toDeleteClients.Add(client);
+                }
+
+                foreach (var uc in toDeleteUsersClients)
+                {
+                    userClientRepository.Delete(uc);
+                }
+
+                foreach(var c in toDeleteClients)
+                {
+                    clientRepository.Delete(c);
+                }
+
+                userRepository.Delete(user);
+
+                context.Commit();
+            }
         }
     }
 }

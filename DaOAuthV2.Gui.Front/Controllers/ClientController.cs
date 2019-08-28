@@ -205,7 +205,7 @@ namespace DaOAuthV2.Gui.Front.Controllers
         [Authorize(Roles = RoleName.Administrator)]
         public async Task<IActionResult> Delete(int id)
         {
-            HttpResponseMessage response = await DeleteToApi($"clients/{id}");
+            await DeleteToApi($"clients/{id}");
 
             return RedirectToAction("List");
         }

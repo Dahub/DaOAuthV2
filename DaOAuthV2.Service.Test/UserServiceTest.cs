@@ -38,7 +38,7 @@ namespace DaOAuthV2.Service.Test
                 JwtService = new FakeJwtService(new MailJwtTokenDto()
                 {
                     Expire = Int64.MaxValue,
-                    IsValid = true                    
+                    IsValid = true
                 })
             };
         }
@@ -409,6 +409,133 @@ namespace DaOAuthV2.Service.Test
 
         [TestMethod]
         [ExpectedException(typeof(DaOAuthServiceException))]
+        public void Delete_Non_Existing_User_Should_Throw_Exception()
+        {
+            _service.DeleteUser("nonExisting");
+        }
+
+        [TestMethod]
+        public void Delete_Existing_User_Should_Delete_User()
+        {
+            var toDeleteUser = FakeDataBase.Instance.Users.Where(u => u.IsValid).FirstOrDefault();
+
+            _service.DeleteUser(toDeleteUser.UserName);
+
+            var deletedUser = FakeDataBase.Instance.Users.FirstOrDefault(u => u.Id.Equals(toDeleteUser.Id));
+
+            Assert.IsNull(deletedUser);
+        }
+
+        [TestMethod]
+        public void Delete_Existing_User_Should_Delete_Clients_Created_By_User()
+        {
+            var idUser = 45234;
+            var userName = "testeurDelete";
+            var clientId = 84237;
+
+            FakeDataBase.Instance.Users.Add(new Domain.User()
+            {
+                BirthDate = DateTime.Now,
+                CreationDate = DateTime.Now,
+                EMail = "test@test.com",
+                FullName = "testeur",
+                Id = idUser,
+                IsValid = true,
+                Password = new byte[] { 0, 1 },
+                UserName = userName
+            });
+
+            FakeDataBase.Instance.Clients.Add(new Domain.Client()
+            {
+                ClientSecret = "secret",
+                ClientTypeId = 1,
+                CreationDate = DateTime.Now,
+                Id = clientId,
+                IsValid = true,
+                Name = "test client",
+                PublicId = "pub-id",
+                UserCreatorId = idUser
+            });
+
+            var toDeleteClient = FakeDataBase.Instance.Clients.FirstOrDefault(c => c.Id.Equals(clientId));
+            Assert.IsNotNull(toDeleteClient);
+
+            _service.DeleteUser(userName);
+
+            var deletedUser = FakeDataBase.Instance.Users.FirstOrDefault(u => u.Id.Equals(idUser));
+
+            Assert.IsNull(deletedUser);
+
+            var deletedClient = FakeDataBase.Instance.Clients.FirstOrDefault(c => c.Id.Equals(clientId));
+
+            Assert.IsNull(deletedClient);
+        }
+
+        [TestMethod]
+        public void Delete_Existing_User_Should_Delete_Users_Clients_From_Clients_Created_By_User()
+        {
+            var idUser = 45234;
+            var userName = "testeurDelete";
+            var clientId = 84237;
+            var idUserForUserClient = 66597;
+            var idUserClient = 54536;
+
+            FakeDataBase.Instance.Users.Add(new Domain.User()
+            {
+                BirthDate = DateTime.Now,
+                CreationDate = DateTime.Now,
+                EMail = "test@test.com",
+                FullName = "testeur",
+                Id = idUser,
+                IsValid = true,
+                Password = new byte[] { 0, 1 },
+                UserName = userName
+            });
+
+            FakeDataBase.Instance.Users.Add(new Domain.User()
+            {
+                BirthDate = DateTime.Now,
+                CreationDate = DateTime.Now,
+                EMail = "test@test.com",
+                FullName = "not to delete",
+                Id = idUserForUserClient,
+                IsValid = true,
+                Password = new byte[] { 0, 1 },
+                UserName = "not to delete"
+            });
+
+            FakeDataBase.Instance.Clients.Add(new Domain.Client()
+            {
+                ClientSecret = "secret",
+                ClientTypeId = 1,
+                CreationDate = DateTime.Now,
+                Id = clientId,
+                IsValid = true,
+                Name = "test client",
+                PublicId = "pub-id",
+                UserCreatorId = idUser
+            });
+
+            FakeDataBase.Instance.UsersClient.Add(new Domain.UserClient()
+            {
+                ClientId = clientId,
+                CreationDate = DateTime.Now,
+                Id = idUserClient,
+                IsActif = true,
+                UserId = idUserForUserClient
+            });
+
+            var toDeleteUserClient = FakeDataBase.Instance.UsersClient.FirstOrDefault(uc => uc.Id.Equals(idUserClient));
+            Assert.IsNotNull(toDeleteUserClient);
+
+            _service.DeleteUser(userName);
+
+            var deletedUserClient = FakeDataBase.Instance.UsersClient.FirstOrDefault(uc => uc.Id.Equals(idUserClient));
+            Assert.IsNull(deletedUserClient);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(DaOAuthServiceException))]
         public void Desactivate_Non_Existing_User_Should_Throw_Exception()
         {
             _service.DesactivateUser("john");
@@ -444,14 +571,14 @@ namespace DaOAuthV2.Service.Test
                                             uc.UserId.Equals(user.Id)
                                             && uc.ClientId.Equals(client.Id)).FirstOrDefault();
 
-            if(userClient == null)
+            if (userClient == null)
             {
                 userClient = new Domain.UserClient()
                 {
                     Id = 999,
                     ClientId = client.Id,
                     UserId = user.Id,
-                    CreationDate = DateTime.Now                   
+                    CreationDate = DateTime.Now
                 };
                 FakeDataBase.Instance.UsersClient.Add(userClient);
             }
@@ -497,7 +624,7 @@ namespace DaOAuthV2.Service.Test
                 UserName = "Sammy",
                 BirthDate = new DateTime(1918, 11, 11),
                 FullName = "new sam",
-                EMail = "newSam@corp.org"                
+                EMail = "newSam@corp.org"
             });
 
             var user = _repo.GetByUserName("Sammy");
@@ -543,7 +670,7 @@ namespace DaOAuthV2.Service.Test
             {
                 BirthDate = DateTime.Now,
                 EMail = email,
-                CreationDate  = DateTime.Now,
+                CreationDate = DateTime.Now,
                 FullName = "test",
                 Id = 5632,
                 IsValid = true,

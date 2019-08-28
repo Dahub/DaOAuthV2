@@ -55,7 +55,7 @@
                         {
                             <a href="@Url.Action("UserDetails", "Administration", new { id = @item.UserId })"><i class="fas fa-2x fa-search"></i></a>
                         }
-                        <span onclick="return doConfirm(@item.UserId);" style="cursor: pointer;"><i class="fas fa-2x fa-trash-alt"></i></span>
+                        <span onclick="return doConfirm('@item.UserName');" style="cursor: pointer;"><i class="fas fa-2x fa-trash-alt"></i></span>
                     </td>
                     <td>
                         @if (item.IsValid)
@@ -76,9 +76,9 @@
 
 @section PageScript {
     <script type="text/javascript">
-        function doConfirm(id) {
+        function doConfirm(userName) {
             $.bsAlert.confirm("Etes vous sûr de vouloir supprimer cet utilisateur ?", function () {
-                $(location).attr('href', '/fr/Administration/UserDelete/' + id);
+                $(location).attr('href', '/fr/Administration/UserDelete/' + userName);
             });
         }
     </script>

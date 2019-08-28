@@ -76,6 +76,14 @@ namespace DaOAuthV2.Gui.Front.Controllers
             return RedirectToAction("List");
         }
 
+        [Route("{culture}/Administration/UserDelete/{userName}")]
+        public async Task<IActionResult> UserDelete(string userName)
+        {
+            await DeleteToApi($"users/{userName}");
+
+            return RedirectToAction("List");
+        }
+
         public async Task<IActionResult> List()
         {
             AdministrationDashboardModel model = new AdministrationDashboardModel();

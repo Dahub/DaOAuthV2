@@ -153,6 +153,24 @@ namespace DaOAuthV2.Dal.EF.Test
         }
 
         [TestMethod]
+        public void Get_All_Client_By_Id_Creator_Should_Return_Clients()
+        {
+            var options = new DbContextOptionsBuilder<DaOAuthContext>()
+                     .UseInMemoryDatabase(databaseName: _dbName)
+                     .Options;
+
+            using (var context = new DaOAuthContext(options))
+            {
+                var clientRepo = _repoFactory.GetClientRepository(context);
+                var clients = clientRepo.GetAllClientsByIdCreator(100);
+
+                Assert.IsNotNull(clients);
+                Assert.AreEqual(clients.Count(), 2);
+                Assert.AreEqual(clients.Where(c => c.UserCreatorId.Equals(100)).Count(), 2);
+            }
+        }
+
+        [TestMethod]
         public void Get_By_Public_Id_Should_Return_Client()
         {
             var options = new DbContextOptionsBuilder<DaOAuthContext>()

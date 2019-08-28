@@ -327,22 +327,40 @@ namespace DaOAuthV2.Gui.Api.Test
         public async Task Delete_Should_Delete_User()
         {
             User nonDeletedUser = null;
+            IList<Client> nonDeletedClients = null;
+            IList<UserClient> nonDeletedUsersClients = null;
             using (var context = new DaOAuthContext(_dbContextOptions))
             {
                 nonDeletedUser = context.Users.Where(c => c.Id.Equals(_sammyUser.Id)).FirstOrDefault();
+                nonDeletedClients = context.Clients.Where(c => c.UserCreatorId.Equals(_sammyUser.Id)).ToList();
+
+                var clientsIds = nonDeletedClients.Select(ndc => ndc.Id).ToList();
+
+                nonDeletedUsersClients = context.UsersClients.Where(nduc => clientsIds.Contains(nduc.Id)).ToList();
             }
             Assert.IsNotNull(nonDeletedUser);
+            Assert.IsTrue(nonDeletedClients.Count() > 0);
+            Assert.IsTrue(nonDeletedUsersClients.Count() > 0);
 
             var httpResponseMessage = await _client.DeleteAsync($"users/{_sammyUser.UserName}");
 
             Assert.IsTrue(httpResponseMessage.IsSuccessStatusCode);
 
             User deletedUser = null;
+            IList<Client> deletedClients = null;
+            IList<UserClient> deletedUsersClients = null;
             using (var context = new DaOAuthContext(_dbContextOptions))
             {
                 deletedUser = context.Users.Where(c => c.Id.Equals(_sammyUser.Id)).FirstOrDefault();
+                deletedClients = context.Clients.Where(c => c.UserCreatorId.Equals(_sammyUser.Id)).ToList();
+
+                var clientsIds = nonDeletedClients.Select(ndc => ndc.Id).ToList();
+
+                deletedUsersClients = context.UsersClients.Where(nduc => clientsIds.Contains(nduc.Id)).ToList();
             }
             Assert.IsNull(deletedUser);
+            Assert.AreEqual(0, deletedClients.Count());
+            Assert.AreEqual(0, deletedUsersClients.Count());
         }
 
         private static void CompareUserDtoAndDbUser(UserDto myUser, User dbUser)

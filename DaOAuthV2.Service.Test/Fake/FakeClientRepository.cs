@@ -65,6 +65,11 @@ namespace DaOAuthV2.Service.Test.Fake
                 ).Count();
         }
 
+        public IEnumerable<Client> GetAllClientsByIdCreator(int idUserCreator)
+        {
+            return FakeDataBase.Instance.Clients.Where(c => c.UserCreatorId.Equals(idUserCreator));
+        }
+
         public Client GetById(int id)
         {
             var c = FakeDataBase.Instance.Clients.Where(cl => cl.Id.Equals(id)).FirstOrDefault();

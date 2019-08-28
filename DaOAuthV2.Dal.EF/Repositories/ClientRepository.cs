@@ -53,5 +53,11 @@ namespace DaOAuthV2.Dal.EF
              Include(c => c.UserCreator).
              Where(c => c.Id.Equals(id)).FirstOrDefault();
         }
+
+        public IEnumerable<Client> GetAllClientsByIdCreator(int idUserCreator)
+        {
+            return Context.Clients.
+             Where(c => c.UserCreatorId.Equals(idUserCreator));
+        }
     }
 }
