@@ -81,7 +81,7 @@ namespace DaOAuthV2.Gui.Api.Test
             var encryptionServce = new EncryptionService();
 
             Assert.IsTrue(encryptionServce.AreEqualsSha256(
-                String.Concat(TestStartup.Configuration.PasswordSalt, toCreateRessourceServer.Password),
+                String.Concat(GuiApiTestStartup.Configuration.PasswordSalt, toCreateRessourceServer.Password),
                 myNewRessourceServer.ServerSecret));
 
             Assert.IsTrue(myNewRessourceServer.IsValid);

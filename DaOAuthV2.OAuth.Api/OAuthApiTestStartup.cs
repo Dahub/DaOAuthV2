@@ -8,16 +8,16 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-namespace DaOAuthV2.Gui.Api
+namespace DaOAuthV2.OAuth.Api
 {
-    public class TestStartup : Startup
+    public class OAuthApiTestStartup : Startup
     {
         public const string TestDataBaseName = "inMemoryDatabase";
         public const string TestEnvironnementName = "test";
         public const string LoggedUserName = "Sammy";
         public static AppConfiguration Configuration;
 
-        public TestStartup(IConfiguration configuration, IHostingEnvironment env) : base(configuration, env)
+        public OAuthApiTestStartup(IConfiguration configuration, IHostingEnvironment env) : base(configuration, env)
         {
         }
 

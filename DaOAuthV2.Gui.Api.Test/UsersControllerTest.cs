@@ -54,7 +54,7 @@ namespace DaOAuthV2.Gui.Api.Test
             var userName = "aNewUserIsComing";
             var password = "azertyui12345#";
             var encryptionService = new EncryptionService();
-            var hashPassword = encryptionService.Sha256Hash($"{TestStartup.Configuration.PasswordSalt}{password}");
+            var hashPassword = encryptionService.Sha256Hash($"{GuiApiTestStartup.Configuration.PasswordSalt}{password}");
 
             SendEmailDto mailSentInfos = null;
             _fakeMailService.SendMailCalled += delegate (object sender, SendEmailDto e)
@@ -211,12 +211,12 @@ namespace DaOAuthV2.Gui.Api.Test
 
             var encryptionService = new EncryptionService();
             var encodedNewPassword = encryptionService.Sha256Hash(
-                String.Concat(TestStartup.Configuration.PasswordSalt, newPassword));
+                String.Concat(GuiApiTestStartup.Configuration.PasswordSalt, newPassword));
 
             User myUser = null;
             using (var context = new DaOAuthContext(_dbContextOptions))
             {
-                myUser = context.Users.FirstOrDefault(u => u.UserName.Equals(TestStartup.LoggedUserName));
+                myUser = context.Users.FirstOrDefault(u => u.UserName.Equals(GuiApiTestStartup.LoggedUserName));
             }
             Assert.IsNotNull(myUser);
             Assert.IsTrue(encodedNewPassword.SequenceEqual(myUser.Password));
@@ -308,7 +308,7 @@ namespace DaOAuthV2.Gui.Api.Test
         { 
             var jwtService = new JwtService()
             {
-                Configuration = TestStartup.Configuration,
+                Configuration = GuiApiTestStartup.Configuration,
                 Logger = new FakeLogger(),
                 RepositoriesFactory = null,
                 StringLocalizerFactory = new FakeStringLocalizerFactory()
@@ -347,7 +347,7 @@ namespace DaOAuthV2.Gui.Api.Test
 
             var encryptonService = new EncryptionService();
 
-            var newPassword = encryptonService.Sha256Hash($"{TestStartup.Configuration.PasswordSalt}{newPasswordString}");
+            var newPassword = encryptonService.Sha256Hash($"{GuiApiTestStartup.Configuration.PasswordSalt}{newPasswordString}");
 
             Assert.IsTrue(newPassword.SequenceEqual<byte>(myUser.Password));
         }

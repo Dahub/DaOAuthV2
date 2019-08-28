@@ -133,7 +133,7 @@ namespace DaOAuthV2.Service
                         TokenName = OAuthConvention.AccessToken,
                         UserName = authorizeInfo.UserName
                     });
-                    string tokenLocation = String.Concat(authorizeInfo.RedirectUri, "?token=", myToken.Token, "?token_type=bearer?expires_in", Configuration.AccesTokenLifeTimeInSeconds);
+                    string tokenLocation = String.Concat(authorizeInfo.RedirectUri, "?token=", myToken.Token, "&token_type=bearer&expires_in=", Configuration.AccesTokenLifeTimeInSeconds);
                     if (!String.IsNullOrEmpty(authorizeInfo.State))
                         tokenLocation = String.Concat(tokenLocation, "&state=", authorizeInfo.State);
                     toReturn = new Uri(tokenLocation);

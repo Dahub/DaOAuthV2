@@ -1,0 +1,33 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
+
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="appsettings.Test.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="appsettings.Test.json">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.2.6" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.0.1" />
+    <PackageReference Include="MSTest.TestAdapter" Version="1.4.0" />
+    <PackageReference Include="MSTest.TestFramework" Version="1.4.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DaOAuthV2.Dal.EF\DaOAuthV2.Dal.EF.csproj" />
+    <ProjectReference Include="..\DaOAuthV2.Gui.Api.Test\DaOAuthV2.Gui.Api.Test.csproj" />
+    <ProjectReference Include="..\DaOAuthV2.OAuth.Api\DaOAuthV2.OAuth.Api.csproj" />
+    <ProjectReference Include="..\DaOAuthV2.Service\DaOAuthV2.Service.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -27,6 +27,7 @@ namespace DaOAuthV2.OAuth.Api
         }
 
         public IConfiguration Configuration { get; }
+
         private IHostingEnvironment CurrentEnvironment { get; set; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
@@ -37,24 +38,9 @@ namespace DaOAuthV2.OAuth.Api
 
             var conf = Configuration.GetSection("AppConfiguration").Get<AppConfiguration>();
 
-            var connexionString = Configuration.GetConnectionString("DaOAuthConnexionString");
-            var builder = new DbContextOptionsBuilder<DaOAuthContext>();
-            builder.UseSqlServer(connexionString, b => b.MigrationsAssembly("DaOAuthV2.Dal.EF"));
+            var dbContextOptions = BuildDbContextOptions();
 
-            var dbContextOptions = builder.Options;
-
-            services.AddAuthentication(conf.DefaultScheme).AddCookie(conf.DefaultScheme,
-               options =>
-                {
-                    options.DataProtectionProvider = DataProtectionProvider.Create(
-                        new DirectoryInfo(conf.DataProtectionProviderDirectory));
-                    options.Cookie.Domain = string.Concat(".", conf.AppsDomain);
-                    options.Events.OnRedirectToLogin = (context) =>
-                    {
-                        context.Response.Redirect($"{conf.LoginPageUrl.AbsoluteUri}?returnUrl={conf.OauthApiUrl}{context.RedirectUri.Split("ReturnUrl=")[1]}");                        
-                        return Task.CompletedTask;
-                    };
-                });
+            BuildAuthentification(services, conf);
 
             var sp = services.BuildServiceProvider();
             var localizationServiceFactory = sp.GetService<IStringLocalizerFactory>();
@@ -82,11 +68,9 @@ namespace DaOAuthV2.OAuth.Api
             services.AddMvc(options =>
                 options.Filters.Add(new DaOAuthExceptionFilter(CurrentEnvironment, loggerServiceFactory))).SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
-            services.AddSwaggerGen(c =>
-            {
-                c.SwaggerDoc("v1", new Info { Title = "DaOAuth OAuth API", Version = "v1" });
-                c.IncludeXmlComments(GetXmlCommentsPath());
-            });
+            UseSwagger(services);
+
+            ExecuteAfterConfigureServices();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -101,21 +85,63 @@ namespace DaOAuthV2.OAuth.Api
                 app.UseHsts();
             }
 
-            app.UseAuthentication();
+            AddSwagger(app);
 
-            app.UseSwagger();
-            app.UseSwaggerUI(c =>
-            {
-                c.SwaggerEndpoint("../swagger/v1/swagger.json", "DaOAuth OAuth API");
-            });
+            app.UseAuthentication();
 
             app.UseHttpsRedirection();
             app.UseMvc();
         }
 
-        private string GetXmlCommentsPath()
+        protected virtual void ExecuteAfterConfigureServices()
         {
-            return Path.ChangeExtension(typeof(Startup).Assembly.Location, ".xml");
+
+        }
+
+        protected virtual void BuildAuthentification(IServiceCollection services, AppConfiguration conf)
+        {
+            services.AddAuthentication(conf.DefaultScheme).AddCookie(conf.DefaultScheme,
+               options =>
+               {
+                   options.DataProtectionProvider = DataProtectionProvider.Create(
+                       new DirectoryInfo(conf.DataProtectionProviderDirectory));
+                   options.Cookie.Domain = string.Concat(".", conf.AppsDomain);
+                   options.Events.OnRedirectToLogin = (context) =>
+                   {
+                       context.Response.Redirect($"{conf.LoginPageUrl.AbsoluteUri}?returnUrl={conf.OauthApiUrl}{context.RedirectUri.Split("ReturnUrl=")[1]}");
+                       return Task.CompletedTask;
+                   };
+               });
+        }
+
+        protected virtual void AddSwagger(IApplicationBuilder app)
+        {
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("../swagger/v1/swagger.json", "DaOAuth OAuth API");
+            });
+        }
+
+        protected virtual void AddLogger(ILoggerFactory loggerFactory)
+        {
+        }
+
+        protected virtual void UseSwagger(IServiceCollection services)
+        {
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new Info { Title = "DaOAuth OAuth API", Version = "v1" });
+                c.IncludeXmlComments(Path.ChangeExtension(typeof(Startup).Assembly.Location, ".xml"));
+            });
+        }
+
+        protected virtual DbContextOptions BuildDbContextOptions()
+        {
+            var connexionString = Configuration.GetConnectionString("DaOAuthConnexionString");
+            var builder = new DbContextOptionsBuilder<DaOAuthContext>();
+            builder.UseSqlServer(connexionString, b => b.MigrationsAssembly("DaOAuthV2.Dal.EF"));
+            return builder.Options;
         }
     }
 }

@@ -78,7 +78,7 @@ namespace DaOAuthV2.Gui.Api.Test
             Id = 1001,
             IsValid = true,
             Password = _encryptService.Sha256Hash(String.Concat("saltNpepper", _sammyPassword)),
-            UserName = TestStartup.LoggedUserName,
+            UserName = GuiApiTestStartup.LoggedUserName,
             ValidationToken = "abc"
         };
 
@@ -253,7 +253,7 @@ namespace DaOAuthV2.Gui.Api.Test
         protected void CleanUpDataBase()
         {
             var options = new DbContextOptionsBuilder<DaOAuthContext>()
-                         .UseInMemoryDatabase(databaseName: TestStartup.TestDataBaseName)
+                         .UseInMemoryDatabase(databaseName: GuiApiTestStartup.TestDataBaseName)
                          .Options;
 
             using (var context = new DaOAuthContext(options))
@@ -267,7 +267,7 @@ namespace DaOAuthV2.Gui.Api.Test
         protected void InitDataBaseAndHttpClient()
         {
             _dbContextOptions = new DbContextOptionsBuilder<DaOAuthContext>()
-             .UseInMemoryDatabase(databaseName: TestStartup.TestDataBaseName)
+             .UseInMemoryDatabase(databaseName: GuiApiTestStartup.TestDataBaseName)
              .Options;
 
             using (var context = new DaOAuthContext(_dbContextOptions))
@@ -324,7 +324,7 @@ namespace DaOAuthV2.Gui.Api.Test
                 {
                     services.AddTransient<IUserService>(u => new UserService()
                     {
-                        Configuration = TestStartup.Configuration,
+                        Configuration = GuiApiTestStartup.Configuration,
                         RepositoriesFactory = new EfRepositoriesFactory()
                         {
                             DbContextOptions = _dbContextOptions
@@ -336,14 +336,14 @@ namespace DaOAuthV2.Gui.Api.Test
                         EncryptionService = new EncryptionService(),
                         JwtService = new JwtService()
                         {
-                            Configuration = TestStartup.Configuration,
+                            Configuration = GuiApiTestStartup.Configuration,
                             StringLocalizerFactory = new FakeStringLocalizerFactory(),
                             Logger = new FakeLogger()
                         }
                     });
                 })
-                .UseEnvironment(TestStartup.TestEnvironnementName)                
-                .UseStartup<TestStartup>());
+                .UseEnvironment(GuiApiTestStartup.TestEnvironnementName)                
+                .UseStartup<GuiApiTestStartup>());
 
             _client = server.CreateClient();
         }
