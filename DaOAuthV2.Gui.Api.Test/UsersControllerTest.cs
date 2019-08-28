@@ -51,6 +51,11 @@ namespace DaOAuthV2.Gui.Api.Test
         [TestMethod]
         public async Task Post_Should_Create_User()
         {
+            var userName = "aNewUserIsComing";
+            var password = "azertyui12345#";
+            var encryptionService = new EncryptionService();
+            var hashPassword = encryptionService.Sha256Hash($"{TestStartup.Configuration.PasswordSalt}{password}");
+
             SendEmailDto mailSentInfos = null;
             _fakeMailService.SendMailCalled += delegate (object sender, SendEmailDto e)
             {
@@ -62,9 +67,9 @@ namespace DaOAuthV2.Gui.Api.Test
                 BirthDate = DateTime.Now.AddYears(-41),
                 EMail = "new@new.com",
                 FullName = "johnny lecrabe",
-                Password = "anewpasswordforjohnny",
-                RepeatPassword = "anewpasswordforjohnny",
-                UserName = "johnny"
+                Password = password,
+                RepeatPassword = password,
+                UserName = userName
             };
 
             var httpResponseMessage = await _client.PostAsJsonAsync("users", createUserDto);
@@ -74,6 +79,30 @@ namespace DaOAuthV2.Gui.Api.Test
             Assert.IsNotNull(mailSentInfos);
             Assert.IsNotNull(mailSentInfos.Receviers.FirstOrDefault());
             Assert.AreEqual(createUserDto.EMail, mailSentInfos.Receviers.First().Key);
+
+            User userFromDb = null;            
+            using(var context = new DaOAuthContext(_dbContextOptions))
+            {
+                userFromDb = context.Users.FirstOrDefault(u => u.UserName.Equals(userName));
+            }
+
+            Assert.IsNotNull(userFromDb);
+            Assert.AreEqual(createUserDto.BirthDate, userFromDb.BirthDate);
+            Assert.AreEqual(createUserDto.EMail, userFromDb.EMail);
+            Assert.AreEqual(DateTime.Now.Date, userFromDb.CreationDate.Date);
+            Assert.AreEqual(createUserDto.FullName, userFromDb.FullName);
+            Assert.IsTrue(hashPassword.SequenceEqual<byte>(userFromDb.Password));
+            Assert.IsFalse(userFromDb.IsValid);
+
+            IList<UserRole> userRolesFromDb = null;
+            using (var context = new DaOAuthContext(_dbContextOptions))
+            {
+                userRolesFromDb = context.UsersRoles.Where(ur => ur.UserId.Equals(userFromDb.Id)).ToList();
+            }
+            Assert.IsNotNull(userRolesFromDb);
+            Assert.IsTrue(userRolesFromDb.Count() > 0);
+            Assert.IsNotNull(userRolesFromDb.FirstOrDefault(ur => ur.Id.Equals((int)ERole.USER)));
+            Assert.IsNull(userRolesFromDb.FirstOrDefault(ur => ur.Id.Equals((int)ERole.ADMIN)));
         }
 
         [TestMethod]
