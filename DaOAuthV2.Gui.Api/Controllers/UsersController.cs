@@ -142,6 +142,7 @@ namespace DaOAuthV2.Gui.Api.Controllers
 
         [HttpDelete]
         [Authorize]
+        [Route("{userName}")]
         public IActionResult Delete(string userName)
         {
             if (!(User.Identity.Name.Equals(userName, StringComparison.OrdinalIgnoreCase) ||

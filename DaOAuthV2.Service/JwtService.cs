@@ -25,7 +25,7 @@ namespace DaOAuthV2.Service
 
             var utcNow = DateTimeOffset.UtcNow;
 
-            IList<Claim> claims = new List<Claim>();
+            var claims = new List<Claim>();
             claims.Add(new Claim(ClaimName.ClientId, value.ClientPublicId));
             claims.Add(new Claim(ClaimName.TokenName, value.TokenName));
             claims.Add(new Claim(ClaimName.Issued, utcNow.ToUnixTimeSeconds().ToString(CultureInfo.InvariantCulture)));         
@@ -42,7 +42,7 @@ namespace DaOAuthV2.Service
                 signingCredentials: creds,
                 expires: utcNow.AddSeconds(value.SecondsLifeTime).UtcDateTime);
 
-            JwtTokenDto toReturn = new JwtTokenDto()
+            var toReturn = new JwtTokenDto()
             {
                 ClientId = value.ClientPublicId,
                 Expire = utcNow.AddSeconds(value.SecondsLifeTime).ToUnixTimeSeconds(),
@@ -61,7 +61,7 @@ namespace DaOAuthV2.Service
 
             Validate(tokenInfo);
 
-            JwtTokenDto toReturn = new JwtTokenDto()
+            var toReturn = new JwtTokenDto()
             {
                 Token = tokenInfo.Token,
                 IsValid = false
@@ -73,7 +73,7 @@ namespace DaOAuthV2.Service
             }
 
             var handler = new JwtSecurityTokenHandler();
-            TokenValidationParameters validationParameters = new TokenValidationParameters
+            var validationParameters = new TokenValidationParameters
             {
                 ValidIssuer = Configuration.Issuer,
                 ValidAudience = Configuration.Audience,
@@ -127,7 +127,7 @@ namespace DaOAuthV2.Service
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration.SecurityKey));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
-            IList<Claim> claims = new List<Claim>();
+            var claims = new List<Claim>();
             claims.Add(new Claim(ClaimName.Issued, utcNow.ToUnixTimeSeconds().ToString(CultureInfo.InvariantCulture)));
             claims.Add(new Claim(ClaimName.Name, !String.IsNullOrEmpty(userName) ? userName : String.Empty));
 
@@ -163,7 +163,7 @@ namespace DaOAuthV2.Service
 
             ClaimsPrincipal pClaim = null;
             var handler = new JwtSecurityTokenHandler();
-            TokenValidationParameters validationParameters = new TokenValidationParameters
+            var validationParameters = new TokenValidationParameters
             {
                 ValidIssuer = Configuration.Issuer,
                 ValidAudience = Configuration.Audience,

@@ -83,7 +83,6 @@ namespace DaOAuthV2.Dal.EF
             modelBuilder.Entity<Client>().HasMany<ClientReturnUrl>(c => c.ClientReturnUrls).WithOne(c => c.Client);
             modelBuilder.Entity<Client>().Property(p => p.UserCreatorId).HasColumnName("FK_UserCreator").HasColumnType("int").IsRequired();
             modelBuilder.Entity<Client>().HasOne<User>(c => c.UserCreator).WithMany(u => u.CreatedClients).HasForeignKey(c => c.UserCreatorId).OnDelete(DeleteBehavior.Restrict);
-
             modelBuilder.Entity<Client>().HasIndex(c => c.PublicId).IsUnique();
 
             modelBuilder.Entity<Scope>().ToTable("Scope");

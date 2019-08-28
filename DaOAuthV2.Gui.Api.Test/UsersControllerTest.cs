@@ -1,5 +1,4 @@
 ﻿using DaOAuthV2.ApiTools;
-using DaOAuthV2.Constants;
 using DaOAuthV2.Dal.EF;
 using DaOAuthV2.Domain;
 using DaOAuthV2.Service;
@@ -73,6 +72,8 @@ namespace DaOAuthV2.Gui.Api.Test
             Assert.AreEqual(HttpStatusCode.Created, httpResponseMessage.StatusCode);
 
             Assert.IsNotNull(mailSentInfos);
+            Assert.IsNotNull(mailSentInfos.Receviers.FirstOrDefault());
+            Assert.AreEqual(createUserDto.EMail, mailSentInfos.Receviers.First().Key);
         }
 
         [TestMethod]
@@ -253,6 +254,95 @@ namespace DaOAuthV2.Gui.Api.Test
             }
             Assert.IsNotNull(myUserActivated);
             Assert.IsTrue(myUserActivated.IsValid);
+        }
+
+        [TestMethod]
+        public async Task Get_New_Password_Should_Send_Mail()
+        {
+            SendEmailDto mailSentInfos = null;
+            _fakeMailService.SendMailCalled += delegate (object sender, SendEmailDto e)
+            {
+                mailSentInfos = e;
+            };
+
+            var httpResponseMessage = await _client.GetAsync($"users/password/{_sammyUser.EMail}");
+
+            Assert.IsTrue(httpResponseMessage.IsSuccessStatusCode);
+
+            Assert.IsNotNull(mailSentInfos);
+            Assert.IsNotNull(mailSentInfos.Receviers.FirstOrDefault());
+            Assert.AreEqual(_sammyUser.EMail, mailSentInfos.Receviers.First().Key);
+        }
+
+        [TestMethod]
+        public async Task Post_Password_Should_Change_Password()
+        { 
+            var jwtService = new JwtService()
+            {
+                Configuration = TestStartup.Configuration,
+                Logger = new FakeLogger(),
+                RepositoriesFactory = null,
+                StringLocalizerFactory = new FakeStringLocalizerFactory()
+            };
+
+            var token = jwtService.GenerateMailToken(_sammyUser.UserName);
+            var idUser = _sammyUser.Id;
+            var newPasswordString = "newPassword#1234";
+
+            User myUser = null;
+            using (var context = new DaOAuthContext(_dbContextOptions))
+            {
+                myUser = context.Users.FirstOrDefault(u => u.Id.Equals(idUser));
+            }
+            Assert.IsNotNull(myUser);
+
+            var actualPassword = myUser.Password;
+
+            var newPasswordDto = new NewPasswordDto()
+            {
+                NewPassword = newPasswordString,
+                NewPasswordRepeat = newPasswordString,
+                Token = token.Token
+            };
+
+            var httpResponseMessage = await _client.PostAsJsonAsync("users/password", newPasswordDto);
+            Assert.IsTrue(httpResponseMessage.IsSuccessStatusCode);
+
+            using (var context = new DaOAuthContext(_dbContextOptions))
+            {
+                myUser = context.Users.FirstOrDefault(u => u.Id.Equals(idUser));
+            }
+            Assert.IsNotNull(myUser);
+
+            Assert.IsFalse(actualPassword.SequenceEqual<byte>(myUser.Password));
+
+            var encryptonService = new EncryptionService();
+
+            var newPassword = encryptonService.Sha256Hash($"{TestStartup.Configuration.PasswordSalt}{newPasswordString}");
+
+            Assert.IsTrue(newPassword.SequenceEqual<byte>(myUser.Password));
+        }
+
+        [TestMethod]
+        public async Task Delete_Should_Delete_User()
+        {
+            User nonDeletedUser = null;
+            using (var context = new DaOAuthContext(_dbContextOptions))
+            {
+                nonDeletedUser = context.Users.Where(c => c.Id.Equals(_sammyUser.Id)).FirstOrDefault();
+            }
+            Assert.IsNotNull(nonDeletedUser);
+
+            var httpResponseMessage = await _client.DeleteAsync($"users/{_sammyUser.UserName}");
+
+            Assert.IsTrue(httpResponseMessage.IsSuccessStatusCode);
+
+            User deletedUser = null;
+            using (var context = new DaOAuthContext(_dbContextOptions))
+            {
+                deletedUser = context.Users.Where(c => c.Id.Equals(_sammyUser.Id)).FirstOrDefault();
+            }
+            Assert.IsNull(deletedUser);
         }
 
         private static void CompareUserDtoAndDbUser(UserDto myUser, User dbUser)
