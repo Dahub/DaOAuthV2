@@ -19,7 +19,9 @@ namespace DaOAuthV2.Service
         private const int CodeLenght = 16;
 
         public IRandomService RandomService { get; set; }
+
         public IJwtService JwtService { get; set; }
+
         public IEncryptionService EncryptonService { get; set; }
 
         public Uri GenererateUriForAuthorize(AskAuthorizeDto authorizeInfo)
@@ -688,9 +690,9 @@ namespace DaOAuthV2.Service
             return toReturn;
         }
 
-        private bool CheckIfClientsCredentialsAreValid(Client cl, string authentificationHeader)
+        private bool CheckIfClientsCredentialsAreValid(Client client, string authentificationHeader)
         {
-            if (cl == null || String.IsNullOrWhiteSpace(authentificationHeader))
+            if (client == null || String.IsNullOrWhiteSpace(authentificationHeader))
                 return false;
 
             string[] authsInfos = authentificationHeader.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
@@ -708,9 +710,9 @@ namespace DaOAuthV2.Service
                 string clientPublicId = credentials.Substring(0, separatorIndex);
                 string clientSecret = credentials.Substring(separatorIndex + 1);
 
-                return clientSecret.Equals(cl.ClientSecret, StringComparison.Ordinal)
-                    && cl.IsValid
-                    && cl.PublicId.Equals(clientPublicId, StringComparison.Ordinal);
+                return clientSecret.Equals(client.ClientSecret, StringComparison.Ordinal)
+                    && client.IsValid
+                    && client.PublicId.Equals(clientPublicId, StringComparison.Ordinal);
             }
 
             return false;

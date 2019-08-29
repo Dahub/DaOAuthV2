@@ -16,15 +16,19 @@ namespace DaOAuthV2.OAuth.Api.Test
     {
         protected static HttpClient _client;
         protected static DbContextOptions _dbContextOptions;
+
+        protected static string _sammyUserName = OAuthApiTestStartup.LoggedUserName;
         protected static string _sammyPassword = "sammy-password-1123#";
 
         protected static string _sammyReturnUrlConfidential = "http://www.chezSammy.com";
         protected static string _sammyClientPublicIdConfidential = "pub-id";
-        protected static int _sammyUserClientConfidentialId = 1010;
+        protected static int _sammyUserClientIdConfidential = 1010;
+        protected static string _sammyClientSecretConfidential = "secret-2";
 
         protected static string _sammyReturnUrlPublic = "http://www.chezSammy2.com";
         protected static string _sammyClientPublicIdPublic = "pub-id2";
-        protected static int _sammyUserClientPublicId = 1020;
+        protected static int _sammyUserClientIdPublic = 1020;
+        protected static string _sammyClientSecretPublic = "secret-3";
 
         protected static string _sammyScopeWording = "scopeASammy";
 
@@ -86,7 +90,7 @@ namespace DaOAuthV2.OAuth.Api.Test
             Id = 1001,
             IsValid = true,
             Password = _encryptService.Sha256Hash(String.Concat("saltNpepper", _sammyPassword)),
-            UserName = OAuthApiTestStartup.LoggedUserName,
+            UserName = _sammyUserName,
             ValidationToken = "abc"
         };
 
@@ -111,7 +115,7 @@ namespace DaOAuthV2.OAuth.Api.Test
 
         private static Client _sammyClientConfidential = new Client()
         {
-            ClientSecret = "secret-2",
+            ClientSecret = _sammyClientSecretConfidential,
             ClientTypeId = _confidentialClientType.Id,
             CreationDate = DateTime.Now,
             Description = "Sammy's first nice client, better than jimmy's one",
@@ -124,7 +128,7 @@ namespace DaOAuthV2.OAuth.Api.Test
 
         private static Client _sammyClientPublic = new Client()
         {
-            ClientSecret = "secret-3",
+            ClientSecret = _sammyClientSecretPublic,
             ClientTypeId = _publicClientType.Id,
             CreationDate = DateTime.Now,
             Description = "Sammy's second nice client, better than jimmy's one",
@@ -167,7 +171,7 @@ namespace DaOAuthV2.OAuth.Api.Test
         {
             ClientId = _sammyClientConfidential.Id,
             CreationDate = DateTime.Now,
-            Id = _sammyUserClientConfidentialId,
+            Id = _sammyUserClientIdConfidential,
             IsActif = true,
             RefreshToken = "refreshSammy",
             UserId = _sammyUser.Id
@@ -177,7 +181,7 @@ namespace DaOAuthV2.OAuth.Api.Test
         {
             ClientId = _sammyClientPublic.Id,
             CreationDate = DateTime.Now,
-            Id = _sammyUserClientPublicId,
+            Id = _sammyUserClientIdPublic,
             IsActif = true,
             RefreshToken = "refreshSammy",
             UserId = _sammyUser.Id

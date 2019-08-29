@@ -2,16 +2,23 @@ using DaOAuthV2.ApiTools;
 using DaOAuthV2.Constants;
 using DaOAuthV2.Dal.EF;
 using DaOAuthV2.Domain;
+using DaOAuthV2.OAuth.Api.Models;
 using DaOAuthV2.Service;
+using DaOAuthV2.Service.DTO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Newtonsoft.Json;
 using System;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace DaOAuthV2.OAuth.Api.Test
 {
     [TestClass]
+    [TestCategory("Integration")]
     public class OAuthControllerTest : TestBase
     {
         [TestInitialize]
@@ -65,7 +72,7 @@ namespace DaOAuthV2.OAuth.Api.Test
             Assert.IsNotNull(codeFromDb);
 
             Assert.IsTrue(codeFromDb.IsValid);
-            Assert.AreEqual(_sammyUserClientConfidentialId, codeFromDb.UserClientId);
+            Assert.AreEqual(_sammyUserClientIdConfidential, codeFromDb.UserClientId);
         }
 
         [TestMethod]
@@ -95,8 +102,101 @@ namespace DaOAuthV2.OAuth.Api.Test
             var urlParam = urlParams.Split("&", StringSplitOptions.RemoveEmptyEntries).Where(s => s.Contains("token=")).FirstOrDefault();
             Assert.IsNotNull(urlParam);
             Assert.IsTrue(urlParam.Length > 25);
-            var token = urlParam.Remove(0, 6);
+            var token = urlParam.Remove(0, 6);           
 
+            CheckTokenValid(token, OAuthConvention.AccessToken);
+
+            urlParam = urlParams.Split("&", StringSplitOptions.RemoveEmptyEntries).Where(s => s.Contains("token_type=")).FirstOrDefault();
+            Assert.IsNotNull(urlParam);
+            Assert.IsTrue(urlParam.EndsWith("bearer", StringComparison.OrdinalIgnoreCase));
+
+            urlParam = urlParams.Split("&", StringSplitOptions.RemoveEmptyEntries).Where(s => s.Contains("expires_in=")).FirstOrDefault();
+            Assert.IsNotNull(urlParam);
+            Assert.IsTrue(urlParam.EndsWith(OAuthApiTestStartup.Configuration.AccesTokenLifeTimeInSeconds.ToString(), StringComparison.OrdinalIgnoreCase));
+        }        
+
+        [TestMethod]
+        public async Task Token_For_Grant_Type_Token_Should_Return_Valid_Token()
+        {
+            string code = "abc";
+
+            using (var context = new DaOAuthContext(_dbContextOptions))
+            {
+                Code newCode = new Code()
+                {
+                    CodeValue = code,
+                    ExpirationTimeStamp = long.MaxValue,
+                    Id = 888,
+                    IsValid = true,
+                    Scope = _sammyScopeWording,
+                    UserClientId = _sammyUserClientIdConfidential
+                };
+
+                context.Codes.Add(newCode);
+
+                context.Commit();
+            }
+
+            var formContent = BuildFormContent(
+                _sammyClientPublicIdConfidential,
+                code,
+                OAuthConvention.GrantTypeAuthorizationCode,
+                String.Empty,
+                String.Empty,
+                _sammyReturnUrlConfidential,
+                _sammyScopeWording,
+                _sammyUserName);
+
+            _client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            _client.DefaultRequestHeaders.Authorization = BuildAuthenticationHeaderValue(_sammyClientPublicIdConfidential, _sammyClientSecretConfidential);
+
+            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, "http://localhost/token");
+
+            request.Content = formContent;
+
+            var httpResponseMessage = await _client.SendAsync(request);
+
+            Assert.IsTrue(httpResponseMessage.IsSuccessStatusCode);
+
+            var jsonResult = new 
+            {
+                access_token = "",
+                token_type = "",
+                expires_in = 0,
+                refresh_token = "",
+                scope = ""
+            };
+
+            var myTokenInfos = JsonConvert.DeserializeAnonymousType(await httpResponseMessage.Content.ReadAsStringAsync(), jsonResult);
+
+            Assert.IsNotNull(myTokenInfos);
+            Assert.AreEqual(_sammyScopeWording, myTokenInfos.scope);
+            CheckTokenValid(myTokenInfos.access_token, OAuthConvention.AccessToken);
+            CheckTokenValid(myTokenInfos.refresh_token, OAuthConvention.RefreshToken);
+            Assert.AreEqual(OAuthApiTestStartup.Configuration.AccesTokenLifeTimeInSeconds, myTokenInfos.expires_in);
+
+            string refreshTokenFromDb;
+            using(var context = new DaOAuthContext(_dbContextOptions))
+            {
+                var userClient = context.UsersClients.Where(uc => uc.Id.Equals(_sammyUserClientIdConfidential)).FirstOrDefault();
+                Assert.IsNotNull(userClient);
+                refreshTokenFromDb = userClient.RefreshToken;
+            }
+
+            Assert.AreEqual(refreshTokenFromDb, myTokenInfos.refresh_token);
+
+            Code codeFromDb = null;
+            using(var context = new DaOAuthContext(_dbContextOptions))
+            {
+                codeFromDb = context.Codes.Where(c => c.CodeValue.Equals(code) && c.UserClientId.Equals(_sammyUserClientIdConfidential)).FirstOrDefault();
+            }
+
+            Assert.IsNotNull(codeFromDb);
+            Assert.IsFalse(codeFromDb.IsValid);
+        }
+
+        private static void CheckTokenValid(string token, string tokenName)
+        {
             var jwtService = new JwtService()
             {
                 Configuration = OAuthApiTestStartup.Configuration,
@@ -108,18 +208,40 @@ namespace DaOAuthV2.OAuth.Api.Test
             var jwtTokenDto = jwtService.ExtractToken(new Service.DTO.ExtractTokenDto()
             {
                 Token = token,
-                TokenName = OAuthConvention.AccessToken
+                TokenName = tokenName
             });
 
             Assert.IsTrue(jwtTokenDto.IsValid);
+        }
 
-            urlParam = urlParams.Split("&", StringSplitOptions.RemoveEmptyEntries).Where(s => s.Contains("token_type=")).FirstOrDefault();
-            Assert.IsNotNull(urlParam);
-            Assert.IsTrue(urlParam.EndsWith("bearer", StringComparison.OrdinalIgnoreCase));
+        private AuthenticationHeaderValue BuildAuthenticationHeaderValue(string sammyClientPublicIdConfidential, string sammyClientSecretConfidential)
+        {
+            return new AuthenticationHeaderValue("Basic", Convert.ToBase64String(
+                    Encoding.UTF8.GetBytes($"{sammyClientPublicIdConfidential}:{sammyClientSecretConfidential}")));
+        }
 
-            urlParam = urlParams.Split("&", StringSplitOptions.RemoveEmptyEntries).Where(s => s.Contains("expires_in=")).FirstOrDefault();
-            Assert.IsNotNull(urlParam);
-            Assert.IsTrue(urlParam.EndsWith(OAuthApiTestStartup.Configuration.AccesTokenLifeTimeInSeconds.ToString(), StringComparison.OrdinalIgnoreCase));
+        private MultipartFormDataContent BuildFormContent(
+            string client_id,
+            string code,
+            string grant_type,
+            string refresh_token,
+            string password,
+            string redirect_uri,
+            string scope,
+            string username
+            )
+        {
+            return new MultipartFormDataContent()
+            {
+                { new StringContent(client_id),  "client_id" },
+                { new StringContent(code),  "code" },
+                { new StringContent(grant_type),  "grant_type" },
+                { new StringContent(refresh_token),  "refresh_token" },
+                { new StringContent(password),  "password" },
+                { new StringContent(redirect_uri),  "redirect_uri" },
+                { new StringContent(scope),  "scope" },
+                { new StringContent(username),  "username" },
+            };
         }
     }
 }
