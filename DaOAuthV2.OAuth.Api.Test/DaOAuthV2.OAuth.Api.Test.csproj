@@ -11,8 +11,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="appsettings.Test.json">
+    <Content Include="Configuration\appsettings.Test.json">
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
 
