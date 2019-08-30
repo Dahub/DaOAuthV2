@@ -1,114 +1,65 @@
-using DaOAuthV2.Dal.Interface;
-using DaOAuthV2.Domain;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Linq;
+using DaOAuthV2.Domain;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace DaOAuthV2.Dal.EF.Test
 {
     [TestClass]
-    public class CrudTest
+    public class CrudTest : TestBase
     {
-        private const string _dbName = "testCrud";
-        private IRepositoriesFactory _repoFactory = new EfRepositoriesFactory();
-
         [TestInitialize]
         public void Init()
         {
-            var options = new DbContextOptionsBuilder<DaOAuthContext>()
-                         .UseInMemoryDatabase(databaseName: _dbName)
-                         .Options;
-
-            using (var context = new DaOAuthContext(options))
-            {
-                context.Clients.Add(new Client()
-                {
-                    Id = 100,
-                    ClientSecret = "8",
-                    ClientTypeId = 1,
-                    CreationDate = DateTime.Now,
-                    Description = "Test",
-                    IsValid = true,
-                    Name = "testeur",
-                    PublicId = "test"
-                });
-
-                context.Scopes.Add(new Scope()
-                {
-                    Id = 100,
-                    Wording = "test",
-                    NiceWording = "nice test"
-                });
-
-                context.Commit();
-            }
+            InitDataBase();
         }
 
         [TestCleanup]
         public void CleanUp()
         {
-            var options = new DbContextOptionsBuilder<DaOAuthContext>()
-                         .UseInMemoryDatabase(databaseName: _dbName)
-                         .Options;
-
-            using (var context = new DaOAuthContext(options))
-            {
-                context.Database.EnsureDeleted();
-            }
+            CleanDataBase();
         }
 
         [TestMethod]
         public void Get_By_Existing_Id_Should_Return_An_Entity()
         {
-            var options = new DbContextOptionsBuilder<DaOAuthContext>()
-                        .UseInMemoryDatabase(databaseName: _dbName)
-                        .Options;
-
-            Scope s = null;
-            int correctId = 100;
-
-            using (var context = new DaOAuthContext(options))
+            using (var context = new DaOAuthContext(_dbContextOptions))
             {
-                var scopeRepo = _repoFactory.GetScopeRepository(context);
-                s = scopeRepo.GetById(100);
-            }
+                var correctId = _scope1.Id;
 
-            Assert.IsNotNull(s);
-            Assert.AreEqual(correctId, s.Id);
+                var scopeRepository = _repoFactory.GetScopeRepository(context);
+                var scope = scopeRepository.GetById(100);
+
+                Assert.IsNotNull(scope);
+                Assert.AreEqual(correctId, scope.Id);
+            }
         }
 
         [TestMethod]
         public void Get_By_Non_Existing_Id_Should_Return_Null()
         {
-            var options = new DbContextOptionsBuilder<DaOAuthContext>()
-                        .UseInMemoryDatabase(databaseName: _dbName)
-                        .Options;
+            var wrongId = 1546;
 
-            Scope s = null;
-            int wrongId = 1546;
-
-            using (var context = new DaOAuthContext(options))
+            using (var context = new DaOAuthContext(_dbContextOptions))
             {
-                var scopeRepo = _repoFactory.GetScopeRepository(context);
-                s = scopeRepo.GetById(wrongId);
-            }
+                var scopeRepository = _repoFactory.GetScopeRepository(context);
+                var scope = scopeRepository.GetById(wrongId);
 
-            Assert.IsNull(s);
+                Assert.IsNull(scope);
+            }
         }
 
         [TestMethod]
         public void Add_Should_Add_Entity()
         {
-            var options = new DbContextOptionsBuilder<DaOAuthContext>()
-                          .UseInMemoryDatabase(databaseName: _dbName)
-                          .Options;
+            var actualClientCount = 0;
 
-            // Run the test against one instance of the context
-            using (var context = new DaOAuthContext(options))
+            using (var context = new DaOAuthContext(_dbContextOptions))
             {
-                var clientRepo = _repoFactory.GetClientRepository(context);
-                clientRepo.Add(new Domain.Client()
+                actualClientCount = context.Clients.Count();
+
+                var clientRepository = _repoFactory.GetClientRepository(context);
+                clientRepository.Add(new Client()
                 {
                     ClientSecret = "6",
                     ClientTypeId = 1,
@@ -122,81 +73,73 @@ namespace DaOAuthV2.Dal.EF.Test
             }
 
             // Use a separate instance of the context to verify correct datas were saved to database
-            using (var context = new DaOAuthContext(options))
+            using (var context = new DaOAuthContext(_dbContextOptions))
             {
-                Assert.AreEqual(2, context.Clients.Count());
+                Assert.AreEqual(actualClientCount + 1, context.Clients.Count());
             }
         }
 
         [TestMethod]
         public void Update_Should_Update_Entity()
         {
-            var options = new DbContextOptionsBuilder<DaOAuthContext>()
-            .UseInMemoryDatabase(databaseName: _dbName)
-            .Options;
+            Scope scope = null;
+            var idScope = _scope1.Id;
+            var newWording = "update";
 
-            Scope s = null;
-
-            using (var context = new DaOAuthContext(options))
+            using (var context = new DaOAuthContext(_dbContextOptions))
             {
-                var scopeRepo = _repoFactory.GetScopeRepository(context);
-                s = scopeRepo.GetById(100);
-                s.Wording = "update";
-                scopeRepo.Update(s);
+                var scopeRepository = _repoFactory.GetScopeRepository(context);
+                scope = scopeRepository.GetById(idScope);
+                scope.Wording = newWording;
+                scopeRepository.Update(scope);
                 context.Commit();
             }
 
-            using (var context = new DaOAuthContext(options))
+            using (var context = new DaOAuthContext(_dbContextOptions))
             {
-                var scopeRepo = _repoFactory.GetScopeRepository(context);
-                s = scopeRepo.GetById(100);
+                var scopeRepository = _repoFactory.GetScopeRepository(context);
+                scope = scopeRepository.GetById(idScope);
             }
 
-            Assert.IsNotNull(s);
-            Assert.AreEqual("update", s.Wording);
+            Assert.IsNotNull(scope);
+            Assert.AreEqual(newWording, scope.Wording);
         }
 
         [TestMethod]
         public void Delete_Should_Delete_Entity()
         {
-            var options = new DbContextOptionsBuilder<DaOAuthContext>()
-           .UseInMemoryDatabase(databaseName: _dbName)
-           .Options;
+            Scope scope = null;
+            var idScope = _scope1.Id;
 
-            Scope s = null;
-
-            using (var context = new DaOAuthContext(options))
+            using (var context = new DaOAuthContext(_dbContextOptions))
             {
                 var scopeRepo = _repoFactory.GetScopeRepository(context);
-                s = scopeRepo.GetById(100);
-                scopeRepo.Delete(s);
+                scope = scopeRepo.GetById(idScope);
+                scopeRepo.Delete(scope);
                 context.Commit();
             }
 
-            using (var context = new DaOAuthContext(options))
+            using (var context = new DaOAuthContext(_dbContextOptions))
             {
-                Assert.AreEqual(0, context.Scopes.Count());
+                Assert.AreEqual(0, context.Scopes.Count(s => s.Id.Equals(idScope)));
 
-                var scopeRepo = _repoFactory.GetScopeRepository(context);
-                s = scopeRepo.GetById(100);
+                var scopeRepository = _repoFactory.GetScopeRepository(context);
+                scope = scopeRepository.GetById(idScope);
             }
 
-            Assert.IsNull(s);
+            Assert.IsNull(scope);
         }
 
         [TestMethod]
         public void Get_All_Should_Return_All_Entities()
         {
-            var options = new DbContextOptionsBuilder<DaOAuthContext>()
-           .UseInMemoryDatabase(databaseName: _dbName)
-           .Options;         
-
-            using (var context = new DaOAuthContext(options))
+            using (var context = new DaOAuthContext(_dbContextOptions))
             {
-                var clientRepo = _repoFactory.GetClientRepository(context);
-                var result = clientRepo.GetAll();
-                Assert.IsNotNull(result);
-                Assert.AreEqual(1, result.Count());
+                var clientRepository = _repoFactory.GetClientRepository(context);
+                var clients = clientRepository.GetAll();
+                Assert.IsNotNull(clients);
+                Assert.IsTrue(clients.Count() > 0);
+                Assert.AreEqual(context.Clients.Count(), clients.Count());
             }
         }
     }

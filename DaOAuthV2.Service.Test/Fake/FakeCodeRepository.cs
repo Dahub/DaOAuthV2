@@ -27,7 +27,7 @@ namespace DaOAuthV2.Service.Test.Fake
             throw new NotImplementedException();
         }
 
-        public IEnumerable<Code> GetAllByClientIdAndUserName(string clientPublicId, string userName)
+        public IEnumerable<Code> GetAllByClientPublicIdAndUserName(string clientPublicId, string userName)
         {
             var c = FakeDataBase.Instance.Clients.Where(cl => cl.PublicId.Equals(clientPublicId)).FirstOrDefault();
             if (c == null)

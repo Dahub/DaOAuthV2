@@ -155,7 +155,7 @@ namespace DaOAuthV2.Service
                     throw new DaOAuthServiceException("DeleteClientWrongUser");
                 }
 
-                foreach (var cr in clientReturnUrlRepo.GetAllByClientId(myClient.PublicId).ToList())
+                foreach (var cr in clientReturnUrlRepo.GetAllByClientPublicId(myClient.PublicId).ToList())
                 {
                     clientReturnUrlRepo.Delete(cr);
                 }
@@ -353,7 +353,7 @@ namespace DaOAuthV2.Service
                 }
 
                 // update returns urls
-                foreach (var ru in clientReturnUrlRepo.GetAllByClientId(myClient.PublicId).ToList())
+                foreach (var ru in clientReturnUrlRepo.GetAllByClientPublicId(myClient.PublicId).ToList())
                 {
                     clientReturnUrlRepo.Delete(ru);
                 }

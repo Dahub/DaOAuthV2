@@ -9,7 +9,7 @@ namespace DaOAuthV2.Dal.EF
 {
     internal class ClientReturnUrlRepository : RepositoryBase<ClientReturnUrl>, IClientReturnUrlRepository
     {
-        public IEnumerable<ClientReturnUrl> GetAllByClientId(string clientPublicId)
+        public IEnumerable<ClientReturnUrl> GetAllByClientPublicId(string clientPublicId)
         {
             return Context.ClientReturnUrls.
                Where(c => c.Client.PublicId.Equals(clientPublicId, StringComparison.Ordinal));

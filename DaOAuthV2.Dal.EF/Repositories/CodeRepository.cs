@@ -9,7 +9,7 @@ namespace DaOAuthV2.Dal.EF
 {
     internal class CodeRepository : RepositoryBase<Code>, ICodeRepository
     {
-        public IEnumerable<Code> GetAllByClientIdAndUserName(string clientPublicId, string userName)
+        public IEnumerable<Code> GetAllByClientPublicIdAndUserName(string clientPublicId, string userName)
         {
             return ((DaOAuthContext)Context).Codes.
                 Where(c => c.UserClient.Client.PublicId.Equals(clientPublicId, StringComparison.Ordinal)

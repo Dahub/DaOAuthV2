@@ -1,306 +1,210 @@
-﻿using DaOAuthV2.Dal.Interface;
-using DaOAuthV2.Domain;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using System;
 using System.Linq;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace DaOAuthV2.Dal.EF.Test
 {
     [TestClass]
-    public class RessourceServerRepositoryTest
+    public class RessourceServerRepositoryTest : TestBase
     {
-        private IRepositoriesFactory _repoFactory = new EfRepositoriesFactory();
-        private const string _dbName = "testRessourceServerRepo";
-
         [TestInitialize]
         public void Init()
         {
-            var options = new DbContextOptionsBuilder<DaOAuthContext>()
-                         .UseInMemoryDatabase(databaseName: _dbName)
-                         .Options;
-
-            using (var context = new DaOAuthContext(options))
-            {
-                context.RessourceServers.Add(new RessourceServer()
-                {
-                    Description = "test",
-                    Id = 100,
-                    IsValid = true,
-                    Login = "login_test",
-                    Name = "testServer",
-                    ServerSecret = new byte[] { 1, 1 }
-                });
-
-                context.RessourceServers.Add(new RessourceServer()
-                {
-                    Description = "test2",
-                    Id = 101,
-                    IsValid = true,
-                    Login = "login_test2",
-                    Name = "testServer2",
-                    ServerSecret = new byte[] { 1, 1 }
-                });
-
-                context.RessourceServers.Add(new RessourceServer()
-                {
-                    Description = "test3",
-                    Id = 102,
-                    IsValid = false,
-                    Login = "login_test3",
-                    Name = "testServer3",
-                    ServerSecret = new byte[] { 1, 1 }
-                });
-
-                context.Scopes.Add(new Scope()
-                {
-                    Id = 1,
-                    NiceWording = "test",
-                    RessourceServerId = 100,
-                    Wording = "t1"
-                });
-
-                context.Scopes.Add(new Scope()
-                {
-                    Id = 2,
-                    NiceWording = "test2",
-                    RessourceServerId = 100,
-                    Wording = "t2"
-                });
-
-                context.SaveChanges();
-            }
+            InitDataBase();
         }
 
         [TestCleanup]
         public void CleanUp()
         {
-            var options = new DbContextOptionsBuilder<DaOAuthContext>()
-                         .UseInMemoryDatabase(databaseName: _dbName)
-                         .Options;
-
-            using (var context = new DaOAuthContext(options))
-            {
-                context.Database.EnsureDeleted();
-            }
+            CleanDataBase();
         }
 
         [TestMethod]
         public void Get_By_Existing_Login_Should_Return_Ressource_Server()
         {
-            var options = new DbContextOptionsBuilder<DaOAuthContext>()
-                      .UseInMemoryDatabase(databaseName: _dbName)
-                      .Options;
-
-            using (var context = new DaOAuthContext(options))
+            using (var context = new DaOAuthContext(_dbContextOptions))
             {
-                var repo = _repoFactory.GetRessourceServerRepository(context);
+                var ressourceServerRepository = _repoFactory.GetRessourceServerRepository(context);
 
-                var rs = repo.GetByLogin("login_test3");
+                var ressourceServer = ressourceServerRepository.GetByLogin(_ressourceServer3.Login);
 
-                Assert.IsNotNull(rs);
+                Assert.IsNotNull(ressourceServer);
             }
         }
 
         [TestMethod]
         public void Get_By_Existing_Login_With_Different_Case_Should_Return_Ressource_Server()
         {
-            var options = new DbContextOptionsBuilder<DaOAuthContext>()
-                      .UseInMemoryDatabase(databaseName: _dbName)
-                      .Options;
-
-            using (var context = new DaOAuthContext(options))
+            using (var context = new DaOAuthContext(_dbContextOptions))
             {
-                var repo = _repoFactory.GetRessourceServerRepository(context);
+                var ressourceServerRepository = _repoFactory.GetRessourceServerRepository(context);
 
-                var rs = repo.GetByLogin("lOGin_tEst3");
+                Assert.AreNotEqual(_ressourceServer3.Login, _ressourceServer3.Login.ToUpper());
 
-                Assert.IsNotNull(rs);
+                var ressourceServer = ressourceServerRepository.GetByLogin(_ressourceServer3.Login.ToUpper());
+
+                Assert.IsNotNull(ressourceServer);
             }
         }
 
         [TestMethod]
         public void Get_By_Non_Existing_Login_Should_Return_Null()
         {
-            var options = new DbContextOptionsBuilder<DaOAuthContext>()
-                      .UseInMemoryDatabase(databaseName: _dbName)
-                      .Options;
-
-            using (var context = new DaOAuthContext(options))
+            using (var context = new DaOAuthContext(_dbContextOptions))
             {
-                var repo = _repoFactory.GetRessourceServerRepository(context);
+                var ressourceServerRepository = _repoFactory.GetRessourceServerRepository(context);
+                var ressourceServer = ressourceServerRepository.GetByLogin(Guid.NewGuid().ToString());
 
-                var rs = repo.GetByLogin("not exists");
-
-                Assert.IsNull(rs);
+                Assert.IsNull(ressourceServer);
             }
         }
 
         [TestMethod]
         public void Get_All_By_Criterias_Count_Should_Return_1_With_Ressource_Server_Name()
         {
-            var options = new DbContextOptionsBuilder<DaOAuthContext>()
-                      .UseInMemoryDatabase(databaseName: _dbName)
-                      .Options;
-
-            using (var context = new DaOAuthContext(options))
+            using (var context = new DaOAuthContext(_dbContextOptions))
             {
-                var rsRepo = _repoFactory.GetRessourceServerRepository(context);
-                int result = rsRepo.GetAllByCriteriasCount("testServer", null, null);
+                var expectedRessourceServerCount = context.RessourceServers.Count(rs => rs.Id.Equals(_ressourceServer1.Id));
 
-                Assert.AreEqual(1, result);
+                var ressourceServerRepository = _repoFactory.GetRessourceServerRepository(context);
+                var ressourceServerCount = ressourceServerRepository.GetAllByCriteriasCount(_ressourceServer1.Name, null, null);
+
+                Assert.AreEqual(expectedRessourceServerCount, ressourceServerCount);
             }
         }
 
         [TestMethod]
         public void Get_All_By_Criterias_Count_Should_Return_1_With_Ressource_Server_Login()
         {
-            var options = new DbContextOptionsBuilder<DaOAuthContext>()
-                      .UseInMemoryDatabase(databaseName: _dbName)
-                      .Options;
-
-            using (var context = new DaOAuthContext(options))
+            using (var context = new DaOAuthContext(_dbContextOptions))
             {
-                var rsRepo = _repoFactory.GetRessourceServerRepository(context);
-                int result = rsRepo.GetAllByCriteriasCount(null, "login_test3", null);
+                var expectedRessourceServerCount = context.RessourceServers.Count(rs => rs.Id.Equals(_ressourceServer3.Id));
 
-                Assert.AreEqual(1, result);
+                var ressourceServerRepository = _repoFactory.GetRessourceServerRepository(context);
+                var ressourceServerCount = ressourceServerRepository.GetAllByCriteriasCount(null, _ressourceServer3.Login, null);
+
+                Assert.AreEqual(expectedRessourceServerCount, ressourceServerCount);
             }
         }
 
         [TestMethod]
         public void Get_All_By_Criterias_Count_Should_Return_3_Without_Criteria()
         {
-            var options = new DbContextOptionsBuilder<DaOAuthContext>()
-                      .UseInMemoryDatabase(databaseName: _dbName)
-                      .Options;
-
-            using (var context = new DaOAuthContext(options))
+            using (var context = new DaOAuthContext(_dbContextOptions))
             {
-                var rsRepo = _repoFactory.GetRessourceServerRepository(context);
-                int result = rsRepo.GetAllByCriteriasCount(null, null, null);
+                var expectedRessourceServerCount = context.RessourceServers.Count();
 
-                Assert.AreEqual(3, result);
+                var ressourceServerRepository = _repoFactory.GetRessourceServerRepository(context);
+                var ressourceServerCount = ressourceServerRepository.GetAllByCriteriasCount(null, null, null);
+
+                Assert.AreEqual(expectedRessourceServerCount, ressourceServerCount);
             }
         }
 
         [TestMethod]
         public void Get_All_By_Criterias_Count_Should_Return_2_With_Only_Valid()
         {
-            var options = new DbContextOptionsBuilder<DaOAuthContext>()
-                      .UseInMemoryDatabase(databaseName: _dbName)
-                      .Options;
-
-            using (var context = new DaOAuthContext(options))
+            using (var context = new DaOAuthContext(_dbContextOptions))
             {
-                var rsRepo = _repoFactory.GetRessourceServerRepository(context);
-                int result = rsRepo.GetAllByCriteriasCount(null, null, true);
+                var expectedRessourceServerCount = context.RessourceServers.Count(rs => rs.IsValid);
 
-                Assert.AreEqual(2, result);
+                var ressourceServerRepository = _repoFactory.GetRessourceServerRepository(context);
+                var ressourceServerCount = ressourceServerRepository.GetAllByCriteriasCount(null, null, true);
+
+                Assert.AreEqual(expectedRessourceServerCount, ressourceServerCount);
             }
         }
 
         [TestMethod]
         public void Get_All_By_Criterias_Count_Should_Return_0_With_Unknow_Ressource_Server()
         {
-            var options = new DbContextOptionsBuilder<DaOAuthContext>()
-                      .UseInMemoryDatabase(databaseName: _dbName)
-                      .Options;
-
-            using (var context = new DaOAuthContext(options))
+            using (var context = new DaOAuthContext(_dbContextOptions))
             {
-                var rsRepo = _repoFactory.GetRessourceServerRepository(context);
-                int result = rsRepo.GetAllByCriteriasCount(null, "unknow", true);
+                var ressourceServerRepository = _repoFactory.GetRessourceServerRepository(context);
+                var ressourceServerCount = ressourceServerRepository.GetAllByCriteriasCount(null, Guid.NewGuid().ToString(), true);
 
-                Assert.AreEqual(0, result);
+                Assert.AreEqual(0, ressourceServerCount);
             }
         }
 
         [TestMethod]
         public void Get_All_By_Criterias_Should_Return_Right_Ressource_Server()
         {
-            var options = new DbContextOptionsBuilder<DaOAuthContext>()
-                     .UseInMemoryDatabase(databaseName: _dbName)
-                     .Options;
-
-            using (var context = new DaOAuthContext(options))
+            using (var context = new DaOAuthContext(_dbContextOptions))
             {
-                var rsRepo = _repoFactory.GetRessourceServerRepository(context);
-                var result = rsRepo.GetAllByCriterias(null, "login_test3", null, 0, 50);
+                var ressourceServerRepository = _repoFactory.GetRessourceServerRepository(context);
+                var ressourcesServers = ressourceServerRepository.GetAllByCriterias(null, _ressourceServer3.Login, null, 0, 50);
 
-                Assert.IsNotNull(result);
-                Assert.AreEqual(1, result.Count());
-                Assert.AreEqual("login_test3", result.First().Login);
+                Assert.IsNotNull(ressourcesServers);
+                Assert.AreEqual(1, ressourcesServers.Count());
+                Assert.AreEqual(_ressourceServer3.Login, ressourcesServers.First().Login);
             }
         }
 
         [TestMethod]
         public void Get_All_By_Criterias_Should_Return_First_Page()
         {
-            var options = new DbContextOptionsBuilder<DaOAuthContext>()
-                     .UseInMemoryDatabase(databaseName: _dbName)
-                     .Options;
-
-            using (var context = new DaOAuthContext(options))
+            using (var context = new DaOAuthContext(_dbContextOptions))
             {
-                var rsRepo = _repoFactory.GetRessourceServerRepository(context);
-                var result = rsRepo.GetAllByCriterias(null, null, null, 0, 2);
+                var totalRessourceServers = context.RessourceServers.Count();
+                Assert.IsTrue(totalRessourceServers > 2);
+                var ressourceServerSearchNumber = totalRessourceServers - 1;
 
-                Assert.IsNotNull(result);
-                Assert.AreEqual(2, result.Count());
+                var ressourceServerRepository = _repoFactory.GetRessourceServerRepository(context);
+                var ressourcesServers = ressourceServerRepository.GetAllByCriterias(null, null, null, 0, (uint)ressourceServerSearchNumber);
+
+                Assert.IsNotNull(ressourcesServers);
+                Assert.AreEqual(ressourceServerSearchNumber, ressourcesServers.Count());
             }
         }
 
         [TestMethod]
         public void Get_All_By_Criterias_Should_Return_Second_Page()
         {
-            var options = new DbContextOptionsBuilder<DaOAuthContext>()
-                     .UseInMemoryDatabase(databaseName: _dbName)
-                     .Options;
-
-            using (var context = new DaOAuthContext(options))
+            using (var context = new DaOAuthContext(_dbContextOptions))
             {
-                var rsRepo = _repoFactory.GetRessourceServerRepository(context);
-                var result = rsRepo.GetAllByCriterias(null, null, null, 2, 1);
+                var totalRessourceServers = context.RessourceServers.Count();
+                Assert.IsTrue(totalRessourceServers >= 2);
 
-                Assert.IsNotNull(result);
-                Assert.AreEqual(1, result.Count());
+                var numberPerPage = 1;
+
+                var ressourceServerRepository = _repoFactory.GetRessourceServerRepository(context);
+                var ressourcesServer = ressourceServerRepository.GetAllByCriterias(null, null, null, 2, (uint)numberPerPage);
+
+                Assert.IsNotNull(ressourcesServer);
+                Assert.AreEqual(numberPerPage, ressourcesServer.Count());
             }
         }
 
         [TestMethod]
         public void Get_All_By_Criterias_Should_Return_Ressources_Servers_With_Scopes()
         {
-            var options = new DbContextOptionsBuilder<DaOAuthContext>()
-                     .UseInMemoryDatabase(databaseName: _dbName)
-                     .Options;
-
-            using (var context = new DaOAuthContext(options))
+            using (var context = new DaOAuthContext(_dbContextOptions))
             {
-                var rsRepo = _repoFactory.GetRessourceServerRepository(context);
-                var result = rsRepo.GetAllByCriterias(null, null, null, 0, 5);
+                var ressourceServerRepository = _repoFactory.GetRessourceServerRepository(context);
+                var ressourcesServer = ressourceServerRepository.GetAllByCriterias(null, null, null, 0, 5);
 
-                Assert.IsNotNull(result);
-                Assert.IsTrue(result.Count() > 0);
-                Assert.IsNotNull(result.First().Scopes);
-                Assert.IsTrue(result.First().Scopes.Count() > 0);
+                Assert.IsNotNull(ressourcesServer);
+                Assert.IsTrue(ressourcesServer.Count() > 0);
+                Assert.IsNotNull(ressourcesServer.First().Scopes);
+                Assert.IsTrue(ressourcesServer.First().Scopes.Count() > 0);
             }
         }
 
         [TestMethod]
         public void Get_By_Id_Should_Return_Ressource_Server_With_Scopes()
         {
-            var options = new DbContextOptionsBuilder<DaOAuthContext>()
-                     .UseInMemoryDatabase(databaseName: _dbName)
-                     .Options;
-
-            using (var context = new DaOAuthContext(options))
+            using (var context = new DaOAuthContext(_dbContextOptions))
             {
-                var rsRepo = _repoFactory.GetRessourceServerRepository(context);
-                var result = rsRepo.GetById(100);
+                var expectedScopeNumber = context.Scopes.Count(s => s.RessourceServerId.Equals(_ressourceServer1.Id));
 
-                Assert.IsNotNull(result);
-                Assert.IsNotNull(result.Scopes);
-                Assert.AreEqual(2, result.Scopes.Count());
+                var ressourceServerRepository = _repoFactory.GetRessourceServerRepository(context);
+                var ressourcesServer = ressourceServerRepository.GetById(_ressourceServer1.Id);
+
+                Assert.IsNotNull(ressourcesServer);
+                Assert.IsNotNull(ressourcesServer.Scopes);
+                Assert.IsTrue(ressourcesServer.Scopes.Count() > 0);
+                Assert.AreEqual(expectedScopeNumber, ressourcesServer.Scopes.Count());
             }
         }
     }

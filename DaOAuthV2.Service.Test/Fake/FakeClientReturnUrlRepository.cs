@@ -29,7 +29,7 @@ namespace DaOAuthV2.Service.Test.Fake
             throw new NotImplementedException();
         }
 
-        public IEnumerable<ClientReturnUrl> GetAllByClientId(string clientPublicId)
+        public IEnumerable<ClientReturnUrl> GetAllByClientPublicId(string clientPublicId)
         {
             var client = FakeDataBase.Instance.Clients.Where(c => c.PublicId.Equals(clientPublicId)).SingleOrDefault();
             if (client == null)

@@ -580,7 +580,7 @@ namespace DaOAuthV2.Service
                     return false;
 
                 IList<Uri> clientUris = new List<Uri>();
-                foreach (var uri in clientReturnUrlRepo.GetAllByClientId(clientPublicId))
+                foreach (var uri in clientReturnUrlRepo.GetAllByClientPublicId(clientPublicId))
                 {
                     clientUris.Add(new Uri(uri.ReturnUrl, UriKind.Absolute));
                 }

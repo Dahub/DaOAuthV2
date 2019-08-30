@@ -1,103 +1,47 @@
-﻿using DaOAuthV2.Dal.Interface;
-using DaOAuthV2.Domain;
-using Microsoft.EntityFrameworkCore;
+﻿using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace DaOAuthV2.Dal.EF.Test
 {
     [TestClass]
-    public class ClientReturnUrlRepositoryTest
+    public class ClientReturnUrlRepositoryTest : TestBase
     {
-        private IRepositoriesFactory _repoFactory = new EfRepositoriesFactory();
-        private const string _dbName = "testClientReturnUrlRepo";
-
         [TestInitialize]
         public void Init()
         {
-            var options = new DbContextOptionsBuilder<DaOAuthContext>()
-                         .UseInMemoryDatabase(databaseName: _dbName)
-                         .Options;
-
-            using (var context = new DaOAuthContext(options))
-            {
-                context.Clients.Add(new Client()
-                {
-                    ClientSecret = "9",
-                    ClientTypeId = 1,
-                    CreationDate = DateTime.Now,
-                    Description = "Client test 1",
-                    Id = 100,
-                    IsValid = true,
-                    Name = "CT1",
-                    PublicId = "CT1_id"
-                });
-
-                context.ClientReturnUrls.Add(new ClientReturnUrl()
-                {
-                    ClientId = 100,
-                    Id = 100,
-                    ReturnUrl = "http://www.perdu.com"
-                });
-
-                context.ClientReturnUrls.Add(new ClientReturnUrl()
-                {
-                    ClientId = 100,
-                    Id = 101,
-                    ReturnUrl = "http://www.perdu2.com"
-                });
-
-                context.SaveChanges();
-            }
+            InitDataBase();
         }
 
         [TestCleanup]
         public void CleanUp()
         {
-            var options = new DbContextOptionsBuilder<DaOAuthContext>()
-                         .UseInMemoryDatabase(databaseName: _dbName)
-                         .Options;
-
-            using (var context = new DaOAuthContext(options))
-            {
-                context.Database.EnsureDeleted();
-            }
+            CleanDataBase();
         }
 
         [TestMethod]
         public void Get_By_Id_Should_Return_Return_Url_With_Client()
         {
-            var options = new DbContextOptionsBuilder<DaOAuthContext>()
-                     .UseInMemoryDatabase(databaseName: _dbName)
-                     .Options;
-
-            using (var context = new DaOAuthContext(options))
+            using (var context = new DaOAuthContext(_dbContextOptions))
             {
                 var ruRepo = _repoFactory.GetClientReturnUrlRepository(context);
-                var ru = ruRepo.GetById(100);
-                Assert.IsNotNull(ru);
-                Assert.IsNotNull(ru.Client);
+                var returnUrl = ruRepo.GetById(_clientReturnUrl1ForClient1.Id);
+                Assert.IsNotNull(returnUrl);
+                Assert.IsNotNull(returnUrl.Client);
             }
         }
 
         [TestMethod]
         public void Get_All_By_Client_Id_Should_Return_2_Client_Return_Url()
         {
-            var options = new DbContextOptionsBuilder<DaOAuthContext>()
-                      .UseInMemoryDatabase(databaseName: _dbName)
-                      .Options;
-
-            IEnumerable<ClientReturnUrl> ru = null;
-
-            using (var context = new DaOAuthContext(options))
+            using (var context = new DaOAuthContext(_dbContextOptions))
             {
-                var clientRepo = _repoFactory.GetClientReturnUrlRepository(context);
-                ru = clientRepo.GetAllByClientId("CT1_id");
+                var returnUrlNumberFromDb = context.ClientReturnUrls.Count(ru => ru.ClientId.Equals(_clientConfidential1.Id));
 
-                Assert.IsNotNull(ru);
-                Assert.AreEqual(2, ru.Count());
+                var clientRepo = _repoFactory.GetClientReturnUrlRepository(context);
+                var returnsUrls = clientRepo.GetAllByClientPublicId(_clientConfidential1.PublicId);
+                Assert.IsNotNull(returnsUrls);
+                Assert.IsTrue(returnsUrls.Count() > 0);
+                Assert.AreEqual(returnUrlNumberFromDb, returnsUrls.Count());
             }
         }
     }

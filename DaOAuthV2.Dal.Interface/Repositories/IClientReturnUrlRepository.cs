@@ -5,6 +5,6 @@ namespace DaOAuthV2.Dal.Interface
 {
     public interface IClientReturnUrlRepository : IRepository<ClientReturnUrl>
     {
-        IEnumerable<ClientReturnUrl> GetAllByClientId(string clientPublicId);
+        IEnumerable<ClientReturnUrl> GetAllByClientPublicId(string clientPublicId);
     }
 }
