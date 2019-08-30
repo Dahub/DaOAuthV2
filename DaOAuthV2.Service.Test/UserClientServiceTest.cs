@@ -356,7 +356,7 @@ namespace DaOAuthV2.Service.Test
                 IsActif = true
             });
 
-            var myUc = _repo.GetUserClientByUserNameAndClientPublicId("public_id_1", "Sammy");
+            var myUc = _repo.GetUserClientByClientPublicIdAndUserName("public_id_1", "Sammy");
             Assert.IsNotNull(myUc);
             Assert.IsTrue(myUc.IsActif);
 
@@ -367,7 +367,7 @@ namespace DaOAuthV2.Service.Test
                 IsActif = false
             });
 
-            myUc = _repo.GetUserClientByUserNameAndClientPublicId("public_id_1", "Sammy");
+            myUc = _repo.GetUserClientByClientPublicIdAndUserName("public_id_1", "Sammy");
             Assert.IsNotNull(myUc);
             Assert.IsFalse(myUc.IsActif);
         }
@@ -382,7 +382,7 @@ namespace DaOAuthV2.Service.Test
                 IsActif = false
             });
 
-            var myUc = _repo.GetUserClientByUserNameAndClientPublicId("public_id_1", "Sammy");
+            var myUc = _repo.GetUserClientByClientPublicIdAndUserName("public_id_1", "Sammy");
             Assert.IsNotNull(myUc);
             Assert.IsFalse(myUc.IsActif);
 
@@ -393,7 +393,7 @@ namespace DaOAuthV2.Service.Test
                 IsActif = true
             });
 
-            myUc = _repo.GetUserClientByUserNameAndClientPublicId("public_id_1", "Sammy");
+            myUc = _repo.GetUserClientByClientPublicIdAndUserName("public_id_1", "Sammy");
             Assert.IsNotNull(myUc);
             Assert.IsTrue(myUc.IsActif);
         }

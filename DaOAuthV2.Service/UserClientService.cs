@@ -70,7 +70,7 @@ namespace DaOAuthV2.Service
                 if (client == null || !client.IsValid)
                     throw new DaOAuthServiceException(local["CreateUserClientInvalidClientPublicId"]);
 
-                var uc = userClientRepo.GetUserClientByUserNameAndClientPublicId(toCreate.ClientPublicId, toCreate.UserName);
+                var uc = userClientRepo.GetUserClientByClientPublicIdAndUserName(toCreate.ClientPublicId, toCreate.UserName);
                 if (uc != null)
                     throw new DaOAuthServiceException(local["CreateUserClientClientAlreadyRegister"]);
 
@@ -98,7 +98,7 @@ namespace DaOAuthV2.Service
                 using (var context = RepositoriesFactory.CreateContext())
                 {
                     var ucRepo = RepositoriesFactory.GetUserClientRepository(context);
-                    var myUc = ucRepo.GetUserClientByUserNameAndClientPublicId(toValidate.ClientPublicId, toValidate.UserName);
+                    var myUc = ucRepo.GetUserClientByClientPublicIdAndUserName(toValidate.ClientPublicId, toValidate.UserName);
 
                     if (myUc == null)
                         result.Add(new ValidationResult(resource["UpdateUserClientUserOrClientNotFound"]));
@@ -116,7 +116,7 @@ namespace DaOAuthV2.Service
             using (var context = RepositoriesFactory.CreateContext())
             {
                 var ucRepo = RepositoriesFactory.GetUserClientRepository(context);
-                var myUc = ucRepo.GetUserClientByUserNameAndClientPublicId(toUpdate.ClientPublicId, toUpdate.UserName);
+                var myUc = ucRepo.GetUserClientByClientPublicIdAndUserName(toUpdate.ClientPublicId, toUpdate.UserName);
                 myUc.IsActif = toUpdate.IsActif;
                 ucRepo.Update(myUc);
                 context.Commit();

@@ -459,7 +459,7 @@ namespace DaOAuthV2.Service
                 var userClientRepo = RepositoriesFactory.GetUserClientRepository(context);
                 var codeRepo = RepositoriesFactory.GetCodeRepository(context);
 
-                var uc = userClientRepo.GetUserClientByUserNameAndClientPublicId(clientPublicId, userName);
+                var uc = userClientRepo.GetUserClientByClientPublicIdAndUserName(clientPublicId, userName);
 
                 codeRepo.Add(new Domain.Code()
                 {
@@ -498,7 +498,7 @@ namespace DaOAuthV2.Service
             });
 
             var userClientRepo = RepositoriesFactory.GetUserClientRepository(context);
-            var myUc = userClientRepo.GetUserClientByUserNameAndClientPublicId(tokenInfo.ClientPublicId, userName);
+            var myUc = userClientRepo.GetUserClientByClientPublicIdAndUserName(tokenInfo.ClientPublicId, userName);
             myUc.RefreshToken = newRefreshToken.Token;
             userClientRepo.Update(myUc);
 
@@ -519,7 +519,7 @@ namespace DaOAuthV2.Service
                 return false;
 
             var clientUserRepo = RepositoriesFactory.GetUserClientRepository(context);
-            var client = clientUserRepo.GetUserClientByUserNameAndClientPublicId(tokenDetail.ClientId, tokenDetail.UserName);
+            var client = clientUserRepo.GetUserClientByClientPublicIdAndUserName(tokenDetail.ClientId, tokenDetail.UserName);
 
             if (client == null || !client.IsActif)
                 return false;
@@ -626,7 +626,7 @@ namespace DaOAuthV2.Service
             using (var context = RepositoriesFactory.CreateContext())
             {
                 var clientUserRepo = RepositoriesFactory.GetUserClientRepository(context);
-                return clientUserRepo.GetUserClientByUserNameAndClientPublicId(clientPublicId, userName) != null;
+                return clientUserRepo.GetUserClientByClientPublicIdAndUserName(clientPublicId, userName) != null;
             }
         }
 
@@ -635,7 +635,7 @@ namespace DaOAuthV2.Service
             using (var context = RepositoriesFactory.CreateContext())
             {
                 var clientUserRepo = RepositoriesFactory.GetUserClientRepository(context);
-                var uc = clientUserRepo.GetUserClientByUserNameAndClientPublicId(clientPublicId, userName);
+                var uc = clientUserRepo.GetUserClientByClientPublicIdAndUserName(clientPublicId, userName);
                 return uc != null && uc.IsActif;
             }
         }

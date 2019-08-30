@@ -132,7 +132,7 @@ namespace DaOAuthV2.Service.Test.Fake
             return FakeDataBase.Instance.UsersClient.Where(uc => uc.Id.Equals(id)).FirstOrDefault();
         }
 
-        public UserClient GetUserClientByUserNameAndClientPublicId(string clientPublicId, string userName)
+        public UserClient GetUserClientByClientPublicIdAndUserName(string clientPublicId, string userName)
         {
             var cl = FakeDataBase.Instance.Clients.Where(c => c.PublicId.Equals(clientPublicId)).FirstOrDefault();
             if (cl == null)

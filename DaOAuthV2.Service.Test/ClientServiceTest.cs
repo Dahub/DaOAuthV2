@@ -192,7 +192,7 @@ namespace DaOAuthV2.Service.Test
             Assert.IsNotNull(client);
 
             var ucrepo = new FakeUserClientRepository();
-            var myUc = ucrepo.GetUserClientByUserNameAndClientPublicId(client.PublicId, "Sammy");
+            var myUc = ucrepo.GetUserClientByClientPublicIdAndUserName(client.PublicId, "Sammy");
 
             Assert.IsNotNull(myUc);
             Assert.IsTrue(myUc.Client.UserCreator.UserName.Equals("Sammy"));

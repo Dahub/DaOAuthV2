@@ -10,7 +10,7 @@ namespace DaOAuthV2.Dal.EF.Test
     [TestClass]
     public class UserRepositoryTest
     {
-        private IRepositoriesFactory _repoFactory = new EfRepositoriesFactory();
+        private readonly IRepositoriesFactory _repoFactory = new EfRepositoriesFactory();
         private const string _dbName = "testUserRepo";
 
         [TestInitialize]

@@ -148,7 +148,7 @@ namespace DaOAuthV2.Service
                 }
 
                 var myUserClient = userClientRepo
-                    .GetUserClientByUserNameAndClientPublicId(myClient.PublicId, toDelete.UserName);
+                    .GetUserClientByClientPublicIdAndUserName(myClient.PublicId, toDelete.UserName);
 
                 if (myUserClient == null || !myUserClient.Client.UserCreator.UserName.Equals(toDelete.UserName, StringComparison.OrdinalIgnoreCase))
                 {
@@ -345,7 +345,7 @@ namespace DaOAuthV2.Service
                 }
 
                 var myUserClient = userClientRepo.
-                    GetUserClientByUserNameAndClientPublicId(myClient.PublicId, toUpdate.UserName);
+                    GetUserClientByClientPublicIdAndUserName(myClient.PublicId, toUpdate.UserName);
 
                 if (myUserClient == null || !myUserClient.Client.UserCreator.UserName.Equals(toUpdate.UserName, StringComparison.OrdinalIgnoreCase))
                 {

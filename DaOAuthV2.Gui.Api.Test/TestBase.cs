@@ -20,7 +20,7 @@ namespace DaOAuthV2.Gui.Api.Test
         protected static DbContextOptions _dbContextOptions;
         protected static string _sammyPassword = "sammy-password-1123#";
 
-        private static EncryptionService _encryptService = new EncryptionService();
+        private static readonly EncryptionService _encryptService = new EncryptionService();
 
         protected static RessourceServer _validRessourceServer = new RessourceServer()
         {

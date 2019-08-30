@@ -9,7 +9,7 @@ namespace DaOAuthV2.Dal.EF
 {
     internal class UserClientRepository : RepositoryBase<UserClient>, IUserClientRepository
     {    
-        public UserClient GetUserClientByUserNameAndClientPublicId(string clientPublicId, string userName)
+        public UserClient GetUserClientByClientPublicIdAndUserName(string clientPublicId, string userName)
         {
             return Context.UsersClients.Where(
                 uc => uc.Client.PublicId.Equals(clientPublicId, StringComparison.Ordinal)

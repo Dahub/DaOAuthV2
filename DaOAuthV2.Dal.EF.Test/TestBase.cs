@@ -9,22 +9,22 @@ namespace DaOAuthV2.Dal.EF.Test
     {
         private const string _dbName = "testClientDatabaseName";
 
-        protected readonly IRepositoriesFactory _repoFactory = new EfRepositoriesFactory();
-        protected static DbContextOptions<DaOAuthContext> _dbContextOptions;
+        protected IRepositoriesFactory _repoFactory = new EfRepositoriesFactory();
+        protected static DbContextOptions _dbContextOptions;
 
-        protected static readonly ClientType _confidentialClientType = new ClientType()
+        protected static ClientType _confidentialClientType = new ClientType()
         {
             Id = 1,
             Wording = "Confidential"
         };
 
-        protected static readonly ClientType _publicClientType = new ClientType()
+        protected static ClientType _publicClientType = new ClientType()
         {
             Id = 2,
             Wording = "Public"
         };
 
-        protected static readonly RessourceServer _ressourceServer1 = new RessourceServer()
+        protected static RessourceServer _ressourceServer1 = new RessourceServer()
         {
             Description = "test",
             Id = 100,
@@ -34,7 +34,7 @@ namespace DaOAuthV2.Dal.EF.Test
             ServerSecret = new byte[] { 1, 1 }
         };
 
-        protected static readonly RessourceServer _ressourceServer2 = new RessourceServer()
+        protected static RessourceServer _ressourceServer2 = new RessourceServer()
         {
             Description = "test2",
             Id = 101,
@@ -44,7 +44,7 @@ namespace DaOAuthV2.Dal.EF.Test
             ServerSecret = new byte[] { 1, 1 }
         };
 
-        protected static readonly RessourceServer _ressourceServer3 = new RessourceServer()
+        protected static RessourceServer _ressourceServer3 = new RessourceServer()
         {
             Description = "test3",
             Id = 102,
@@ -54,7 +54,7 @@ namespace DaOAuthV2.Dal.EF.Test
             ServerSecret = new byte[] { 1, 1 }
         };
 
-        protected static readonly Scope _scope1 = new Scope()
+        protected static Scope _scope1 = new Scope()
         {
             Id = 100,
             RessourceServerId = _ressourceServer1.Id,
@@ -62,7 +62,7 @@ namespace DaOAuthV2.Dal.EF.Test
             Wording = "scope_test_1"
         };
 
-        protected static readonly Scope _scope2 = new Scope()
+        protected static Scope _scope2 = new Scope()
         {
             Id = 101,
             RessourceServerId = _ressourceServer1.Id,
@@ -70,7 +70,7 @@ namespace DaOAuthV2.Dal.EF.Test
             Wording = "scope_test_2"
         };
 
-        protected static readonly Scope _scope3 = new Scope()
+        protected static Scope _scope3 = new Scope()
         {
             Id = 102,
             RessourceServerId = _ressourceServer1.Id,
@@ -78,7 +78,7 @@ namespace DaOAuthV2.Dal.EF.Test
             Wording = "scope_test_3"
         };
 
-        protected static readonly Scope _scope4 = new Scope()
+        protected static Scope _scope4 = new Scope()
         {
             Id = 103,
             RessourceServerId = _ressourceServer2.Id,
@@ -86,7 +86,7 @@ namespace DaOAuthV2.Dal.EF.Test
             Wording = "scope_test_4"
         };
 
-        protected static readonly Scope _scope5 = new Scope()
+        protected static Scope _scope5 = new Scope()
         {
             Id = 104,
             RessourceServerId = _ressourceServer3.Id,
@@ -94,89 +94,7 @@ namespace DaOAuthV2.Dal.EF.Test
             Wording = "scope_test_5"
         };
 
-        protected static readonly Client _clientConfidential1 = new Client()
-        {
-            ClientSecret = "0",
-            ClientTypeId = _confidentialClientType.Id,
-            CreationDate = DateTime.Now,
-            Description = "Client test 1",
-            Id = 100,
-            IsValid = true,
-            Name = "CT1",
-            PublicId = "CT1_id",
-            UserCreatorId = 100
-        };
-
-        protected static readonly Client _clientConfidential2 = new Client()
-        {
-            ClientSecret = "1",
-            ClientTypeId = _confidentialClientType.Id,
-            CreationDate = DateTime.Now,
-            Description = "Client test 2",
-            Id = 101,
-            IsValid = true,
-            Name = "CT2",
-            PublicId = "CT2_id",
-            UserCreatorId = 100
-        };
-
-        protected static readonly ClientScope _client1Scope2 = new ClientScope()
-        {
-            Id = 100,
-            ClientId = _clientConfidential1.Id,
-            ScopeId = _scope2.Id
-        };
-
-        protected static readonly ClientScope _client2Scope3 = new ClientScope()
-        {
-            Id = 101,
-            ClientId = _clientConfidential2.Id,
-            ScopeId = _scope3.Id
-        };
-
-        protected static readonly ClientScope _client2Scope1 = new ClientScope()
-        {
-            Id = 102,
-            ClientId = _clientConfidential2.Id,
-            ScopeId = _scope1.Id
-        };
-
-        protected static readonly ClientScope _client1Scope4 = new ClientScope()
-        {
-            Id = 103,
-            ClientId = _clientConfidential1.Id,
-            ScopeId = _scope4.Id
-        };
-
-        protected static readonly ClientScope _client1Scope5 = new ClientScope()
-        {
-            Id = 104,
-            ClientId = _clientConfidential1.Id,
-            ScopeId = _scope5.Id
-        };
-
-        protected static readonly ClientScope _client2Scope5 = new ClientScope()
-        {
-            Id = 105,
-            ClientId = _clientConfidential2.Id,
-            ScopeId = _scope5.Id
-        };
-
-        protected static readonly ClientReturnUrl _clientReturnUrl1ForClient1 = new ClientReturnUrl()
-        {
-            ClientId = _clientConfidential1.Id,
-            Id = 100,
-            ReturnUrl = "http://www.perdu.com"
-        };
-
-        protected static readonly ClientReturnUrl _clientReturnUrl2ForClient1 = new ClientReturnUrl()
-        {
-            ClientId = _clientConfidential1.Id,
-            Id = 101,
-            ReturnUrl = "http://www.perdu2.com"
-        };
-
-        protected static readonly User _user1 = new User()
+        protected static User _user1 = new User()
         {
             BirthDate = DateTime.Now.AddYears(-40),
             CreationDate = DateTime.Now,
@@ -187,7 +105,102 @@ namespace DaOAuthV2.Dal.EF.Test
             UserName = "testeur"
         };
 
-        protected static readonly UserClient _user1Client1 = new UserClient()
+        protected static Client _clientConfidential1 = new Client()
+        {
+            ClientSecret = "0",
+            ClientTypeId = _confidentialClientType.Id,
+            CreationDate = DateTime.Now,
+            Description = "Client test 1",
+            Id = 100,
+            IsValid = true,
+            Name = "CT1",
+            PublicId = "CT1_id",
+            UserCreatorId = _user1.Id
+        };
+
+        protected static Client _clientConfidential2 = new Client()
+        {
+            ClientSecret = "1",
+            ClientTypeId = _confidentialClientType.Id,
+            CreationDate = DateTime.Now,
+            Description = "Client test 2",
+            Id = 101,
+            IsValid = true,
+            Name = "CT2",
+            PublicId = "CT2_id",
+            UserCreatorId = _user1.Id
+        };
+
+        protected static Client _invalidPublicClient1 = new Client()
+        {
+            ClientSecret = "1dg",
+            ClientTypeId = _confidentialClientType.Id,
+            CreationDate = DateTime.Now,
+            Description = "Client test 4",
+            Id = 104,
+            IsValid = false,
+            Name = "CT4",
+            PublicId = "CT4_id",
+            UserCreatorId = _user1.Id
+        };
+
+        protected static ClientScope _client1Scope2 = new ClientScope()
+        {
+            Id = 100,
+            ClientId = _clientConfidential1.Id,
+            ScopeId = _scope2.Id
+        };
+
+        protected static ClientScope _client2Scope3 = new ClientScope()
+        {
+            Id = 101,
+            ClientId = _clientConfidential2.Id,
+            ScopeId = _scope3.Id
+        };
+
+        protected static ClientScope _client2Scope1 = new ClientScope()
+        {
+            Id = 102,
+            ClientId = _clientConfidential2.Id,
+            ScopeId = _scope1.Id
+        };
+
+        protected static ClientScope _client1Scope4 = new ClientScope()
+        {
+            Id = 103,
+            ClientId = _clientConfidential1.Id,
+            ScopeId = _scope4.Id
+        };
+
+        protected static ClientScope _client1Scope5 = new ClientScope()
+        {
+            Id = 104,
+            ClientId = _clientConfidential1.Id,
+            ScopeId = _scope5.Id
+        };
+
+        protected static ClientScope _client2Scope5 = new ClientScope()
+        {
+            Id = 105,
+            ClientId = _clientConfidential2.Id,
+            ScopeId = _scope5.Id
+        };
+
+        protected static ClientReturnUrl _clientReturnUrl1ForClient1 = new ClientReturnUrl()
+        {
+            ClientId = _clientConfidential1.Id,
+            Id = 100,
+            ReturnUrl = "http://www.perdu.com"
+        };
+
+        protected static ClientReturnUrl _clientReturnUrl2ForClient1 = new ClientReturnUrl()
+        {
+            ClientId = _clientConfidential1.Id,
+            Id = 101,
+            ReturnUrl = "http://www.perdu2.com"
+        };        
+
+        protected static UserClient _user1Client1 = new UserClient()
         {
             ClientId = _clientConfidential1.Id,
             CreationDate = DateTime.Now,
@@ -196,7 +209,7 @@ namespace DaOAuthV2.Dal.EF.Test
             UserId = _user1.Id
         };
 
-        protected static readonly UserClient _user1Client2 = new UserClient()
+        protected static UserClient _user1Client2 = new UserClient()
         {
             ClientId = _clientConfidential2.Id,
             CreationDate = DateTime.Now,
@@ -205,7 +218,16 @@ namespace DaOAuthV2.Dal.EF.Test
             UserId = _user1.Id
         };
 
-        protected static readonly Code _code1 = new Code()
+        protected static UserClient _user1ClientInvalid = new UserClient()
+        {
+            ClientId = _invalidPublicClient1.Id,
+            CreationDate = DateTime.Now,
+            Id = 102,
+            IsActif = true,
+            UserId = _user1.Id
+        };
+
+        protected static Code _code1 = new Code()
         {
             UserClientId = _user1Client1.Id,
             Id = 100,
@@ -215,7 +237,7 @@ namespace DaOAuthV2.Dal.EF.Test
             Scope = _scope1.Wording
         };
 
-        protected static readonly Code _code2 = new Code()
+        protected static Code _code2 = new Code()
         {
             UserClientId = _user1Client1.Id,
             Id = 101,
@@ -226,7 +248,7 @@ namespace DaOAuthV2.Dal.EF.Test
         };   
 
 
-        protected static void InitDataBase()
+        protected void InitDataBase()
         {
             _dbContextOptions = new DbContextOptionsBuilder<DaOAuthContext>()
                                      .UseInMemoryDatabase(databaseName: _dbName)
@@ -249,6 +271,7 @@ namespace DaOAuthV2.Dal.EF.Test
 
                 context.Clients.Add(_clientConfidential1);
                 context.Clients.Add(_clientConfidential2);
+                context.Clients.Add(_invalidPublicClient1);
 
                 context.ClientsScopes.Add(_client1Scope2);
                 context.ClientsScopes.Add(_client2Scope3);
@@ -264,6 +287,7 @@ namespace DaOAuthV2.Dal.EF.Test
 
                 context.UsersClients.Add(_user1Client1);
                 context.UsersClients.Add(_user1Client2);
+                context.UsersClients.Add(_user1ClientInvalid);                
 
                 context.Codes.Add(_code1);
                 context.Codes.Add(_code2);
@@ -272,7 +296,7 @@ namespace DaOAuthV2.Dal.EF.Test
             }
         }
 
-        protected static void CleanDataBase()
+        protected void CleanDataBase()
         {
             using (var context = new DaOAuthContext(_dbContextOptions))
             {

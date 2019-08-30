@@ -1014,7 +1014,7 @@ namespace DaOAuthV2.Service.Test
             });
 
             var ucRepo = new FakeUserClientRepository();
-            var uc = ucRepo.GetUserClientByUserNameAndClientPublicId(_validClientConfidential.PublicId, _validUser.UserName);
+            var uc = ucRepo.GetUserClientByClientPublicIdAndUserName(_validClientConfidential.PublicId, _validUser.UserName);
             Assert.IsTrue(uc.RefreshToken != token);
         }
 
@@ -1034,7 +1034,7 @@ namespace DaOAuthV2.Service.Test
             });
 
             var ucRepo = new FakeUserClientRepository();
-            var uc = ucRepo.GetUserClientByUserNameAndClientPublicId(_validClientConfidential.PublicId, _validUser.UserName);
+            var uc = ucRepo.GetUserClientByClientPublicIdAndUserName(_validClientConfidential.PublicId, _validUser.UserName);
             Assert.AreEqual(uc.RefreshToken, myJwtInfos.RefreshToken);
             Assert.AreEqual(_validCode.Scope, myJwtInfos.Scope);
             Assert.AreEqual(OAuthConvention.AccessToken, myJwtInfos.TokenType);
@@ -1141,7 +1141,7 @@ namespace DaOAuthV2.Service.Test
 
             try
             {
-                var uc = new FakeUserClientRepository().GetUserClientByUserNameAndClientPublicId("cl-500", _validUser.UserName);
+                var uc = new FakeUserClientRepository().GetUserClientByClientPublicIdAndUserName("cl-500", _validUser.UserName);
                 uc.IsActif = false;
 
                 _service.GenerateToken(new AskTokenDto()
@@ -1169,7 +1169,7 @@ namespace DaOAuthV2.Service.Test
 
             try
             {
-                var uc = new FakeUserClientRepository().GetUserClientByUserNameAndClientPublicId("cl-500", _validUser.UserName);
+                var uc = new FakeUserClientRepository().GetUserClientByClientPublicIdAndUserName("cl-500", _validUser.UserName);
                 uc.RefreshToken = "fedcba";
 
                 _service.GenerateToken(new AskTokenDto()
