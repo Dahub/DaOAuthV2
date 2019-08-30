@@ -11,15 +11,25 @@ namespace DaOAuthV2.Dal.EF
         public DaOAuthContext(DbContextOptions options) : base(options) { }
 
         public DbSet<Client> Clients { get; set; }
+
         public DbSet<Code> Codes { get; set; }
+
         public DbSet<ClientType> ClientsTypes { get; set; }
+
         public DbSet<User> Users { get; set; }
+
         public DbSet<UserClient> UsersClients { get; set; }
+
         public DbSet<Scope> Scopes { get; set; }
+
         public DbSet<ClientScope> ClientsScopes { get; set; }
+
         public DbSet<RessourceServer> RessourceServers { get; set; }
+
         public DbSet<ClientReturnUrl> ClientReturnUrls { get; set; }
+
         public DbSet<Role> Roles { get; set; }
+
         public DbSet<UserRole> UsersRoles { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
