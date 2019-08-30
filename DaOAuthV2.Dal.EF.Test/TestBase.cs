@@ -102,7 +102,20 @@ namespace DaOAuthV2.Dal.EF.Test
             Id = 100,
             IsValid = true,
             Password = new byte[] { 0, 1 },
-            UserName = "testeur"
+            UserName = "testeur",
+            EMail = "sam@crab.corp"
+        };
+
+        protected static User _user2 = new User()
+        {
+            BirthDate = DateTime.Now.AddYears(-30),
+            CreationDate = DateTime.Now,
+            FullName = "Marius Le Crabe",
+            Id = 101,
+            IsValid = true,
+            Password = new byte[] { 0, 1 },
+            UserName = "testeur2",
+            EMail = "marius@crab.corp"
         };
 
         protected static Client _clientConfidential1 = new Client()
@@ -198,7 +211,7 @@ namespace DaOAuthV2.Dal.EF.Test
             ClientId = _clientConfidential1.Id,
             Id = 101,
             ReturnUrl = "http://www.perdu2.com"
-        };        
+        };
 
         protected static UserClient _user1Client1 = new UserClient()
         {
@@ -245,8 +258,33 @@ namespace DaOAuthV2.Dal.EF.Test
             ExpirationTimeStamp = 1,
             IsValid = true,
             Scope = _scope1.Wording
-        };   
+        };
 
+        protected static Role _role1 = new Role()
+        {
+            Id = 1,
+            Wording = "R1"
+        };
+
+        protected static Role _role2 = new Role()
+        {
+            Id = 2,
+            Wording = "R2"
+        };
+
+        protected static UserRole _user1Role1 = new UserRole()
+        {
+            Id = 1,
+            RoleId = _role1.Id,
+            UserId = _user1.Id
+        };
+
+        protected static UserRole _user1Role2 = new UserRole()
+        {
+            Id = 2,
+            RoleId = _role2.Id,
+            UserId = _user1.Id
+        };
 
         protected void InitDataBase()
         {
@@ -284,13 +322,20 @@ namespace DaOAuthV2.Dal.EF.Test
                 context.ClientReturnUrls.Add(_clientReturnUrl2ForClient1);
 
                 context.Users.Add(_user1);
+                context.Users.Add(_user2);
 
                 context.UsersClients.Add(_user1Client1);
                 context.UsersClients.Add(_user1Client2);
-                context.UsersClients.Add(_user1ClientInvalid);                
+                context.UsersClients.Add(_user1ClientInvalid);
 
                 context.Codes.Add(_code1);
                 context.Codes.Add(_code2);
+
+                context.Roles.Add(_role1);
+                context.Roles.Add(_role2);
+
+                context.UsersRoles.Add(_user1Role1);
+                context.UsersRoles.Add(_user1Role2);
 
                 context.Commit();
             }
