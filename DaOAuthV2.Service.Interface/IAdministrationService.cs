@@ -6,7 +6,9 @@ namespace DaOAuthV2.Service.Interface
     public interface IAdministrationService
     {
         int SearchCount(AdminUserSearchDto criterias);
+
         IEnumerable<AdminUsrDto> Search(AdminUserSearchDto criterias);
+
         AdminUserDetailDto GetByIdUser(int idUser);
     }
 }

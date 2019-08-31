@@ -12,7 +12,7 @@ namespace DaOAuthV2.Gui.Api.Controllers
     [Authorize(Roles = RoleName.User)]
     public class ReturnUrlController : ControllerBase
     {
-        private IReturnUrlService _service;
+        private readonly IReturnUrlService _service;
 
         public ReturnUrlController([FromServices] IReturnUrlService service)
         {
@@ -24,7 +24,7 @@ namespace DaOAuthV2.Gui.Api.Controllers
         public IActionResult Post(CreateReturnUrlDto toCreate)
         {
             toCreate.UserName = User.Identity.Name;
-            int createdId = _service.CreateReturnUrl(toCreate);
+            var createdId = _service.CreateReturnUrl(toCreate);
             var currentUrl = UriHelper.GetDisplayUrl(Request);
             return Created($"{currentUrl}/{createdId}", null);
         }

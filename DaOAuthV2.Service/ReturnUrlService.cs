@@ -11,29 +11,37 @@ namespace DaOAuthV2.Service
         {
             this.Validate(toCreate);
 
-            int idCreated = 0;
+            var idCreated = 0;
 
             var resource = this.GetErrorStringLocalizer();
 
-            if (!Uri.TryCreate(toCreate.ReturnUrl, UriKind.Absolute, out Uri u))
+            if (!Uri.TryCreate(toCreate.ReturnUrl, UriKind.Absolute, out var u))
+            {
                 throw new DaOAuthServiceException(resource["CreateReturnUrlReturnUrlIncorrect"]);
+            }
 
             using (var context = RepositoriesFactory.CreateContext())
             {
                 var userRepo = RepositoriesFactory.GetUserRepository(context);
                 var user = userRepo.GetByUserName(toCreate.UserName);
                 if (user == null || !user.IsValid)
+                {
                     throw new DaOAuthServiceException(resource["CreateReturnUrlInvalidUser"]);
+                }
 
                 var ucRepo = RepositoriesFactory.GetUserClientRepository(context);
                 var uc = ucRepo.GetUserClientByClientPublicIdAndUserName(toCreate.ClientPublicId, toCreate.UserName);
                 if (uc == null)
+                {
                     throw new DaOAuthServiceException(resource["CreateReturnUrlBadUserNameOrClientId"]);
+                }
 
                 var clientRepo = RepositoriesFactory.GetClientRepository(context);
                 var client = clientRepo.GetByPublicId(toCreate.ClientPublicId);
                 if (client == null || !client.IsValid)
+                {
                     throw new DaOAuthServiceException(resource["CreateReturnUrlInvalidClient"]);
+                }
 
                 var existingReturnUrl = client.ClientReturnUrls.Where(c => c.ReturnUrl.Equals(toCreate.ReturnUrl, StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
 
@@ -69,17 +77,23 @@ namespace DaOAuthV2.Service
                 var myReturnUrl = returnUrlRepo.GetById(toDelete.IdReturnUrl);
 
                 if (myReturnUrl == null)
+                {
                     throw new DaOAuthServiceException(resource["DeleteReturnUrlUnknowReturnUrl"]);
+                }
 
                 var userRepo = RepositoriesFactory.GetUserRepository(context);
                 var user = userRepo.GetByUserName(toDelete.UserName);
                 if (user == null || !user.IsValid)
+                {
                     throw new DaOAuthServiceException(resource["DeleteReturnUrlInvalidUser"]);
+                }
 
                 var ucRepo = RepositoriesFactory.GetUserClientRepository(context);
                 var uc = ucRepo.GetUserClientByClientPublicIdAndUserName(myReturnUrl.Client.PublicId, toDelete.UserName);
                 if (uc == null)
+                {
                     throw new DaOAuthServiceException(resource["DeleteReturnUrlBadUserNameOrClientId"]);
+                }
 
                 returnUrlRepo.Delete(myReturnUrl);
 
@@ -93,8 +107,10 @@ namespace DaOAuthV2.Service
 
             var resource = this.GetErrorStringLocalizer();
 
-            if (!Uri.TryCreate(toUpdate.ReturnUrl, UriKind.Absolute, out Uri u))
+            if (!Uri.TryCreate(toUpdate.ReturnUrl, UriKind.Absolute, out var u))
+            {
                 throw new DaOAuthServiceException(resource["UpdateReturnUrlReturnUrlIncorrect"]);
+            }
 
             using (var context = RepositoriesFactory.CreateContext())
             {
@@ -102,17 +118,23 @@ namespace DaOAuthV2.Service
                 var myReturnUrl = returnUrlRepo.GetById(toUpdate.IdReturnUrl);
 
                 if (myReturnUrl == null)
+                {
                     throw new DaOAuthServiceException(resource["UpdateReturnUrlUnknowReturnUrl"]);
+                }
 
                 var userRepo = RepositoriesFactory.GetUserRepository(context);
                 var user = userRepo.GetByUserName(toUpdate.UserName);
                 if (user == null || !user.IsValid)
+                {
                     throw new DaOAuthServiceException(resource["UpdateReturnUrlInvalidUser"]);
+                }
 
                 var ucRepo = RepositoriesFactory.GetUserClientRepository(context);
                 var uc = ucRepo.GetUserClientByClientPublicIdAndUserName(myReturnUrl.Client.PublicId, toUpdate.UserName);
                 if (uc == null)
+                {
                     throw new DaOAuthServiceException(resource["UpdateReturnUrlBadUserNameOrClientId"]);
+                }
 
                 myReturnUrl.ReturnUrl = toUpdate.ReturnUrl;
 

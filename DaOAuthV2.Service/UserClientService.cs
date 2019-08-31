@@ -1,12 +1,11 @@
-﻿using DaOAuthV2.Domain;
-using DaOAuthV2.Service.DTO;
-using DaOAuthV2.Service.ExtensionsMethods;
-using DaOAuthV2.Service.Interface;
-using Microsoft.Extensions.Localization;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using DaOAuthV2.Domain;
+using DaOAuthV2.Service.DTO;
+using DaOAuthV2.Service.ExtensionsMethods;
+using DaOAuthV2.Service.Interface;
 
 namespace DaOAuthV2.Service
 {
@@ -16,7 +15,7 @@ namespace DaOAuthV2.Service
         {
             Validate(criterias, ExtendValidationSearchCriterias);
 
-            int count = 0;
+            var count = 0;
 
             using (var c = RepositoriesFactory.CreateContext())
             {
@@ -33,7 +32,7 @@ namespace DaOAuthV2.Service
 
             IList<UserClient> clients = null;
 
-            int? clientTypeId = GetClientTypeId(criterias.ClientType);
+            var clientTypeId = GetClientTypeId(criterias.ClientType);
 
             using (var context = RepositoriesFactory.CreateContext())
             {
@@ -43,18 +42,16 @@ namespace DaOAuthV2.Service
                     true, clientTypeId, criterias.Skip, criterias.Limit).ToList();
             }
 
-            if (clients != null)
-                return clients.ToDto(criterias.UserName);
-            return new List<UserClientListDto>();
+            return clients != null ? clients.ToDto(criterias.UserName) : new List<UserClientListDto>();
         }
 
         public int CreateUserClient(CreateUserClientDto toCreate)
         {
             Validate(toCreate);
 
-            int id = 0;
+            var id = 0;
 
-            IStringLocalizer local = GetErrorStringLocalizer();
+            var local = GetErrorStringLocalizer();
 
             using (var context = RepositoriesFactory.CreateContext())
             {
@@ -64,15 +61,21 @@ namespace DaOAuthV2.Service
 
                 var user = userRepo.GetByUserName(toCreate.UserName);
                 if (user == null || !user.IsValid)
+                {
                     throw new DaOAuthServiceException(local["CreateUserClientInvalidUserName"]);
+                }
 
                 var client = clientRepo.GetByPublicId(toCreate.ClientPublicId);
                 if (client == null || !client.IsValid)
+                {
                     throw new DaOAuthServiceException(local["CreateUserClientInvalidClientPublicId"]);
+                }
 
                 var uc = userClientRepo.GetUserClientByClientPublicIdAndUserName(toCreate.ClientPublicId, toCreate.UserName);
                 if (uc != null)
+                {
                     throw new DaOAuthServiceException(local["CreateUserClientClientAlreadyRegister"]);
+                }
 
                 id = userClientRepo.Add(new UserClient()
                 {
@@ -101,11 +104,19 @@ namespace DaOAuthV2.Service
                     var myUc = ucRepo.GetUserClientByClientPublicIdAndUserName(toValidate.ClientPublicId, toValidate.UserName);
 
                     if (myUc == null)
+                    {
                         result.Add(new ValidationResult(resource["UpdateUserClientUserOrClientNotFound"]));
-                    if(myUc != null && (myUc.User == null || !myUc.User.IsValid))
+                    }
+
+                    if (myUc != null && (myUc.User == null || !myUc.User.IsValid))
+                    {
                         result.Add(new ValidationResult(resource["UpdateUserClientUserNotValid"]));
+                    }
+
                     if (myUc != null && (myUc.Client == null || !myUc.Client.IsValid))
-                        result.Add(new ValidationResult(resource["UpdateUserClientClientNotValid"]));  
+                    {
+                        result.Add(new ValidationResult(resource["UpdateUserClientClientNotValid"]));
+                    }
                 }
 
                 return result;
@@ -133,11 +144,15 @@ namespace DaOAuthV2.Service
                 var userRepo = RepositoriesFactory.GetUserRepository(context);
                 var user = userRepo.GetByUserName(c.UserName);
                 if (user == null || !user.IsValid)
+                {
                     result.Add(new ValidationResult(String.Format(resource["SearchClientInvalidUser"], c)));
+                }
             }
 
             if (c.Limit - c.Skip > 50)
+            {
                 result.Add(new ValidationResult(String.Format(resource["SearchClientAskTooMuch"], c)));
+            }
 
             return result;
         }

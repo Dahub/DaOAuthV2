@@ -13,7 +13,7 @@ namespace DaOAuthV2.Service
         {
             using (var context = RepositoriesFactory.CreateContext())
             {
-                List<Scope> scopes = new List<Scope>();
+                var scopes = new List<Scope>();
                 var rsRepo = RepositoriesFactory.GetRessourceServerRepository(context);
                 var scopeRepo = RepositoriesFactory.GetScopeRepository(context);
 

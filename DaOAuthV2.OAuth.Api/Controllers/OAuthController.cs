@@ -14,7 +14,7 @@ namespace DaOAuthV2.OAuth.Api.Controllers
     [ApiController]
     public class OAuthController : ControllerBase
     {
-        private IOAuthService _authorizeService;
+        private readonly IOAuthService _authorizeService;
 
         /// <summary>
         /// Constructor

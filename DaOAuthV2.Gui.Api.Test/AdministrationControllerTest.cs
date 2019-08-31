@@ -30,7 +30,7 @@ namespace DaOAuthV2.Gui.Api.Test
         [TestMethod]
         public async Task Get_Administration_Should_Return_All_Users()
         {
-            int totalUsers = 0;
+            var totalUsers = 0;
             using (var context = new DaOAuthContext(_dbContextOptions))
             {
                 totalUsers = context.Users.Count();
@@ -59,7 +59,7 @@ namespace DaOAuthV2.Gui.Api.Test
         [TestMethod]
         public async Task Head_Administration_Should_Return_All_Users_Count()
         {
-            int totalUsers = 0;
+            var totalUsers = 0;
             using (var context = new DaOAuthContext(_dbContextOptions))
             {
                 totalUsers = context.Users.Count();
@@ -73,7 +73,7 @@ namespace DaOAuthV2.Gui.Api.Test
 
             Assert.IsTrue(httpResponseMessage.IsSuccessStatusCode);
             Assert.IsTrue(httpResponseMessage.Headers.Contains("X-Total-Count"));
-            httpResponseMessage.Headers.TryGetValues("X-Total-Count", out IEnumerable<string> values);
+            httpResponseMessage.Headers.TryGetValues("X-Total-Count", out var values);
             Assert.AreEqual(values.Count(), 1);
             Assert.AreEqual(values.First(), totalUsers.ToString());
         }
@@ -81,8 +81,8 @@ namespace DaOAuthV2.Gui.Api.Test
         [TestMethod]
         public async Task Get_By_Id_Should_Return_User_With_Clients()
         {
-            int totalClientForUserMarius = 0;
-            int totalClientForUserJimmy = 0;
+            var totalClientForUserMarius = 0;
+            var totalClientForUserJimmy = 0;
             using (var context = new DaOAuthContext(_dbContextOptions))
             {
                 totalClientForUserMarius = context.UsersClients.Where(uc => uc.UserId.Equals(_mariusUser.Id)).Count();

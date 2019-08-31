@@ -29,9 +29,9 @@ namespace DaOAuthV2.Service.Test
             FakeDataBase.Instance.Clients.Clear();
             FakeDataBase.Instance.UsersClient.Clear();
 
-            for (int i = 1; i <= 500; i++)
+            for (var i = 1; i <= 500; i++)
             {
-                string userName = $"user-{i}";
+                var userName = $"user-{i}";
                 FakeDataBase.Instance.Users.Add(new User()
                 {
                     BirthDate = DateTime.Now,
@@ -45,9 +45,9 @@ namespace DaOAuthV2.Service.Test
                 });
             }
 
-            for (int i = 1; i <= 100; i++)
+            for (var i = 1; i <= 100; i++)
             {
-                string publicId = $"public-{i}";
+                var publicId = $"public-{i}";
                 FakeDataBase.Instance.Clients.Add(new Client()
                 {
                     ClientTypeId = i % 2 == 0 ? 1 : 2,
@@ -60,7 +60,7 @@ namespace DaOAuthV2.Service.Test
                     PublicId = publicId
                 });
 
-                for (int j = 1; j <= FakeDataBase.Instance.Users.Count(); j++)
+                for (var j = 1; j <= FakeDataBase.Instance.Users.Count(); j++)
                 {
                     if (j % i == 0)
                     {
@@ -89,7 +89,7 @@ namespace DaOAuthV2.Service.Test
         [TestMethod]
         public void Search_Count_Should_Return_All_User_Count()
         {
-            int count = _service.SearchCount(new AdminUserSearchDto()
+            var count = _service.SearchCount(new AdminUserSearchDto()
             {
                 Limit = 50,
                 Skip = 0

@@ -6,6 +6,7 @@ namespace DaOAuthV2.Dal.Interface
     public interface IClientScopeRepository : IRepository<ClientScope>
     {
         IEnumerable<ClientScope> GetAllByScopeId(int scopeId);
+
         IEnumerable<ClientScope> GetAllByClientId(int clientId);
     }
 }

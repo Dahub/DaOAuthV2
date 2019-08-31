@@ -94,12 +94,16 @@ namespace DaOAuthV2.Service
 
             long expire;
             if (!long.TryParse(GetValueFromClaim(pClaim.Claims, ClaimName.Expire), out expire))
+            {
                 return toReturn;
+            }
 
             toReturn.Expire = expire;
 
             if (expire < DateTimeOffset.Now.ToUnixTimeSeconds() || GetValueFromClaim(pClaim.Claims, ClaimName.TokenName) != tokenInfo.TokenName)
+            {
                 return toReturn;
+            }
 
             toReturn.Scope = GetValueFromClaim(pClaim.Claims, ClaimName.Scope);
             toReturn.ClientId = GetValueFromClaim(pClaim.Claims, ClaimName.ClientId);
@@ -113,10 +117,7 @@ namespace DaOAuthV2.Service
         {
             var claim = claims.Where(c => c.Type.Equals(claimType, StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
 
-            if (claim == null)
-                return String.Empty;
-
-            return claim.Value;
+            return claim == null ? String.Empty : claim.Value;
         }
 
         public MailJwtTokenDto GenerateMailToken(string userName)
@@ -183,13 +184,17 @@ namespace DaOAuthV2.Service
 
             long expire;
             if (!long.TryParse(GetValueFromClaim(pClaim.Claims, ClaimName.Expire), out expire))
+            {
                 return toReturn;
+            }
 
             toReturn.Expire = expire;
             toReturn.UserName = GetValueFromClaim(pClaim.Claims, ClaimName.Name);
 
             if (expire < DateTimeOffset.Now.ToUnixTimeSeconds())
+            {
                 return toReturn;
+            }
 
             toReturn.IsValid = true;
 

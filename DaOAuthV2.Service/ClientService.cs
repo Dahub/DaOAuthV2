@@ -29,23 +29,31 @@ namespace DaOAuthV2.Service
 
                 foreach (var ur in toValidate.ReturnUrls)
                 {
-                    if (!Uri.TryCreate(ur, UriKind.Absolute, out Uri u))
+                    if (!Uri.TryCreate(ur, UriKind.Absolute, out var u))
+                    {
                         result.Add(new ValidationResult(resource["CreateClientDtoReturnUrlIncorrect"]));
+                    }
                 }
 
                 if (toValidate.ClientType != ClientTypeName.Confidential && toValidate.ClientType != ClientTypeName.Public)
+                {
                     result.Add(new ValidationResult(resource["CreateClientDtoTypeIncorrect"]));
+                }
 
                 using (var context = RepositoriesFactory.CreateContext())
                 {
                     var userRepo = RepositoriesFactory.GetUserRepository(context);
                     var user = userRepo.GetByUserName(toValidate.UserName);
                     if (user == null || !user.IsValid)
+                    {
                         result.Add(new ValidationResult(String.Format(resource["CreateClientDtoInvalidUser"], toCreate.UserName)));
+                    }
 
                     var userClientRepo = RepositoriesFactory.GetUserClientRepository(context);
                     if (!String.IsNullOrEmpty(toValidate.Name) && userClientRepo.GetAllByCriteriasCount(toValidate.UserName, toValidate.Name, null, null) > 0)
+                    {
                         result.Add(new ValidationResult(resource["CreateClientDtoNameAlreadyUse"]));
+                    }
                 }
 
                 return result;
@@ -63,9 +71,9 @@ namespace DaOAuthV2.Service
                 var userRepo = RepositoriesFactory.GetUserRepository(context);
                 var clientScopeRepo = RepositoriesFactory.GetClientScopeRepository(context);
 
-                User user = userRepo.GetByUserName(toCreate.UserName);
+                var user = userRepo.GetByUserName(toCreate.UserName);
 
-                Client client = new Client()
+                var client = new Client()
                 {
                     ClientSecret = RandomService.GenerateRandomString(16),
                     ClientTypeId = toCreate.ClientType.Equals(ClientTypeName.Confidential, StringComparison.OrdinalIgnoreCase) ? (int)EClientType.CONFIDENTIAL : (int)EClientType.PUBLIC,
@@ -81,16 +89,16 @@ namespace DaOAuthV2.Service
 
                 foreach (var ur in toCreate.ReturnUrls)
                 {
-                    ClientReturnUrl returnUrl = new ClientReturnUrl()
+                    var clientReturnUrl = new ClientReturnUrl()
                     {
                         ReturnUrl = ur,
                         ClientId = client.Id
                     };
 
-                    returnUrlRepo.Add(returnUrl);
+                    returnUrlRepo.Add(clientReturnUrl);
                 }
 
-                UserClient userClient = new UserClient()
+                var userClient = new UserClient()
                 {
                     ClientId = client.Id,
                     CreationDate = DateTime.Now,
@@ -190,12 +198,14 @@ namespace DaOAuthV2.Service
                 var client = clientRepo.GetById(id);
 
                 if (client == null || !client.IsValid)
+                {
                     throw new DaOAuthNotFoundException();
+                }
 
                 // we need to remove scopes from invalid ressources servers
                 if (client.ClientsScopes != null && client.ClientsScopes.Count() > 0)
                 {
-                    IList<int> invalidsRs = ExtractInvalidRessourceServerIds(context);
+                    var invalidsRs = ExtractInvalidRessourceServerIds(context);
 
                     client.ClientsScopes = client.ClientsScopes.ToList().Where(cs => !invalidsRs.Contains(cs.Scope.RessourceServerId)).ToList();
                 }
@@ -214,7 +224,7 @@ namespace DaOAuthV2.Service
 
             IList<Client> clients = null;
 
-            int? clientTypeId = GetClientTypeId(criterias.ClientType);
+            var clientTypeId = GetClientTypeId(criterias.ClientType);
 
             using (var context = RepositoriesFactory.CreateContext())
             {
@@ -229,7 +239,7 @@ namespace DaOAuthV2.Service
                                         criterias.Limit
                                     ).ToList();
 
-                IList<int> invalidsRs = ExtractInvalidRessourceServerIds(context);
+                var invalidsRs = ExtractInvalidRessourceServerIds(context);
 
                 foreach (var c in clients)
                 {
@@ -247,7 +257,7 @@ namespace DaOAuthV2.Service
         {
             Validate(criterias, ExtendValidationSearchCriterias);
 
-            int count = 0;
+            var count = 0;
 
             using (var c = RepositoriesFactory.CreateContext())
             {
@@ -274,16 +284,22 @@ namespace DaOAuthV2.Service
                 {
                     foreach (var ur in toValidate.ReturnUrls)
                     {
-                        if (!Uri.TryCreate(ur, UriKind.Absolute, out Uri u))
+                        if (!Uri.TryCreate(ur, UriKind.Absolute, out var u))
+                        {
                             result.Add(new ValidationResult(resource["UpdateClientDtoReturnUrlIncorrect"]));
+                        }
                     }
                 }
 
                 if (toValidate.ClientType != ClientTypeName.Confidential && toValidate.ClientType != ClientTypeName.Public)
+                {
                     result.Add(new ValidationResult(resource["UpdateClientDtoTypeIncorrect"]));
+                }
 
                 if (!toValidate.ClientSecret.IsMatchClientSecretPolicy())
+                {
                     result.Add(new ValidationResult(resource["UpdateClientDtoClientSecretDontMatchPolicy"]));
+                }
 
                 return result;
             }
@@ -315,7 +331,9 @@ namespace DaOAuthV2.Service
                 {
                     var myUc = ucs.First();
                     if (myUc.ClientId != myClient.Id)
+                    {
                         throw new DaOAuthServiceException(resource["UpdateClientNameAlreadyUsed"]);
+                    }
                 }
 
                 var cl = clientRepo.GetByPublicId(toUpdate.PublicId);
@@ -328,7 +346,7 @@ namespace DaOAuthV2.Service
                 if (toUpdate.ScopesIds != null)
                 {
                     IList<int> ids = scopes.Select(s => s.Id).ToList();
-                    foreach (int scopeId in toUpdate.ScopesIds)
+                    foreach (var scopeId in toUpdate.ScopesIds)
                     {
                         if (!ids.Contains(scopeId))
                         {
@@ -407,7 +425,9 @@ namespace DaOAuthV2.Service
             IList<ValidationResult> result = new List<ValidationResult>();
 
             if (c.Limit - c.Skip > 50)
+            {
                 result.Add(new ValidationResult(String.Format(resource["SearchClientAskTooMuch"], c)));
+            }
 
             return result;
         }

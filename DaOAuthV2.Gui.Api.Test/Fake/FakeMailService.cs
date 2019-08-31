@@ -11,7 +11,7 @@ namespace DaOAuthV2.Gui.Api.Test
 
         public Task<bool> SendEmail(SendEmailDto mailInfo)
         {
-            EventHandler<SendEmailDto> handler = SendMailCalled;
+            var handler = SendMailCalled;
             handler?.Invoke(this, mailInfo);
 
             return Task<bool>.Factory.StartNew(() => { return true; });

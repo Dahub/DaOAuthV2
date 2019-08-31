@@ -12,8 +12,11 @@ namespace DaOAuthV2.Service
     public abstract class ServiceBase
     {
         public AppConfiguration Configuration { get; set; }
+
         public IRepositoriesFactory RepositoriesFactory { get; set; }
+
         public IStringLocalizerFactory StringLocalizerFactory { get; set; }
+
         public ILogger Logger { get; set; }
 
         protected void Validate<T>(T toValidate, Func<T, IList<ValidationResult>> extendValidate)
@@ -21,24 +24,28 @@ namespace DaOAuthV2.Service
             var local = this.GetDtoStringLocalizer();
 
             if (toValidate == null)
+            {
                 throw new DaOAuthServiceException(local["ModelNull"]);
+            }
 
             var results = extendValidate(toValidate);
             if (results == null)
+            {
                 results = new List<ValidationResult>();
+            }
 
             var context = new ValidationContext(toValidate, null, null);           
 
             if (!Validator.TryValidateObject(toValidate, context, results, true) || results.Count > 0)
             {
-                StringBuilder msg = new StringBuilder();
+                var stringBuilder = new StringBuilder();
 
                 foreach (var error in results)
                 {
-                    msg.AppendLine(local[error.ErrorMessage]);
+                    stringBuilder.AppendLine(local[error.ErrorMessage]);
                 }
 
-                throw new DaOAuthServiceException(msg.ToString());
+                throw new DaOAuthServiceException(stringBuilder.ToString());
             }
         }
 
@@ -65,12 +72,17 @@ namespace DaOAuthV2.Service
         protected int? GetClientTypeId(string clientType)
         {
             int? clientTypeId = null;
+
             if (!String.IsNullOrEmpty(clientType))
             {
                 if (clientType.Equals(ClientTypeName.Confidential, StringComparison.OrdinalIgnoreCase))
+                {
                     clientTypeId = (int)EClientType.CONFIDENTIAL;
+                }
                 else if (clientType.Equals(ClientTypeName.Public, StringComparison.OrdinalIgnoreCase))
+                {
                     clientTypeId = (int)EClientType.PUBLIC;
+                }
             }
 
             return clientTypeId;

@@ -61,7 +61,7 @@ namespace DaOAuthV2.OAuth.Api.Filters
                 if (!context.HttpContext.Response.HasStarted)
                 {
                     context.HttpContext.Response.StatusCode = 400;
-                    string json =  String.Empty;
+                    var json =  String.Empty;
                     var ex = (DaOAuthTokenException)context.Exception;
                     if(String.IsNullOrWhiteSpace(ex.State))
                     {

@@ -30,11 +30,11 @@ namespace DaOAuthV2.Service.Test
         private RessourceServer _validRessourceServer;
         private RessourceServer _invalidRessourceServer;
 
-        private string _validUserPassword = "plop";
-        private string _validRessourceServerLogin = "rs";
-        private string _invalidRessourceServerLogin = "rsi";
-        private string _validRessourceServerPassword = "rsp";
-        private string _invalidRessourceServerPassword = "rsp";
+        private readonly string _validUserPassword = "plop";
+        private readonly string _validRessourceServerLogin = "rs";
+        private readonly string _invalidRessourceServerLogin = "rsi";
+        private readonly string _validRessourceServerPassword = "rsp";
+        private readonly string _invalidRessourceServerPassword = "rsp";
 
         [TestInitialize]
         public void Init()
@@ -43,19 +43,19 @@ namespace DaOAuthV2.Service.Test
             byte[] pwdValidRessourceServer;
             byte[] pwdInvalidRessourceServer;
 
-            using (SHA256Managed sha256 = new SHA256Managed())
+            using (var sha256 = new SHA256Managed())
             {
                 pwdValidUser = sha256.ComputeHash(
                     Encoding.UTF8.GetBytes(String.Concat(FakeConfigurationHelper.GetFakeConf().PasswordSalt, _validUserPassword)));
             }
 
-            using (SHA256Managed sha256 = new SHA256Managed())
+            using (var sha256 = new SHA256Managed())
             {
                 pwdValidRessourceServer = sha256.ComputeHash(
                     Encoding.UTF8.GetBytes(String.Concat(FakeConfigurationHelper.GetFakeConf().PasswordSalt, _validRessourceServerPassword)));
             }
 
-            using (SHA256Managed sha256 = new SHA256Managed())
+            using (var sha256 = new SHA256Managed())
             {
                 pwdInvalidRessourceServer = sha256.ComputeHash(
                     Encoding.UTF8.GetBytes(String.Concat(FakeConfigurationHelper.GetFakeConf().PasswordSalt, _invalidRessourceServerPassword)));
@@ -109,8 +109,8 @@ namespace DaOAuthV2.Service.Test
             FakeDataBase.Instance.Users.Add(_validUser);
             FakeDataBase.Instance.Users.Add(_invalidUser);
 
-            int confidentialClientTypeId = FakeDataBase.Instance.ClientTypes.Where(ct => ct.Wording.Equals(ClientTypeName.Confidential)).First().Id;
-            int publicClientTypeId = FakeDataBase.Instance.ClientTypes.Where(ct => ct.Wording.Equals(ClientTypeName.Public)).First().Id;
+            var confidentialClientTypeId = FakeDataBase.Instance.ClientTypes.Where(ct => ct.Wording.Equals(ClientTypeName.Confidential)).First().Id;
+            var publicClientTypeId = FakeDataBase.Instance.ClientTypes.Where(ct => ct.Wording.Equals(ClientTypeName.Public)).First().Id;
 
             _validClientConfidential = new Client()
             {
@@ -311,7 +311,7 @@ namespace DaOAuthV2.Service.Test
         [TestMethod]
         public void Genererate_Uri_For_Authorize_Should_Contain_Redirect_Uri_When_Response_Type_Is_Empty()
         {
-            bool exceptionOccured = false;
+            var exceptionOccured = false;
             DaOAuthRedirectException ex = null;
             try
             {
@@ -357,7 +357,7 @@ namespace DaOAuthV2.Service.Test
         [TestMethod]
         public void Genererate_Uri_For_Authorize_Should_Contain_Redirect_Uri_When_Response_Type_Is_Unsupported()
         {
-            bool exceptionOccured = false;
+            var exceptionOccured = false;
             DaOAuthRedirectException ex = null;
             try
             {
@@ -419,7 +419,7 @@ namespace DaOAuthV2.Service.Test
         [TestMethod]
         public void Genererate_Uri_For_Authorize_Should_Contain_Redirect_Uri_When_Client_Id_Is_Empty()
         {
-            bool exceptionOccured = false;
+            var exceptionOccured = false;
             DaOAuthRedirectException ex = null;
             try
             {
@@ -503,7 +503,7 @@ namespace DaOAuthV2.Service.Test
         [TestMethod]
         public void Genererate_Uri_For_Authorize_Should_Contains_Correct_Redirect_Url_When_User_Has_Not_Authorized_Or_Deny_Client_To_Ask()
         {
-            bool exceptionOccured = false;
+            var exceptionOccured = false;
             try
             {
                 _dto.ClientPublicId = "public_id_4";
@@ -548,7 +548,7 @@ namespace DaOAuthV2.Service.Test
         public void Genererate_Uri_For_Authorize_Should_Contains_Correct_Redirect_Url_When_User_Has_Deny_Client()
         {
             FakeDataBase.Instance.UsersClient.Clear();
-            bool exceptionOccured = false;
+            var exceptionOccured = false;
             FakeDataBase.Instance.UsersClient.Add(new UserClient()
             {
                 ClientId = _validClientConfidential.Id,
@@ -635,7 +635,7 @@ namespace DaOAuthV2.Service.Test
         [TestMethod]
         public void Genererate_Uri_For_Authorize_Should_Contains_Correct_Redirect_Url_When_User_Ask_Token()
         {
-            UserClient ucToAdd = new UserClient()
+            var ucToAdd = new UserClient()
             {
                 ClientId = _validClientPublic.Id,
                 CreationDate = DateTime.Now,
@@ -675,7 +675,7 @@ namespace DaOAuthV2.Service.Test
         [TestMethod]
         public void Generate_Token_Should_Throw_DaOAuthTokenException_With_Correct_Error_Message_When_Grant_Type_Is_Invalid()
         {
-            bool exceptionOccured = false;
+            var exceptionOccured = false;
             try
             {
                 _service.GenerateToken(new AskTokenDto()
@@ -698,7 +698,7 @@ namespace DaOAuthV2.Service.Test
         [TestMethod]
         public void Generate_Token_Should_Throw_DaOAuthTokenException_With_Correct_Error_Message_When_Client_Credentials_Are_Invalid_For_Authorization_Code_Grant()
         {
-            bool exceptionOccured = false;
+            var exceptionOccured = false;
             try
             {
                 _service.GenerateToken(new AskTokenDto()
@@ -721,7 +721,7 @@ namespace DaOAuthV2.Service.Test
         [TestMethod]
         public void Generate_Token_Should_Throw_DaOAuthTokenException_With_Correct_Error_Message_When_Code_Empty_For_Authorization_Code_Grant()
         {
-            bool exceptionOccured = false;
+            var exceptionOccured = false;
             try
             {
                 _service.GenerateToken(new AskTokenDto()
@@ -745,7 +745,7 @@ namespace DaOAuthV2.Service.Test
         [TestMethod]
         public void Generate_Token_Should_Throw_DaOAuthTokenException_With_Correct_Error_Message_When_Return_Url_Empty_For_Authorization_Code_Grant()
         {
-            bool exceptionOccured = false;
+            var exceptionOccured = false;
             try
             {
                 _service.GenerateToken(new AskTokenDto()
@@ -770,7 +770,7 @@ namespace DaOAuthV2.Service.Test
         [TestMethod]
         public void Generate_Token_Should_Throw_DaOAuthTokenException_With_Correct_Error_Message_When_Client_Public_Id_Empty_For_Authorization_Code_Grant()
         {
-            bool exceptionOccured = false;
+            var exceptionOccured = false;
             try
             {
                 _service.GenerateToken(new AskTokenDto()
@@ -795,7 +795,7 @@ namespace DaOAuthV2.Service.Test
         [TestMethod]
         public void Generate_Token_Should_Throw_DaOAuthTokenException_With_Correct_Error_Message_When_Return_Url_Is_Invalid_For_Authorization_Code_Grant()
         {
-            bool exceptionOccured = false;
+            var exceptionOccured = false;
             try
             {
                 _service.GenerateToken(new AskTokenDto()
@@ -820,7 +820,7 @@ namespace DaOAuthV2.Service.Test
         [TestMethod]
         public void Generate_Token_Should_Throw_DaOAuthTokenException_With_Correct_Error_Message_When_Client_Type_Is_Public_For_Authorization_Code_Grant()
         {
-            bool exceptionOccured = false;
+            var exceptionOccured = false;
             try
             {
                 _service.GenerateToken(new AskTokenDto()
@@ -845,7 +845,7 @@ namespace DaOAuthV2.Service.Test
         [TestMethod]
         public void Generate_Token_Should_Throw_DaOAuthTokenException_With_Correct_Error_Message_When_Client_Return_Url_Unknow_For_Authorization_Code_Grant()
         {
-            bool exceptionOccured = false;
+            var exceptionOccured = false;
             try
             {
                 _service.GenerateToken(new AskTokenDto()
@@ -870,7 +870,7 @@ namespace DaOAuthV2.Service.Test
         [TestMethod]
         public void Generate_Token_Should_Throw_DaOAuthTokenException_With_Correct_Error_Message_When_Code_Incorrect_For_Authorization_Code_Grant()
         {
-            bool exceptionOccured = false;
+            var exceptionOccured = false;
             try
             {
                 _service.GenerateToken(new AskTokenDto()
@@ -897,7 +897,7 @@ namespace DaOAuthV2.Service.Test
         [TestMethod]
         public void Generate_Token_Should_Throw_DaOAuthTokenException_With_Correct_Error_Message_When_Code_Invalid_For_Authorization_Code_Grant()
         {
-            bool exceptionOccured = false;
+            var exceptionOccured = false;
             try
             {
                 _service.GenerateToken(new AskTokenDto()
@@ -924,7 +924,7 @@ namespace DaOAuthV2.Service.Test
         [TestMethod]
         public void Generate_Token_Should_Throw_DaOAuthTokenException_With_Correct_Error_Message_When_Code_Expired_For_Authorization_Code_Grant()
         {
-            bool exceptionOccured = false;
+            var exceptionOccured = false;
             try
             {
                 _service.GenerateToken(new AskTokenDto()
@@ -951,7 +951,7 @@ namespace DaOAuthV2.Service.Test
         [TestMethod]
         public void Generate_Token_Should_Throw_DaOAuthTokenException_With_Correct_Error_Message_When_Scope_Are_Invalid_For_Authorization_Code_Grant()
         {
-            bool exceptionOccured = false;
+            var exceptionOccured = false;
             try
             {
                 _service.GenerateToken(new AskTokenDto()
@@ -999,7 +999,7 @@ namespace DaOAuthV2.Service.Test
         [TestMethod]
         public void Generate_Token_Should_Create_New_Refresh_Token_For_Authorization_Code_Grant()
         {
-            string token = _validUserClientConfidential.RefreshToken;
+            var token = _validUserClientConfidential.RefreshToken;
 
             _service.GenerateToken(new AskTokenDto()
             {
@@ -1043,7 +1043,7 @@ namespace DaOAuthV2.Service.Test
         [TestMethod]
         public void Generate_Token_Should_Throw_DaOAuthTokenException_With_Correct_Error_Message_When_Client_Credentials_Are_Invalid_For_Refresh_Token_Grant()
         {
-            bool exceptionOccured = false;
+            var exceptionOccured = false;
             try
             {
                 _service.GenerateToken(new AskTokenDto()
@@ -1067,7 +1067,7 @@ namespace DaOAuthV2.Service.Test
         [TestMethod]
         public void Generate_Token_Should_Throw_DaOAuthTokenException_With_Correct_Error_Message_When_Refresh_Token_Is_Missing_For_Refresh_Token_Grant()
         {
-            bool exceptionOccured = false;
+            var exceptionOccured = false;
             try
             {
                 _service.GenerateToken(new AskTokenDto()
@@ -1091,7 +1091,7 @@ namespace DaOAuthV2.Service.Test
         [TestMethod]
         public void Generate_Token_Should_Throw_DaOAuthTokenException_With_Correct_Error_Message_When_Refresh_Token_Is_Invalid_For_Refresh_Token_Grant()
         {
-            bool exceptionOccured = false;
+            var exceptionOccured = false;
             try
             {
                 _service = new OAuthService()
@@ -1137,7 +1137,7 @@ namespace DaOAuthV2.Service.Test
         [TestMethod]
         public void Generate_Token_Should_Throw_DaOAuthTokenException_With_Correct_Error_Message_When_Client_Is_Inactif_For_Refresh_Token_Grant()
         {
-            bool exceptionOccured = false;
+            var exceptionOccured = false;
 
             try
             {
@@ -1165,7 +1165,7 @@ namespace DaOAuthV2.Service.Test
         [TestMethod]
         public void Generate_Token_Should_Throw_DaOAuthTokenException_With_Correct_Error_Message_When_Client_Refresh_Token_Is_Different_For_Refresh_Token_Grant()
         {
-            bool exceptionOccured = false;
+            var exceptionOccured = false;
 
             try
             {
@@ -1193,7 +1193,7 @@ namespace DaOAuthV2.Service.Test
         [TestMethod]
         public void Generate_Token_Should_Create_New_Refresh_Token_For_Refresh_Token_Code_Grant()
         {
-            string token = _validUserClientConfidential.RefreshToken;
+            var token = _validUserClientConfidential.RefreshToken;
 
             _service = new OAuthService()
             {
@@ -1238,7 +1238,7 @@ namespace DaOAuthV2.Service.Test
         [TestMethod]
         public void Generate_Token_Should_Throw_DaOAuthTokenException_With_Correct_Error_Message_When_Client_Credentials_Are_Invalid_For_Password_Code_Grant()
         {
-            bool exceptionOccured = false;
+            var exceptionOccured = false;
 
             try
             {
@@ -1295,7 +1295,7 @@ namespace DaOAuthV2.Service.Test
         [TestMethod]
         public void Generate_Token_Should_Throw_DaOAuthTokenException_With_Correct_Error_Message_When_Password_Is_Incorrect_For_Password_Code_Grant()
         {
-            bool exceptionOccured = false;
+            var exceptionOccured = false;
 
             try
             {
@@ -1322,7 +1322,7 @@ namespace DaOAuthV2.Service.Test
         [TestMethod]
         public void Generate_Token_Should_Throw_DaOAuthTokenException_With_Correct_Error_Message_When_UserName_Is_Incorrect_For_Password_Code_Grant()
         {
-            bool exceptionOccured = false;
+            var exceptionOccured = false;
 
             try
             {
@@ -1349,7 +1349,7 @@ namespace DaOAuthV2.Service.Test
         [TestMethod]
         public void Generate_Token_Should_Throw_DaOAuthTokenException_With_Correct_Error_Message_When_Scope_Is_Incorrect_For_Password_Code_Grant()
         {
-            bool exceptionOccured = false;
+            var exceptionOccured = false;
 
             try
             {
@@ -1376,7 +1376,7 @@ namespace DaOAuthV2.Service.Test
         [TestMethod]
         public void Generate_Token_Should_Create_New_Refresh_Token_For_Password_Code_Grant()
         {
-            string token = _validUserClientConfidential.RefreshToken;
+            var token = _validUserClientConfidential.RefreshToken;
 
             _service = new OAuthService()
             {
@@ -1417,7 +1417,7 @@ namespace DaOAuthV2.Service.Test
         [TestMethod]
         public void Generate_Token_Should_Throw_DaOAuthTokenException_With_Correct_Error_Message_When_Client_Credentials_Are_Invalid_For_Client_Credentials_Code_Grant()
         {
-            bool exceptionOccured = false;
+            var exceptionOccured = false;
 
             try
             {
@@ -1442,7 +1442,7 @@ namespace DaOAuthV2.Service.Test
         [TestMethod]
         public void Generate_Token_Should_Throw_DaOAuthTokenException_With_Correct_Error_Message_When_Scope_Is_Incorrect_For_Client_Credential_Code_Grant()
         {
-            bool exceptionOccured = false;
+            var exceptionOccured = false;
 
             try
             {
@@ -1467,7 +1467,7 @@ namespace DaOAuthV2.Service.Test
         [TestMethod]
         public void Generate_Token_Should_Create_Acces_Token_For_Client_Credentials_Code_Grant()
         {
-            string token = _validUserClientConfidential.RefreshToken;
+            var token = _validUserClientConfidential.RefreshToken;
 
             _service = new OAuthService()
             {
@@ -1526,7 +1526,7 @@ namespace DaOAuthV2.Service.Test
         [TestMethod]
         public void Introspect_Should_Return_False_When_Ressource_Server_Credentials_Are_Invalid()
         {
-            string token = "test-token";
+            var token = "test-token";
 
             _service = new OAuthService()
             {
@@ -1557,7 +1557,7 @@ namespace DaOAuthV2.Service.Test
         [TestMethod]
         public void Introspect_Should_Return_False_When_Ressource_Server_Is_Invalid()
         {
-            string token = "test-token";
+            var token = "test-token";
 
             _service = new OAuthService()
             {
@@ -1588,7 +1588,7 @@ namespace DaOAuthV2.Service.Test
         [TestMethod]
         public void Introspect_Should_Return_False_When_Token_Is_Invalid()
         {
-            string token = "test-token";
+            var token = "test-token";
 
             _service = new OAuthService()
             {
@@ -1619,7 +1619,7 @@ namespace DaOAuthV2.Service.Test
         [TestMethod]
         public void Introspect_Should_Return_True_When_All_Is_Correct()
         {
-            string token = "test-token";
+            var token = "test-token";
 
             _service = new OAuthService()
             {

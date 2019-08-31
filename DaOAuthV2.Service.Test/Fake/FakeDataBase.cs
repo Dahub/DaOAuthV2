@@ -16,7 +16,10 @@ namespace DaOAuthV2.Service.Test.Fake
             get
             {
                 if (_instance == null)
+                {
                     _instance = new FakeDataBase();
+                }
+
                 return _instance;
             }
         }
@@ -284,7 +287,7 @@ namespace DaOAuthV2.Service.Test.Fake
 
         private static byte[] HashPassword(string pwd)
         {
-            using (SHA256Managed sha256 = new SHA256Managed())
+            using (var sha256 = new SHA256Managed())
             {
                 return sha256.ComputeHash(Encoding.UTF8.GetBytes(pwd));
             }

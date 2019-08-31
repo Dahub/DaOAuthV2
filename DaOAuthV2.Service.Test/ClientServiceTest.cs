@@ -173,10 +173,10 @@ namespace DaOAuthV2.Service.Test
         [TestMethod]
         public void Create_New_Client_Should_Create_A_Creator_User_Client()
         {
-            string name = "client_test_create";
-            string description = "test";
+            var name = "client_test_create";
+            var description = "test";
 
-            int id = _service.CreateClient(new DTO.CreateClientDto()
+            var id = _service.CreateClient(new DTO.CreateClientDto()
             {
                 ClientType = ClientTypeName.Confidential,
                 ReturnUrls = new List<string>() { "http://www.perdu.com" },
@@ -201,10 +201,10 @@ namespace DaOAuthV2.Service.Test
         [TestMethod]
         public void Create_New_Client_Should_Return_Int()
         {
-            string name = "client_test_create";
-            string description = "test";
+            var name = "client_test_create";
+            var description = "test";
 
-            int id = _service.CreateClient(new DTO.CreateClientDto()
+            var id = _service.CreateClient(new DTO.CreateClientDto()
             {
                 ClientType = ClientTypeName.Confidential,
                 ReturnUrls = new List<string>() { "http://www.perdu.com" },
@@ -226,15 +226,15 @@ namespace DaOAuthV2.Service.Test
         [TestMethod]
         public void Create_New_Client_Should_Create_Scopes()
         {
-            string name = "client_test_create";
-            string description = "test";
-            Scope sc1 = new Scope()
+            var name = "client_test_create";
+            var description = "test";
+            var sc1 = new Scope()
             {
                 Id = 456,
                 NiceWording = "sc1",
                 Wording = "sc1"
             };
-            Scope sc2 = new Scope()
+            var sc2 = new Scope()
             {
                 Id = 457,
                 NiceWording = "sc2",
@@ -244,7 +244,7 @@ namespace DaOAuthV2.Service.Test
             FakeDataBase.Instance.Scopes.Add(sc1);
             FakeDataBase.Instance.Scopes.Add(sc2);
 
-            int id = _service.CreateClient(new DTO.CreateClientDto()
+            var id = _service.CreateClient(new DTO.CreateClientDto()
             {
                 ClientType = ClientTypeName.Confidential,
                 ReturnUrls = new List<string>() { "http://www.perdu.com" },
@@ -270,10 +270,10 @@ namespace DaOAuthV2.Service.Test
         [TestMethod]
         public void Create_New_Client_Should_Return_Client_With_Generated_Secret()
         {
-            string name = "client_test_create";
-            string description = "test";
+            var name = "client_test_create";
+            var description = "test";
 
-            int id = _service.CreateClient(new DTO.CreateClientDto()
+            var id = _service.CreateClient(new DTO.CreateClientDto()
             {
                 ClientType = ClientTypeName.Confidential,
                 ReturnUrls = new List<string>() { "http://www.perdu.com" },
@@ -294,7 +294,7 @@ namespace DaOAuthV2.Service.Test
         [ExpectedException(typeof(DaOAuthServiceException))]
         public void Create_New_Client_With_Empty_Client_Type_Should_Throw_DaOauthServiceException()
         {
-            int id = _service.CreateClient(new DTO.CreateClientDto()
+            var id = _service.CreateClient(new DTO.CreateClientDto()
             {
                 ReturnUrls = new List<string>() { "http://www.perdu.com" },
                 Name = "client_test_crete",
@@ -306,7 +306,7 @@ namespace DaOAuthV2.Service.Test
         [ExpectedException(typeof(DaOAuthServiceException))]
         public void Create_New_Client_With_Empty_Name_Should_Throw_DaOauthServiceException()
         {
-            int id = _service.CreateClient(new DTO.CreateClientDto()
+            var id = _service.CreateClient(new DTO.CreateClientDto()
             {
                 ClientType = ClientTypeName.Confidential,
                 ReturnUrls = new List<string>() { "http://www.perdu.com" },
@@ -319,7 +319,7 @@ namespace DaOAuthV2.Service.Test
         [ExpectedException(typeof(DaOAuthServiceException))]
         public void Create_New_Client_With_Empty_Return_Url_Should_Throw_DaOauthServiceException()
         {
-            int id = _service.CreateClient(new DTO.CreateClientDto()
+            var id = _service.CreateClient(new DTO.CreateClientDto()
             {
                 ClientType = ClientTypeName.Confidential,
                 ReturnUrls = new List<string>(),
@@ -332,7 +332,7 @@ namespace DaOAuthV2.Service.Test
         [ExpectedException(typeof(DaOAuthServiceException))]
         public void Create_New_Client_With_Incorrect_Client_Type_Should_Throw_DaOauthServiceException()
         {
-            int id = _service.CreateClient(new DTO.CreateClientDto()
+            var id = _service.CreateClient(new DTO.CreateClientDto()
             {
                 ClientType = "incorrect",
                 ReturnUrls = new List<string>() { "http://www.perdu.com" },
@@ -345,7 +345,7 @@ namespace DaOAuthV2.Service.Test
         [ExpectedException(typeof(DaOAuthServiceException))]
         public void Create_New_Client_With_Existing_Name_Should_Throw_DaOauthServiceException()
         {
-            int id = _service.CreateClient(new DTO.CreateClientDto()
+            var id = _service.CreateClient(new DTO.CreateClientDto()
             {
                 ClientType = ClientTypeName.Confidential,
                 ReturnUrls = new List<string>() { "http://www.perdu.com" },
@@ -358,7 +358,7 @@ namespace DaOAuthV2.Service.Test
         [ExpectedException(typeof(DaOAuthServiceException))]
         public void Create_New_Client_With_Incorrect_Return_Url_Should_Throw_DaOauthServiceException()
         {
-            int id = _service.CreateClient(new DTO.CreateClientDto()
+            var id = _service.CreateClient(new DTO.CreateClientDto()
             {
                 ClientType = ClientTypeName.Confidential,
                 ReturnUrls = new List<string>() { "httpwww.perdcom" },
@@ -371,7 +371,7 @@ namespace DaOAuthV2.Service.Test
         [ExpectedException(typeof(DaOAuthServiceException))]
         public void Create_New_Client_With_Inactive_User_Should_Throw_DaOauthServiceException()
         {
-            int id = _service.CreateClient(new DTO.CreateClientDto()
+            var id = _service.CreateClient(new DTO.CreateClientDto()
             {
                 ClientType = ClientTypeName.Confidential,
                 ReturnUrls = new List<string>() { "http://www.perdu.com" },
@@ -384,7 +384,7 @@ namespace DaOAuthV2.Service.Test
         [ExpectedException(typeof(DaOAuthServiceException))]
         public void Create_New_Client_With_Non_Existing_User_Should_Throw_DaOauthServiceException()
         {
-            int id = _service.CreateClient(new DTO.CreateClientDto()
+            var id = _service.CreateClient(new DTO.CreateClientDto()
             {
                 ClientType = ClientTypeName.Confidential,
                 ReturnUrls = new List<string>() { "http://www.perdu.com" },
@@ -396,7 +396,7 @@ namespace DaOAuthV2.Service.Test
         [TestMethod]
         public void Search_Count_Should_Return_All_Valid_Clients_Number()
         {
-            int valid = FakeDataBase.Instance.Clients.Where(c => c.IsValid.Equals(true)).Count();
+            var valid = FakeDataBase.Instance.Clients.Where(c => c.IsValid.Equals(true)).Count();
 
             Assert.AreEqual(valid, _service.SearchCount(new DTO.ClientSearchDto()));
         }
@@ -404,8 +404,8 @@ namespace DaOAuthV2.Service.Test
         [TestMethod]
         public void Search_Count_Should_Return_1_With_Client_Name()
         {
-            string cn = FakeDataBase.Instance.Clients.Where(c => c.IsValid.Equals(true)).Select(c => c.Name).First();
-            int nbr = _service.SearchCount(new DTO.ClientSearchDto()
+            var cn = FakeDataBase.Instance.Clients.Where(c => c.IsValid.Equals(true)).Select(c => c.Name).First();
+            var nbr = _service.SearchCount(new DTO.ClientSearchDto()
             {
                 Name = cn
             });
@@ -415,7 +415,7 @@ namespace DaOAuthV2.Service.Test
         [TestMethod]
         public void Search_Count_Should_Return_0_With_Non_Existing_Client_Name()
         {
-            int nbr = _service.SearchCount(new DTO.ClientSearchDto()
+            var nbr = _service.SearchCount(new DTO.ClientSearchDto()
             {
                 Name = "non existing",
                 Skip = 0,
@@ -427,9 +427,9 @@ namespace DaOAuthV2.Service.Test
         [TestMethod]
         public void Search_Count_Should_Return_All_Confidential_And_Valid_Clients_Number()
         {
-            int clientTypeId = FakeDataBase.Instance.ClientTypes.Where(ct => ct.Wording.Equals(ClientTypeName.Confidential)).First().Id;
-            int valid = FakeDataBase.Instance.Clients.Where(c => c.IsValid.Equals(true) && c.ClientTypeId.Equals(clientTypeId)).Count();
-            int nbr = _service.SearchCount(new DTO.ClientSearchDto()
+            var clientTypeId = FakeDataBase.Instance.ClientTypes.Where(ct => ct.Wording.Equals(ClientTypeName.Confidential)).First().Id;
+            var valid = FakeDataBase.Instance.Clients.Where(c => c.IsValid.Equals(true) && c.ClientTypeId.Equals(clientTypeId)).Count();
+            var nbr = _service.SearchCount(new DTO.ClientSearchDto()
             {
                 ClientType = ClientTypeName.Confidential,
                 Skip = 0,
@@ -441,7 +441,7 @@ namespace DaOAuthV2.Service.Test
         [TestMethod]
         public void Search_Should_Return_All_Valid_Clients()
         {
-            int valid = FakeDataBase.Instance.Clients.Where(c => c.IsValid.Equals(true)).Count();
+            var valid = FakeDataBase.Instance.Clients.Where(c => c.IsValid.Equals(true)).Count();
 
             var clients = _service.Search(new DTO.ClientSearchDto()
             {
@@ -493,7 +493,7 @@ namespace DaOAuthV2.Service.Test
         [TestMethod]
         public void Search_Should_Return_Client_Where_Search_By_Name()
         {
-            string cn = FakeDataBase.Instance.Clients.Where(c => c.IsValid.Equals(true)).Select(c => c.Name).First();
+            var cn = FakeDataBase.Instance.Clients.Where(c => c.IsValid.Equals(true)).Select(c => c.Name).First();
             var clients = _service.Search(new DTO.ClientSearchDto()
             {
                 Name = cn,
@@ -509,7 +509,7 @@ namespace DaOAuthV2.Service.Test
         [TestMethod]
         public void Search_Should_Return_Client_Where_Search_By_Public_Id()
         {
-            string pi = FakeDataBase.Instance.Clients.Where(c => c.IsValid.Equals(true)).Select(c => c.PublicId).First();
+            var pi = FakeDataBase.Instance.Clients.Where(c => c.IsValid.Equals(true)).Select(c => c.PublicId).First();
             var clients = _service.Search(new DTO.ClientSearchDto()
             {
                 PublicId = pi,
@@ -524,8 +524,8 @@ namespace DaOAuthV2.Service.Test
         [TestMethod]
         public void Search_Should_Return_All_Confidential_And_Valid_Clients()
         {
-            int clientTypeId = FakeDataBase.Instance.ClientTypes.Where(ct => ct.Wording.Equals(ClientTypeName.Confidential)).First().Id;
-            int valid = FakeDataBase.Instance.Clients.Where(c => c.IsValid.Equals(true) && c.ClientTypeId.Equals(clientTypeId)).Count();
+            var clientTypeId = FakeDataBase.Instance.ClientTypes.Where(ct => ct.Wording.Equals(ClientTypeName.Confidential)).First().Id;
+            var valid = FakeDataBase.Instance.Clients.Where(c => c.IsValid.Equals(true) && c.ClientTypeId.Equals(clientTypeId)).Count();
 
             var clients = _service.Search(new DTO.ClientSearchDto()
             {

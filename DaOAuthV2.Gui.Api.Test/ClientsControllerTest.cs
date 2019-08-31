@@ -330,7 +330,7 @@ namespace DaOAuthV2.Gui.Api.Test
 
             Assert.IsTrue(httpResponseMessage.IsSuccessStatusCode);
             Assert.IsTrue(httpResponseMessage.Headers.Contains("X-Total-Count"));
-            httpResponseMessage.Headers.TryGetValues("X-Total-Count", out IEnumerable<string> values);
+            httpResponseMessage.Headers.TryGetValues("X-Total-Count", out var values);
             Assert.AreEqual(values.Count(), 1);
             Assert.AreEqual(values.First(), totalClients.ToString());
         }

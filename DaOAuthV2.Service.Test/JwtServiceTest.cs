@@ -11,14 +11,14 @@ namespace DaOAuthV2.Service.Test
     public class JwtServiceTest
     {
         private IJwtService _service;
-        private string _tokenName = "tokenName";
-        private string _longLifeToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjbGllbnRfaWQiOiJjbGllbnRJZCIsInRva2VuX25hbWUiOiJ0b2tlbk5hbWUiLCJpc3N1ZWQiOiIxNTQyMjMxMDc4IiwidXNlcl9wdWJsaWNfaWQiOiIwMjA0YmE0NC02NWRhLTQ4ZjMtOWE2OC03ZjdlMWIxNmQ1MmQiLCJuYW1lIjoidXNlck5hbWUiLCJzY29wZSI6InNjb3BlIiwiZXhwIjoxODU3NTg3NDc4LCJpc3MiOiJ0ZXN0LWlzc3VlciIsImF1ZCI6InRlc3QtYXVkaWVuY2UifQ.jEUu9UWgEJ0bsSdnUgR8ylxzjwCx909GfisBPDg0A78";
-        private string _shortLifeToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjbGllbnRfaWQiOiJjbGllbnRJZCIsInRva2VuX25hbWUiOiJ0b2tlbk5hbWUiLCJpc3N1ZWQiOiIxNTQyMjMxMTk4IiwidXNlcl9wdWJsaWNfaWQiOiI4MjM0MmU0Yi01YmI0LTQ5M2YtYjA4NC0xM2Y5MjhmNGU1YmMiLCJuYW1lIjoidXNlck5hbWUiLCJzY29wZSI6InNjb3BlIiwiZXhwIjoxNTQyMjI3NTk4LCJpc3MiOiJ0ZXN0LWlzc3VlciIsImF1ZCI6InRlc3QtYXVkaWVuY2UifQ.2Csoj8pKMBuW6Qpcqiv7sbYM5odmN7sxjYi8FFwiESM";
+        private readonly string _tokenName = "tokenName";
+        private readonly string _longLifeToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjbGllbnRfaWQiOiJjbGllbnRJZCIsInRva2VuX25hbWUiOiJ0b2tlbk5hbWUiLCJpc3N1ZWQiOiIxNTQyMjMxMDc4IiwidXNlcl9wdWJsaWNfaWQiOiIwMjA0YmE0NC02NWRhLTQ4ZjMtOWE2OC03ZjdlMWIxNmQ1MmQiLCJuYW1lIjoidXNlck5hbWUiLCJzY29wZSI6InNjb3BlIiwiZXhwIjoxODU3NTg3NDc4LCJpc3MiOiJ0ZXN0LWlzc3VlciIsImF1ZCI6InRlc3QtYXVkaWVuY2UifQ.jEUu9UWgEJ0bsSdnUgR8ylxzjwCx909GfisBPDg0A78";
+        private readonly string _shortLifeToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjbGllbnRfaWQiOiJjbGllbnRJZCIsInRva2VuX25hbWUiOiJ0b2tlbk5hbWUiLCJpc3N1ZWQiOiIxNTQyMjMxMTk4IiwidXNlcl9wdWJsaWNfaWQiOiI4MjM0MmU0Yi01YmI0LTQ5M2YtYjA4NC0xM2Y5MjhmNGU1YmMiLCJuYW1lIjoidXNlck5hbWUiLCJzY29wZSI6InNjb3BlIiwiZXhwIjoxNTQyMjI3NTk4LCJpc3MiOiJ0ZXN0LWlzc3VlciIsImF1ZCI6InRlc3QtYXVkaWVuY2UifQ.2Csoj8pKMBuW6Qpcqiv7sbYM5odmN7sxjYi8FFwiESM";
         
         [TestInitialize]
         public void Init()
         {
-            AppConfiguration conf = new AppConfiguration()
+            var conf = new AppConfiguration()
             {
                 PasswordSalt = "salt",
                 SecurityKey = "not-too-short-key",

@@ -22,18 +22,20 @@ namespace DaOAuthV2.Service
 
         private static string GenerateRandom(int length, string valids)
         {
-            string s = "";
-            using (RNGCryptoServiceProvider provider = new RNGCryptoServiceProvider())
+            var s = "";
+            using (var provider = new RNGCryptoServiceProvider())
             {
                 while (s.Length != length)
                 {
-                    byte[] oneByte = new byte[1];
+                    var oneByte = new byte[1];
                     provider.GetBytes(oneByte);
-                    char character = (char)oneByte[0];
+                    var character = (char)oneByte[0];
                     if (valids.Contains(character.ToString(CultureInfo.CurrentCulture)))
                     {
                         if(s.Length != 0 || character != '0') // don't add 0 for first character
+                        {
                             s += character;
+                        }
                     }
                 }
             }

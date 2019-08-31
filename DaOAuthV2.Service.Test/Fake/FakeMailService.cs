@@ -13,10 +13,7 @@ namespace DaOAuthV2.Service.Test.Fake
         public Task<bool> SendEmail(SendEmailDto mailInfo)
         {
             HaveBeenCalled = true;
-            bool ReturnTrue()
-            {
-                return true;
-            }
+            bool ReturnTrue() => true;
 
             return new Task<bool>(ReturnTrue); 
         }

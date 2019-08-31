@@ -59,21 +59,21 @@ namespace DaOAuthV2.Service.Test
                 ServerSecret = new byte[] { 0 }
             });
 
-            Scope sc1 = new Scope()
+            var sc1 = new Scope()
             {
                 Id = 1,
                 Wording = "RW_test_1",
                 NiceWording = "test_1",
                 RessourceServerId = 1
             };
-            Scope sc2 = new Scope()
+            var sc2 = new Scope()
             {
                 Id = 2,
                 Wording = "RW_test_2",
                 NiceWording = "test_2",
                 RessourceServerId = 1
             };
-            Scope sc3 = new Scope()
+            var sc3 = new Scope()
             {
                 Id = 3,
                 Wording = "RW_test_3",

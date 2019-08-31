@@ -392,7 +392,7 @@ namespace DaOAuthV2.Service.Test
         [TestMethod]
         public void Search_Count_Should_Return_All_Valid_Ressource_Server_Number_Without_Search_Criterias()
         {
-            int total = _service.SearchCount(new RessourceServerSearchDto()
+            var total = _service.SearchCount(new RessourceServerSearchDto()
             {
                 Limit = 50,
                 Skip = 0,
@@ -400,7 +400,7 @@ namespace DaOAuthV2.Service.Test
                 Name = String.Empty
             });
 
-            int expected = FakeDataBase.Instance.RessourceServers.Where(r => r.IsValid.Equals(true)).Count();
+            var expected = FakeDataBase.Instance.RessourceServers.Where(r => r.IsValid.Equals(true)).Count();
 
             Assert.AreEqual(expected, total);
         }
@@ -408,7 +408,7 @@ namespace DaOAuthV2.Service.Test
         [TestMethod]
         public void Search_Count_Should_Return_1_With_Valid_Ressource_Server_Name()
         {
-            int total = _service.SearchCount(new RessourceServerSearchDto()
+            var total = _service.SearchCount(new RessourceServerSearchDto()
             {
                 Limit = 50,
                 Skip = 0,
@@ -422,7 +422,7 @@ namespace DaOAuthV2.Service.Test
         [TestMethod]
         public void Search_Count_Should_Return_0_With_Invalid_Ressource_Server_Name()
         {
-            int total = _service.SearchCount(new RessourceServerSearchDto()
+            var total = _service.SearchCount(new RessourceServerSearchDto()
             {
                 Limit = 50,
                 Skip = 0,

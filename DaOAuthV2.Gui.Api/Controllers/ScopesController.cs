@@ -19,7 +19,7 @@ namespace DaOAuthV2.Gui.Api.Controllers
     [Authorize(Roles = RoleName.User)]
     public class ScopesController : ControllerBase
     {
-        private IScopeService _service;
+        private readonly IScopeService _service;
 
         /// <summary>
         /// Constructor with scope service injected
@@ -41,7 +41,9 @@ namespace DaOAuthV2.Gui.Api.Controllers
         {
             var scopes = _service.GetAll();
             if (scopes == null)
+            {
                 scopes = new List<ScopeDto>();
+            }
 
             var count = scopes.Count();
             Request.HttpContext.Response.Headers.Add("X-Total-Count", count.ToString());

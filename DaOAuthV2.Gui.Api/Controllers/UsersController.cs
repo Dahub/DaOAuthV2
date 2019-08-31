@@ -13,7 +13,7 @@ namespace DaOAuthV2.Gui.Api.Controllers
     [Route("[controller]")]
     public class UsersController : ControllerBase
     {
-        private IUserService _service;
+        private readonly IUserService _service;
 
         /// <summary>
         /// Contructor

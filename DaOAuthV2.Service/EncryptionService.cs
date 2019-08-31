@@ -10,9 +10,9 @@ namespace DaOAuthV2.Service
     {
         public bool AreEqualsSha256(string toCompare, byte[] hash)
         {
-            bool toReturn = false;
+            var toReturn = false;
 
-            using (SHA256Managed sha256 = new SHA256Managed())
+            using (var sha256 = new SHA256Managed())
             {
                 var hashed = sha256.ComputeHash(Encoding.UTF8.GetBytes(toCompare));
                 toReturn = hashed.SequenceEqual(hash);
@@ -23,7 +23,7 @@ namespace DaOAuthV2.Service
 
         public byte[] Sha256Hash(string toHash)
         {
-            using (SHA256Managed sha256 = new SHA256Managed())
+            using (var sha256 = new SHA256Managed())
             {
                 return sha256.ComputeHash(Encoding.UTF8.GetBytes(toHash));
             }

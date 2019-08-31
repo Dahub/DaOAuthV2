@@ -21,7 +21,9 @@ namespace DaOAuthV2.Service.Test.Fake
         {
             var user = FakeDataBase.Instance.Users.Where(u => u.Id.Equals(toDelete.Id)).FirstOrDefault();
             if (user != null)
+            {
                 FakeDataBase.Instance.Users.Remove(user);
+            }
         }
 
         public IEnumerable<User> GetAll()
@@ -63,31 +65,45 @@ namespace DaOAuthV2.Service.Test.Fake
             var u = FakeDataBase.Instance.Users.Where(usr => usr.Id.Equals(id)).FirstOrDefault();
 
             if (u == null)
+            {
                 return null;
+            }
 
             var ur = FakeDataBase.Instance.UsersRoles.Where(x => x.UserId.Equals(u.Id));
 
             if (ur == null)
+            {
                 return u;
+            }
+
             u.UsersRoles = new List<UserRole>();
             foreach (var userRole in ur)
             {                
                 var r = FakeDataBase.Instance.Roles.Where(x => x.Id.Equals(userRole.RoleId)).FirstOrDefault();
                 if (r != null)
+                {
                     userRole.Role = r;
+                }
+
                 u.UsersRoles.Add(userRole);
             }
 
             var uc = FakeDataBase.Instance.UsersClient.Where(x => x.UserId.Equals(u.Id));
 
             if (uc == null)
+            {
                 return u;
+            }
+
             u.UsersClients = new List<UserClient>();
             foreach(var userClient in uc)
             {
                 var c = FakeDataBase.Instance.Clients.Where(x => x.Id.Equals(userClient.ClientId)).FirstOrDefault();
                 if (c != null)
+                {
                     userClient.Client = c;
+                }
+
                 u.UsersClients.Add(userClient);
             }
 
@@ -99,18 +115,26 @@ namespace DaOAuthV2.Service.Test.Fake
             var u = FakeDataBase.Instance.Users.Where(user => user.UserName.Equals(userName, StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
 
             if (u == null)
+            {
                 return null;
+            }
 
             var ur = FakeDataBase.Instance.UsersRoles.Where(x => x.UserId.Equals(u.Id));
 
             if (ur == null)
+            {
                 return u;
+            }
+
             u.UsersRoles = new List<UserRole>();
             foreach (var userRole in ur)
             {
                 var r = FakeDataBase.Instance.Roles.Where(x => x.Id.Equals(userRole.RoleId)).FirstOrDefault();
                 if (r != null)
+                {
                     userRole.Role = r;
+                }
+
                 u.UsersRoles.Add(userRole);
             }
 

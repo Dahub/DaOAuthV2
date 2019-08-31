@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace DaOAuthV2.Service.DTO
 {
@@ -12,9 +10,13 @@ namespace DaOAuthV2.Service.DTO
         }
 
         public KeyValuePair<string, string> Sender { get; set; }
+
         public IDictionary<string, string> Receviers { get; set; } 
+
         public string Body { get; set; }
+
         public bool IsHtml { get; set; }
+
         public string Subject { get; set; }
     }
 }

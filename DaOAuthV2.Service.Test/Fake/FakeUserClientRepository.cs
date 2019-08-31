@@ -21,7 +21,9 @@ namespace DaOAuthV2.Service.Test.Fake
         {
             var uc = FakeDataBase.Instance.UsersClient.FirstOrDefault(r => r.Id.Equals(toDelete.Id));
             if (uc != null)
+            {
                 FakeDataBase.Instance.UsersClient.Remove(uc);
+            }
         }
 
         public IEnumerable<UserClient> GetAll()
@@ -39,12 +41,16 @@ namespace DaOAuthV2.Service.Test.Fake
             var user = FakeDataBase.Instance.Users.Where(u => u.UserName.Equals(userName, StringComparison.Ordinal)).FirstOrDefault();
 
             if (user == null)
+            {
                 return null;
+            }
 
             var userClients = FakeDataBase.Instance.UsersClient;
 
             if (userClients == null)
+            {
                 return null;
+            }
 
             foreach (var uc in userClients)
             {
@@ -78,12 +84,16 @@ namespace DaOAuthV2.Service.Test.Fake
              var user = FakeDataBase.Instance.Users.Where(u => u.UserName.Equals(userName, StringComparison.Ordinal)).FirstOrDefault();
 
             if (user == null)
+            {
                 return 0;
+            }
 
             var userClients = FakeDataBase.Instance.UsersClient;
 
             if (userClients == null)
+            {
                 return 0;
+            }
 
             foreach (var uc in userClients)
             {
@@ -116,9 +126,11 @@ namespace DaOAuthV2.Service.Test.Fake
         {
             var ucs = FakeDataBase.Instance.UsersClient.Where(uc => uc.UserId.Equals(userId));
             if (ucs == null)
+            {
                 new List<UserClient>();
+            }
 
-            foreach(var uc in ucs)
+            foreach (var uc in ucs)
             {
                 uc.Client = FakeDataBase.Instance.Clients.Where(c => c.Id.Equals(uc.ClientId)).FirstOrDefault();
                 uc.User = FakeDataBase.Instance.Users.Where(u => u.Id.Equals(uc.UserId)).FirstOrDefault();
@@ -136,16 +148,22 @@ namespace DaOAuthV2.Service.Test.Fake
         {
             var cl = FakeDataBase.Instance.Clients.Where(c => c.PublicId.Equals(clientPublicId)).FirstOrDefault();
             if (cl == null)
+            {
                 return null;
+            }
 
             var us = FakeDataBase.Instance.Users.Where(u => u.UserName.Equals(userName)).FirstOrDefault();
             if (us == null)
+            {
                 return null;
+            }
 
             var toReturn = FakeDataBase.Instance.UsersClient.Where(x => x.ClientId.Equals(cl.Id) && x.UserId.Equals(us.Id)).FirstOrDefault();
 
             if (toReturn == null)
+            {
                 return null;
+            }
 
             toReturn.Client = cl;
             toReturn.User = us;

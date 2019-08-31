@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using System;
 
 namespace DaOAuthV2.OAuth.Api.Models
 {

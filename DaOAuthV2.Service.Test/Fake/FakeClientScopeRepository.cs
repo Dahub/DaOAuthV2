@@ -12,10 +12,7 @@ namespace DaOAuthV2.Service.Test.Fake
 
         public int Add(ClientScope toAdd)
         {
-            if (FakeDataBase.Instance.ClientsScopes.Count > 0)
-                toAdd.Id = FakeDataBase.Instance.ClientsScopes.Max(u => u.Id) + 1;
-            else
-                toAdd.Id = 1;
+            toAdd.Id = FakeDataBase.Instance.ClientsScopes.Count > 0 ? FakeDataBase.Instance.ClientsScopes.Max(u => u.Id) + 1 : 1;
 
             FakeDataBase.Instance.ClientsScopes.Add(toAdd);
             return toAdd.Id;
@@ -25,7 +22,9 @@ namespace DaOAuthV2.Service.Test.Fake
         {
             var cs = FakeDataBase.Instance.ClientsScopes.FirstOrDefault(r => r.Id.Equals(toDelete.Id));
             if (cs != null)
+            {
                 FakeDataBase.Instance.ClientsScopes.Remove(cs);
+            }
         }
 
         public IEnumerable<ClientScope> GetAll()

@@ -32,9 +32,9 @@ namespace DaOAuthV2.OAuth.Api.Test
 
         protected static string _sammyScopeWording = "scopeASammy";
 
-        private static EncryptionService _encryptService = new EncryptionService();
+        private static readonly EncryptionService _encryptService = new EncryptionService();
 
-        private static RessourceServer _validRessourceServer = new RessourceServer()
+        private static readonly RessourceServer _validRessourceServer = new RessourceServer()
         {
             CreationDate = DateTime.Now,
             Description = "Test ressource Server",
@@ -45,7 +45,7 @@ namespace DaOAuthV2.OAuth.Api.Test
             ServerSecret = new byte[] { 0, 1, 0 }
         };
 
-        private static Scope _scope1 = new Scope()
+        private static readonly Scope _scope1 = new Scope()
         {
             Id = 1001,
             NiceWording = "scope 1",
@@ -53,7 +53,7 @@ namespace DaOAuthV2.OAuth.Api.Test
             Wording = "scope_1"
         };
 
-        private static Scope _scope2 = new Scope()
+        private static readonly Scope _scope2 = new Scope()
         {
             Id = 1002,
             NiceWording = "scope 2",
@@ -61,7 +61,7 @@ namespace DaOAuthV2.OAuth.Api.Test
             Wording = _sammyScopeWording
         };
 
-        private static Scope _scope3 = new Scope()
+        private static readonly Scope _scope3 = new Scope()
         {
             Id = 1003,
             NiceWording = "scope 3",
@@ -69,19 +69,19 @@ namespace DaOAuthV2.OAuth.Api.Test
             Wording = "scope_3"
         };
 
-        private static Role _roleAdmin = new Role()
+        private static readonly Role _roleAdmin = new Role()
         {
             Id = (int)ERole.ADMIN,
             Wording = "Admin"
         };
 
-        private static Role _roleUser = new Role()
+        private static readonly Role _roleUser = new Role()
         {
             Id = (int)ERole.USER,
             Wording = "User"
         };
 
-        private static User _sammyUser = new User()
+        private static readonly User _sammyUser = new User()
         {
             BirthDate = DateTime.Now.AddYears(-30),
             CreationDate = DateTime.Now,
@@ -94,26 +94,26 @@ namespace DaOAuthV2.OAuth.Api.Test
             ValidationToken = "abc"
         };
 
-        private static ClientType _confidentialClientType = new ClientType()
+        private static readonly ClientType _confidentialClientType = new ClientType()
         {
             Id = (int)EClientType.CONFIDENTIAL,
             Wording = ClientTypeName.Confidential
         };
 
-        private static ClientType _publicClientType = new ClientType()
+        private static readonly ClientType _publicClientType = new ClientType()
         {
             Id = (int)EClientType.PUBLIC,
             Wording = ClientTypeName.Public
         };
 
-        private static UserRole _sammyAdminRole = new UserRole()
+        private static readonly UserRole _sammyAdminRole = new UserRole()
         {
             Id = 1001,
             RoleId = _roleAdmin.Id,
             UserId = _sammyUser.Id
         };
 
-        private static Client _sammyClientConfidential = new Client()
+        private static readonly Client _sammyClientConfidential = new Client()
         {
             ClientSecret = _sammyClientSecretConfidential,
             ClientTypeId = _confidentialClientType.Id,
@@ -126,7 +126,7 @@ namespace DaOAuthV2.OAuth.Api.Test
             UserCreatorId = _sammyUser.Id
         };
 
-        private static Client _sammyClientPublic = new Client()
+        private static readonly Client _sammyClientPublic = new Client()
         {
             ClientSecret = _sammyClientSecretPublic,
             ClientTypeId = _publicClientType.Id,
@@ -139,35 +139,35 @@ namespace DaOAuthV2.OAuth.Api.Test
             UserCreatorId = _sammyUser.Id
         };
 
-        private static ClientScope _clientScopeConfidential = new ClientScope()
+        private static readonly ClientScope _clientScopeConfidential = new ClientScope()
         {
             ClientId = _sammyClientConfidential.Id,
             ScopeId = _scope2.Id,
             Id = 1002
         };
 
-        private static ClientScope _clientScopePublic = new ClientScope()
+        private static readonly ClientScope _clientScopePublic = new ClientScope()
         {
             ClientId = _sammyClientPublic.Id,
             ScopeId = _scope2.Id,
             Id = 1001
         };
 
-        private static ClientReturnUrl _clientReturnUrlPublic = new ClientReturnUrl()
+        private static readonly ClientReturnUrl _clientReturnUrlPublic = new ClientReturnUrl()
         {
             Id = 1002,
             ClientId = _sammyClientPublic.Id,
             ReturnUrl = _sammyReturnUrlPublic
         };
 
-        private static ClientReturnUrl _clientReturnUrlConfidential = new ClientReturnUrl()
+        private static readonly ClientReturnUrl _clientReturnUrlConfidential = new ClientReturnUrl()
         {
             Id = 1003,
             ClientId = _sammyClientConfidential.Id,
             ReturnUrl = _sammyReturnUrlConfidential
         };
 
-        private static UserClient _sammyUserClientConfidential = new UserClient()
+        private static readonly UserClient _sammyUserClientConfidential = new UserClient()
         {
             ClientId = _sammyClientConfidential.Id,
             CreationDate = DateTime.Now,
@@ -177,7 +177,7 @@ namespace DaOAuthV2.OAuth.Api.Test
             UserId = _sammyUser.Id
         };
 
-        private static UserClient _sammyUserClientPublic = new UserClient()
+        private static readonly UserClient _sammyUserClientPublic = new UserClient()
         {
             ClientId = _sammyClientPublic.Id,
             CreationDate = DateTime.Now,

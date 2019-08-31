@@ -33,7 +33,7 @@ namespace DaOAuthV2.Gui.Api.Test
         [TestMethod]
         public async Task Post_Should_Create_Ressource_Server()
         {
-            bool scopeIsReadWrite = true;
+            var scopeIsReadWrite = true;
 
             var toCreateRessourceServer = new CreateRessourceServerDto()
             {
@@ -208,7 +208,9 @@ namespace DaOAuthV2.Gui.Api.Test
             {
                 var myScope = updateRessourceServerDto.Scopes.SingleOrDefault(s => s.IdScope.Equals(scope.Id));
                 if (myScope == null)
+                {
                     myScope = updateRessourceServerDto.Scopes.SingleOrDefault(s => !s.IdScope.HasValue);
+                }
 
                 Assert.IsNotNull(myScope);
                 if (myScope.IdScope.HasValue)
@@ -234,7 +236,7 @@ namespace DaOAuthV2.Gui.Api.Test
         [TestMethod]
         public async Task Head_Should_Return_All_Ressources_Servers_Count()
         {
-            int totalRessourcesServers = 0;
+            var totalRessourcesServers = 0;
             using (var context = new DaOAuthContext(_dbContextOptions))
             {
                 totalRessourcesServers = context.RessourceServers.Count();
@@ -248,7 +250,7 @@ namespace DaOAuthV2.Gui.Api.Test
 
             Assert.IsTrue(httpResponseMessage.IsSuccessStatusCode);
             Assert.IsTrue(httpResponseMessage.Headers.Contains("X-Total-Count"));
-            httpResponseMessage.Headers.TryGetValues("X-Total-Count", out IEnumerable<string> values);
+            httpResponseMessage.Headers.TryGetValues("X-Total-Count", out var values);
             Assert.AreEqual(values.Count(), 1);
             Assert.AreEqual(values.First(), totalRessourcesServers.ToString());
         }
@@ -256,7 +258,7 @@ namespace DaOAuthV2.Gui.Api.Test
         [TestMethod]
         public async Task Get_Should_Return_All_Ressources_Servers()
         {
-            int totalRessourcesServers = 0;
+            var totalRessourcesServers = 0;
             IList<Scope> scopesFromDbs = null;
             using (var context = new DaOAuthContext(_dbContextOptions))
             {

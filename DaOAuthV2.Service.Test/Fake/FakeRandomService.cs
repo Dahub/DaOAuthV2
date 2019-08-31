@@ -4,8 +4,8 @@ namespace DaOAuthV2.Service.Test.Fake
 {
     public class FakeRandomService : IRandomService
     {
-        private int _int;
-        private string _string;
+        private readonly int _int;
+        private readonly string _string;
 
         public FakeRandomService()
         {

@@ -17,7 +17,7 @@ namespace DaOAuthV2.Gui.Api.Controllers
     [Authorize(Roles = RoleName.Administrator)]
     public class AdministrationController : ControllerBase
     {
-        private IAdministrationService _service;
+        private readonly IAdministrationService _service;
 
         /// <summary>
         /// Constructor

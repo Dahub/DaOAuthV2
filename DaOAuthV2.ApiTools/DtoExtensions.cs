@@ -7,7 +7,7 @@ namespace DaOAuthV2.ApiTools
     {
         public static SearchResult<T> ToSearchResult<T>(this IEnumerable<IDto> values, string currentUri, int count) where T : IDto
         {
-            SearchResult<T> result = new SearchResult<T>()
+            var result = new SearchResult<T>()
             {
                 Count = count,
                 Datas = values.Select(v => (T)v),
@@ -20,7 +20,7 @@ namespace DaOAuthV2.ApiTools
 
         public static SearchResult<T> ToSearchResult<T>(this IEnumerable<IDto> values, string currentUri, int count, ISearchCriteriasDto criterias) where T:IDto
         {
-            SearchResult<T> result = new SearchResult<T>()
+            var result = new SearchResult<T>()
             {
                 Count = count,
                 Datas = values.Select(v => (T)v),
@@ -29,20 +29,22 @@ namespace DaOAuthV2.ApiTools
             };
             result.Links.This = currentUri;
 
-            string pattern = $"skip={criterias.Skip}&limit={criterias.Limit}";
+            var pattern = $"skip={criterias.Skip}&limit={criterias.Limit}";
             if (count > criterias.Skip + criterias.Limit)
             {
-                string t = $"skip={criterias.Skip + criterias.Limit}&limit={criterias.Limit}";
+                var t = $"skip={criterias.Skip + criterias.Limit}&limit={criterias.Limit}";
                 result.Links.Next = currentUri.Replace(pattern, t);
             }
 
             if (criterias.Skip > 0)
             {
-                int val = (int)criterias.Skip - (int)criterias.Limit;
+                var val = (int)criterias.Skip - (int)criterias.Limit;
                 if (val < 0)
+                {
                     val = 0;
+                }
 
-                string t = $"skip={val}&limit={criterias.Limit}";
+                var t = $"skip={val}&limit={criterias.Limit}";
                 result.Links.Prev = currentUri.Replace(pattern, t);
             }
 

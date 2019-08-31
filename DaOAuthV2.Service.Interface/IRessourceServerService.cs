@@ -8,10 +8,15 @@ namespace DaOAuthV2.Service.Interface
         IEncryptionService EncryptonService { get; set; }
 
         int CreateRessourceServer(CreateRessourceServerDto toCreate);
+
         int SearchCount(RessourceServerSearchDto criterias);
+
         IEnumerable<RessourceServerDto> Search(RessourceServerSearchDto criterias);
+
         RessourceServerDto GetById(int id);
+
         RessourceServerDto Update(UpdateRessourceServerDto toUpdate);
+
         void Delete(DeleteRessourceServerDto toDelete);
     }
 }

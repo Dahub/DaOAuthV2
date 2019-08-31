@@ -32,7 +32,9 @@ namespace DaOAuthV2.Service
                 IList<ValidationResult> result = new List<ValidationResult>();
 
                 if (!String.IsNullOrEmpty(toValidate.RedirectUri) && !IsUriCorrect(toValidate.RedirectUri))
+                {
                     result.Add(new ValidationResult(resource["AuthorizeAuthorizeRedirectUrlIncorrect"]));
+                }
 
                 return result;
             }
@@ -45,6 +47,7 @@ namespace DaOAuthV2.Service
             Validate(authorizeInfo, ExtendValidation);
 
             if (String.IsNullOrEmpty(authorizeInfo.ResponseType))
+            {
                 throw new DaOAuthRedirectException()
                 {
                     RedirectUri = GenerateRedirectErrorMessage(
@@ -53,9 +56,11 @@ namespace DaOAuthV2.Service
                         errorLocal["AuthorizeResponseTypeParameterMandatory"],
                         authorizeInfo.State)
                 };
+            }
 
             if (!authorizeInfo.ResponseType.Equals(OAuthConvention.ResponseTypeCode, StringComparison.Ordinal)
                 && !authorizeInfo.ResponseType.Equals(OAuthConvention.ResponseTypeToken, StringComparison.Ordinal))
+            {
                 throw new DaOAuthRedirectException()
                 {
                     RedirectUri = GenerateRedirectErrorMessage(
@@ -64,8 +69,10 @@ namespace DaOAuthV2.Service
                        errorLocal["AuthorizeUnsupportedResponseType"],
                        authorizeInfo.State)
                 };
+            }
 
             if (String.IsNullOrEmpty(authorizeInfo.ClientPublicId))
+            {
                 throw new DaOAuthRedirectException()
                 {
                     RedirectUri = GenerateRedirectErrorMessage(
@@ -74,9 +81,11 @@ namespace DaOAuthV2.Service
                         errorLocal["AuthorizeClientIdParameterMandatory"],
                         authorizeInfo.State)
                 };
+            }
 
             if (!CheckIfClientIsValid(authorizeInfo.ClientPublicId, new Uri(authorizeInfo.RedirectUri),
                 authorizeInfo.ResponseType.Equals(OAuthConvention.ResponseTypeCode, StringComparison.Ordinal) ? EClientType.CONFIDENTIAL : EClientType.PUBLIC))
+            {
                 throw new DaOAuthRedirectException()
                 {
                     RedirectUri = GenerateRedirectErrorMessage(
@@ -85,8 +94,10 @@ namespace DaOAuthV2.Service
                         errorLocal["UnauthorizedClient"],
                         authorizeInfo.State)
                 };
+            }
 
             if (!CheckIfScopesAreAuthorizedForClient(authorizeInfo.ClientPublicId, authorizeInfo.Scope))
+            {
                 throw new DaOAuthRedirectException()
                 {
                     RedirectUri = GenerateRedirectErrorMessage(
@@ -95,8 +106,10 @@ namespace DaOAuthV2.Service
                         errorLocal["UnauthorizedScope"],
                         authorizeInfo.State)
                 };
+            }
 
             if (!CheckIfUserHasAuthorizeOrDeniedClientAccess(authorizeInfo.ClientPublicId, authorizeInfo.UserName))
+            {
                 throw new DaOAuthRedirectException()
                 {
                     RedirectUri = new Uri($"{Configuration.AuthorizeClientPageUrl}?" +
@@ -106,8 +119,10 @@ namespace DaOAuthV2.Service
                                     $"redirect_uri={authorizeInfo.RedirectUri}&" +
                                     $"scope={authorizeInfo.Scope}")
                 };
+            }
 
             if (!CheckIfUserHasAuthorizeClient(authorizeInfo.ClientPublicId, authorizeInfo.UserName))
+            {
                 throw new DaOAuthRedirectException()
                 {
                     RedirectUri = GenerateRedirectErrorMessage(
@@ -116,14 +131,18 @@ namespace DaOAuthV2.Service
                             errorLocal["AccessDenied"],
                             authorizeInfo.State)
                 };
+            }
 
             switch (authorizeInfo.ResponseType)
             {
                 case OAuthConvention.ResponseTypeCode:
                     var myCode = GenerateAndSaveCode(authorizeInfo.ClientPublicId, authorizeInfo.UserName, authorizeInfo.Scope);
-                    string codeLocation = String.Concat(authorizeInfo.RedirectUri, "?code=", myCode);
+                    var codeLocation = String.Concat(authorizeInfo.RedirectUri, "?code=", myCode);
                     if (!String.IsNullOrEmpty(authorizeInfo.State))
+                    {
                         codeLocation = String.Concat(codeLocation, "&state=", authorizeInfo.State);
+                    }
+
                     toReturn = new Uri(codeLocation);
                     break;
                 default: // response_type token 
@@ -135,9 +154,12 @@ namespace DaOAuthV2.Service
                         TokenName = OAuthConvention.AccessToken,
                         UserName = authorizeInfo.UserName
                     });
-                    string tokenLocation = String.Concat(authorizeInfo.RedirectUri, "?token=", myToken.Token, "&token_type=bearer&expires_in=", Configuration.AccesTokenLifeTimeInSeconds);
+                    var tokenLocation = String.Concat(authorizeInfo.RedirectUri, "?token=", myToken.Token, "&token_type=bearer&expires_in=", Configuration.AccesTokenLifeTimeInSeconds);
                     if (!String.IsNullOrEmpty(authorizeInfo.State))
+                    {
                         tokenLocation = String.Concat(tokenLocation, "&state=", authorizeInfo.State);
+                    }
+
                     toReturn = new Uri(tokenLocation);
                     break;
             }
@@ -151,7 +173,7 @@ namespace DaOAuthV2.Service
 
             Validate(tokenInfo);
 
-            IStringLocalizer errorLocal = GetErrorStringLocalizer();
+            var errorLocal = GetErrorStringLocalizer();
 
             TokenInfoDto result = null;
 
@@ -186,25 +208,31 @@ namespace DaOAuthV2.Service
 
             Logger.LogInformation($"Introspect token {introspectInfo.Token}");
 
-            IntrospectInfoDto toReturn = new IntrospectInfoDto()
+            var toReturn = new IntrospectInfoDto()
             {
                 IsValid = false
             };
 
-            string[] authsInfos = introspectInfo.AuthorizationHeader.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            var authsInfos = introspectInfo.AuthorizationHeader.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
 
             if (authsInfos.Length != 2)
+            {
                 return toReturn;
+            }
 
             if (!authsInfos[0].Equals("Basic", StringComparison.OrdinalIgnoreCase))
+            {
                 return toReturn;
+            }
 
-            string credentials = Encoding.UTF8.GetString(Convert.FromBase64String(authsInfos[1]));
-            int separatorIndex = credentials.IndexOf(':');
+            var credentials = Encoding.UTF8.GetString(Convert.FromBase64String(authsInfos[1]));
+            var separatorIndex = credentials.IndexOf(':');
             if (separatorIndex == -1)
+            {
                 return toReturn;
+            }
 
-            string rsLogin = credentials.Substring(0, separatorIndex);
+            var rsLogin = credentials.Substring(0, separatorIndex);
             RessourceServer rs = null;
 
             using (var context = RepositoriesFactory.CreateContext())
@@ -214,14 +242,20 @@ namespace DaOAuthV2.Service
 
 
                 if (rs == null)
+                {
                     return toReturn;
+                }
 
-                string rsSecret = credentials.Substring(separatorIndex + 1);
+                var rsSecret = credentials.Substring(separatorIndex + 1);
                 if (!EncryptonService.AreEqualsSha256(String.Concat(Configuration.PasswordSalt, rsSecret), rs.ServerSecret))
+                {
                     return toReturn;
+                }
 
                 if (!rs.IsValid)
+                {
                     return toReturn;
+                }
 
                 var tokenInfo = JwtService.ExtractToken(new ExtractTokenDto()
                 {
@@ -230,7 +264,9 @@ namespace DaOAuthV2.Service
                 });
 
                 if (!tokenInfo.IsValid)
+                {
                     return toReturn;
+                }
 
                 toReturn.ClientPublicId = tokenInfo.ClientId;
                 toReturn.Expire = tokenInfo.Expire;
@@ -248,51 +284,63 @@ namespace DaOAuthV2.Service
             TokenInfoDto toReturn = null;
 
             if (String.IsNullOrWhiteSpace(tokenInfo.ClientPublicId))
+            {
                 throw new DaOAuthTokenException()
                 {
                     Error = OAuthConvention.ErrorNameInvalidRequest,
                     Description = errorLocal["ClientIdParameterError"]
                 };
+            }
 
             using (var context = RepositoriesFactory.CreateContext())
             {
                 var clientRepo = RepositoriesFactory.GetClientRepository(context);
-                Client myClient = clientRepo.GetByPublicId(tokenInfo.ClientPublicId);
+                var myClient = clientRepo.GetByPublicId(tokenInfo.ClientPublicId);
 
                 if (!CheckIfClientsCredentialsAreValid(myClient, tokenInfo.AuthorizationHeader))
+                {
                     throw new DaOAuthTokenException()
                     {
                         Error = OAuthConvention.ErrorNameUnauthorizedClient,
                         Description = errorLocal["UnauthorizedClient"]
                     };
+                }
 
                 if (String.IsNullOrWhiteSpace(tokenInfo.CodeValue))
+                {
                     throw new DaOAuthTokenException()
                     {
                         Error = OAuthConvention.ErrorNameInvalidRequest,
                         Description = errorLocal["CodeParameterError"]
                     };
+                }
 
-                if (String.IsNullOrWhiteSpace(tokenInfo.RedirectUrl) || !Uri.TryCreate(tokenInfo.RedirectUrl, UriKind.Absolute, out Uri myUri))
+                if (String.IsNullOrWhiteSpace(tokenInfo.RedirectUrl) || !Uri.TryCreate(tokenInfo.RedirectUrl, UriKind.Absolute, out var myUri))
+                {
                     throw new DaOAuthTokenException()
                     {
                         Error = OAuthConvention.ErrorNameInvalidRequest,
                         Description = errorLocal["ReturnUrlParameterError"]
                     };
+                }
 
                 if (!CheckIfClientValidForToken(myClient, tokenInfo.RedirectUrl, OAuthConvention.ResponseTypeCode))
+                {
                     throw new DaOAuthTokenException()
                     {
                         Error = OAuthConvention.ErrorNameInvalidClient,
                         Description = errorLocal["AskTokenInvalidClient"]
                     };
+                }
 
-                if (!CheckIfCodeIsValid(tokenInfo.ClientPublicId, tokenInfo.Scope, tokenInfo.CodeValue, context, out string userName))
+                if (!CheckIfCodeIsValid(tokenInfo.ClientPublicId, tokenInfo.Scope, tokenInfo.CodeValue, context, out var userName))
+                {
                     throw new DaOAuthTokenException()
                     {
                         Error = OAuthConvention.ErrorNameInvalidGrant,
                         Description = errorLocal["AskTokenInvalidGrant"]
                     };
+                }
 
                 toReturn = GenerateAccessTokenAndUpdateRefreshToken(tokenInfo, context, userName);
 
@@ -307,23 +355,27 @@ namespace DaOAuthV2.Service
             TokenInfoDto toReturn = null;
 
             if (String.IsNullOrWhiteSpace(tokenInfo.ClientPublicId))
+            {
                 throw new DaOAuthTokenException()
                 {
                     Error = OAuthConvention.ErrorNameRefreshToken,
                     Description = errorLocal["RefreshTokenParameterError"]
                 };
+            }
 
             using (var context = RepositoriesFactory.CreateContext())
             {
                 var clientRepo = RepositoriesFactory.GetClientRepository(context);
-                Client myClient = clientRepo.GetByPublicId(tokenInfo.ClientPublicId);
+                var myClient = clientRepo.GetByPublicId(tokenInfo.ClientPublicId);
 
                 if (!CheckIfClientsCredentialsAreValid(myClient, tokenInfo.AuthorizationHeader))
+                {
                     throw new DaOAuthTokenException()
                     {
                         Error = OAuthConvention.ErrorNameUnauthorizedClient,
                         Description = errorLocal["UnauthorizedClient"]
                     };
+                }
 
                 var tokenDetail = JwtService.ExtractToken(new ExtractTokenDto()
                 {
@@ -332,18 +384,22 @@ namespace DaOAuthV2.Service
                 });
 
                 if (!CheckIfTokenIsValid(tokenDetail, context))
+                {
                     throw new DaOAuthTokenException()
                     {
                         Error = OAuthConvention.ErrorNameInvalidGrant,
                         Description = errorLocal["RefreshTokenInvalid"]
                     };
+                }
 
                 if (!CheckIfScopesAreAuthorizedForClient(tokenDetail.ClientId, tokenInfo.Scope))
+                {
                     throw new DaOAuthTokenException()
                     {
                         Error = OAuthConvention.ErrorNameInvalidScope,
                         Description = errorLocal["UnauthorizedScope"]
                     };
+                }
 
                 toReturn = GenerateAccessTokenAndUpdateRefreshToken(tokenInfo, context, tokenDetail.UserName);
             }
@@ -356,48 +412,58 @@ namespace DaOAuthV2.Service
             TokenInfoDto toReturn = null;
 
             if (String.IsNullOrWhiteSpace(tokenInfo.ParameterUsername))
+            {
                 throw new DaOAuthTokenException()
                 {
                     Error = OAuthConvention.ErrorNameInvalidRequest,
                     Description = errorLocal["UserNameParameterError"]
                 };
+            }
 
             if (String.IsNullOrWhiteSpace(tokenInfo.Password))
+            {
                 throw new DaOAuthTokenException()
                 {
                     Error = OAuthConvention.ErrorNameInvalidRequest,
                     Description = errorLocal["PasswordParameterError"]
                 };
+            }
 
             using (var context = RepositoriesFactory.CreateContext())
             {
                 var clientRepo = RepositoriesFactory.GetClientRepository(context);
-                Client myClient = clientRepo.GetByPublicId(tokenInfo.ClientPublicId);
+                var myClient = clientRepo.GetByPublicId(tokenInfo.ClientPublicId);
 
                 if (!CheckIfClientsCredentialsAreValid(myClient, tokenInfo.AuthorizationHeader))
+                {
                     throw new DaOAuthTokenException()
                     {
                         Error = OAuthConvention.ErrorNameUnauthorizedClient,
                         Description = errorLocal["UnauthorizedClient"]
                     };
+                }
 
                 var repo = RepositoriesFactory.GetUserRepository(context);
                 var user = repo.GetByUserName(tokenInfo.ParameterUsername);
 
                 if (user == null || !user.IsValid || !EncryptonService.AreEqualsSha256(
                     String.Concat(Configuration.PasswordSalt, tokenInfo.Password), user.Password))
+                {
                     throw new DaOAuthTokenException()
                     {
                         Error = OAuthConvention.ErrorNameInvalidGrant,
                         Description = errorLocal["UserCredentialsIncorrects"]
                     };
+                }
 
                 if (!CheckIfScopesAreAuthorizedForClient(myClient.PublicId, tokenInfo.Scope))
+                {
                     throw new DaOAuthTokenException()
                     {
                         Error = OAuthConvention.ErrorNameInvalidScope,
                         Description = errorLocal["UnauthorizedScope"]
                     };
+                }
 
                 toReturn = GenerateAccessTokenAndUpdateRefreshToken(tokenInfo, context, tokenInfo.ParameterUsername);
             }
@@ -412,24 +478,27 @@ namespace DaOAuthV2.Service
             using (var context = RepositoriesFactory.CreateContext())
             {
                 var clientRepo = RepositoriesFactory.GetClientRepository(context);
-                Client myClient = clientRepo.GetByPublicId(tokenInfo.ClientPublicId);
+                var myClient = clientRepo.GetByPublicId(tokenInfo.ClientPublicId);
 
                 if (!CheckIfClientsCredentialsAreValid(myClient, tokenInfo.AuthorizationHeader))
+                {
                     throw new DaOAuthTokenException()
                     {
                         Error = OAuthConvention.ErrorNameUnauthorizedClient,
                         Description = errorLocal["UnauthorizedClient"]
                     };
+                }
 
                 if (!CheckIfScopesAreAuthorizedForClient(myClient.PublicId, tokenInfo.Scope))
+                {
                     throw new DaOAuthTokenException()
                     {
                         Error = OAuthConvention.ErrorNameInvalidScope,
                         Description = errorLocal["UnauthorizedScope"]
                     };
+                }
 
-             
-                JwtTokenDto accesToken = JwtService.GenerateToken(new CreateTokenDto()
+                var accesToken = JwtService.GenerateToken(new CreateTokenDto()
                 {
                     ClientPublicId = myClient.PublicId,
                     Scope = tokenInfo.Scope,
@@ -452,7 +521,7 @@ namespace DaOAuthV2.Service
 
         private string GenerateAndSaveCode(string clientPublicId, string userName, string scope)
         {
-            string codeValue = RandomService.GenerateRandomString(CodeLenght);
+            var codeValue = RandomService.GenerateRandomString(CodeLenght);
 
             using (var context = RepositoriesFactory.CreateContext())
             {
@@ -479,7 +548,7 @@ namespace DaOAuthV2.Service
         private TokenInfoDto GenerateAccessTokenAndUpdateRefreshToken(AskTokenDto tokenInfo, IContext context, string userName)
         {
             TokenInfoDto toReturn;
-            JwtTokenDto newRefreshToken = JwtService.GenerateToken(new CreateTokenDto()
+            var newRefreshToken = JwtService.GenerateToken(new CreateTokenDto()
             {
                 ClientPublicId = tokenInfo.ClientPublicId,
                 Scope = tokenInfo.Scope,
@@ -488,7 +557,7 @@ namespace DaOAuthV2.Service
                 UserName = userName
             });
 
-            JwtTokenDto accesToken = JwtService.GenerateToken(new CreateTokenDto()
+            var accesToken = JwtService.GenerateToken(new CreateTokenDto()
             {
                 ClientPublicId = tokenInfo.ClientPublicId,
                 Scope = tokenInfo.Scope,
@@ -516,37 +585,41 @@ namespace DaOAuthV2.Service
         private bool CheckIfTokenIsValid(JwtTokenDto tokenDetail, IContext context)
         {
             if (!tokenDetail.IsValid)
+            {
                 return false;
+            }
 
             var clientUserRepo = RepositoriesFactory.GetUserClientRepository(context);
             var client = clientUserRepo.GetUserClientByClientPublicIdAndUserName(tokenDetail.ClientId, tokenDetail.UserName);
 
-            if (client == null || !client.IsActif)
-                return false;
-
-            return client.RefreshToken != null && client.RefreshToken.Equals(tokenDetail.Token, StringComparison.Ordinal);
+            return client == null || !client.IsActif
+                ? false
+                : client.RefreshToken != null && client.RefreshToken.Equals(tokenDetail.Token, StringComparison.Ordinal);
         }
 
         private static bool CheckIfClientValidForToken(Client client, string returnUrl, string responseType)
         {
             if (client == null || String.IsNullOrWhiteSpace(returnUrl) || String.IsNullOrWhiteSpace(responseType))
+            {
                 return false;
+            }
 
             if (!client.ClientReturnUrls.Where(cru => cru.ReturnUrl.Equals(returnUrl, StringComparison.OrdinalIgnoreCase)).Any())
+            {
                 return false;
+            }
 
             if (responseType.Equals(OAuthConvention.ResponseTypeCode, StringComparison.OrdinalIgnoreCase) && client.ClientTypeId.Equals((int)EClientType.CONFIDENTIAL))
+            {
                 return true;
+            }
 
-            if (responseType.Equals(OAuthConvention.ResponseTypeToken, StringComparison.OrdinalIgnoreCase) && client.ClientTypeId.Equals((int)EClientType.PUBLIC))
-                return true;
-
-            return false;
+            return responseType.Equals(OAuthConvention.ResponseTypeToken, StringComparison.OrdinalIgnoreCase) && client.ClientTypeId.Equals((int)EClientType.PUBLIC);
         }
 
         private static bool IsUriCorrect(string uri)
         {
-            return Uri.TryCreate(uri, UriKind.Absolute, out Uri u);
+            return Uri.TryCreate(uri, UriKind.Absolute, out var u);
         }
 
         private static Uri GenerateRedirectErrorMessage(string redirectUri, string errorName, string errorDescription, string stateInfo)
@@ -571,13 +644,19 @@ namespace DaOAuthV2.Service
                 var client = clientRepo.GetByPublicId(clientPublicId);
 
                 if (client == null)
+                {
                     return false;
+                }
 
                 if (!client.IsValid)
+                {
                     return false;
+                }
 
                 if (client.ClientTypeId != (int)clientType)
+                {
                     return false;
+                }
 
                 IList<Uri> clientUris = new List<Uri>();
                 foreach (var uri in clientReturnUrlRepo.GetAllByClientPublicId(clientPublicId))
@@ -586,7 +665,9 @@ namespace DaOAuthV2.Service
                 }
 
                 if (!clientUris.Contains(requestRedirectUri))
+                {
                     return false;
+                }
             }
 
             return true;
@@ -596,25 +677,35 @@ namespace DaOAuthV2.Service
         {
             string[] scopes = null;
             if (!String.IsNullOrEmpty(scope))
+            {
                 scopes = scope.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            }
             else
-                return true; 
+            {
+                return true;
+            }
 
             using (var context = RepositoriesFactory.CreateContext())
             {
                 var scopeRepo = RepositoriesFactory.GetScopeRepository(context);
-                IEnumerable<string> clientScopes = scopeRepo.GetByClientPublicId(clientPublicId).Select(s => s.Wording.ToUpper(CultureInfo.CurrentCulture));
+                var clientScopes = scopeRepo.GetByClientPublicId(clientPublicId).Select(s => s.Wording.ToUpper(CultureInfo.CurrentCulture));
 
                 if ((scopes == null || scopes.Length == 0) && clientScopes.Count() == 0) // client sans scope défini
+                {
                     return true;
+                }
 
                 if ((scopes == null || scopes.Length == 0) && clientScopes.Count() > 0) // client avec scopes définis
+                {
                     return false;
+                }
 
                 foreach (var s in scopes)
                 {
                     if (!clientScopes.Contains<string>(s.ToUpper(CultureInfo.InvariantCulture)))
+                    {
                         return false;
+                    }
                 }
             }
 
@@ -645,11 +736,19 @@ namespace DaOAuthV2.Service
             bool IsValid(Code code)
             {
                 if (code == null)
+                {
                     return false;
+                }
+
                 if (!code.IsValid)
+                {
                     return false;
+                }
+
                 if (code.ExpirationTimeStamp < new DateTimeOffset(DateTime.Now).ToUnixTimeSeconds())
+                {
                     return false;
+                }
 
                 if (!String.IsNullOrWhiteSpace(code.Scope) && !String.IsNullOrWhiteSpace(scope))
                 {
@@ -658,27 +757,30 @@ namespace DaOAuthV2.Service
                     foreach (var s in scopes)
                     {
                         if (!codeScopes.Contains(s))
+                        {
                             return false;
+                        }
                     }
                 }
 
-                if (!code.UserClient.Client.PublicId.Equals(clientPublicId, StringComparison.Ordinal))
-                    return false;
-
-                return true;
+                return code.UserClient.Client.PublicId.Equals(clientPublicId, StringComparison.Ordinal);
             }
 
             userName = String.Empty;
-            bool toReturn = true;
+            var toReturn = true;
 
             var codeRepo = RepositoriesFactory.GetCodeRepository(context);
-            Code myCode = codeRepo.GetByCode(codeValue);
+            var myCode = codeRepo.GetByCode(codeValue);
 
             if (myCode == null)
+            {
                 return false;
+            }
 
             if (!IsValid(myCode))
+            {
                 toReturn = false;
+            }
             else
             {
                 myCode.IsValid = false;
@@ -693,22 +795,28 @@ namespace DaOAuthV2.Service
         private bool CheckIfClientsCredentialsAreValid(Client client, string authentificationHeader)
         {
             if (client == null || String.IsNullOrWhiteSpace(authentificationHeader))
+            {
                 return false;
+            }
 
-            string[] authsInfos = authentificationHeader.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            var authsInfos = authentificationHeader.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
 
             if (authsInfos.Length != 2)
+            {
                 return false;
+            }
 
             if (!authsInfos[0].Equals("Basic", StringComparison.OrdinalIgnoreCase))
+            {
                 return false;
+            }
 
-            string credentials = Encoding.UTF8.GetString(Convert.FromBase64String(authsInfos[1]));
-            int separatorIndex = credentials.IndexOf(':');
+            var credentials = Encoding.UTF8.GetString(Convert.FromBase64String(authsInfos[1]));
+            var separatorIndex = credentials.IndexOf(':');
             if (separatorIndex >= 0)
             {
-                string clientPublicId = credentials.Substring(0, separatorIndex);
-                string clientSecret = credentials.Substring(separatorIndex + 1);
+                var clientPublicId = credentials.Substring(0, separatorIndex);
+                var clientSecret = credentials.Substring(separatorIndex + 1);
 
                 return clientSecret.Equals(client.ClientSecret, StringComparison.Ordinal)
                     && client.IsValid

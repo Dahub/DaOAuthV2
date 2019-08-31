@@ -118,11 +118,11 @@ namespace DaOAuthV2.OAuth.Api.Test
         [TestMethod]
         public async Task Token_For_Grant_Type_Token_Should_Return_Valid_Token()
         {
-            string code = "abc";
+            var code = "abc";
 
             using (var context = new DaOAuthContext(_dbContextOptions))
             {
-                Code newCode = new Code()
+                var newCode = new Code()
                 {
                     CodeValue = code,
                     ExpirationTimeStamp = long.MaxValue,
@@ -150,7 +150,7 @@ namespace DaOAuthV2.OAuth.Api.Test
             _client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             _client.DefaultRequestHeaders.Authorization = BuildAuthenticationHeaderValue(_sammyClientPublicIdConfidential, _sammyClientSecretConfidential);
 
-            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, "http://localhost/token");
+            var request = new HttpRequestMessage(HttpMethod.Post, "http://localhost/token");
 
             request.Content = formContent;
 

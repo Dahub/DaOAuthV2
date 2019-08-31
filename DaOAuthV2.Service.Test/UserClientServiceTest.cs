@@ -71,7 +71,7 @@ namespace DaOAuthV2.Service.Test
         [TestMethod]
         public void Search_Count_Should_Count_All_Clients_For_User_Name()
         {
-            int total = _service.SearchCount(
+            var total = _service.SearchCount(
                 new DTO.UserClientSearchDto()
                 {
                     UserName = _validUser.UserName
@@ -245,7 +245,7 @@ namespace DaOAuthV2.Service.Test
         [TestMethod]
         public void Create_New_User_Client_Should_Return_Int()
         {
-            int id = _service.CreateUserClient(new DTO.CreateUserClientDto()
+            var id = _service.CreateUserClient(new DTO.CreateUserClientDto()
             {
                 ClientPublicId = "pub-c-500",
                 UserName = _validUser.UserName,
@@ -267,7 +267,7 @@ namespace DaOAuthV2.Service.Test
         [TestMethod]
         public void Create_New_Inactif_User_Client_Should_Return_Int_And_Be_Inactif()
         {
-            int id = _service.CreateUserClient(new DTO.CreateUserClientDto()
+            var id = _service.CreateUserClient(new DTO.CreateUserClientDto()
             {
                 ClientPublicId = "pub-c-500",
                 UserName = _validUser.UserName,

@@ -18,7 +18,9 @@ namespace DaOAuthV2.Service.DTO
 
         [Required(ErrorMessage = "CreateUserDtoPasswordRequired")]
         public string Password { get; set; }
+
         public string RepeatPassword { get; set; }
+
         public DateTime? BirthDate { get; set; }
     }
 }

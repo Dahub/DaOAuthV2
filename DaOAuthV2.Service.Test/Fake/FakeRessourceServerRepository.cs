@@ -12,10 +12,8 @@ namespace DaOAuthV2.Service.Test.Fake
 
         public int Add(RessourceServer toAdd)
         {
-            if (FakeDataBase.Instance.RessourceServers.Count > 0)
-                toAdd.Id = FakeDataBase.Instance.RessourceServers.Max(u => u.Id) + 1;
-            else
-                toAdd.Id = 1;
+            toAdd.Id = FakeDataBase.Instance.RessourceServers.Count > 0 ? 
+                FakeDataBase.Instance.RessourceServers.Max(u => u.Id) + 1 : 1;
 
             FakeDataBase.Instance.RessourceServers.Add(toAdd);
             return toAdd.Id;
@@ -25,7 +23,9 @@ namespace DaOAuthV2.Service.Test.Fake
         {
             var rs =FakeDataBase.Instance.RessourceServers.FirstOrDefault(r => r.Id.Equals(toDelete.Id));
             if (rs != null)
+            {
                 FakeDataBase.Instance.RessourceServers.Remove(rs);
+            }
         }
 
         public IEnumerable<RessourceServer> GetAll()
@@ -55,7 +55,10 @@ namespace DaOAuthV2.Service.Test.Fake
         {
             var rs = FakeDataBase.Instance.RessourceServers.Where(c => c.Id.Equals(id)).FirstOrDefault();
             if (rs == null)
+            {
                 return null;
+            }
+
             rs.Scopes = FakeDataBase.Instance.Scopes.Where(s => s.RessourceServerId.Equals(id)).ToList();
             return rs;
         }
@@ -69,7 +72,9 @@ namespace DaOAuthV2.Service.Test.Fake
         {
             var rs = FakeDataBase.Instance.RessourceServers.FirstOrDefault(r => r.Id.Equals(toUpdate.Id));
             if (rs != null)
+            {
                 rs = toUpdate;
+            }
         }
     }
 }

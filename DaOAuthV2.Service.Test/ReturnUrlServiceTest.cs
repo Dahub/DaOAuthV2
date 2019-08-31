@@ -213,7 +213,7 @@ namespace DaOAuthV2.Service.Test
         [TestMethod]
         public void Create_Return_Url_Should_Add_Return_Url()
         {
-            int id = _service.CreateReturnUrl(new DTO.CreateReturnUrlDto()
+            var id = _service.CreateReturnUrl(new DTO.CreateReturnUrlDto()
             {
                 ClientPublicId = _validClient.PublicId,
                 ReturnUrl = _returnUrl,
@@ -423,7 +423,7 @@ namespace DaOAuthV2.Service.Test
         [TestMethod]
         public void Update_Return_Url_Should_Update_Return_Url()
         {
-            string newUrl = "http://www.i_am_new.com";
+            var newUrl = "http://www.i_am_new.com";
             FakeDataBase.Instance.ClientReturnUrls.Add(new ClientReturnUrl()
             {
                 ClientId = _validClient.Id,

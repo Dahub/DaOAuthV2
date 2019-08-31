@@ -41,7 +41,10 @@ namespace DaOAuthV2.Service
             }
 
             if (users != null)
+            {
                 return users.ToAdminDto();
+            }
+
             return new List<AdminUsrDto>();
         }
 
@@ -51,7 +54,9 @@ namespace DaOAuthV2.Service
             IList<ValidationResult> result = new List<ValidationResult>();
 
             if (c.Limit - c.Skip > 50)
+            {
                 result.Add(new ValidationResult(String.Format(resource["SearchAdministrationAskTooMuch"], c)));
+            }
 
             return result;
         }
@@ -65,7 +70,9 @@ namespace DaOAuthV2.Service
                 var user = userClientRepo.GetById(idUser);
 
                 if (user == null)
+                {
                     throw new DaOAuthNotFoundException("GetByIdUserUserNotFound");
+                }
 
                 return user.ToAdminDetailDto();
             }

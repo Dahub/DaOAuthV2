@@ -17,10 +17,12 @@ namespace DaOAuthV2.Service.DTO
 
         [Required(ErrorMessage = "CreateRessourceServerPasswordRequired")]
         public string Password { get; set; }
+
         public string RepeatPassword { get; set; }
 
         [Required(ErrorMessage = "CreateRessourceServerNameRequired")]
         public string Name { get; set; }
+
         public string Description { get; set; }
 
         [IgnoreDataMember]
@@ -33,6 +35,7 @@ namespace DaOAuthV2.Service.DTO
     public class CreateRessourceServerScopesDto
     {
         public string NiceWording { get; set; }
+
         public bool IsReadWrite { get; set; }
     }
 }

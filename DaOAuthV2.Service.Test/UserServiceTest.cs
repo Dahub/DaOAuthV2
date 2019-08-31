@@ -52,7 +52,7 @@ namespace DaOAuthV2.Service.Test
         [TestMethod]
         public void Get_By_Valid_User_Name_Should_Return_User()
         {
-            string userName = FakeDataBase.Instance.Users.FirstOrDefault(u => u.IsValid.Equals(true)).UserName;
+            var userName = FakeDataBase.Instance.Users.FirstOrDefault(u => u.IsValid.Equals(true)).UserName;
 
             var user = _service.GetUser(userName);
 
@@ -63,7 +63,7 @@ namespace DaOAuthV2.Service.Test
         [TestMethod]
         public void Get_By_Invalid_User_Name_Should_Return_Null()
         {
-            string userName = FakeDataBase.Instance.Users.FirstOrDefault(u => u.IsValid.Equals(false)).UserName;
+            var userName = FakeDataBase.Instance.Users.FirstOrDefault(u => u.IsValid.Equals(false)).UserName;
 
             var user = _service.GetUser(userName);
 
@@ -73,7 +73,7 @@ namespace DaOAuthV2.Service.Test
         [TestMethod]
         public void Get_By_Non_Existing_User_Name_Should_Return_Null()
         {
-            string userName = "i_dont_exists";
+            var userName = "i_dont_exists";
 
             var user = _service.GetUser(userName);
 
@@ -118,7 +118,7 @@ namespace DaOAuthV2.Service.Test
         [TestMethod]
         public void Create_New_User_Should_Return_Int()
         {
-            int id = _service.CreateUser(new DTO.CreateUserDto()
+            var id = _service.CreateUser(new DTO.CreateUserDto()
             {
                 BirthDate = new DateTime(1978, 09, 16),
                 EMail = "test@test.com",
@@ -664,7 +664,7 @@ namespace DaOAuthV2.Service.Test
         [ExpectedException(typeof(DaOAuthServiceException))]
         public void Update_With_Existing_Email_Should_Throw_Exception()
         {
-            string email = "existing@test.com";
+            var email = "existing@test.com";
 
             FakeDataBase.Instance.Users.Add(new Domain.User()
             {

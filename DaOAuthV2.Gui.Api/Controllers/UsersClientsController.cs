@@ -16,7 +16,7 @@ namespace DaOAuthV2.Gui.Api.Controllers
     [Authorize]
     public class UsersClientsController : ControllerBase
     {
-        private IUserClientService _service;
+        private readonly IUserClientService _service;
 
         /// <summary>
         /// Constructor
@@ -60,7 +60,7 @@ namespace DaOAuthV2.Gui.Api.Controllers
         public IActionResult Post(CreateUserClientDto toCreate)
         {
             toCreate.UserName = User.Identity.Name;
-            int createdId = _service.CreateUserClient(toCreate);
+            var createdId = _service.CreateUserClient(toCreate);
             var currentUrl = UriHelper.GetDisplayUrl(Request);
             return Created($"{currentUrl}/{createdId}", null);
         }

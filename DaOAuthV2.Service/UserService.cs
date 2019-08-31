@@ -13,8 +13,11 @@ namespace DaOAuthV2.Service
     public class UserService : ServiceBase, IUserService
     {
         public IMailService MailService { get; set; }
+
         public IRandomService RandomService { get; set; }
+
         public IEncryptionService EncryptionService { get; set; }
+
         public IJwtService JwtService { get; set; }
 
         public void ChangeUserPassword(ChangePasswordDto infos)
@@ -31,17 +34,25 @@ namespace DaOAuthV2.Service
                 var user = userRepo.GetByUserName(infos.UserName);
 
                 if (user == null || !user.IsValid)
+                {
                     throw new DaOAuthServiceException(local["ChangeUserPasswordUserInvalid"]);
+                }
 
                 if (!EncryptionService.AreEqualsSha256(
                         String.Concat(Configuration.PasswordSalt, infos.OldPassword), user.Password))
+                {
                     throw new DaOAuthServiceException(local["ChangeUserPasswordPasswordInvalid"]);
+                }
 
                 if (!infos.NewPassword.Equals(infos.NewPasswordRepeat, StringComparison.Ordinal))
+                {
                     throw new DaOAuthServiceException(local["ChangeUserPasswordDifferentsNewPasswords"]);
+                }
 
                 if (!infos.NewPassword.IsMatchPasswordPolicy())
+                {
                     throw new DaOAuthServiceException(local["ChangeUserPasswordNewPasswordDontMatchPolicy"]);
+                }
 
                 user.Password = EncryptionService.Sha256Hash(String.Concat(Configuration.PasswordSalt, infos.NewPassword));
 
@@ -63,20 +74,28 @@ namespace DaOAuthV2.Service
                 if (!String.IsNullOrEmpty(toCreate.Password)
                     && !String.IsNullOrEmpty(toCreate.RepeatPassword)
                     && !toCreate.Password.Equals(toCreate.RepeatPassword, StringComparison.Ordinal))
+                {
                     result.Add(new ValidationResult(errorResource["CreateUserPasswordDontMatch"]));
+                }
 
                 if (!toValidate.Password.IsMatchPasswordPolicy())
+                {
                     result.Add(new ValidationResult(errorResource["CreateUserPasswordPolicyFailed"]));
+                }
 
                 using (var c = RepositoriesFactory.CreateContext())
                 {
                     var repo = RepositoriesFactory.GetUserRepository(c);
 
                     if (repo.GetByUserName(toCreate.UserName) != null)
+                    {
                         result.Add(new ValidationResult(String.Format(errorResource["CreateUserUserNameExists"], toCreate.UserName)));
+                    }
 
                     if (repo.GetByEmail(toCreate.EMail) != null)
+                    {
                         result.Add(new ValidationResult(String.Format(errorResource["CreateUserEmailExists"], toCreate.EMail)));
+                    }
                 }
 
                 return result;
@@ -85,10 +104,10 @@ namespace DaOAuthV2.Service
 
             Validate(toCreate, ExtendValidation);
 
-            int idCreated = 0;
+            var idCreated = 0;
             var mailResource = this.GetMailStringLocalizer();
 
-            User u = new User()
+            var u = new User()
             {
                 BirthDate = toCreate.BirthDate,
                 CreationDate = DateTime.Now,
@@ -118,7 +137,7 @@ namespace DaOAuthV2.Service
                     });
                 }
 
-                Uri link = new Uri(String.Format(Configuration.ValidateAccountPageUrl, u.UserName, u.ValidationToken));
+                var link = new Uri(String.Format(Configuration.ValidateAccountPageUrl, u.UserName, u.ValidationToken));
 
                 MailService.SendEmail(new SendEmailDto()
                 {
@@ -150,7 +169,9 @@ namespace DaOAuthV2.Service
                 var local = this.GetErrorStringLocalizer();
 
                 if (user == null || !user.IsValid)
+                {
                     throw new DaOAuthServiceException(local["DeleteUserNoUserFound"]);
+                }
 
                 user.IsValid = false;
                 repo.Update(user);
@@ -178,7 +199,9 @@ namespace DaOAuthV2.Service
                 var local = this.GetErrorStringLocalizer();
 
                 if (user == null || user.IsValid)
+                {
                     throw new DaOAuthServiceException(local["DeleteUserNoUserFound"]);
+                }
 
                 user.IsValid = true;
                 repo.Update(user);
@@ -246,10 +269,12 @@ namespace DaOAuthV2.Service
                 var user = userRepo.GetByEmail(infos.Email);
 
                 if (user == null || !user.IsValid)
+                {
                     throw new DaOAuthServiceException(errorResource["SendMailLostPasswordUserNoUserFound"]);
+                }
 
                 var myToken = JwtService.GenerateMailToken(user.UserName);
-                Uri link = new Uri(String.Format(Configuration.GetNewPasswordPageUrl, myToken.Token));
+                var link = new Uri(String.Format(Configuration.GetNewPasswordPageUrl, myToken.Token));
 
                 MailService.SendEmail(new SendEmailDto()
                 {
@@ -276,13 +301,19 @@ namespace DaOAuthV2.Service
             var tokenInfos = JwtService.ExtractMailToken(infos.Token);
 
             if (!tokenInfos.IsValid)
+            {
                 throw new DaOAuthServiceException(local["SetNewUserPasswordInvalidToken"]);
+            }
 
             if (!infos.NewPassword.IsMatchPasswordPolicy())
+            {
                 throw new DaOAuthServiceException(local["SetNewUserPasswordNewPasswordDontMatchPolicy"]);
+            }
 
             if (!infos.NewPassword.Equals(infos.NewPasswordRepeat, StringComparison.Ordinal))
+            {
                 throw new DaOAuthServiceException(local["SetNewUserPasswordDifferentsNewPasswords"]);
+            }
 
             using (var context = RepositoriesFactory.CreateContext())
             {
@@ -310,12 +341,16 @@ namespace DaOAuthV2.Service
                     var user = repo.GetByUserName(toUpdate.UserName);
 
                     if (user == null || !user.IsValid)
+                    {
                         result.Add(new ValidationResult(resource["UpdateUserNoUserFound"]));
+                    }
 
                     var errorResource = this.GetErrorStringLocalizer();
                     var getByMailUser = repo.GetByEmail(toValidate.EMail);
                     if (getByMailUser != null && getByMailUser.Id != user.Id)
+                    {
                         result.Add(new ValidationResult(String.Format(errorResource["CreateUserEmailExists"], toValidate.EMail)));
+                    }
                 }
 
                 return result;
@@ -392,7 +427,9 @@ namespace DaOAuthV2.Service
                 var local = this.GetErrorStringLocalizer();
 
                 if (user == null || !user.IsValid)
-                    throw new DaOAuthServiceException(local["DeleteUserNoUserFound"]);               
+                {
+                    throw new DaOAuthServiceException(local["DeleteUserNoUserFound"]);
+                }
 
                 var clients = clientRepository.GetAllClientsByIdCreator(user.Id);
 

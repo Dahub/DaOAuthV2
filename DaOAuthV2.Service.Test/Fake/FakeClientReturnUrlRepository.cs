@@ -21,7 +21,9 @@ namespace DaOAuthV2.Service.Test.Fake
         {
             var ru = FakeDataBase.Instance.ClientReturnUrls.Where(x => x.Id.Equals(toDelete.Id)).FirstOrDefault();
             if (ru != null)
+            {
                 FakeDataBase.Instance.ClientReturnUrls.Remove(ru);
+            }
         }
 
         public IEnumerable<ClientReturnUrl> GetAll()
@@ -32,9 +34,7 @@ namespace DaOAuthV2.Service.Test.Fake
         public IEnumerable<ClientReturnUrl> GetAllByClientPublicId(string clientPublicId)
         {
             var client = FakeDataBase.Instance.Clients.Where(c => c.PublicId.Equals(clientPublicId)).SingleOrDefault();
-            if (client == null)
-                return null;
-            return FakeDataBase.Instance.ClientReturnUrls.Where(c => c.ClientId.Equals(client.Id));
+            return client == null ? null : FakeDataBase.Instance.ClientReturnUrls.Where(c => c.ClientId.Equals(client.Id));
         }
 
         public ClientReturnUrl GetById(int id)
@@ -42,7 +42,9 @@ namespace DaOAuthV2.Service.Test.Fake
             var ru = FakeDataBase.Instance.ClientReturnUrls.FirstOrDefault(x => x.Id.Equals(id));
 
             if (ru == null)
+            {
                 return null;
+            }
 
             ru.Client = FakeDataBase.Instance.Clients.FirstOrDefault(x => x.Id.Equals(ru.ClientId));
 
@@ -53,7 +55,9 @@ namespace DaOAuthV2.Service.Test.Fake
         {
             var ru = FakeDataBase.Instance.ClientReturnUrls.Where(x => x.Id.Equals(toUpdate.Id)).FirstOrDefault();
             if (ru != null)
+            {
                 ru.ReturnUrl = toUpdate.ReturnUrl;
+            }
         }
     }
 }

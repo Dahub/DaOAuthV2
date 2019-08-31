@@ -95,7 +95,6 @@ namespace DaOAuthV2.OAuth.Api
 
         protected virtual void ExecuteAfterConfigureServices()
         {
-
         }
 
         protected virtual void BuildAuthentification(IServiceCollection services, AppConfiguration conf)

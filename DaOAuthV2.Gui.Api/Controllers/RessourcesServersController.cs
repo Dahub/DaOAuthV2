@@ -14,7 +14,7 @@ namespace DaOAuthV2.Gui.Api.Controllers
     [Authorize(Roles = RoleName.User)]
     public class RessourcesServersController : ControllerBase
     {
-        private IRessourceServerService _service;
+        private readonly IRessourceServerService _service;
 
         public RessourcesServersController([FromServices] IRessourceServerService service)
         {
@@ -27,7 +27,7 @@ namespace DaOAuthV2.Gui.Api.Controllers
         public IActionResult Post(CreateRessourceServerDto infos)
         {
             infos.UserName = User.Identity.Name;
-            int createdId = _service.CreateRessourceServer(infos);
+            var createdId = _service.CreateRessourceServer(infos);
             var currentUrl = UriHelper.GetDisplayUrl(Request);
             return Created($"{currentUrl}/{createdId}", null);
         }

@@ -11,10 +11,14 @@ namespace DaOAuthV2.Service.ExtensionsMethods
         public static bool IsMatchPasswordPolicy(this string value)
         {
             if (String.IsNullOrWhiteSpace(value))
+            {
                 return false;
+            }
 
             if (value.Length < MIN_LENGHT_PASSWORD)
+            {
                 return false;
+            }
 
             return true;
         }
@@ -22,22 +26,30 @@ namespace DaOAuthV2.Service.ExtensionsMethods
         public static bool IsMatchClientSecretPolicy(this string value)
         {
             if (String.IsNullOrWhiteSpace(value))
+            {
                 return false;
+            }
 
             if (value.Length < MIN_LENGHT_CLIENT_SECRET)
+            {
                 return false;
+            }
 
             return true;
         }
 
         public static string ToScopeWording(this string value, bool readWrite)
         {
-            StringBuilder result = new StringBuilder();
+            var result = new StringBuilder();
 
             if (readWrite)
+            {
                 result.Append("RW_");
+            }
             else
+            {
                 result.Append("R_");
+            }
 
             value = value.Replace("_", " ");
             foreach(var s in value.Split(' ', StringSplitOptions.RemoveEmptyEntries))

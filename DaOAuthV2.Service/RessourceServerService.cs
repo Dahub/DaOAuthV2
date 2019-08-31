@@ -16,7 +16,7 @@ namespace DaOAuthV2.Service
 
         public int CreateRessourceServer(CreateRessourceServerDto toCreate)
         {
-            int rsId = 0;
+            var rsId = 0;
 
             IList<ValidationResult> ExtendValidation(CreateRessourceServerDto toValidate)
             {
@@ -25,19 +25,27 @@ namespace DaOAuthV2.Service
 
                 if (!String.IsNullOrEmpty(toCreate.Password)
                     && !toCreate.Password.Equals(toCreate.RepeatPassword, StringComparison.Ordinal))
+                {
                     result.Add(new ValidationResult(resource["CreateRessourceServerPasswordDontMatch"]));
+                }
 
                 if (!toValidate.Password.IsMatchPasswordPolicy())
+                {
                     result.Add(new ValidationResult(resource["CreateRessourceServerPasswordPolicyFailed"]));
+                }
 
                 // check empties or multiple scopes names
                 if (toValidate.Scopes != null)
                 {
                     if (toValidate.Scopes.Where(s => String.IsNullOrWhiteSpace(s.NiceWording)).Any())
+                    {
                         result.Add(new ValidationResult(resource["CreateRessourceServerEmptyScopeWording"]));
+                    }
 
                     if (toValidate.Scopes.Where(s => !String.IsNullOrWhiteSpace(s.NiceWording)).GroupBy(s => s.NiceWording.ToUpper()).Where(x => x.Count() > 1).Any())
+                    {
                         result.Add(new ValidationResult(resource["CreateRessourceServerMultipleScopeWording"]));
+                    }
                 }
 
                 return result;
@@ -86,16 +94,20 @@ namespace DaOAuthV2.Service
                 {
                     foreach (var s in toCreate.Scopes)
                     {
-                        string s1 = s.NiceWording.ToScopeWording(true);
-                        string s2 = s.NiceWording.ToScopeWording(false);
+                        var s1 = s.NiceWording.ToScopeWording(true);
+                        var s2 = s.NiceWording.ToScopeWording(false);
 
                         var scope = scopeRepo.GetByWording(s1);
                         if (scope != null)
+                        {
                             throw new DaOAuthServiceException("CreateRessourceServerExistingScope");
+                        }
 
                         scope = scopeRepo.GetByWording(s2);
                         if (scope != null)
+                        {
                             throw new DaOAuthServiceException("CreateRessourceServerExistingScope");
+                        }
 
                         scope = new Scope()
                         {
@@ -172,7 +184,9 @@ namespace DaOAuthV2.Service
                 var rs = rsRepo.GetById(id);
 
                 if (rs == null || !rs.IsValid)
+                {
                     throw new DaOAuthNotFoundException();
+                }
 
                 toReturn = rs.ToDto();
             }
@@ -196,17 +210,14 @@ namespace DaOAuthV2.Service
                 rs = rsRepo.GetAllByCriterias(criterias.Name, criterias.Login, true, criterias.Skip, criterias.Limit).ToList();
             }
 
-            if (rs != null)
-                return rs.ToDto();
-
-            return new List<RessourceServerDto>();
+            return rs != null ? rs.ToDto() : new List<RessourceServerDto>();
         }
 
         public int SearchCount(RessourceServerSearchDto criterias)
         {
             Validate(criterias, ExtendValidationSearchCriterias);
 
-            int count = 0;
+            var count = 0;
 
             using (var c = RepositoriesFactory.CreateContext())
             {
@@ -253,9 +264,14 @@ namespace DaOAuthV2.Service
                 rsRepo.Update(myRs);
 
                 if (toUpdate.Scopes == null)
+                {
                     toUpdate.Scopes = new List<UpdateRessourceServerScopesDto>();
+                }
+
                 if (myRs.Scopes == null)
+                {
                     myRs.Scopes = new List<Scope>();
+                }
 
                 IList<int> newScopesTempIds = new List<int>();
 
@@ -304,7 +320,9 @@ namespace DaOAuthV2.Service
             IList<ValidationResult> result = new List<ValidationResult>();
 
             if (c.Limit - c.Skip > 50)
+            {
                 result.Add(new ValidationResult(String.Format(resource["SearchRessourceServerAskTooMuch"], c)));
+            }
 
             return result;
         }

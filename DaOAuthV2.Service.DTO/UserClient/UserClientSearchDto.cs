@@ -7,9 +7,13 @@ namespace DaOAuthV2.Service.DTO
     {
         [Required(ErrorMessage = "ClientSearchDtoUserNameRequired")]
         public string UserName { get; set; }
+
         public string Name { get; set; }
+
         public string ClientType { get; set; }
+
         public uint Skip { get; set; }
+
         public uint Limit { get; set; }
     }
 }

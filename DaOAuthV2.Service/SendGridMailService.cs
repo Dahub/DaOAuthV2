@@ -46,7 +46,9 @@ namespace DaOAuthV2.Service
                 var response = await client.SendEmailAsync(msg);
 
                 if (response.StatusCode != System.Net.HttpStatusCode.Accepted)
+                {
                     return false;
+                }
             }
             return true;
         }
