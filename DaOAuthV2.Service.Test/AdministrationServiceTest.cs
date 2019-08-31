@@ -76,8 +76,6 @@ namespace DaOAuthV2.Service.Test
                     }
                 }
             }
-
-
         }
 
         [TestCleanup]
@@ -101,17 +99,22 @@ namespace DaOAuthV2.Service.Test
         [TestMethod]
         public void Search_Should_Return_All_Users_With_Client_Count()
         {
-            var users = _service.Search(new AdminUserSearchDto()
+            var adminUsersDto = _service.Search(new AdminUserSearchDto()
             {
                 Limit = 50,
                 Skip = 0
             });
 
-            Assert.IsNotNull(users);
-            Assert.AreEqual(50, users.Count());
-            var id = FakeDataBase.Instance.UsersClient.Select(uc => uc.UserId).First();
-            Assert.AreEqual(users.Where(u => u.Id.Equals(id)).First().ClientCount,
-                FakeDataBase.Instance.UsersClient.Where(uc => uc.UserId.Equals(id)).Count());
+            Assert.IsNotNull(adminUsersDto);
+            Assert.AreEqual(50, adminUsersDto.Count());
+            foreach (var idUser in FakeDataBase.Instance.UsersClient.Select(uc => uc.UserId))
+            {
+                var adminUserDto = adminUsersDto.Where(u => u.Id.Equals(idUser)).FirstOrDefault();
+                if (adminUserDto != null)
+                {
+                    Assert.AreEqual(adminUserDto.ClientCount, FakeDataBase.Instance.UsersClient.Where(uc => uc.UserId.Equals(idUser)).Count());
+                }
+            }
         }
 
         [TestMethod]
@@ -135,18 +138,20 @@ namespace DaOAuthV2.Service.Test
         [TestMethod]
         public void Get_By_Id_User_Should_Return_User_With_Clients()
         {
-            var user = FakeDataBase.Instance.Users.First();
-            Assert.IsNotNull(user);
-            var userClients = FakeDataBase.Instance.UsersClient.Where(uc => uc.UserId.Equals(user.Id));
-            Assert.IsNotNull(userClients);
-            Assert.IsTrue(userClients.Count() > 0);
+            foreach (var user in FakeDataBase.Instance.Users)
+            {
+                Assert.IsNotNull(user);
+                var userClients = FakeDataBase.Instance.UsersClient.Where(uc => uc.UserId.Equals(user.Id));
+                Assert.IsNotNull(userClients);
+                Assert.IsTrue(userClients.Count() > 0);
 
-            var myUserInfos = _service.GetByIdUser(user.Id);
+                var myUserInfos = _service.GetByIdUser(user.Id);
 
-            Assert.IsNotNull(myUserInfos);
-            Assert.AreEqual(myUserInfos.Clients.Count(), userClients.Count());
-            Assert.AreEqual(myUserInfos.FullName, user.FullName);
-            Assert.AreEqual(myUserInfos.UserName, user.UserName);
+                Assert.IsNotNull(myUserInfos);
+                Assert.AreEqual(myUserInfos.Clients.Count(), userClients.Count());
+                Assert.AreEqual(myUserInfos.FullName, user.FullName);
+                Assert.AreEqual(myUserInfos.UserName, user.UserName);
+            }
         }
     }
 }
