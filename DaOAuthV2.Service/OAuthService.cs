@@ -402,6 +402,8 @@ namespace DaOAuthV2.Service
                 }
 
                 toReturn = GenerateAccessTokenAndUpdateRefreshToken(tokenInfo, context, tokenDetail.UserName);
+
+                context.Commit();
             }
 
             return toReturn;
@@ -466,6 +468,8 @@ namespace DaOAuthV2.Service
                 }
 
                 toReturn = GenerateAccessTokenAndUpdateRefreshToken(tokenInfo, context, tokenInfo.ParameterUsername);
+
+                context.Commit();
             }
 
             return toReturn;
