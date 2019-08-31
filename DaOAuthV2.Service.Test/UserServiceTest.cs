@@ -1,4 +1,5 @@
 using DaOAuthV2.ApiTools;
+using DaOAuthV2.Constants;
 using DaOAuthV2.Dal.Interface;
 using DaOAuthV2.Domain;
 using DaOAuthV2.Service.DTO;
@@ -19,10 +20,19 @@ namespace DaOAuthV2.Service.Test
         private FakeMailService _fakeMailService;
         private User _validUser;
         private User _invalidUser;
+        private Client _validClient;
+        private UserClient _validUserClient;
+
+
+        private readonly string _validUserPassword = "pwd";
+        private readonly string _invalidUserPassword = "azerty";
+        private readonly string _randomReturnString = "returnString";
 
         [TestInitialize]
         public void Init()
         {
+            var fakeEncryptionService = new FakeEncryptionService();
+
             _validUser = new User()
             {
                 CreationDate = DateTime.Now,
@@ -30,7 +40,7 @@ namespace DaOAuthV2.Service.Test
                 FullName = "Sammy le Crabe",
                 Id = 646,
                 IsValid = true,
-                Password = new byte[] { 0 },
+                Password = fakeEncryptionService.Sha256Hash($"{FakeConfigurationHelper.GetFakeConf().PasswordSalt}{_validUserPassword}"),
                 UserName = "Sam_Crab"
             };
 
@@ -41,12 +51,36 @@ namespace DaOAuthV2.Service.Test
                 FullName = "Johnny le Crabe",
                 Id = 6289,
                 IsValid = false,
-                Password = new byte[] { 0 },
+                Password = fakeEncryptionService.Sha256Hash($"{FakeConfigurationHelper.GetFakeConf().PasswordSalt}{_invalidUserPassword}"),
                 UserName = "John_Crab"
+            };
+
+            _validClient = new Client()
+            {
+                ClientSecret = "abc",
+                ClientTypeId = FakeDataBase.Instance.ClientTypes.Where(ct => ct.Wording.Equals(ClientTypeName.Confidential)).First().Id,
+                CreationDate = DateTime.Now,
+                Id = 500,
+                Description = "Démo client",
+                IsValid = true,
+                Name = "C-500",
+                PublicId = "pub-c-500",
+                UserCreatorId = _validUser.Id
+            };
+
+            _validUserClient = new UserClient()
+            {
+                ClientId = _validClient.Id,
+                Id = 2956,
+                CreationDate = DateTime.Now,
+                IsActif = true,
+                UserId = _validUser.Id
             };
 
             FakeDataBase.Instance.Users.Add(_validUser);
             FakeDataBase.Instance.Users.Add(_invalidUser);
+            FakeDataBase.Instance.Clients.Add(_validClient);
+            FakeDataBase.Instance.UsersClient.Add(_validUserClient);
 
             _repo = new FakeUserRepository()
             {
@@ -62,8 +96,8 @@ namespace DaOAuthV2.Service.Test
                 StringLocalizerFactory = new FakeStringLocalizerFactory(),
                 Logger = new FakeLogger(),
                 MailService = _fakeMailService,
-                RandomService = new FakeRandomService(123, "returnString"),
-                EncryptionService = new FakeEncryptionService(),
+                RandomService = new FakeRandomService(123, _randomReturnString),
+                EncryptionService = fakeEncryptionService,
                 JwtService = new FakeJwtService(new MailJwtTokenDto()
                 {
                     Expire = Int64.MaxValue,
@@ -98,7 +132,7 @@ namespace DaOAuthV2.Service.Test
         [TestMethod]
         public void Get_By_Non_Existing_User_Name_Should_Return_Null()
         {
-            var userName = "i_dont_exists";
+            var userName = Guid.NewGuid().ToString();
 
             var user = _service.GetUser(userName);
 
@@ -108,36 +142,37 @@ namespace DaOAuthV2.Service.Test
         [TestMethod]
         public void Get_User_By_Login_And_Password_Should_Return_User()
         {
-            var u = _service.GetUser(new DTO.LoginUserDto() { UserName = "Sammy", Password = "test" });
-            Assert.IsNotNull(u);
+            var user = _service.GetUser(new DTO.LoginUserDto() { UserName = _validUser.UserName, Password = _validUserPassword });
+            Assert.IsNotNull(user);
         }
 
         [TestMethod]
         public void Get_User_By_Login_And_Password_With_Insensitive_Case_Should_Return_User()
         {
-            var u = _service.GetUser(new DTO.LoginUserDto() { UserName = "SamMY", Password = "test" });
-            Assert.IsNotNull(u);
+            Assert.IsTrue(_validUser.UserName.ToUpper() != _validUser.UserName);
+            var user = _service.GetUser(new DTO.LoginUserDto() { UserName = _validUser.UserName.ToUpper(), Password = _validUserPassword });
+            Assert.IsNotNull(user);
         }
 
         [TestMethod]
         public void Get_User_By_Login_And_Wrong_Password_Should_Return_Null()
         {
-            var u = _service.GetUser(new DTO.LoginUserDto() { UserName = "Sammy", Password = "test__" });
-            Assert.IsNull(u);
+            var user = _service.GetUser(new DTO.LoginUserDto() { UserName = _validUser.UserName, Password = Guid.NewGuid().ToString() });
+            Assert.IsNull(user);
         }
 
         [TestMethod]
         public void Get_User_By_Wrong_Login_And_Wrong_Password_Should_Return_Null()
         {
-            var u = _service.GetUser(new DTO.LoginUserDto() { UserName = "vSammy", Password = "test__" });
-            Assert.IsNull(u);
+            var user = _service.GetUser(new DTO.LoginUserDto() { UserName = Guid.NewGuid().ToString(), Password = Guid.NewGuid().ToString() });
+            Assert.IsNull(user);
         }
 
         [TestMethod]
         public void Get_Desactivate_User_should_return_null()
         {
-            var u = _service.GetUser(new DTO.LoginUserDto() { UserName = "Johnny", Password = "test" });
-            Assert.IsNull(u);
+            var user = _service.GetUser(new DTO.LoginUserDto() { UserName = _invalidUser.UserName, Password = _invalidUserPassword });
+            Assert.IsNull(user);
         }
 
         [TestMethod]
@@ -177,7 +212,7 @@ namespace DaOAuthV2.Service.Test
             Assert.IsNotNull(user);
             Assert.IsFalse(user.IsValid);
             Assert.IsTrue(!String.IsNullOrWhiteSpace(user.ValidationToken));
-            Assert.AreEqual("returnString", user.ValidationToken);
+            Assert.AreEqual(_randomReturnString, user.ValidationToken);
             Assert.IsTrue(_fakeMailService.HaveBeenCalled);
         }
 
@@ -214,7 +249,7 @@ namespace DaOAuthV2.Service.Test
             _service.CreateUser(new DTO.CreateUserDto()
             {
                 BirthDate = new DateTime(1978, 09, 16),
-                EMail = "sam@crab.corp",
+                EMail = _validUser.EMail,
                 FullName = "testeur createur",
                 UserName = "testCreate",
                 Password = "test#1254",
@@ -246,7 +281,7 @@ namespace DaOAuthV2.Service.Test
                 BirthDate = new DateTime(1978, 09, 16),
                 EMail = "test@test.com",
                 FullName = "testeur createur",
-                UserName = "Sammy",
+                UserName = _validUser.UserName,
                 Password = "test#1254",
                 RepeatPassword = "test#1254"
             });
@@ -256,12 +291,14 @@ namespace DaOAuthV2.Service.Test
         [ExpectedException(typeof(DaOAuthServiceException))]
         public void Create_User_With_Use_UserName_Case_Insensitive_Should_Throw_Exception()
         {
+            Assert.IsTrue(_validUser.UserName.ToUpper() != _validUser.UserName);
+
             _service.CreateUser(new DTO.CreateUserDto()
             {
                 BirthDate = new DateTime(1978, 09, 16),
                 EMail = "test@test.com",
                 FullName = "testeur createur",
-                UserName = "SaMMy",
+                UserName = _validUser.UserName.ToUpper(),
                 Password = "test#1254",
                 RepeatPassword = "test#1254"
             });
@@ -436,13 +473,15 @@ namespace DaOAuthV2.Service.Test
         [ExpectedException(typeof(DaOAuthServiceException))]
         public void Delete_Non_Existing_User_Should_Throw_Exception()
         {
-            _service.DeleteUser("nonExisting");
+            _service.DeleteUser(Guid.NewGuid().ToString());
         }
 
         [TestMethod]
         public void Delete_Existing_User_Should_Delete_User()
         {
             var toDeleteUser = FakeDataBase.Instance.Users.Where(u => u.IsValid).FirstOrDefault();
+
+            Assert.IsNotNull(toDeleteUser);
 
             _service.DeleteUser(toDeleteUser.UserName);
 
@@ -488,11 +527,9 @@ namespace DaOAuthV2.Service.Test
             _service.DeleteUser(userName);
 
             var deletedUser = FakeDataBase.Instance.Users.FirstOrDefault(u => u.Id.Equals(idUser));
-
             Assert.IsNull(deletedUser);
 
             var deletedClient = FakeDataBase.Instance.Clients.FirstOrDefault(c => c.Id.Equals(clientId));
-
             Assert.IsNull(deletedClient);
         }
 
@@ -563,22 +600,22 @@ namespace DaOAuthV2.Service.Test
         [ExpectedException(typeof(DaOAuthServiceException))]
         public void Desactivate_Non_Existing_User_Should_Throw_Exception()
         {
-            _service.DesactivateUser("john");
+            _service.DesactivateUser(Guid.NewGuid().ToString());
         }
 
         [TestMethod]
         [ExpectedException(typeof(DaOAuthServiceException))]
         public void Desactivate_Desactivate_User_Should_Throw_Exception()
         {
-            _service.DesactivateUser("Johnny");
+            _service.DesactivateUser(_invalidUser.UserName);
         }
 
         [TestMethod]
         public void Desactivate_User_Shoud_Logicaly_Delete_User()
         {
-            _service.DesactivateUser("Sammy");
+            _service.DesactivateUser(_validUser.UserName);
 
-            var user = _repo.GetByUserName("Sammy");
+            var user = _repo.GetByUserName(_validUser.UserName);
 
             Assert.IsFalse(user.IsValid);
         }
@@ -590,7 +627,7 @@ namespace DaOAuthV2.Service.Test
             Assert.IsNotNull(user);
 
             var client = FakeDataBase.Instance.Clients.Where(c => c.IsValid).FirstOrDefault();
-            Assert.IsNotNull(client);
+            Assert.IsNotNull(client);            
 
             var userClient = FakeDataBase.Instance.UsersClient.Where(uc =>
                                             uc.UserId.Equals(user.Id)
@@ -621,22 +658,22 @@ namespace DaOAuthV2.Service.Test
         [ExpectedException(typeof(DaOAuthServiceException))]
         public void Activate_Non_Existing_User_Should_Throw_Exception()
         {
-            _service.ActivateUser("john");
+            _service.ActivateUser(Guid.NewGuid().ToString());
         }
 
         [TestMethod]
         [ExpectedException(typeof(DaOAuthServiceException))]
         public void Activate_Activate_User_Should_Throw_Exception()
         {
-            _service.ActivateUser("Sammy");
+            _service.ActivateUser(_validUser.UserName);
         }
 
         [TestMethod]
         public void Activate_User_Shoud_Logicaly_Activate_User()
         {
-            _service.ActivateUser("Johnny");
+            _service.ActivateUser(_invalidUser.UserName);
 
-            var user = _repo.GetByUserName("Johnny");
+            var user = _repo.GetByUserName(_invalidUser.UserName);
 
             Assert.IsTrue(user.IsValid);
         }
@@ -646,13 +683,13 @@ namespace DaOAuthV2.Service.Test
         {
             _service.UpdateUser(new DTO.UpdateUserDto()
             {
-                UserName = "Sammy",
+                UserName = _validUser.UserName,
                 BirthDate = new DateTime(1918, 11, 11),
                 FullName = "new sam",
                 EMail = "newSam@corp.org"
             });
 
-            var user = _repo.GetByUserName("Sammy");
+            var user = _repo.GetByUserName(_validUser.UserName);
 
             Assert.AreEqual(new DateTime(1918, 11, 11), user.BirthDate);
             Assert.AreEqual("new sam", user.FullName);
@@ -665,7 +702,7 @@ namespace DaOAuthV2.Service.Test
         {
             _service.UpdateUser(new DTO.UpdateUserDto()
             {
-                UserName = "Non_existing",
+                UserName = Guid.NewGuid().ToString(),
                 BirthDate = new DateTime(1918, 11, 11),
                 FullName = "new sam",
                 EMail = "newSam@corp.org"
@@ -678,7 +715,7 @@ namespace DaOAuthV2.Service.Test
         {
             _service.UpdateUser(new DTO.UpdateUserDto()
             {
-                UserName = "Sammy",
+                UserName = _validUser.UserName,
                 BirthDate = new DateTime(1918, 11, 11),
                 FullName = "new sam",
                 EMail = String.Empty
@@ -705,7 +742,7 @@ namespace DaOAuthV2.Service.Test
 
             _service.UpdateUser(new DTO.UpdateUserDto()
             {
-                UserName = "Sammy",
+                UserName = _validUser.UserName,
                 BirthDate = new DateTime(1918, 11, 11),
                 FullName = "new sam",
                 EMail = email
@@ -718,7 +755,7 @@ namespace DaOAuthV2.Service.Test
         {
             _service.UpdateUser(new DTO.UpdateUserDto()
             {
-                UserName = "Sammy",
+                UserName = _validUser.UserName,
                 BirthDate = new DateTime(1918, 11, 11),
                 FullName = "new sam",
                 EMail = "not valid"
@@ -731,7 +768,7 @@ namespace DaOAuthV2.Service.Test
         {
             _service.UpdateUser(new DTO.UpdateUserDto()
             {
-                UserName = "Sammy",
+                UserName = _validUser.UserName,
                 BirthDate = new DateTime(1918, 11, 11),
                 FullName = String.Empty,
                 EMail = "newSam@corp.org"
@@ -744,7 +781,7 @@ namespace DaOAuthV2.Service.Test
         {
             _service.UpdateUser(new DTO.UpdateUserDto()
             {
-                UserName = "Johnny",
+                UserName = _invalidUser.UserName,
                 BirthDate = new DateTime(1918, 11, 11),
                 FullName = "john john",
                 EMail = "newJohn@corp.org"
@@ -791,13 +828,13 @@ namespace DaOAuthV2.Service.Test
                 Id = 3566,
                 IsValid = false,
                 Password = new byte[] { 0 },
-                UserName = "validate_test",
+                UserName = Guid.NewGuid().ToString(),
                 ValidationToken = "validateToken"
             });
 
             _service.ValidateUser(new DTO.ValidateUserDto()
             {
-                UserName = "validate_test_wrong",
+                UserName = Guid.NewGuid().ToString(),
                 Token = "validateToken"
             });
         }
