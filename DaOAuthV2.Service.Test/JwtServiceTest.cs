@@ -38,7 +38,7 @@ namespace DaOAuthV2.Service.Test
         [TestMethod]
         public void Generate_Mail_Token_Should_Return_Valid_Token()
         {
-            var t = _service.GenerateMailToken("Sammy");
+            var t = _service.GenerateMailToken(Guid.NewGuid().ToString());
             Assert.IsTrue(!String.IsNullOrWhiteSpace(t.Token));
             Assert.IsTrue(t.IsValid);
         }
@@ -89,7 +89,7 @@ namespace DaOAuthV2.Service.Test
         [TestMethod]
         public void Extract_Mail_Token_Should_Return_Valid()
         {
-            var t = _service.ExtractMailToken(_service.GenerateMailToken("Sammy").Token);
+            var t = _service.ExtractMailToken(_service.GenerateMailToken(Guid.NewGuid().ToString()).Token);
             Assert.IsTrue(t.IsValid);
         }
 

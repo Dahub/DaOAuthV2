@@ -12,7 +12,14 @@ namespace DaOAuthV2.Service.Test.Fake
 
         public int Add(UserClient toAdd)
         {
-            toAdd.Id = FakeDataBase.Instance.UsersClient.Max(u => u.Id) + 1;
+            if(FakeDataBase.Instance.UsersClient.Count() == 0)
+            {
+                toAdd.Id = 1;
+            }
+            else
+            {
+                toAdd.Id = FakeDataBase.Instance.UsersClient.Max(u => u.Id) + 1;
+            }
             FakeDataBase.Instance.UsersClient.Add(toAdd);
             return toAdd.Id;
         }

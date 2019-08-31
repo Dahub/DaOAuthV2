@@ -18,11 +18,32 @@ namespace DaOAuthV2.Service.Test
         private Client _validClient;
         private Client _invalidClient;
         private User _validUser;
+        private User _invalidUser;
 
         [TestInitialize]
         public void Init()
         {
-            _validUser = FakeDataBase.Instance.Users.Where(u => u.UserName.Equals("Sammy")).First();
+            _validUser = new User()
+            {
+                CreationDate = DateTime.Now,
+                EMail = "sam@crab.org",
+                FullName = "Sammy le Crabe",
+                Id = 646,
+                IsValid = true,
+                Password = new byte[] { 0 },
+                UserName = "Sam_Crab"
+            };
+
+            _invalidUser = new User()
+            {
+                CreationDate = DateTime.Now,
+                EMail = "john@crab.org",
+                FullName = "Johnny le Crabe",
+                Id = 6289,
+                IsValid = false,
+                Password = new byte[] { 0 },
+                UserName = "John_Crab"
+            };
 
             _repo = new FakeUserClientRepository();
             _service = new UserClientService()
@@ -60,6 +81,8 @@ namespace DaOAuthV2.Service.Test
 
             FakeDataBase.Instance.Clients.Add(_validClient);
             FakeDataBase.Instance.Clients.Add(_invalidClient);
+            FakeDataBase.Instance.Users.Add(_validUser);
+            FakeDataBase.Instance.Users.Add(_invalidUser);
         }
 
         [TestCleanup]
@@ -71,17 +94,22 @@ namespace DaOAuthV2.Service.Test
         [TestMethod]
         public void Search_Count_Should_Count_All_Clients_For_User_Name()
         {
+            var expectedNumberOfUserClient = FakeDataBase.Instance.UsersClient.Count(uc => uc.UserId.Equals(_validUser.Id));
+
             var total = _service.SearchCount(
                 new DTO.UserClientSearchDto()
                 {
                     UserName = _validUser.UserName
                 });
-            Assert.AreEqual(2, total);
+
+            Assert.AreEqual(expectedNumberOfUserClient, total);
         }
 
         [TestMethod]
         public void Search_Should_Return_Clients_For_User_Name()
         {
+            var expectedNumberOfUserClient = FakeDataBase.Instance.UsersClient.Count(uc => uc.UserId.Equals(_validUser.Id));
+
             var clients = _service.Search(
                 new DTO.UserClientSearchDto()
                 {
@@ -89,25 +117,33 @@ namespace DaOAuthV2.Service.Test
                     Skip = 0,
                     Limit = 50
                 });
+
             Assert.IsNotNull(clients);
-            Assert.AreEqual(2, clients.Count());
+            Assert.AreEqual(expectedNumberOfUserClient, clients.Count());
         }
 
         [TestMethod]
         public void Search_Should_Return_Clients_Public_Id()
         {
+            AddUserClientForValidUserAndValidClientIfMissing();
+
+            var expectedUserClientNumber = FakeDataBase.Instance.UsersClient.
+                Count(uc => uc.UserId.Equals(_validUser.Id) && uc.ClientId.Equals(_validClient.Id));
+
+
             var clients = _service.Search(
                 new DTO.UserClientSearchDto()
                 {
                     UserName = _validUser.UserName,
-                    Name = "client_1",
+                    Name = _validClient.Name,
                     Skip = 0,
                     Limit = 50
                 });
             Assert.IsNotNull(clients);
-            Assert.AreEqual(1, clients.Count());
-            Assert.AreEqual("public_id_1", clients.First().ClientPublicId);
-        }
+            Assert.IsTrue(clients.Count() > 0);
+            Assert.AreEqual(expectedUserClientNumber, clients.Count());
+            Assert.AreEqual(_validClient.PublicId, clients.First().ClientPublicId);
+        }        
 
         [TestMethod]
         [ExpectedException(typeof(DaOAuthServiceException))]
@@ -128,7 +164,7 @@ namespace DaOAuthV2.Service.Test
             var clients = _service.Search(
               new DTO.UserClientSearchDto()
               {
-                  UserName = "Johnny",
+                  UserName = Guid.NewGuid().ToString(),
                   Skip = 0,
                   Limit = 50
               });
@@ -145,8 +181,6 @@ namespace DaOAuthV2.Service.Test
                     Skip = 0,
                     Limit = 51
                 });
-            Assert.IsNotNull(clients);
-            Assert.AreEqual(3, clients.Count());
         }
 
         [TestMethod]
@@ -155,7 +189,7 @@ namespace DaOAuthV2.Service.Test
         {
             _service.CreateUserClient(new DTO.CreateUserClientDto()
             {
-                ClientPublicId = "pub-c-500",
+                ClientPublicId = _validClient.PublicId,
                 UserName = String.Empty,
                 IsActif = true
             });
@@ -179,8 +213,8 @@ namespace DaOAuthV2.Service.Test
         {
             _service.CreateUserClient(new DTO.CreateUserClientDto()
             {
-                ClientPublicId = "pub-c-500",
-                UserName = "Johnny",
+                ClientPublicId = _validClient.PublicId,
+                UserName = _invalidUser.UserName,
                 IsActif = true
             });
         }
@@ -191,8 +225,8 @@ namespace DaOAuthV2.Service.Test
         {
             _service.CreateUserClient(new DTO.CreateUserClientDto()
             {
-                ClientPublicId = "pub-c-500",
-                UserName = "non-existing",
+                ClientPublicId = _validClient.PublicId,
+                UserName = Guid.NewGuid().ToString(),
                 IsActif = true
             });
         }
@@ -203,7 +237,7 @@ namespace DaOAuthV2.Service.Test
         {
             _service.CreateUserClient(new DTO.CreateUserClientDto()
             {
-                ClientPublicId = "pub-c-501",
+                ClientPublicId = _invalidClient.PublicId,
                 UserName = _validUser.UserName,
                 IsActif = true
             });
@@ -215,7 +249,7 @@ namespace DaOAuthV2.Service.Test
         {
             _service.CreateUserClient(new DTO.CreateUserClientDto()
             {
-                ClientPublicId = "missing",
+                ClientPublicId = Guid.NewGuid().ToString(),
                 UserName = _validUser.UserName,
                 IsActif = true
             });
@@ -247,7 +281,7 @@ namespace DaOAuthV2.Service.Test
         {
             var id = _service.CreateUserClient(new DTO.CreateUserClientDto()
             {
-                ClientPublicId = "pub-c-500",
+                ClientPublicId = _validClient.PublicId,
                 UserName = _validUser.UserName,
                 IsActif = true
             });
@@ -269,7 +303,7 @@ namespace DaOAuthV2.Service.Test
         {
             var id = _service.CreateUserClient(new DTO.CreateUserClientDto()
             {
-                ClientPublicId = "pub-c-500",
+                ClientPublicId = _validClient.PublicId,
                 UserName = _validUser.UserName,
                 IsActif = false
             });
@@ -293,7 +327,7 @@ namespace DaOAuthV2.Service.Test
             _service.UpdateUserClient(new DTO.UpdateUserClientDto()
             {
                 UserName = String.Empty,
-                ClientPublicId = "public_id_1",
+                ClientPublicId = _validClient.PublicId,
                 IsActif = true
             });
         }
@@ -304,7 +338,7 @@ namespace DaOAuthV2.Service.Test
         {
             _service.UpdateUserClient(new DTO.UpdateUserClientDto()
             {
-                UserName = "Sammy",
+                UserName = _validUser.UserName,
                 ClientPublicId = String.Empty,
                 IsActif = true
             });
@@ -316,20 +350,20 @@ namespace DaOAuthV2.Service.Test
         {
             _service.UpdateUserClient(new DTO.UpdateUserClientDto()
             {
-                UserName = "Sammy",
-                ClientPublicId = "public_id_5",
+                UserName = _validUser.UserName,
+                ClientPublicId = _invalidClient.PublicId,
                 IsActif = true
             });
         }
 
         [TestMethod]
         [ExpectedException(typeof(DaOAuthServiceException))]
-        public void Update_User_Client_With_Non_Exsting_User_Should_Throw_DaOAuthServiceException()
+        public void Update_User_Client_With_Non_Existing_User_Should_Throw_DaOAuthServiceException()
         {
             _service.UpdateUserClient(new DTO.UpdateUserClientDto()
             {
-                UserName = "Johnny",
-                ClientPublicId = "public_id_4",
+                UserName = Guid.NewGuid().ToString(),
+                ClientPublicId = _validClient.PublicId,
                 IsActif = true
             });
         }
@@ -340,8 +374,8 @@ namespace DaOAuthV2.Service.Test
         {
             _service.UpdateUserClient(new DTO.UpdateUserClientDto()
             {
-                UserName = "Sammy",
-                ClientPublicId = "public_id_4",
+                UserName = _validUser.UserName,
+                ClientPublicId = Guid.NewGuid().ToString(),
                 IsActif = true
             });
         }
@@ -349,25 +383,27 @@ namespace DaOAuthV2.Service.Test
         [TestMethod]
         public void Update_User_Client_With_Is_Actif_False_Should_Update()
         {
+            AddUserClientForValidUserAndValidClientIfMissing();
+
             _service.UpdateUserClient(new DTO.UpdateUserClientDto()
             {
-                UserName = "Sammy",
-                ClientPublicId = "public_id_1",
+                UserName = _validUser.UserName,
+                ClientPublicId = _validClient.PublicId,
                 IsActif = true
             });
 
-            var myUc = _repo.GetUserClientByClientPublicIdAndUserName("public_id_1", "Sammy");
+            var myUc = _repo.GetUserClientByClientPublicIdAndUserName(_validClient.PublicId, _validUser.UserName);
             Assert.IsNotNull(myUc);
             Assert.IsTrue(myUc.IsActif);
 
             _service.UpdateUserClient(new DTO.UpdateUserClientDto()
             {
-                UserName = "Sammy",
-                ClientPublicId = "public_id_1",
+                UserName = _validUser.UserName,
+                ClientPublicId = _validClient.PublicId,
                 IsActif = false
             });
 
-            myUc = _repo.GetUserClientByClientPublicIdAndUserName("public_id_1", "Sammy");
+            myUc = _repo.GetUserClientByClientPublicIdAndUserName(_validClient.PublicId, _validUser.UserName);
             Assert.IsNotNull(myUc);
             Assert.IsFalse(myUc.IsActif);
         }
@@ -375,27 +411,47 @@ namespace DaOAuthV2.Service.Test
         [TestMethod]
         public void Update_User_Client_With_Is_Actif_True_Should_Update()
         {
+            AddUserClientForValidUserAndValidClientIfMissing();
+
             _service.UpdateUserClient(new DTO.UpdateUserClientDto()
             {
-                UserName = "Sammy",
-                ClientPublicId = "public_id_1",
+                UserName = _validUser.UserName,
+                ClientPublicId = _validClient.PublicId,
                 IsActif = false
             });
 
-            var myUc = _repo.GetUserClientByClientPublicIdAndUserName("public_id_1", "Sammy");
+            var myUc = _repo.GetUserClientByClientPublicIdAndUserName(_validClient.PublicId, _validUser.UserName);
             Assert.IsNotNull(myUc);
             Assert.IsFalse(myUc.IsActif);
 
             _service.UpdateUserClient(new DTO.UpdateUserClientDto()
             {
-                UserName = "Sammy",
-                ClientPublicId = "public_id_1",
+                UserName = _validUser.UserName,
+                ClientPublicId = _validClient.PublicId,
                 IsActif = true
             });
 
-            myUc = _repo.GetUserClientByClientPublicIdAndUserName("public_id_1", "Sammy");
+            myUc = _repo.GetUserClientByClientPublicIdAndUserName(_validClient.PublicId, _validUser.UserName);
             Assert.IsNotNull(myUc);
             Assert.IsTrue(myUc.IsActif);
+        }
+
+        private void AddUserClientForValidUserAndValidClientIfMissing()
+        {
+            var userClient = FakeDataBase.Instance.UsersClient.
+                            FirstOrDefault(uc => uc.UserId.Equals(_validUser.Id) && uc.ClientId.Equals(_validClient.Id));
+
+            if (userClient == null)
+            {
+                FakeDataBase.Instance.UsersClient.Add(new UserClient()
+                {
+                    ClientId = _validClient.Id,
+                    Id = 2956,
+                    CreationDate = DateTime.Now,
+                    IsActif = true,
+                    UserId = _validUser.Id
+                });
+            }
         }
     }
 }

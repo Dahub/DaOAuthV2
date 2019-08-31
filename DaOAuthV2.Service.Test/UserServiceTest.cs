@@ -1,5 +1,6 @@
 using DaOAuthV2.ApiTools;
 using DaOAuthV2.Dal.Interface;
+using DaOAuthV2.Domain;
 using DaOAuthV2.Service.DTO;
 using DaOAuthV2.Service.Interface;
 using DaOAuthV2.Service.Test.Fake;
@@ -14,11 +15,39 @@ namespace DaOAuthV2.Service.Test
     {
         private IUserService _service;
         private IUserRepository _repo;
+
         private FakeMailService _fakeMailService;
+        private User _validUser;
+        private User _invalidUser;
 
         [TestInitialize]
         public void Init()
         {
+            _validUser = new User()
+            {
+                CreationDate = DateTime.Now,
+                EMail = "sam@crab.org",
+                FullName = "Sammy le Crabe",
+                Id = 646,
+                IsValid = true,
+                Password = new byte[] { 0 },
+                UserName = "Sam_Crab"
+            };
+
+            _invalidUser = new User()
+            {
+                CreationDate = DateTime.Now,
+                EMail = "john@crab.org",
+                FullName = "Johnny le Crabe",
+                Id = 6289,
+                IsValid = false,
+                Password = new byte[] { 0 },
+                UserName = "John_Crab"
+            };
+
+            FakeDataBase.Instance.Users.Add(_validUser);
+            FakeDataBase.Instance.Users.Add(_invalidUser);
+
             _repo = new FakeUserRepository()
             {
                 Context = new FakeContext()
@@ -52,20 +81,16 @@ namespace DaOAuthV2.Service.Test
         [TestMethod]
         public void Get_By_Valid_User_Name_Should_Return_User()
         {
-            var userName = FakeDataBase.Instance.Users.FirstOrDefault(u => u.IsValid.Equals(true)).UserName;
-
-            var user = _service.GetUser(userName);
+            var user = _service.GetUser(_validUser.UserName);
 
             Assert.IsNotNull(user);
-            Assert.AreEqual(userName, user.UserName);
+            Assert.AreEqual(_validUser.UserName, user.UserName);
         }
 
         [TestMethod]
         public void Get_By_Invalid_User_Name_Should_Return_Null()
         {
-            var userName = FakeDataBase.Instance.Users.FirstOrDefault(u => u.IsValid.Equals(false)).UserName;
-
-            var user = _service.GetUser(userName);
+            var user = _service.GetUser(_invalidUser.UserName);
 
             Assert.IsNull(user);
         }

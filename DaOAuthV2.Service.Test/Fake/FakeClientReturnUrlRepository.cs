@@ -12,7 +12,14 @@ namespace DaOAuthV2.Service.Test.Fake
 
         public int Add(ClientReturnUrl toAdd)
         {
-            toAdd.Id = FakeDataBase.Instance.ClientReturnUrls.Max(u => u.Id) + 1;
+            if (FakeDataBase.Instance.ClientReturnUrls.Count() == 0)
+            {
+                toAdd.Id = 1;
+            }
+            else
+            {
+                toAdd.Id = FakeDataBase.Instance.ClientReturnUrls.Max(u => u.Id) + 1;
+            }
             FakeDataBase.Instance.ClientReturnUrls.Add(toAdd);
             return toAdd.Id;
         }

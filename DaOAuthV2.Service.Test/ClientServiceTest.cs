@@ -19,11 +19,13 @@ namespace DaOAuthV2.Service.Test
         private IClientRepository _repo;
         private Client _validClient;
         private Client _invalidClient;
+        private Client _anotherValidClient;
         private User _validUserCreator;
         private User _validUserNonCreator;
         private User _invalidUser;
         private ClientReturnUrl _clientReturnUrl;
         private Scope _scope;
+        private readonly string _generatedClientSecret = "azerty";
 
         [TestInitialize]
         public void Init()
@@ -74,6 +76,19 @@ namespace DaOAuthV2.Service.Test
                 UserCreatorId = _validUserCreator.Id
             };
 
+            _anotherValidClient = new Client()
+            {
+                ClientSecret = "fghjzertukh",
+                ClientTypeId = 1,
+                CreationDate = DateTime.Now,
+                Description = "test again",
+                Id = 778,
+                IsValid = true,
+                Name = "test again",
+                PublicId = "def",
+                UserCreatorId = _validUserCreator.Id
+            };
+
             _invalidClient = new Client()
             {
                 ClientSecret = "abcdefghijklmnopqrstuv",
@@ -85,10 +100,11 @@ namespace DaOAuthV2.Service.Test
                 Name = "test_invalid",
                 PublicId = "abc_invalid",
                 UserCreatorId = _invalidUser.Id
-            };           
+            };
 
             FakeDataBase.Instance.Clients.Add(_validClient);
             FakeDataBase.Instance.Clients.Add(_invalidClient);
+            FakeDataBase.Instance.Clients.Add(_anotherValidClient);
             FakeDataBase.Instance.Users.Add(_validUserCreator);
             FakeDataBase.Instance.Users.Add(_validUserNonCreator);
             FakeDataBase.Instance.Users.Add(_invalidUser);
@@ -158,7 +174,7 @@ namespace DaOAuthV2.Service.Test
                 RepositoriesFactory = new FakeRepositoriesFactory(),
                 StringLocalizerFactory = new FakeStringLocalizerFactory(),
                 Logger = new FakeLogger(),
-                RandomService = new FakeRandomService()
+                RandomService = new FakeRandomService(1, _generatedClientSecret)
             };
 
             _repo = new FakeClientRepository();
@@ -173,15 +189,16 @@ namespace DaOAuthV2.Service.Test
         [TestMethod]
         public void Create_New_Client_Should_Create_A_Creator_User_Client()
         {
-            var name = "client_test_create";
-            var description = "test";
+            var name = Guid.NewGuid().ToString();
+            var description = Guid.NewGuid().ToString();
+            var userName = _validUserCreator.UserName;
 
             var id = _service.CreateClient(new DTO.CreateClientDto()
             {
                 ClientType = ClientTypeName.Confidential,
                 ReturnUrls = new List<string>() { "http://www.perdu.com" },
                 Name = name,
-                UserName = "Sammy",
+                UserName = userName,
                 Description = description
             });
 
@@ -192,24 +209,25 @@ namespace DaOAuthV2.Service.Test
             Assert.IsNotNull(client);
 
             var ucrepo = new FakeUserClientRepository();
-            var myUc = ucrepo.GetUserClientByClientPublicIdAndUserName(client.PublicId, "Sammy");
+            var myUc = ucrepo.GetUserClientByClientPublicIdAndUserName(client.PublicId, userName);
 
             Assert.IsNotNull(myUc);
-            Assert.IsTrue(myUc.Client.UserCreator.UserName.Equals("Sammy"));
+            Assert.IsTrue(myUc.Client.UserCreator.UserName.Equals(userName));
         }
 
         [TestMethod]
         public void Create_New_Client_Should_Return_Int()
         {
-            var name = "client_test_create";
-            var description = "test";
+            var name = Guid.NewGuid().ToString();
+            var description = Guid.NewGuid().ToString();
+            var userName = _validUserCreator.UserName;
 
             var id = _service.CreateClient(new DTO.CreateClientDto()
             {
                 ClientType = ClientTypeName.Confidential,
                 ReturnUrls = new List<string>() { "http://www.perdu.com" },
                 Name = name,
-                UserName = "Sammy",
+                UserName = userName,
                 Description = description
             });
 
@@ -226,19 +244,20 @@ namespace DaOAuthV2.Service.Test
         [TestMethod]
         public void Create_New_Client_Should_Create_Scopes()
         {
-            var name = "client_test_create";
-            var description = "test";
+            var name = Guid.NewGuid().ToString();
+            var description = Guid.NewGuid().ToString();
+            var userName = _validUserCreator.UserName;
             var sc1 = new Scope()
             {
                 Id = 456,
-                NiceWording = "sc1",
-                Wording = "sc1"
+                NiceWording = Guid.NewGuid().ToString(),
+                Wording = Guid.NewGuid().ToString()
             };
             var sc2 = new Scope()
             {
                 Id = 457,
-                NiceWording = "sc2",
-                Wording = "sc2"
+                NiceWording = Guid.NewGuid().ToString(),
+                Wording = Guid.NewGuid().ToString()
             };
 
             FakeDataBase.Instance.Scopes.Add(sc1);
@@ -249,7 +268,7 @@ namespace DaOAuthV2.Service.Test
                 ClientType = ClientTypeName.Confidential,
                 ReturnUrls = new List<string>() { "http://www.perdu.com" },
                 Name = name,
-                UserName = "Sammy",
+                UserName = userName,
                 Description = description,
                 ScopesIds = new List<int> { 456, 457 }
             });
@@ -270,15 +289,15 @@ namespace DaOAuthV2.Service.Test
         [TestMethod]
         public void Create_New_Client_Should_Return_Client_With_Generated_Secret()
         {
-            var name = "client_test_create";
-            var description = "test";
-
+            var name = Guid.NewGuid().ToString();
+            var description = Guid.NewGuid().ToString();
+            var userName = _validUserCreator.UserName;
             var id = _service.CreateClient(new DTO.CreateClientDto()
             {
                 ClientType = ClientTypeName.Confidential,
                 ReturnUrls = new List<string>() { "http://www.perdu.com" },
                 Name = name,
-                UserName = "Sammy",
+                UserName = userName,
                 Description = description
             });
 
@@ -287,7 +306,7 @@ namespace DaOAuthV2.Service.Test
             var client = _repo.GetById(id);
 
             Assert.IsNotNull(client);
-            Assert.AreEqual("azerty", client.ClientSecret);
+            Assert.AreEqual(_generatedClientSecret, client.ClientSecret);
         }
 
         [TestMethod]
@@ -297,8 +316,8 @@ namespace DaOAuthV2.Service.Test
             var id = _service.CreateClient(new DTO.CreateClientDto()
             {
                 ReturnUrls = new List<string>() { "http://www.perdu.com" },
-                Name = "client_test_crete",
-                UserName = "Sammy"
+                Name = Guid.NewGuid().ToString(),
+                UserName = _validUserCreator.UserName
             });
         }
 
@@ -311,7 +330,7 @@ namespace DaOAuthV2.Service.Test
                 ClientType = ClientTypeName.Confidential,
                 ReturnUrls = new List<string>() { "http://www.perdu.com" },
                 Name = String.Empty,
-                UserName = "Sammy"
+                UserName = _validUserCreator.UserName
             });
         }
 
@@ -323,8 +342,8 @@ namespace DaOAuthV2.Service.Test
             {
                 ClientType = ClientTypeName.Confidential,
                 ReturnUrls = new List<string>(),
-                Name = "test",
-                UserName = "Sammy"
+                Name = Guid.NewGuid().ToString(),
+                UserName = _validUserCreator.UserName
             });
         }
 
@@ -334,10 +353,10 @@ namespace DaOAuthV2.Service.Test
         {
             var id = _service.CreateClient(new DTO.CreateClientDto()
             {
-                ClientType = "incorrect",
+                ClientType = Guid.NewGuid().ToString(),
                 ReturnUrls = new List<string>() { "http://www.perdu.com" },
-                Name = "test",
-                UserName = "Sammy"
+                Name = Guid.NewGuid().ToString(),
+                UserName = _validUserCreator.UserName
             });
         }
 
@@ -349,8 +368,8 @@ namespace DaOAuthV2.Service.Test
             {
                 ClientType = ClientTypeName.Confidential,
                 ReturnUrls = new List<string>() { "http://www.perdu.com" },
-                Name = "client_1",
-                UserName = "Sammy"
+                Name = _validClient.Name,
+                UserName = _validUserCreator.UserName
             });
         }
 
@@ -362,8 +381,8 @@ namespace DaOAuthV2.Service.Test
             {
                 ClientType = ClientTypeName.Confidential,
                 ReturnUrls = new List<string>() { "httpwww.perdcom" },
-                Name = "test",
-                UserName = "Sammy"
+                Name = Guid.NewGuid().ToString(),
+                UserName = _validUserCreator.UserName
             });
         }
 
@@ -375,8 +394,8 @@ namespace DaOAuthV2.Service.Test
             {
                 ClientType = ClientTypeName.Confidential,
                 ReturnUrls = new List<string>() { "http://www.perdu.com" },
-                Name = "test",
-                UserName = "Johnny"
+                Name = Guid.NewGuid().ToString(),
+                UserName = _invalidUser.UserName
             });
         }
 
@@ -388,8 +407,8 @@ namespace DaOAuthV2.Service.Test
             {
                 ClientType = ClientTypeName.Confidential,
                 ReturnUrls = new List<string>() { "http://www.perdu.com" },
-                Name = "test",
-                UserName = "I_dont_exist"
+                Name = Guid.NewGuid().ToString(),
+                UserName = Guid.NewGuid().ToString()
             });
         }
 
@@ -404,10 +423,11 @@ namespace DaOAuthV2.Service.Test
         [TestMethod]
         public void Search_Count_Should_Return_1_With_Client_Name()
         {
-            var cn = FakeDataBase.Instance.Clients.Where(c => c.IsValid.Equals(true)).Select(c => c.Name).First();
+            var clientName = FakeDataBase.Instance.Clients.Where(c => c.IsValid.Equals(true)).Select(c => c.Name).FirstOrDefault();
+            Assert.IsNotNull(clientName);
             var nbr = _service.SearchCount(new DTO.ClientSearchDto()
             {
-                Name = cn
+                Name = clientName
             });
             Assert.AreEqual(1, nbr);
         }
@@ -417,7 +437,7 @@ namespace DaOAuthV2.Service.Test
         {
             var nbr = _service.SearchCount(new DTO.ClientSearchDto()
             {
-                Name = "non existing",
+                Name = Guid.NewGuid().ToString(),
                 Skip = 0,
                 Limit = 50
             });
@@ -469,7 +489,7 @@ namespace DaOAuthV2.Service.Test
         {
             var clients = _service.Search(new DTO.ClientSearchDto()
             {
-                Skip = 1,
+                Skip = 0,
                 Limit = 1
             });
 
@@ -493,26 +513,28 @@ namespace DaOAuthV2.Service.Test
         [TestMethod]
         public void Search_Should_Return_Client_Where_Search_By_Name()
         {
-            var cn = FakeDataBase.Instance.Clients.Where(c => c.IsValid.Equals(true)).Select(c => c.Name).First();
+            var clientName = FakeDataBase.Instance.Clients.Where(c => c.IsValid.Equals(true)).Select(c => c.Name).FirstOrDefault();
+            Assert.IsNotNull(clientName);
             var clients = _service.Search(new DTO.ClientSearchDto()
             {
-                Name = cn,
+                Name = clientName,
                 Skip = 0,
                 Limit = 50
             });
 
             Assert.IsNotNull(clients);
             Assert.AreEqual(1, clients.Count());
-            Assert.AreEqual(cn, clients.First().Name);
+            Assert.AreEqual(clientName, clients.First().Name);
         }
 
         [TestMethod]
         public void Search_Should_Return_Client_Where_Search_By_Public_Id()
         {
-            var pi = FakeDataBase.Instance.Clients.Where(c => c.IsValid.Equals(true)).Select(c => c.PublicId).First();
+            var publicId = FakeDataBase.Instance.Clients.Where(c => c.IsValid.Equals(true)).Select(c => c.PublicId).FirstOrDefault();
+            Assert.IsNotNull(publicId);
             var clients = _service.Search(new DTO.ClientSearchDto()
             {
-                PublicId = pi,
+                PublicId = publicId,
                 Skip = 0,
                 Limit = 50
             });
@@ -524,7 +546,7 @@ namespace DaOAuthV2.Service.Test
         [TestMethod]
         public void Search_Should_Return_All_Confidential_And_Valid_Clients()
         {
-            var clientTypeId = FakeDataBase.Instance.ClientTypes.Where(ct => ct.Wording.Equals(ClientTypeName.Confidential)).First().Id;
+            var clientTypeId = FakeDataBase.Instance.ClientTypes.Where(ct => ct.Wording.Equals(ClientTypeName.Confidential)).Single().Id;
             var valid = FakeDataBase.Instance.Clients.Where(c => c.IsValid.Equals(true) && c.ClientTypeId.Equals(clientTypeId)).Count();
 
             var clients = _service.Search(new DTO.ClientSearchDto()
@@ -565,7 +587,7 @@ namespace DaOAuthV2.Service.Test
         [TestMethod]
         public void Get_By_Id_Should_Return_Client_Without_Public_Id_For_Existing_Id_And_Non_Creator()
         {
-            var c = _service.GetById(1, _validUserNonCreator.UserName);
+            var c = _service.GetById(_validClient.Id, _validUserNonCreator.UserName);
             Assert.IsNotNull(c);
             Assert.IsTrue(String.IsNullOrEmpty(c.PublicId));
         }
@@ -671,7 +693,7 @@ namespace DaOAuthV2.Service.Test
             _service.Delete(new DeleteClientDto()
             {
                 Id = _validClient.Id,
-                UserName = "i_dont_exists"
+                UserName = Guid.NewGuid().ToString()
             });
         }
 
@@ -694,7 +716,7 @@ namespace DaOAuthV2.Service.Test
             {
                 Id = _validClient.Id,
                 ClientSecret = _validClient.ClientSecret,
-                ClientType = "confidential",
+                ClientType = ClientTypeName.Confidential,
                 Description = _validClient.Description,
                 Name = _validClient.Name,
                 PublicId = _validClient.PublicId,
@@ -713,7 +735,7 @@ namespace DaOAuthV2.Service.Test
             {
                 Id = _validClient.Id,
                 ClientSecret = _validClient.ClientSecret,
-                ClientType = "confidential",
+                ClientType = ClientTypeName.Confidential,
                 Description = _validClient.Description,
                 Name = _validClient.Name,
                 PublicId = _validClient.PublicId,
@@ -732,7 +754,7 @@ namespace DaOAuthV2.Service.Test
             {
                 Id = _validClient.Id,
                 ClientSecret = _validClient.ClientSecret,
-                ClientType = "confidential",
+                ClientType = ClientTypeName.Confidential,
                 Description = _validClient.Description,
                 Name = _validClient.Name,
                 PublicId = _validClient.PublicId,
@@ -751,7 +773,7 @@ namespace DaOAuthV2.Service.Test
             {
                 Id = _invalidClient.Id,
                 ClientSecret = _invalidClient.ClientSecret,
-                ClientType = "confidential",
+                ClientType = ClientTypeName.Confidential,
                 Description = _invalidClient.Description,
                 Name = _invalidClient.Name,
                 PublicId = _invalidClient.PublicId,
@@ -770,7 +792,7 @@ namespace DaOAuthV2.Service.Test
             {
                 Id = 44259,
                 ClientSecret = _validClient.ClientSecret,
-                ClientType = "confidential",
+                ClientType = ClientTypeName.Confidential,
                 Description = _validClient.Description,
                 Name = _validClient.Name,
                 PublicId = _validClient.PublicId,
@@ -789,7 +811,7 @@ namespace DaOAuthV2.Service.Test
             {
                 Id = _validClient.Id,
                 ClientSecret = String.Empty,
-                ClientType = "confidential",
+                ClientType = ClientTypeName.Confidential,
                 Description = _validClient.Description,
                 Name = _validClient.Name,
                 PublicId = _validClient.PublicId,
@@ -808,7 +830,7 @@ namespace DaOAuthV2.Service.Test
             {
                 Id = _validClient.Id,
                 ClientSecret = "short",
-                ClientType = "confidential",
+                ClientType = ClientTypeName.Confidential,
                 Description = _validClient.Description,
                 Name = _validClient.Name,
                 PublicId = _validClient.PublicId,
@@ -846,7 +868,7 @@ namespace DaOAuthV2.Service.Test
             {
                 Id = _validClient.Id,
                 ClientSecret = _validClient.ClientSecret,
-                ClientType = "invalid",
+                ClientType = Guid.NewGuid().ToString(),
                 Description = _validClient.Description,
                 Name = _validClient.Name,
                 PublicId = _validClient.PublicId,
@@ -865,7 +887,7 @@ namespace DaOAuthV2.Service.Test
             {
                 Id = _validClient.Id,
                 ClientSecret = _validClient.ClientSecret,
-                ClientType = "confidential",
+                ClientType = ClientTypeName.Confidential,
                 Description = _validClient.Description,
                 Name = String.Empty,
                 PublicId = _validClient.PublicId,
@@ -884,7 +906,7 @@ namespace DaOAuthV2.Service.Test
             {
                 Id = _validClient.Id,
                 ClientSecret = _validClient.ClientSecret,
-                ClientType = "confidential",
+                ClientType = ClientTypeName.Confidential,
                 Description = _validClient.Description,
                 Name = _invalidClient.Name,
                 PublicId = _validClient.PublicId,
@@ -903,7 +925,7 @@ namespace DaOAuthV2.Service.Test
             {
                 Id = _validClient.Id,
                 ClientSecret = _validClient.ClientSecret,
-                ClientType = "confidential",
+                ClientType = ClientTypeName.Confidential,
                 Description = _validClient.Description,
                 Name = _validClient.Name,
                 PublicId = String.Empty,
@@ -922,7 +944,7 @@ namespace DaOAuthV2.Service.Test
             {
                 Id = _validClient.Id,
                 ClientSecret = _validClient.ClientSecret,
-                ClientType = "confidential",
+                ClientType = ClientTypeName.Confidential,
                 Description = _validClient.Description,
                 Name = _validClient.Name,
                 PublicId = _invalidClient.PublicId,
@@ -941,7 +963,7 @@ namespace DaOAuthV2.Service.Test
             {
                 Id = _validClient.Id,
                 ClientSecret = _validClient.ClientSecret,
-                ClientType = "confidential",
+                ClientType = ClientTypeName.Confidential,
                 Description = _validClient.Description,
                 Name = _validClient.Name,
                 PublicId = _invalidClient.PublicId,
@@ -959,11 +981,11 @@ namespace DaOAuthV2.Service.Test
             {
                 Id = _validClient.Id,
                 ClientSecret = _validClient.ClientSecret,
-                ClientType = "confidential",
+                ClientType = ClientTypeName.Confidential,
                 Description = _validClient.Description,
                 Name = _validClient.Name,
                 PublicId = _invalidClient.PublicId,
-                ReturnUrls = new List<string>() { "pasvalid" },
+                ReturnUrls = new List<string>() { "urlNotvalid" },
                 ScopesIds = FakeDataBase.Instance.ClientsScopes.Where(s => s.ClientId.Equals(_validClient.Id)).Select(s => s.ScopeId).ToList(),
                 UserName = _validUserCreator.UserName
             });
@@ -977,7 +999,7 @@ namespace DaOAuthV2.Service.Test
             {
                 Id = _validClient.Id,
                 ClientSecret = _validClient.ClientSecret,
-                ClientType = "confidential",
+                ClientType = ClientTypeName.Confidential,
                 Description = _validClient.Description,
                 Name = _validClient.Name,
                 PublicId = _invalidClient.PublicId,
@@ -991,9 +1013,11 @@ namespace DaOAuthV2.Service.Test
         [TestMethod]
         public void Update_Should_Update()
         {
+            var scopeId = 99999;
+
             FakeDataBase.Instance.Scopes.Add(new Scope()
             {
-                Id = 999999,
+                Id = scopeId,
                 NiceWording = "new",
                 Wording = "new"
             });
@@ -1007,7 +1031,7 @@ namespace DaOAuthV2.Service.Test
                 Name = "updated name",
                 PublicId = "this is my new public id",
                 ReturnUrls = new List<string>() { "http://updated.com" },
-                ScopesIds = new List<int>() {  999999 },
+                ScopesIds = new List<int>() { scopeId },
                 UserName = _validUserCreator.UserName
             });
 
@@ -1030,7 +1054,7 @@ namespace DaOAuthV2.Service.Test
 
             Assert.IsNotNull(cScopes);
             Assert.AreEqual(1, cScopes.Count());
-            Assert.AreEqual(999999, cScopes.First().ScopeId);
+            Assert.AreEqual(scopeId, cScopes.First().ScopeId);
         }
 
         private void InitTestForInvalidRessourceServerScopes(out Client cl, out Scope sc1, out Scope sc2, out Scope sc3)
