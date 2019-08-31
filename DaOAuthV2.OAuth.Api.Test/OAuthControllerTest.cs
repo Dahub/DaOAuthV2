@@ -143,6 +143,33 @@ namespace DaOAuthV2.OAuth.Api.Test
         }
 
         [TestMethod]
+        public async Task Token_For_Grant_Type_Client_Credentials_Should_Return_Valid_Token()
+        {
+            var formContent = BuildFormContent(
+               _sammyClientPublicIdPublic,
+               String.Empty,
+               OAuthConvention.GrantTypeClientCredentials,
+               String.Empty,
+               String.Empty,
+               _sammyReturnUrlPublic,
+               _sammyScopeWording,
+               _sammyUserName);
+
+            _client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            _client.DefaultRequestHeaders.Authorization = BuildAuthenticationHeaderValue(_sammyClientPublicIdPublic, _sammyClientSecretPublic);
+
+            var request = new HttpRequestMessage(HttpMethod.Post, "http://localhost/token");
+
+            request.Content = formContent;
+
+            var httpResponseMessage = await _client.SendAsync(request);
+
+            Assert.IsTrue(httpResponseMessage.IsSuccessStatusCode);
+
+            await CheckResponseContentIsValid(httpResponseMessage, false);
+        }
+
+        [TestMethod]
         public async Task Token_For_Grant_Type_Refresh_Token_Should_Return_Valid_Token()
         {
             var jwtService = new JwtService()
@@ -255,7 +282,7 @@ namespace DaOAuthV2.OAuth.Api.Test
             Assert.IsFalse(codeFromDb.IsValid);
         }
 
-        private static async Task CheckResponseContentIsValid(HttpResponseMessage httpResponseMessage)
+        private static async Task CheckResponseContentIsValid(HttpResponseMessage httpResponseMessage, bool checkRefreshToken = true)
         {
             var jsonResult = new
             {
@@ -270,19 +297,23 @@ namespace DaOAuthV2.OAuth.Api.Test
 
             Assert.IsNotNull(myTokenInfos);
             Assert.AreEqual(_sammyScopeWording, myTokenInfos.scope);
-            CheckTokenValid(myTokenInfos.access_token, OAuthConvention.AccessToken);
-            CheckTokenValid(myTokenInfos.refresh_token, OAuthConvention.RefreshToken);
+            CheckTokenValid(myTokenInfos.access_token, OAuthConvention.AccessToken);           
             Assert.AreEqual(OAuthApiTestStartup.Configuration.AccesTokenLifeTimeInSeconds, myTokenInfos.expires_in);
 
-            string refreshTokenFromDb;
-            using (var context = new DaOAuthContext(_dbContextOptions))
+            if (checkRefreshToken)
             {
-                var userClient = context.UsersClients.Where(uc => uc.Id.Equals(_sammyUserClientIdConfidential)).FirstOrDefault();
-                Assert.IsNotNull(userClient);
-                refreshTokenFromDb = userClient.RefreshToken;
-            }
+                CheckTokenValid(myTokenInfos.refresh_token, OAuthConvention.RefreshToken);
 
-            Assert.AreEqual(refreshTokenFromDb, myTokenInfos.refresh_token);
+                string refreshTokenFromDb;
+                using (var context = new DaOAuthContext(_dbContextOptions))
+                {
+                    var userClient = context.UsersClients.Where(uc => uc.Id.Equals(_sammyUserClientIdConfidential)).FirstOrDefault();
+                    Assert.IsNotNull(userClient);
+                    refreshTokenFromDb = userClient.RefreshToken;
+                }
+
+                Assert.AreEqual(refreshTokenFromDb, myTokenInfos.refresh_token);
+            }
         }
 
         private static void CheckTokenValid(string token, string tokenName)
