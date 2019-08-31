@@ -240,7 +240,6 @@ namespace DaOAuthV2.Service
                 var rsRepo = RepositoriesFactory.GetRessourceServerRepository(context);
                 rs = rsRepo.GetByLogin(rsLogin);
 
-
                 if (rs == null)
                 {
                     return toReturn;

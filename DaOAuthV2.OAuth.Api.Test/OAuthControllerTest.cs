@@ -13,6 +13,7 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace DaOAuthV2.OAuth.Api.Test
@@ -282,6 +283,103 @@ namespace DaOAuthV2.OAuth.Api.Test
             Assert.IsFalse(codeFromDb.IsValid);
         }
 
+        [TestMethod]
+        public async Task Introspect_Should_Return_Valid_For_Valid_Token()
+        {
+            var lifeTimeInSecond = OAuthApiTestStartup.Configuration.AccesTokenLifeTimeInSeconds;
+
+            var jwtTokenDto = BuildAccessToken(lifeTimeInSecond);
+
+            var httpResponseMessage = await SendIntrospectRequest(jwtTokenDto);
+
+            Assert.IsTrue(httpResponseMessage.IsSuccessStatusCode);
+
+            var jsonResult = new
+            {
+                active = true,
+                exp = 0,
+                aud = new string[0],
+                client_id = "",
+                name = "",
+                scope = ""
+            };
+
+            var myIntrospectInfo = JsonConvert.DeserializeAnonymousType(await httpResponseMessage.Content.ReadAsStringAsync(), jsonResult);
+
+            Assert.IsTrue(myIntrospectInfo.active);
+            Assert.AreEqual(myIntrospectInfo.client_id, _sammyClientPublicIdConfidential);
+            Assert.IsTrue(myIntrospectInfo.aud.SequenceEqual<string>(new string[] { _sammyRessourceServerName }));
+            Assert.AreEqual(myIntrospectInfo.exp, jwtTokenDto.Expire);
+            Assert.AreEqual(myIntrospectInfo.name, _sammyUserName);
+            Assert.AreEqual(myIntrospectInfo.scope, _sammyScopeWording);
+        }       
+
+        [TestMethod]
+        public async Task Introspect_Should_Return_Invalid_For_Valid_Token()
+        {
+            var lifeTimeInSecond = 1;
+
+            var jwtTokenDto = BuildAccessToken(lifeTimeInSecond);
+
+            Thread.Sleep((lifeTimeInSecond + 1) * 1000);
+
+            var httpResponseMessage = await SendIntrospectRequest(jwtTokenDto);
+
+            Assert.IsTrue(httpResponseMessage.IsSuccessStatusCode);
+
+            var jsonResult = new
+            {
+                active = true,
+                exp = 0,
+                aud = new string[0],
+                client_id = "",
+                name = "",
+                scope = ""
+            };
+
+            var myIntrospectInfo = JsonConvert.DeserializeAnonymousType(await httpResponseMessage.Content.ReadAsStringAsync(), jsonResult);
+
+            Assert.IsFalse(myIntrospectInfo.active);
+        }
+
+        private async Task<HttpResponseMessage> SendIntrospectRequest(JwtTokenDto jwtTokenDto)
+        {
+            var formContent = new MultipartFormDataContent()
+            {
+                { new StringContent(jwtTokenDto.Token),  "token" }
+            };
+
+            _client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            _client.DefaultRequestHeaders.Authorization = BuildAuthenticationHeaderValue(_sammyRessourceServerLogin, _sammyRessourceServerPassword);
+
+            var request = new HttpRequestMessage(HttpMethod.Post, "http://localhost/introspect");
+
+            request.Content = formContent;
+
+            return await _client.SendAsync(request);
+        }
+
+        private static JwtTokenDto BuildAccessToken(int lifeTimeInSecond)
+        {
+            var jwtService = new JwtService()
+            {
+                Configuration = OAuthApiTestStartup.Configuration,
+                Logger = new FakeLogger(),
+                RepositoriesFactory = null,
+                StringLocalizerFactory = new FakeStringLocalizerFactory()
+            };
+
+            var jwtTokenDto = jwtService.GenerateToken(new CreateTokenDto()
+            {
+                ClientPublicId = _sammyClientPublicIdConfidential,
+                Scope = _sammyScopeWording,
+                SecondsLifeTime = lifeTimeInSecond,
+                TokenName = OAuthConvention.AccessToken,
+                UserName = _sammyUserName
+            });
+            return jwtTokenDto;
+        }
+
         private static async Task CheckResponseContentIsValid(HttpResponseMessage httpResponseMessage, bool checkRefreshToken = true)
         {
             var jsonResult = new
@@ -297,7 +395,7 @@ namespace DaOAuthV2.OAuth.Api.Test
 
             Assert.IsNotNull(myTokenInfos);
             Assert.AreEqual(_sammyScopeWording, myTokenInfos.scope);
-            CheckTokenValid(myTokenInfos.access_token, OAuthConvention.AccessToken);           
+            CheckTokenValid(myTokenInfos.access_token, OAuthConvention.AccessToken);
             Assert.AreEqual(OAuthApiTestStartup.Configuration.AccesTokenLifeTimeInSeconds, myTokenInfos.expires_in);
 
             if (checkRefreshToken)

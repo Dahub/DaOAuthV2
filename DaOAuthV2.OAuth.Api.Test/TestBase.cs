@@ -32,6 +32,10 @@ namespace DaOAuthV2.OAuth.Api.Test
 
         protected static string _sammyScopeWording = "scopeASammy";
 
+        protected static string _sammyRessourceServerLogin = "logMe";
+        protected static string _sammyRessourceServerPassword = "secrets";
+        protected static string _sammyRessourceServerName = "TestValid";
+
         private static readonly EncryptionService _encryptService = new EncryptionService();
 
         private static readonly RessourceServer _validRessourceServer = new RessourceServer()
@@ -40,9 +44,9 @@ namespace DaOAuthV2.OAuth.Api.Test
             Description = "Test ressource Server",
             Id = 1001,
             IsValid = true,
-            Login = "logMe",
-            Name = "TestValid",
-            ServerSecret = new byte[] { 0, 1, 0 }
+            Login = _sammyRessourceServerLogin,
+            Name = _sammyRessourceServerName,
+            ServerSecret = _encryptService.Sha256Hash($"saltNpepper{_sammyRessourceServerPassword}")
         };
 
         private static readonly Scope _scope1 = new Scope()
