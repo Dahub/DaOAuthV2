@@ -25,7 +25,7 @@ namespace DaOAuthV2.Gui.Front.Controllers
         [HttpGet]
         public async Task<IActionResult> List()
         {
-            NameValueCollection nv = new NameValueCollection();
+            var nv = new NameValueCollection();
             nv.Add("skip", "0");
             nv.Add("limit", "50");
 
@@ -52,9 +52,11 @@ namespace DaOAuthV2.Gui.Front.Controllers
         public async Task<IActionResult> Create(CreateRessouceServerModel model)
         {
             if (model.Scopes == null)
+            {
                 model.Scopes = new Dictionary<string, bool>();
+            }
 
-            HttpResponseMessage response = await PostToApi("ressourcesServers", new CreateRessourceServerDto()
+            var response = await PostToApi("ressourcesServers", new CreateRessourceServerDto()
             {
                 Login = model.Login,
                 Password = model.Password,
@@ -68,24 +70,23 @@ namespace DaOAuthV2.Gui.Front.Controllers
                 }).ToList()
             });
 
-            if (!await model.ValidateAsync(response))
-                return View(model);
-
-            return RedirectToAction("List");
+            return !await model.ValidateAsync(response) ? View(model) : (IActionResult)RedirectToAction("List");
         }
 
         [HttpGet]
         [Authorize(Roles = RoleName.Administrator)]
         public async Task<IActionResult> Edit(int id)
         {
-            UpdateRessouceServerModel model = new UpdateRessouceServerModel();
+            var model = new UpdateRessouceServerModel();
 
             var response = await GetToApi($"ressourcesServers/{id}");
             var rs = JsonConvert.DeserializeObject<RessourceServerDto>(
                await response.Content.ReadAsStringAsync());
 
             if (!await model.ValidateAsync(response))
+            {
                 return View(model);
+            }
 
             model.Description = rs.Description;
             model.Id = rs.Id;
@@ -112,9 +113,11 @@ namespace DaOAuthV2.Gui.Front.Controllers
         public async Task<IActionResult> Edit(UpdateRessouceServerModel model)
         {
             if (model.Scopes == null)
+            {
                 model.Scopes = new List<UpdateRessourceServerScopeModel>();
+            }
 
-            HttpResponseMessage response = await PutToApi("ressourcesServers", new UpdateRessourceServerDto()
+            var response = await PutToApi("ressourcesServers", new UpdateRessourceServerDto()
             {
                 Id = model.Id,
                 Description = model.Description,
@@ -128,17 +131,14 @@ namespace DaOAuthV2.Gui.Front.Controllers
                 }).ToList()
             });
 
-            if (!await model.ValidateAsync(response))
-                return View(model);
-
-            return RedirectToAction("List");
+            return !await model.ValidateAsync(response) ? View(model) : (IActionResult)RedirectToAction("List");
         }
 
         [HttpGet]
         [Authorize(Roles = RoleName.Administrator)]
         public async Task<IActionResult> Delete(int id)
         {
-            HttpResponseMessage response = await DeleteToApi($"ressourcesServers/{id}");
+            var response = await DeleteToApi($"ressourcesServers/{id}");
 
             return RedirectToAction("List");
         }
@@ -146,16 +146,18 @@ namespace DaOAuthV2.Gui.Front.Controllers
         [HttpGet]
         public async Task<IActionResult> Details(int id)
         {
-            HttpResponseMessage response = await GetToApi($"ressourcesServers/{id}");
+            var response = await GetToApi($"ressourcesServers/{id}");
 
             var rs = JsonConvert.DeserializeObject<RessourceServerDto>(
                 await response.Content.ReadAsStringAsync());
 
-            DetailsRessouceServerModel model = new DetailsRessouceServerModel();
+            var model = new DetailsRessouceServerModel();
             model.Scopes = new List<DetailsRessourceServerScopeModel>();
 
             if (!await model.ValidateAsync(response))
+            {
                 return View(model);
+            }
 
             model.Description = rs.Description;
             model.Login = rs.Login;

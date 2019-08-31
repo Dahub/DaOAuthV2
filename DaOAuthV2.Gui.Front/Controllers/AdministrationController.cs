@@ -22,12 +22,14 @@ namespace DaOAuthV2.Gui.Front.Controllers
 
         public async Task<IActionResult> UserDetails(int id)
         {
-            AdministrationUserDetailsModel model = new AdministrationUserDetailsModel();
+            var model = new AdministrationUserDetailsModel();
 
             var response = await GetToApi(string.Concat("administration/", id));
 
             if (!await model.ValidateAsync(response))
+            {
                 return View(model);
+            }
 
             var userDetail = JsonConvert.DeserializeObject<AdminUserDetailDto>(
              await response.Content.ReadAsStringAsync());
@@ -52,7 +54,7 @@ namespace DaOAuthV2.Gui.Front.Controllers
         [Route("{culture}/Administration/Activate/{userName}")]
         public async Task<IActionResult> Activate(string userName)
         {
-            NameValueCollection nv = new NameValueCollection
+            var nv = new NameValueCollection
             {
                 { "userName", userName }
             };
@@ -86,9 +88,9 @@ namespace DaOAuthV2.Gui.Front.Controllers
 
         public async Task<IActionResult> List()
         {
-            AdministrationDashboardModel model = new AdministrationDashboardModel();
+            var model = new AdministrationDashboardModel();
 
-            NameValueCollection nv = new NameValueCollection
+            var nv = new NameValueCollection
             {
                 { "skip", "0" },
                 { "limit", "50" }
@@ -97,7 +99,9 @@ namespace DaOAuthV2.Gui.Front.Controllers
             var response = await GetToApi($"administration", nv);
 
             if (!await model.ValidateAsync(response))
+            {
                 return View(model);
+            }
 
             var users = JsonConvert.DeserializeObject<SearchResult<AdminUsrDto>>(
                 await response.Content.ReadAsStringAsync());

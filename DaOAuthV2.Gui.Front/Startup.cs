@@ -46,11 +46,11 @@ namespace DaOAuthV2.Gui.Front
                .AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix)
                .AddDataAnnotationsLocalization();
 
-            CultureInfo en = new CultureInfo("en-US");
+            var en = new CultureInfo("en-US");
             en.DateTimeFormat.ShortDatePattern = "dd/MMM/yyyy";
             en.DateTimeFormat.DateSeparator = "/";
 
-            CultureInfo fr = new CultureInfo("fr-FR");
+            var fr = new CultureInfo("fr-FR");
             fr.DateTimeFormat.ShortDatePattern = "dd/MMM/yyyy";
             fr.DateTimeFormat.DateSeparator = "/";
 

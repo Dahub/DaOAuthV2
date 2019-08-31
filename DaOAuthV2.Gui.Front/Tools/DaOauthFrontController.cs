@@ -11,7 +11,7 @@ namespace DaOAuthV2.Gui.Front.Tools
     public class DaOauthFrontController : Controller
     {
         protected readonly FrontConfiguration _conf;
-        private HttpClient _client = new HttpClient();
+        private readonly HttpClient _client = new HttpClient();
 
         public DaOauthFrontController(IConfiguration Configuration)
         {
@@ -43,7 +43,9 @@ namespace DaOAuthV2.Gui.Front.Tools
             var culture = "en";
 
             if (ControllerContext.RouteData.Values.ContainsKey("culture"))
+            {
                 culture = this.ControllerContext.RouteData.Values["culture"].ToString();
+            }
 
             return $"{culture}.{viewName}";
         }
@@ -55,7 +57,7 @@ namespace DaOAuthV2.Gui.Front.Tools
 
         protected async Task<HttpResponseMessage> GetToApi(string route, NameValueCollection queryParams)
         {
-            Uri myUri = BuildRouteWithParams(ref route, queryParams);
+            var myUri = BuildRouteWithParams(ref route, queryParams);
 
             return await _client.GetAsync(
                 $"{_conf.GuiApiUrl}/{route}");
@@ -98,7 +100,7 @@ namespace DaOAuthV2.Gui.Front.Tools
 
         protected async Task<HttpResponseMessage> HeadToApi(string route, NameValueCollection queryParams)
         {
-            Uri myUri = BuildRouteWithParams(ref route, queryParams);
+            var myUri = BuildRouteWithParams(ref route, queryParams);
 
             return await _client.SendAsync(new HttpRequestMessage()
             {
@@ -111,19 +113,18 @@ namespace DaOAuthV2.Gui.Front.Tools
         {
             if (HttpContext.Request.Cookies[".AspNetCore.DaOAuth"] != null)
             {
-                string value = HttpContext.Request.Cookies[".AspNetCore.DaOAuth"];
+                var value = HttpContext.Request.Cookies[".AspNetCore.DaOAuth"];
                 _client.DefaultRequestHeaders.Add("Cookie", $".AspNetCore.DaOAuth={value}");
             }
         }
 
         private string ApplyCultureToRoute(string route)
         {
-            string culture = String.Empty;
+            var culture = String.Empty;
 
-            if (ControllerContext.RouteData.Values.ContainsKey("culture"))
-                culture = this.ControllerContext.RouteData.Values["culture"].ToString();
-            else
-                culture = "en";
+            culture = ControllerContext.RouteData.Values.ContainsKey("culture")
+                ? this.ControllerContext.RouteData.Values["culture"].ToString()
+                : "en";
 
             if (!String.IsNullOrWhiteSpace(culture))
             {
@@ -155,7 +156,7 @@ namespace DaOAuthV2.Gui.Front.Tools
 
             AddAuthorizationCookieIfAuthentificated();
 
-            Uri.TryCreate($"{_conf.GuiApiUrl}/{route}", UriKind.Absolute, out Uri myUri);
+            Uri.TryCreate($"{_conf.GuiApiUrl}/{route}", UriKind.Absolute, out var myUri);
             return myUri;
         }
     }

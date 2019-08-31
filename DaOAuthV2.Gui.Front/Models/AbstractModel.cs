@@ -30,10 +30,10 @@ namespace DaOAuthV2.Gui.Front.Models
             {
                 try
                 {
-                    ErrorApiResultDto e = JsonConvert.DeserializeObject<ErrorApiResultDto>(await response.Content.ReadAsStringAsync());
-                    if(e != null)
+                    var errorApiResult = JsonConvert.DeserializeObject<ErrorApiResultDto>(await response.Content.ReadAsStringAsync());
+                    if(errorApiResult != null)
                     {
-                        Errors = e.Message.Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries).ToList();                       
+                        Errors = errorApiResult.Message.Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries).ToList();                       
                     }
                 }
                 catch

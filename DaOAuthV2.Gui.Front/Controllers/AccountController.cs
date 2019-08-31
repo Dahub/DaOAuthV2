@@ -30,10 +30,7 @@ namespace DaOAuthV2.Gui.Front.Controllers
         {
             if (User.Identity.IsAuthenticated)
             {
-                if (!String.IsNullOrEmpty(returnUrl))
-                    return Redirect(returnUrl);
-                else
-                    return RedirectToAction("Dashboard", "Home");
+                return !String.IsNullOrEmpty(returnUrl) ? Redirect(returnUrl) : (IActionResult)RedirectToAction("Dashboard", "Home");
             }
 
             return View(new LoginModel()
@@ -46,23 +43,22 @@ namespace DaOAuthV2.Gui.Front.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Login(LoginModel model)
         {
-            HttpResponseMessage response = await PostToApi("users/find", new LoginUserDto
+            var response = await PostToApi("users/find", new LoginUserDto
             {
                 UserName = model.UserName,
                 Password = model.Password
             });
 
             if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+            {
                 model.Errors.Add("Username or password incorrects");
+            }
 
             if (await model.ValidateAsync(response))
             {
                 LogUser(await response.Content.ReadAsAsync<UserDto>(), model.RememberMe);
 
-                if (!String.IsNullOrEmpty(model.ReturnUrl))
-                    return Redirect(model.ReturnUrl);
-                else
-                    return RedirectToAction("Dashboard", "Home");
+                return !String.IsNullOrEmpty(model.ReturnUrl) ? Redirect(model.ReturnUrl) : (IActionResult)RedirectToAction("Dashboard", "Home");
             }
 
             return View(model);
@@ -79,17 +75,14 @@ namespace DaOAuthV2.Gui.Front.Controllers
         [AllowAnonymous]
         public IActionResult Register()
         {
-            if (User.Identity.IsAuthenticated)
-                return RedirectToAction("Dashboard", "Home");
-
-            return View(new RegisterModel());
+            return User.Identity.IsAuthenticated ? RedirectToAction("Dashboard", "Home") : (IActionResult)View(new RegisterModel());
         }
 
         [HttpPost]
         [AllowAnonymous]      
         public async Task<IActionResult> Register(RegisterModel model)
         {
-            HttpResponseMessage response = await PostToApi("users", new CreateUserDto()
+            var response = await PostToApi("users", new CreateUserDto()
             {
                 BirthDate = model.BirthDate,
                 EMail = model.EMail,
@@ -99,21 +92,20 @@ namespace DaOAuthV2.Gui.Front.Controllers
                 UserName = model.UserName
             });
 
-            if (!await model.ValidateAsync(response))
-                return View(model);
-
-            return View("RegisterOk");
+            return !await model.ValidateAsync(response) ? View(model) : View("RegisterOk");
         }
 
         [HttpGet]
         public async Task<IActionResult> Edit()
         {
-            UpdateUserModel model = new UpdateUserModel();
+            var model = new UpdateUserModel();
 
-            HttpResponseMessage response = await GetToApi("users");
+            var response = await GetToApi("users");
 
             if (!await model.ValidateAsync(response))
+            {
                 return View(model);
+            }
 
             var user = await response.Content.ReadAsAsync<UserDto>();
 
@@ -127,17 +119,14 @@ namespace DaOAuthV2.Gui.Front.Controllers
         [HttpPost]
         public async Task<IActionResult> Edit(UpdateUserModel model)
         {
-            HttpResponseMessage response = await PutToApi("users", new UpdateUserDto()
+            var response = await PutToApi("users", new UpdateUserDto()
             {
                 BirthDate = model.BirthDate,
                 EMail = model.EMail,
                 FullName = model.FullName
             });
 
-            if (!await model.ValidateAsync(response))
-                return View(model);
-
-            return RedirectToAction("Dashboard", "Home");
+            return !await model.ValidateAsync(response) ? View(model) : (IActionResult)RedirectToAction("Dashboard", "Home");
         }
 
         [Authorize]
@@ -148,7 +137,7 @@ namespace DaOAuthV2.Gui.Front.Controllers
            [FromQuery(Name = "redirect_uri")] Uri redirectUri,
            [FromQuery(Name = "scope")] string scope)
         {
-            NameValueCollection nv = new NameValueCollection();
+            var nv = new NameValueCollection();
             nv.Add("skip", "0");
             nv.Add("limit", "50");
             nv.Add("publicId", clientId);
@@ -158,11 +147,13 @@ namespace DaOAuthV2.Gui.Front.Controllers
             // check client validity
             var myClient = clients.Datas.FirstOrDefault();
             if (myClient == null)
+            {
                 throw new Exception("TODO exception si client null"); // TODO manage exceptions
+            }
 
             var clientRef = ClientAuthorizationStack.Add(new ClientRedirectInfo(responseType, redirectUri, scope, state, clientId));
 
-            AuthorizeClientModel model = new AuthorizeClientModel()
+            var model = new AuthorizeClientModel()
             {
                 ClientName = myClient.Name,
                 ClientRef = clientRef.ToString()
@@ -180,8 +171,8 @@ namespace DaOAuthV2.Gui.Front.Controllers
         [Route("{culture}/Account/AcceptClient/{clientRef}")]
         public async Task<IActionResult> AcceptClient(string clientRef)
         {
-            Guid r = Guid.Parse(clientRef);
-            ClientRedirectInfo client = ClientAuthorizationStack.Get(r);
+            var clientReference = Guid.Parse(clientRef);
+            var client = ClientAuthorizationStack.Get(clientReference);
 
             var response = await PostToApi("UsersClients", new CreateUserClientDto()
             {
@@ -189,14 +180,16 @@ namespace DaOAuthV2.Gui.Front.Controllers
                 IsActif = true
             });
 
-            string url = $"{_conf.OAuthApiUrl.AbsoluteUri}authorize?response_type={client.ResponseType}" +
+            var url = $"{_conf.OAuthApiUrl.AbsoluteUri}authorize?response_type={client.ResponseType}" +
                 $"&client_id={client.ClientPublicId}" +
                 $"&state={client.State}" +
                 $"&scope={client.Scope}" +
                 $"&redirect_uri={client.RedirectUri}";
 
             if (((int)response.StatusCode) < 300)
+            {
                 return Redirect(url);
+            }
 
             // TODO manage exceptions
             throw new Exception("TODO mécanisme exception");
@@ -205,8 +198,8 @@ namespace DaOAuthV2.Gui.Front.Controllers
         [Route("{culture}/Account/DenyClient/{clientRef}")]
         public async Task<IActionResult> DenyClient(string clientRef)
         {
-            Guid r = Guid.Parse(clientRef);
-            ClientRedirectInfo client = ClientAuthorizationStack.Get(r);
+            var clientReference = Guid.Parse(clientRef);
+            var client = ClientAuthorizationStack.Get(clientReference);
 
             var response = await PostToApi("UsersClients", new CreateUserClientDto()
             {
@@ -214,14 +207,16 @@ namespace DaOAuthV2.Gui.Front.Controllers
                 IsActif = false
             });
 
-            string url = $"{_conf.OAuthApiUrl.AbsoluteUri}authorize?response_type={client.ResponseType}" +
+            var url = $"{_conf.OAuthApiUrl.AbsoluteUri}authorize?response_type={client.ResponseType}" +
              $"&client_id={client.ClientPublicId}" +
              $"&state={client.State}" +
              $"&scope={client.Scope}" +
              $"&redirect_uri={client.RedirectUri}";
 
             if (((int)response.StatusCode) < 300)
+            {
                 return Redirect(url);
+            }
 
             // TODO manage exceptions
             throw new Exception("TODO mécanisme exception");
@@ -232,7 +227,7 @@ namespace DaOAuthV2.Gui.Front.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> ValidateUser(string userName, string token)
         {
-            HttpResponseMessage response = await PutToApi("users/validate", new ValidateUserDto()
+            var response = await PutToApi("users/validate", new ValidateUserDto()
             {
                 UserName = userName,
                 Token = token
@@ -240,7 +235,7 @@ namespace DaOAuthV2.Gui.Front.Controllers
 
             if (response.StatusCode != System.Net.HttpStatusCode.OK)
             {
-                ErrorApiResultDto e = JsonConvert.DeserializeObject<ErrorApiResultDto>(await response.Content.ReadAsStringAsync());
+                var e = JsonConvert.DeserializeObject<ErrorApiResultDto>(await response.Content.ReadAsStringAsync());
                 throw new Exception(e.Message);
             }
 
@@ -277,10 +272,7 @@ namespace DaOAuthV2.Gui.Front.Controllers
                 Token = model.Token
             });
 
-            if (!await model.ValidateAsync(response))
-                return View(model);
-
-            return View("SetPasswordOk");
+            return !await model.ValidateAsync(response) ? View(model) : View("SetPasswordOk");
         }
 
         [HttpGet]
@@ -296,10 +288,7 @@ namespace DaOAuthV2.Gui.Front.Controllers
         {
             var response = await GetToApi($"users/password/{model.Email}");
 
-            if (!await model.ValidateAsync(response))
-                return View(model);
-
-            return View("AskNewPasswordOk");
+            return !await model.ValidateAsync(response) ? View(model) : View("AskNewPasswordOk");
         }
 
         [HttpPost]
@@ -312,10 +301,7 @@ namespace DaOAuthV2.Gui.Front.Controllers
                 OldPassword = model.OldPassword
             });
 
-            if (!await model.ValidateAsync(response))
-                return View(model);
-
-            return View("ChangePasswordOk");
+            return !await model.ValidateAsync(response) ? View(model) : View("ChangePasswordOk");
         }
 
         private void LogUser(UserDto u, bool rememberMe)
@@ -331,7 +317,7 @@ namespace DaOAuthV2.Gui.Front.Controllers
                 claimsIdentity.AddClaim(roleClaim);
             }
 
-            ClaimsPrincipal principal = new ClaimsPrincipal(claimsIdentity);
+            var principal = new ClaimsPrincipal(claimsIdentity);
 
             HttpContext.SignInAsync("DaOAuth", principal, new AuthenticationProperties()
             {

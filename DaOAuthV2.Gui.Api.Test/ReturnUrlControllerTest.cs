@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 namespace DaOAuthV2.Gui.Api.Test
 {
     [TestClass]
+    [TestCategory("Integration")]
     public class ReturnUrlControllerTest : TestBase
     {
         [TestInitialize]

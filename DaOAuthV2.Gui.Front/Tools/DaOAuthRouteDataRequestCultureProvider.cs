@@ -13,7 +13,9 @@ namespace DaOAuthV2.Gui.Front.Tools
         public override Task<ProviderCultureResult> DetermineProviderCultureResult(HttpContext httpContext)
         {
             if (httpContext == null)
+            {
                 throw new ArgumentNullException(nameof(httpContext));
+            }
 
             string culture = null;
             string uiCulture = null;
@@ -22,23 +24,37 @@ namespace DaOAuthV2.Gui.Front.Tools
             var twoLetterUICultureName = httpContext.Request.Path.Value.Split('/')[IndexofUICulture]?.ToString();
 
             if (twoLetterCultureName == "fr")
+            {
                 culture = "fr-FR";
+            }
             else if (twoLetterCultureName == "en")
+            {
                 culture = "en-US";
+            }
 
             if (twoLetterUICultureName == "fr")
+            {
                 uiCulture = "fr-FR";
+            }
             else if (twoLetterUICultureName == "en")
+            {
                 culture =  "en-US";
+            }
 
             if (culture == null && uiCulture == null)
+            {
                 return NullProviderCultureResult;
+            }
 
             if (culture != null && uiCulture == null)
+            {
                 uiCulture = culture;
+            }
 
             if (culture == null && uiCulture != null)
+            {
                 culture = uiCulture;
+            }
 
             var providerResultCulture = new ProviderCultureResult(culture, uiCulture);
 
