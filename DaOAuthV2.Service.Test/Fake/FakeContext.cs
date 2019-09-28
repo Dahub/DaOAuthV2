@@ -1,4 +1,5 @@
-﻿using DaOAuthV2.Dal.Interface;
+﻿using System.Threading.Tasks;
+using DaOAuthV2.Dal.Interface;
 
 namespace DaOAuthV2.Service.Test.Fake
 {
@@ -8,12 +9,13 @@ namespace DaOAuthV2.Service.Test.Fake
         {            
         }
 
-        public void CommitAsync()
+        public void Dispose()
         {            
         }
 
-        public void Dispose()
-        {            
+        Task IContext.CommitAsync()
+        {
+            throw new System.NotImplementedException();
         }
     }
 }
