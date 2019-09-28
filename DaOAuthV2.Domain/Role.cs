@@ -6,7 +6,9 @@ namespace DaOAuthV2.Domain
     public class Role : IDomainObject
     {
         public int Id { get; set; }
+
         public string Wording { get; set; }
+
         public ICollection<UserRole> UsersRoles { get; set; }
     }
 }

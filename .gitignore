@@ -266,3 +266,5 @@ __pycache__/
 *.production.json
 *.pubxml
 *.pubxml.user
+*.ncrunchproject
+*.ncrunchsolution

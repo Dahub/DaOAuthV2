@@ -4,8 +4,10 @@ using DaOAuthV2.Domain;
 using DaOAuthV2.Service.DTO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace DaOAuthV2.Gui.Api.Test
@@ -48,7 +50,7 @@ namespace DaOAuthV2.Gui.Api.Test
             Assert.IsTrue(scopes.Count > 0);
             Assert.AreEqual(scopes.Datas.Count(), allScopesFromDb.Count());
 
-            foreach(var scopeFromdb in allScopesFromDb)
+            foreach (var scopeFromdb in allScopesFromDb)
             {
                 var myScope = scopes.Datas.Where(s => s.Id.Equals(scopeFromdb.Id)).FirstOrDefault();
 
@@ -67,6 +69,28 @@ namespace DaOAuthV2.Gui.Api.Test
                 Assert.IsNotNull(myRessourceServer);
                 Assert.AreEqual(myRessourceServer.Name, myScope.RessourceServerName);
             }
+        }
+
+        [TestMethod]
+        public async Task Head_Should_Return_Scopes_Count_Of_Valids_Ressources_Servers()
+        {
+            IList<Scope> allScopesFromDb = null;
+            using (var context = new DaOAuthContext(_dbContextOptions))
+            {
+                allScopesFromDb = context.Scopes.Where(s => s.RessourceServer.IsValid).ToList();
+            }
+            Assert.IsNotNull(allScopesFromDb);
+            Assert.IsTrue(allScopesFromDb.Count() > 0);
+
+            var httpResponseMessage = await _client.SendAsync(new HttpRequestMessage()
+            {
+                Method = HttpMethod.Head,
+                RequestUri = new System.Uri("scopes?skip=0&limit=50", System.UriKind.Relative)
+            });
+
+            Assert.IsTrue(httpResponseMessage.IsSuccessStatusCode);
+            var headerValue = httpResponseMessage.Headers.Single(h => h.Key.Equals("X-Total-Count")).Value.Single();
+            Assert.AreEqual(allScopesFromDb.Count(), Int32.Parse(headerValue)); 
         }
     }
 }

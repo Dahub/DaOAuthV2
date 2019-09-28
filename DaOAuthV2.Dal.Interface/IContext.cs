@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 
 namespace DaOAuthV2.Dal.Interface
 {
@@ -6,6 +7,6 @@ namespace DaOAuthV2.Dal.Interface
     {
         void Commit();
 
-        void CommitAsync();
+        Task CommitAsync();
     }
 }

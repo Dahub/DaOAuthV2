@@ -40,10 +40,6 @@ namespace DaOAuthV2.Gui.Api.Controllers
         public IActionResult GetAll()
         {
             var scopes = _service.GetAll();
-            if (scopes == null)
-            {
-                scopes = new List<ScopeDto>();
-            }
 
             var count = scopes.Count();
             Request.HttpContext.Response.Headers.Add("X-Total-Count", count.ToString());

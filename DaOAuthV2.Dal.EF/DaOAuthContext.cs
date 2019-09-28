@@ -3,6 +3,7 @@ using DaOAuthV2.Dal.Interface;
 using DaOAuthV2.Domain;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Threading.Tasks;
 
 namespace DaOAuthV2.Dal.EF
 {
@@ -157,7 +158,7 @@ namespace DaOAuthV2.Dal.EF
             this.SaveChanges();
         }
 
-        public async void CommitAsync()
+        public async Task CommitAsync()
         {
             await SaveChangesAsync().ConfigureAwait(false);
         }

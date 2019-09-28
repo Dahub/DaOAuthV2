@@ -6,6 +6,7 @@ namespace DaOAuthV2.Domain
     public class ClientType : IDomainObject
     {
         public int Id { get; set; }
+
         public string Wording { get; set; }
 
         public ICollection<Client> Clients { get; set; }
