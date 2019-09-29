@@ -32,7 +32,7 @@ namespace DaOAuthV2.Service
                 var to = new EmailAddress(t.Key, t.Value);
                 var text = mailInfo.Body;
 
-                SendGridMessage msg = null;
+                SendGridMessage msg;
                 if (mailInfo.IsHtml)
                 {
                     msg = MailHelper.CreateSingleEmail(from, to, subject, string.Empty, text);

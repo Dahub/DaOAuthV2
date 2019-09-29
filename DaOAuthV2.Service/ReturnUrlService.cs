@@ -43,7 +43,7 @@ namespace DaOAuthV2.Service
                     throw new DaOAuthServiceException(resource["CreateReturnUrlInvalidClient"]);
                 }
 
-                var existingReturnUrl = client.ClientReturnUrls.Where(c => c.ReturnUrl.Equals(toCreate.ReturnUrl, StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
+                var existingReturnUrl = client.ClientReturnUrls.FirstOrDefault(c => c.ReturnUrl.Equals(toCreate.ReturnUrl, StringComparison.OrdinalIgnoreCase));
 
                 if (existingReturnUrl != null)
                 {

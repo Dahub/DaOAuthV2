@@ -50,7 +50,7 @@ namespace DaOAuthV2.Gui.Api.Controllers
             else
             {
                 var clients = _service.Search(criterias);
-                var currentUrl = UriHelper.GetDisplayUrl(Request);
+                var currentUrl = Request.GetDisplayUrl();
                 return Ok(clients.ToSearchResult<UserClientListDto>(currentUrl, count, criterias));
             }
         }
@@ -61,7 +61,7 @@ namespace DaOAuthV2.Gui.Api.Controllers
         {
             toCreate.UserName = User.Identity.Name;
             var createdId = _service.CreateUserClient(toCreate);
-            var currentUrl = UriHelper.GetDisplayUrl(Request);
+            var currentUrl = Request.GetDisplayUrl();
             return Created($"{currentUrl}/{createdId}", null);
         }
 

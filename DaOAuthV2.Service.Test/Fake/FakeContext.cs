@@ -15,7 +15,7 @@ namespace DaOAuthV2.Service.Test.Fake
 
         Task IContext.CommitAsync()
         {
-            throw new System.NotImplementedException();
+            return Task.CompletedTask;
         }
     }
 }

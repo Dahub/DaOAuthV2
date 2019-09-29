@@ -33,13 +33,13 @@ namespace DaOAuthV2.Service
             claims.Add(new Claim(ClaimName.Scope, !String.IsNullOrEmpty(value.Scope) ? value.Scope : String.Empty));
            
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration.SecurityKey));
-            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+            var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
             var token = new JwtSecurityToken(
                 issuer: Configuration.Issuer,
                 audience: Configuration.Audience,
                 claims: claims,
-                signingCredentials: creds,
+                signingCredentials: credentials,
                 expires: utcNow.AddSeconds(value.SecondsLifeTime).UtcDateTime);
 
             var toReturn = new JwtTokenDto()
@@ -67,7 +67,7 @@ namespace DaOAuthV2.Service
                 IsValid = false
             };
 
-            if (String.IsNullOrEmpty(tokenInfo.Token))
+            if (string.IsNullOrEmpty(tokenInfo.Token))
             {
                 return toReturn;
             }
@@ -80,11 +80,11 @@ namespace DaOAuthV2.Service
                 IssuerSigningKeys = new List<SecurityKey>() { new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration.SecurityKey)) }
             };
 
-            ClaimsPrincipal pClaim = null;
-            SecurityToken validatedToken;
+            ClaimsPrincipal pClaim;
+
             try
             {
-                pClaim = handler.ValidateToken(tokenInfo.Token, validationParameters, out validatedToken);
+                pClaim = handler.ValidateToken(tokenInfo.Token, validationParameters, out var validatedToken);
             }
             catch(Exception ex)
             {
@@ -92,8 +92,7 @@ namespace DaOAuthV2.Service
                 return toReturn;
             }
 
-            long expire;
-            if (!long.TryParse(GetValueFromClaim(pClaim.Claims, ClaimName.Expire), out expire))
+            if (!long.TryParse(GetValueFromClaim(pClaim.Claims, ClaimName.Expire), out var expire))
             {
                 return toReturn;
             }
@@ -115,9 +114,9 @@ namespace DaOAuthV2.Service
 
         private string GetValueFromClaim(IEnumerable<Claim> claims, string claimType)
         {
-            var claim = claims.Where(c => c.Type.Equals(claimType, StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
+            var claim = claims.FirstOrDefault(c => c.Type.Equals(claimType, StringComparison.OrdinalIgnoreCase));
 
-            return claim == null ? String.Empty : claim.Value;
+            return claim == null ? string.Empty : claim.Value;
         }
 
         public MailJwtTokenDto GenerateMailToken(string userName)
@@ -126,7 +125,7 @@ namespace DaOAuthV2.Service
 
             var utcNow = DateTimeOffset.UtcNow;
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration.SecurityKey));
-            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+            var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
             var claims = new List<Claim>();
             claims.Add(new Claim(ClaimName.Issued, utcNow.ToUnixTimeSeconds().ToString(CultureInfo.InvariantCulture)));
@@ -135,7 +134,7 @@ namespace DaOAuthV2.Service
             var token = new JwtSecurityToken(
                 issuer: Configuration.Issuer,
                 audience: Configuration.Audience,
-                signingCredentials: creds,
+                signingCredentials: credentials,
                 claims: claims,
                 expires: utcNow.AddSeconds(MAIL_TOKEN_LIFETIME_IN_SECONDS).UtcDateTime);
 
@@ -157,7 +156,7 @@ namespace DaOAuthV2.Service
                 Token = token
             };
 
-            if (String.IsNullOrEmpty(token))
+            if (string.IsNullOrEmpty(token))
             {
                 return toReturn;
             }

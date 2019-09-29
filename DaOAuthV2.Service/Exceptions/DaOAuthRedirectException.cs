@@ -9,12 +9,8 @@ namespace DaOAuthV2.Service
     {
         public Uri RedirectUri { get; set; }
 
-        public DaOAuthRedirectException() : base() { }
-
-        public DaOAuthRedirectException(string msg) : base(msg) { }
-
-        public DaOAuthRedirectException(string msg, Exception ex) : base(msg, ex) { }
-
+        public DaOAuthRedirectException()
+        { }
 
         [SecurityPermission(SecurityAction.Demand, SerializationFormatter = true)]
         public DaOAuthRedirectException(SerializationInfo info, StreamingContext context): base(info, context) { }

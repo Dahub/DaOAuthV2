@@ -4,9 +4,13 @@ using DaOAuthV2.Domain;
 using DaOAuthV2.Service.DTO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace DaOAuthV2.Gui.Api.Test
 {
@@ -27,7 +31,7 @@ namespace DaOAuthV2.Gui.Api.Test
         }
 
         [TestMethod]
-        public async Task Get_Should_Return_All_Users_Clients()
+        public async Task Head_Should_Return_Users_Clients_Count()
         {
             IList<UserClient> usersClientsFromDb = null;
             using (var context = new DaOAuthContext(_dbContextOptions))
@@ -36,6 +40,89 @@ namespace DaOAuthV2.Gui.Api.Test
             }
             Assert.IsNotNull(usersClientsFromDb);
             Assert.IsTrue(usersClientsFromDb.Count() > 0);
+
+            var httpResponseMessage = await _client.SendAsync(new HttpRequestMessage()
+            {
+                Method = HttpMethod.Head,
+                RequestUri = new System.Uri("usersClients?skip=0&limit=50", System.UriKind.Relative)
+            });
+
+            Assert.IsTrue(httpResponseMessage.IsSuccessStatusCode);
+            var headerValue = httpResponseMessage.Headers.Single(h => h.Key.Equals("X-Total-Count")).Value.Single();
+            Assert.AreEqual(usersClientsFromDb.Count(), int.Parse(headerValue));
+        }
+
+        [TestMethod]
+        public async Task Post_Should_Add_User_Client()
+        {
+            var createUserClientDto = new CreateUserClientDto()
+            {
+                ClientPublicId = _jimmyClient.PublicId,
+                IsActif = true
+            };
+
+            var httpResponseMessage = await _client.PostAsJsonAsync("usersClients", createUserClientDto);
+
+            Assert.AreEqual(HttpStatusCode.Created, httpResponseMessage.StatusCode);
+            Assert.IsTrue(httpResponseMessage.Headers.Contains("location"));
+
+            var location = httpResponseMessage.Headers.GetValues("location").Single();
+
+            Assert.IsTrue(location.Length > 0);
+
+            var userClientId = Int32.Parse(location.Split('/', StringSplitOptions.RemoveEmptyEntries).Last());
+
+            using (var context = new DaOAuthContext(_dbContextOptions))
+            {
+                var myCreatedUserClient = context.UsersClients.SingleOrDefault(uc => uc.Id.Equals(userClientId));
+                Assert.IsNotNull(myCreatedUserClient);
+                Assert.AreEqual(myCreatedUserClient.ClientId, _jimmyClient.Id);
+            }
+        }
+
+        [TestMethod]
+        public async Task Put_Should_Update_User_Client()
+        {
+            UserClient userClientToUpdate;
+            using (var context = new DaOAuthContext(_dbContextOptions))
+            {
+                userClientToUpdate = context.UsersClients.Include(uc => uc.Client).FirstOrDefault(uc =>
+                    uc.IsActif && uc.User.UserName.Equals(GuiApiTestStartup.LoggedUserName));
+
+                Assert.IsNotNull(userClientToUpdate);
+            }
+
+            var updateUserClientDto = new UpdateUserClientDto()
+            {
+                ClientPublicId = userClientToUpdate.Client.PublicId,
+                IsActif = false,
+                UserName = GuiApiTestStartup.LoggedUserName
+            };
+
+            var httpResponseMessage = await _client.PutAsJsonAsync("usersClients", updateUserClientDto);
+
+            Assert.AreEqual(204, (int)httpResponseMessage.StatusCode);
+
+            using (var context = new DaOAuthContext(_dbContextOptions))
+            {
+                var userClientFromDb = context.UsersClients.SingleOrDefault(uc => uc.IsActif.Equals(false)
+                                        && uc.Client.PublicId.Equals(userClientToUpdate.Client.PublicId)
+                                        && uc.User.UserName.Equals(GuiApiTestStartup.LoggedUserName));
+
+                Assert.IsNotNull(userClientFromDb);
+            }
+        }
+
+        [TestMethod]
+        public async Task Get_All_Should_Return_All_Users_Clients()
+        {
+            IList<UserClient> usersClientsFromDb = null;
+            using (var context = new DaOAuthContext(_dbContextOptions))
+            {
+                usersClientsFromDb = context.UsersClients.Where(uc => uc.UserId.Equals(_sammyUser.Id)).ToList();
+            }
+            Assert.IsNotNull(usersClientsFromDb);
+            Assert.IsTrue(usersClientsFromDb.Any());
 
             var httpResponseMessage = await _client.GetAsync("usersClients?skip=0&limit=50");
 
@@ -48,7 +135,7 @@ namespace DaOAuthV2.Gui.Api.Test
             Assert.IsTrue(usersClients.Count > 0);
             Assert.AreEqual(usersClients.Datas.Count(), usersClientsFromDb.Count());
 
-            foreach(var userClientFromDb in usersClientsFromDb)
+            foreach (var userClientFromDb in usersClientsFromDb)
             {
                 var myUserClient = usersClients.Datas.Where(uc => uc.Id.Equals(userClientFromDb.Id)).FirstOrDefault();
 
