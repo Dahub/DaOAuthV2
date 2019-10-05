@@ -7,7 +7,7 @@ namespace DaOAuthV2.Service.Interface
     {
         IEncryptionService EncryptonService { get; set; }
 
-        Uri GenererateUriForAuthorize(AskAuthorizeDto authorizeInfo);
+        Uri GenerateUriForAuthorize(AskAuthorizeDto authorizeInfo);
 
         TokenInfoDto GenerateToken(AskTokenDto tokenInfo);
 

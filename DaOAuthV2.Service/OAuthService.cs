@@ -16,7 +16,7 @@ namespace DaOAuthV2.Service
 {
     public class OAuthService : ServiceBase, IOAuthService
     {
-        private const int CodeLenght = 16;
+        private const int CodeLength = 16;
 
         public IRandomService RandomService { get; set; }
 
@@ -24,14 +24,14 @@ namespace DaOAuthV2.Service
 
         public IEncryptionService EncryptonService { get; set; }
 
-        public Uri GenererateUriForAuthorize(AskAuthorizeDto authorizeInfo)
+        public Uri GenerateUriForAuthorize(AskAuthorizeDto authorizeInfo)
         {
             IList<ValidationResult> ExtendValidation(AskAuthorizeDto toValidate)
             {
                 var resource = this.GetErrorStringLocalizer();
                 IList<ValidationResult> result = new List<ValidationResult>();
 
-                if (!String.IsNullOrEmpty(toValidate.RedirectUri) && !IsUriCorrect(toValidate.RedirectUri))
+                if (!string.IsNullOrEmpty(toValidate.RedirectUri) && !IsUriCorrect(toValidate.RedirectUri))
                 {
                     result.Add(new ValidationResult(resource["AuthorizeAuthorizeRedirectUrlIncorrect"]));
                 }
@@ -39,37 +39,11 @@ namespace DaOAuthV2.Service
                 return result;
             }
 
-            Uri toReturn = null;
-
             Logger.LogInformation($"Ask for authorize, client : {authorizeInfo.ClientPublicId} - response_type : {authorizeInfo.ResponseType}");
 
             var errorLocal = GetErrorStringLocalizer();
+
             Validate(authorizeInfo, ExtendValidation);
-
-            if (String.IsNullOrEmpty(authorizeInfo.ResponseType))
-            {
-                throw new DaOAuthRedirectException()
-                {
-                    RedirectUri = GenerateRedirectErrorMessage(
-                        authorizeInfo.RedirectUri,
-                        OAuthConvention.ErrorNameInvalidRequest,
-                        errorLocal["AuthorizeResponseTypeParameterMandatory"],
-                        authorizeInfo.State)
-                };
-            }
-
-            if (!authorizeInfo.ResponseType.Equals(OAuthConvention.ResponseTypeCode, StringComparison.Ordinal)
-                && !authorizeInfo.ResponseType.Equals(OAuthConvention.ResponseTypeToken, StringComparison.Ordinal))
-            {
-                throw new DaOAuthRedirectException()
-                {
-                    RedirectUri = GenerateRedirectErrorMessage(
-                       authorizeInfo.RedirectUri,
-                       OAuthConvention.ErrorNameUnsupportedResponseType,
-                       errorLocal["AuthorizeUnsupportedResponseType"],
-                       authorizeInfo.State)
-                };
-            }
 
             if (String.IsNullOrEmpty(authorizeInfo.ClientPublicId))
             {
@@ -83,8 +57,22 @@ namespace DaOAuthV2.Service
                 };
             }
 
-            if (!CheckIfClientIsValid(authorizeInfo.ClientPublicId, new Uri(authorizeInfo.RedirectUri),
-                authorizeInfo.ResponseType.Equals(OAuthConvention.ResponseTypeCode, StringComparison.Ordinal) ? EClientType.CONFIDENTIAL : EClientType.PUBLIC))
+            if (string.IsNullOrWhiteSpace(authorizeInfo.CodeChallenge) &&
+                !string.IsNullOrWhiteSpace(authorizeInfo.CodeChallengeMethod))
+            {
+                throw new DaOAuthRedirectException()
+                {
+                    RedirectUri = GenerateRedirectErrorMessage(
+                        authorizeInfo.RedirectUri,
+                        OAuthConvention.ErrorNameInvalidRequest,
+                        errorLocal["AuthorizeInvalidCodeChallengeRequest"],
+                        authorizeInfo.State)
+                };
+            }
+
+            var client = ExtractClient(authorizeInfo.ClientPublicId);
+
+            if (!CheckIfClientIsValid(client, new Uri(authorizeInfo.RedirectUri)))
             {
                 throw new DaOAuthRedirectException()
                 {
@@ -113,11 +101,11 @@ namespace DaOAuthV2.Service
                 throw new DaOAuthRedirectException()
                 {
                     RedirectUri = new Uri($"{Configuration.AuthorizeClientPageUrl}?" +
-                                    $"response_type={authorizeInfo.ResponseType}&" +
-                                    $"client_id={authorizeInfo.ClientPublicId}&" +
-                                    $"state={authorizeInfo.State}&" +
-                                    $"redirect_uri={authorizeInfo.RedirectUri}&" +
-                                    $"scope={authorizeInfo.Scope}")
+                                          $"response_type={authorizeInfo.ResponseType}&" +
+                                          $"client_id={authorizeInfo.ClientPublicId}&" +
+                                          $"state={authorizeInfo.State}&" +
+                                          $"redirect_uri={authorizeInfo.RedirectUri}&" +
+                                          $"scope={authorizeInfo.Scope}")
                 };
             }
 
@@ -126,45 +114,96 @@ namespace DaOAuthV2.Service
                 throw new DaOAuthRedirectException()
                 {
                     RedirectUri = GenerateRedirectErrorMessage(
-                            authorizeInfo.RedirectUri,
-                            OAuthConvention.ErrorNameAccessDenied,
-                            errorLocal["AccessDenied"],
-                            authorizeInfo.State)
+                        authorizeInfo.RedirectUri,
+                        OAuthConvention.ErrorNameAccessDenied,
+                        errorLocal["AccessDenied"],
+                        authorizeInfo.State)
                 };
             }
 
-            switch (authorizeInfo.ResponseType)
+            return (authorizeInfo.ResponseType, client.ClientTypeId, string.IsNullOrWhiteSpace(authorizeInfo.CodeChallenge)) switch
             {
-                case OAuthConvention.ResponseTypeCode:
-                    var myCode = GenerateAndSaveCode(authorizeInfo.ClientPublicId, authorizeInfo.UserName, authorizeInfo.Scope);
-                    var codeLocation = String.Concat(authorizeInfo.RedirectUri, "?code=", myCode);
-                    if (!String.IsNullOrEmpty(authorizeInfo.State))
-                    {
-                        codeLocation = String.Concat(codeLocation, "&state=", authorizeInfo.State);
-                    }
+                (OAuthConvention.ResponseTypeCode, (int)EClientType.CONFIDENTIAL, true) => GenerateUriForCodeResponseType(authorizeInfo),
+                (OAuthConvention.ResponseTypeToken, (int)EClientType.PUBLIC, _) => GenerateUriForTokenResponseType(authorizeInfo),
+                (OAuthConvention.ResponseTypeCode, (int)EClientType.PUBLIC, false) => GenerateUriForCodeChallenge(authorizeInfo),
+                (OAuthConvention.ResponseTypeCode, (int)EClientType.PUBLIC, true) => throw new DaOAuthRedirectException()
+                {
+                    RedirectUri = GenerateRedirectErrorMessage(
+                            authorizeInfo.RedirectUri,
+                            OAuthConvention.ErrorNameUnauthorizedClient,
+                            errorLocal["UnauthorizedClient"],
+                            authorizeInfo.State)
+                },
+                (OAuthConvention.ResponseTypeToken, (int)EClientType.CONFIDENTIAL, _) => throw new DaOAuthRedirectException()
+                {
+                    RedirectUri = GenerateRedirectErrorMessage(
+                        authorizeInfo.RedirectUri,
+                        OAuthConvention.ErrorNameUnauthorizedClient,
+                        errorLocal["UnauthorizedClient"],
+                        authorizeInfo.State)
+                },
+                ("", _, _) => throw new DaOAuthRedirectException()
+                {
+                    RedirectUri = GenerateRedirectErrorMessage(
+                         authorizeInfo.RedirectUri,
+                         OAuthConvention.ErrorNameInvalidRequest,
+                         errorLocal["AuthorizeResponseTypeParameterMandatory"],
+                         authorizeInfo.State)
+                },
+                (null, _, _) => throw new DaOAuthRedirectException()
+                {
+                    RedirectUri = GenerateRedirectErrorMessage(
+                        authorizeInfo.RedirectUri,
+                        OAuthConvention.ErrorNameInvalidRequest,
+                        errorLocal["AuthorizeResponseTypeParameterMandatory"],
+                        authorizeInfo.State)
+                },
+                _ => throw new DaOAuthRedirectException()
+                {
+                    RedirectUri = GenerateRedirectErrorMessage(
+                            authorizeInfo.RedirectUri,
+                            OAuthConvention.ErrorNameUnsupportedResponseType,
+                            errorLocal["AuthorizeUnsupportedResponseType"],
+                            authorizeInfo.State)
+                }
+            };
+        }
 
-                    toReturn = new Uri(codeLocation);
-                    break;
-                default: // response_type token 
-                    var myToken = JwtService.GenerateToken(new CreateTokenDto()
-                    {
-                        SecondsLifeTime = Configuration.AccesTokenLifeTimeInSeconds,
-                        ClientPublicId = authorizeInfo.ClientPublicId,
-                        Scope = authorizeInfo.Scope,
-                        TokenName = OAuthConvention.AccessToken,
-                        UserName = authorizeInfo.UserName
-                    });
-                    var tokenLocation = String.Concat(authorizeInfo.RedirectUri, "?token=", myToken.Token, "&token_type=bearer&expires_in=", Configuration.AccesTokenLifeTimeInSeconds);
-                    if (!String.IsNullOrEmpty(authorizeInfo.State))
-                    {
-                        tokenLocation = String.Concat(tokenLocation, "&state=", authorizeInfo.State);
-                    }
-
-                    toReturn = new Uri(tokenLocation);
-                    break;
+        private Uri GenerateUriForCodeResponseType(AskAuthorizeDto authorizeInfo)
+        {
+            var myCode = GenerateAndSaveCode(authorizeInfo.ClientPublicId, authorizeInfo.UserName, authorizeInfo.Scope);
+            var codeLocation = string.Concat(authorizeInfo.RedirectUri, "?code=", myCode);
+            if (!string.IsNullOrEmpty(authorizeInfo.State))
+            {
+                codeLocation = string.Concat(codeLocation, "&state=", authorizeInfo.State);
             }
 
-            return toReturn;
+            return new Uri(codeLocation);
+        }
+
+        private Uri GenerateUriForCodeChallenge(AskAuthorizeDto authorizeInfo)
+        {
+            var myCode = GenerateAndSaveCode(authorizeInfo.ClientPublicId, authorizeInfo.UserName, authorizeInfo.Scope);
+            throw new NotImplementedException();
+        }
+
+        private Uri GenerateUriForTokenResponseType(AskAuthorizeDto authorizeInfo)
+        {
+            var myToken = JwtService.GenerateToken(new CreateTokenDto()
+            {
+                SecondsLifeTime = Configuration.AccesTokenLifeTimeInSeconds,
+                ClientPublicId = authorizeInfo.ClientPublicId,
+                Scope = authorizeInfo.Scope,
+                TokenName = OAuthConvention.AccessToken,
+                UserName = authorizeInfo.UserName
+            });
+            var tokenLocation = String.Concat(authorizeInfo.RedirectUri, "?token=", myToken.Token, "&token_type=bearer&expires_in=", Configuration.AccesTokenLifeTimeInSeconds);
+            if (!String.IsNullOrEmpty(authorizeInfo.State))
+            {
+                tokenLocation = String.Concat(tokenLocation, "&state=", authorizeInfo.State);
+            }
+
+            return new Uri(tokenLocation);
         }
 
         public TokenInfoDto GenerateToken(AskTokenDto tokenInfo)
@@ -175,31 +214,18 @@ namespace DaOAuthV2.Service
 
             var errorLocal = GetErrorStringLocalizer();
 
-            TokenInfoDto result = null;
-
-            switch (tokenInfo.GrantType)
+            return tokenInfo.GrantType switch
             {
-                case OAuthConvention.GrantTypeAuthorizationCode:
-                    result = GenerateTokenForAuthorizationCodeGrant(tokenInfo, errorLocal);
-                    break;
-                case OAuthConvention.GrantTypeRefreshToken:
-                    result = GenerateTokenForRefreshToken(tokenInfo, errorLocal);
-                    break;
-                case OAuthConvention.GrantTypePassword:
-                    result = GenerateTokenForPasswordGrant(tokenInfo, errorLocal);
-                    break;
-                case OAuthConvention.GrantTypeClientCredentials:
-                    result = GenerateTokenForClientCredentailsGrant(tokenInfo, errorLocal);
-                    break;
-                default:
-                    throw new DaOAuthTokenException()
-                    {
-                        Error = OAuthConvention.ErrorNameUnsupportedGrantType,
-                        Description = errorLocal["UnsupportedGrantType"]
-                    };
-            }
-
-            return result;
+                OAuthConvention.GrantTypeAuthorizationCode => GenerateTokenForAuthorizationCodeGrant(tokenInfo, errorLocal),
+                OAuthConvention.GrantTypeRefreshToken => GenerateTokenForRefreshToken(tokenInfo, errorLocal),
+                OAuthConvention.GrantTypePassword => GenerateTokenForPasswordGrant(tokenInfo, errorLocal),
+                OAuthConvention.GrantTypeClientCredentials => GenerateTokenForClientCredentailsGrant(tokenInfo, errorLocal),
+                _ => throw new DaOAuthTokenException()
+                {
+                    Error = OAuthConvention.ErrorNameUnsupportedGrantType,
+                    Description = errorLocal["UnsupportedGrantType"]
+                },
+            };
         }
 
         public IntrospectInfoDto Introspect(AskIntrospectDto introspectInfo)
@@ -524,7 +550,7 @@ namespace DaOAuthV2.Service
 
         private string GenerateAndSaveCode(string clientPublicId, string userName, string scope)
         {
-            var codeValue = RandomService.GenerateRandomString(CodeLenght);
+            var codeValue = RandomService.GenerateRandomString(CodeLength);
 
             using (var context = RepositoriesFactory.CreateContext())
             {
@@ -595,9 +621,7 @@ namespace DaOAuthV2.Service
             var clientUserRepo = RepositoriesFactory.GetUserClientRepository(context);
             var client = clientUserRepo.GetUserClientByClientPublicIdAndUserName(tokenDetail.ClientId, tokenDetail.UserName);
 
-            return client == null || !client.IsActif
-                ? false
-                : client.RefreshToken != null && client.RefreshToken.Equals(tokenDetail.Token, StringComparison.Ordinal);
+            return client != null && client.IsActif && (client.RefreshToken != null && client.RefreshToken.Equals(tokenDetail.Token, StringComparison.Ordinal));
         }
 
         private static bool CheckIfClientValidForToken(Client client, string returnUrl, string responseType)
@@ -607,7 +631,7 @@ namespace DaOAuthV2.Service
                 return false;
             }
 
-            if (!client.ClientReturnUrls.Where(cru => cru.ReturnUrl.Equals(returnUrl, StringComparison.OrdinalIgnoreCase)).Any())
+            if (!client.ClientReturnUrls.Any(cru => cru.ReturnUrl.Equals(returnUrl, StringComparison.OrdinalIgnoreCase)))
             {
                 return false;
             }
@@ -637,14 +661,20 @@ namespace DaOAuthV2.Service
             }
         }
 
-        private bool CheckIfClientIsValid(string clientPublicId, Uri requestRedirectUri, EClientType clientType)
+        private Client ExtractClient(string clientPublicId)
         {
             using (var context = RepositoriesFactory.CreateContext())
             {
                 var clientRepo = RepositoriesFactory.GetClientRepository(context);
-                var clientReturnUrlRepo = RepositoriesFactory.GetClientReturnUrlRepository(context);
+                return clientRepo.GetByPublicId(clientPublicId);
+            }
+        }
 
-                var client = clientRepo.GetByPublicId(clientPublicId);
+        private bool CheckIfClientIsValid(Client client, Uri requestRedirectUri)
+        {
+            using (var context = RepositoriesFactory.CreateContext())
+            {
+                var clientReturnUrlRepo = RepositoriesFactory.GetClientReturnUrlRepository(context);
 
                 if (client == null)
                 {
@@ -656,13 +686,8 @@ namespace DaOAuthV2.Service
                     return false;
                 }
 
-                if (client.ClientTypeId != (int)clientType)
-                {
-                    return false;
-                }
-
-                IList<Uri> clientUris = new List<Uri>();
-                foreach (var uri in clientReturnUrlRepo.GetAllByClientPublicId(clientPublicId))
+                var clientUris = new List<Uri>();
+                foreach (var uri in clientReturnUrlRepo.GetAllByClientPublicId(client.PublicId))
                 {
                     clientUris.Add(new Uri(uri.ReturnUrl, UriKind.Absolute));
                 }

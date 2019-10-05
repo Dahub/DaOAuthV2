@@ -104,7 +104,7 @@ namespace DaOAuthV2.Service.Test.Fake
                 return null;
             }
 
-            c.ClientType = FakeDataBase.Instance.ClientTypes.Where(ct => ct.Id.Equals(c.ClientTypeId)).FirstOrDefault();
+            c.ClientType = FakeDataBase.Instance.ClientTypes.FirstOrDefault(ct => ct.Id.Equals(c.ClientTypeId));
             c.ClientReturnUrls = FakeDataBase.Instance.ClientReturnUrls.Where(cru => cru.ClientId.Equals(c.Id)).ToList();
             c.ClientsScopes = FakeDataBase.Instance.ClientsScopes.Where(cs => cs.ClientId.Equals(c.Id)).ToList();
 

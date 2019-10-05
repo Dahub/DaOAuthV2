@@ -47,7 +47,7 @@ namespace DaOAuthV2.OAuth.Api.Controllers
            [FromQuery(Name = "code_challenge")] string codeChallenge,
            [FromQuery(Name = "code_challenge_method")] string codeChallengeMethod)
         {
-            var uri = _authorizeService.GenererateUriForAuthorize(new AskAuthorizeDto()
+            var uri = _authorizeService.GenerateUriForAuthorize(new AskAuthorizeDto()
             {
                 ClientPublicId = clientId,
                 RedirectUri = redirectUri,

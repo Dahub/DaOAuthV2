@@ -366,4 +366,7 @@
   <data name="UpdateUserEmailExists" xml:space="preserve">
     <value>L'adresse email {0} existe déjà</value>
   </data>
+  <data name="AuthorizeInvalidCodeChallengeRequest" xml:space="preserve">
+    <value>Requête de code challenge incorrecte</value>
+  </data>
 </root>
