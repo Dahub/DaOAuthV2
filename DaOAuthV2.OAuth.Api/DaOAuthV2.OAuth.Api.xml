@@ -15,7 +15,7 @@
             </summary>
             <param name="authorizeService">Injected Authorize service</param>
         </member>
-        <member name="M:DaOAuthV2.OAuth.Api.Controllers.OAuthController.Authorize(System.String,System.String,System.String,System.String,System.String)">
+        <member name="M:DaOAuthV2.OAuth.Api.Controllers.OAuthController.Authorize(System.String,System.String,System.String,System.String,System.String,System.String,System.String)">
             <summary>
             The authorize endpoint
             </summary>
@@ -24,6 +24,8 @@
             <param name="state">a state parameter, will be returned by server</param>
             <param name="redirectUri">url on wich redirect the response, mandatory</param>
             <param name="scope">scopes askings by the client</param>
+            <param name="codeChallenge">code challenge for pkce flow</param>
+            <param name="codeChallengeMethod">code challenge method for code challenge</param>
             <returns>Redirect to redirect url, with an authorization code</returns>
         </member>
         <member name="M:DaOAuthV2.OAuth.Api.Controllers.OAuthController.Token(DaOAuthV2.OAuth.Api.Models.TokenModel,System.String)">

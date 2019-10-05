@@ -8,6 +8,10 @@ namespace DaOAuthV2.Domain
 
         public string CodeValue { get; set; }
 
+        public string CodeChallengeValue { get; set; }
+
+        public string CodeChallengeMethod { get; set; }
+
         public long ExpirationTimeStamp { get; set; } 
 
         public bool IsValid { get; set; }

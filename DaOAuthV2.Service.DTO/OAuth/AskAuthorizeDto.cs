@@ -18,5 +18,9 @@ namespace DaOAuthV2.Service.DTO
         public string Scope { get; set; }
 
         public string UserName { get; set; }
+
+        public string CodeChallenge { get; set; }
+
+        public string CodeChallengeMethod { get; set; }
     }
 }

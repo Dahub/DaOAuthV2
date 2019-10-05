@@ -22,5 +22,8 @@
         public const string GrantTypeRefreshToken = "refresh_token";
         public const string GrantTypePassword = "password";
         public const string GrantTypeClientCredentials = "client_credentials";
+
+        public const string CodeChallengeMethodPlainText = "plain";
+        public const string CodeChallengeMethodSha256 = "S256";
     }
 }

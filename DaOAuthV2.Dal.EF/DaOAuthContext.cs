@@ -109,6 +109,8 @@ namespace DaOAuthV2.Dal.EF
             modelBuilder.Entity<Code>().HasKey(c => c.Id);
             modelBuilder.Entity<Code>().Property(p => p.Id).HasColumnName("Id").HasColumnType("int").IsRequired();
             modelBuilder.Entity<Code>().Property(p => p.CodeValue).HasColumnName("CodeValue").HasColumnType("nvarchar(256)").HasMaxLength(256).IsRequired();
+            modelBuilder.Entity<Code>().Property(p => p.CodeChallengeValue).HasColumnName("CodeChallengeValue").HasColumnType("nvarchar(512)").HasMaxLength(512);
+            modelBuilder.Entity<Code>().Property(p => p.CodeChallengeMethod).HasColumnName("CodeChallengeMethod").HasColumnType("nvarchar(8)").HasMaxLength(8);
             modelBuilder.Entity<Code>().Property(p => p.ExpirationTimeStamp).HasColumnName("ExpirationTimeStamp").HasColumnType("bigint").IsRequired();
             modelBuilder.Entity<Code>().Property(p => p.IsValid).HasColumnName("IsValid").HasColumnType("bit").IsRequired();
             modelBuilder.Entity<Code>().Property(p => p.Scope).HasColumnName("Scope").HasColumnType("nvarchar(max)").HasMaxLength(Int32.MaxValue);

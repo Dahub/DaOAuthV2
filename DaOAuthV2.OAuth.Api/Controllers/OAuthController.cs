@@ -33,6 +33,8 @@ namespace DaOAuthV2.OAuth.Api.Controllers
         /// <param name="state">a state parameter, will be returned by server</param>
         /// <param name="redirectUri">url on wich redirect the response, mandatory</param>
         /// <param name="scope">scopes askings by the client</param>
+        /// <param name="codeChallenge">code challenge for pkce flow</param>
+        /// <param name="codeChallengeMethod">code challenge method for code challenge</param>
         /// <returns>Redirect to redirect url, with an authorization code</returns>
         [Authorize]
         [HttpGet]
@@ -41,7 +43,9 @@ namespace DaOAuthV2.OAuth.Api.Controllers
            [FromQuery(Name = "client_id")] string clientId,
            [FromQuery(Name = "state")] string state,
            [FromQuery(Name = "redirect_uri")] string redirectUri,
-           [FromQuery(Name = "scope")] string scope)
+           [FromQuery(Name = "scope")] string scope,
+           [FromQuery(Name = "code_challenge")] string codeChallenge,
+           [FromQuery(Name = "code_challenge_method")] string codeChallengeMethod)
         {
             var uri = _authorizeService.GenererateUriForAuthorize(new AskAuthorizeDto()
             {
@@ -50,7 +54,9 @@ namespace DaOAuthV2.OAuth.Api.Controllers
                 ResponseType = responseType,
                 Scope = scope,
                 State = state,
-                UserName = User.Identity.Name
+                UserName = User.Identity.Name,
+                CodeChallenge = codeChallenge,
+                CodeChallengeMethod = codeChallengeMethod
             });
             return Redirect(uri.AbsoluteUri);
         }
@@ -117,7 +123,7 @@ namespace DaOAuthV2.OAuth.Api.Controllers
                 AuthorizationHeader = authorization
             });
 
-            if(!result.IsValid)
+            if (!result.IsValid)
             {
                 return new JsonResult(new
                 {
