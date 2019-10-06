@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Net.Http;
+using System.Text;
 
 namespace DaOAuthV2.OAuth.Api.Test
 {
@@ -256,6 +257,30 @@ namespace DaOAuthV2.OAuth.Api.Test
                 .UseStartup<OAuthApiTestStartup>());
 
             _client = server.CreateClient();
+        }
+
+        protected static string HashToSha256(string randomString)
+        {
+            var crypt = new System.Security.Cryptography.SHA256Managed();
+            var hash = new System.Text.StringBuilder();
+            var crypto = crypt.ComputeHash(Encoding.UTF8.GetBytes(randomString));
+            foreach (var theByte in crypto)
+            {
+                hash.Append(theByte.ToString("x2"));
+            }
+            return hash.ToString();
+        }
+
+        protected static string Base64Encode(string plainText)
+        {
+            var plainTextBytes = System.Text.Encoding.UTF8.GetBytes(plainText);
+            return System.Convert.ToBase64String(plainTextBytes);
+        }
+
+        protected static string Base64Decode(string base64EncodedData)
+        {
+            var base64EncodedBytes = System.Convert.FromBase64String(base64EncodedData);
+            return System.Text.Encoding.UTF8.GetString(base64EncodedBytes);
         }
     }
 }

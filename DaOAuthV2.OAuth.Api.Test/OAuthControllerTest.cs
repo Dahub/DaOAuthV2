@@ -1,12 +1,3 @@
-using DaOAuthV2.ApiTools;
-using DaOAuthV2.Constants;
-using DaOAuthV2.Dal.EF;
-using DaOAuthV2.Domain;
-using DaOAuthV2.OAuth.Api.Models;
-using DaOAuthV2.Service;
-using DaOAuthV2.Service.DTO;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Newtonsoft.Json;
 using System;
 using System.Linq;
 using System.Net;
@@ -15,6 +6,14 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using DaOAuthV2.ApiTools;
+using DaOAuthV2.Constants;
+using DaOAuthV2.Dal.EF;
+using DaOAuthV2.Domain;
+using DaOAuthV2.Service;
+using DaOAuthV2.Service.DTO;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Newtonsoft.Json;
 
 namespace DaOAuthV2.OAuth.Api.Test
 {
@@ -35,7 +34,7 @@ namespace DaOAuthV2.OAuth.Api.Test
         }
 
         [TestMethod]
-        public async Task Authorize_Should_Redirect_With_Code_For_Code_Response_Type()
+        public async Task Authorize_Should_Redirect_With_Code_For_Code_Response_Type_Without_Code_Challenge()
         {
             var responseType = "code";
             var state = "myTestState";
@@ -74,6 +73,53 @@ namespace DaOAuthV2.OAuth.Api.Test
 
             Assert.IsTrue(codeFromDb.IsValid);
             Assert.AreEqual(_sammyUserClientIdConfidential, codeFromDb.UserClientId);
+        }
+
+        [TestMethod]
+        public async Task Authorize_Should_Redirect_With_Code_For_Code_Response_Type_With_Code_Challenge()
+        {
+            var responseType = "code";
+            var state = "myTestState";
+            var rawCodeChallenge = "azertyuiopmlkjhgfdsqxcvbnazertyuiopmlkjhgfdsqxcvbn";
+            var hashAndEncodeCodeChallenge = Base64Encode(HashToSha256(rawCodeChallenge));
+            var codeChallengeMethod = "S256";
+
+            var uri = new Uri($"http://localhost/Authorize?redirect_uri={_sammyReturnUrlPublic}&response_type={responseType}&client_id={_sammyClientPublicIdPublic}&state={state}&scope={_sammyScopeWording}&code_challenge={hashAndEncodeCodeChallenge}&code_challenge_method={codeChallengeMethod}");
+
+            var httpResponseMessage = await _client.GetAsync(uri);
+
+            Assert.AreEqual(HttpStatusCode.Redirect, httpResponseMessage.StatusCode,
+                $"{httpResponseMessage.StatusCode} : {await httpResponseMessage.Content.ReadAsStringAsync()}");
+
+            var location = httpResponseMessage.Headers.GetValues("location").Single();
+
+            Assert.IsTrue(location.Length > 0);
+            Assert.IsFalse(location.Contains("error"), location);
+            Assert.IsTrue(location.Contains("code"), location);
+            Assert.IsTrue(location.Contains("state=myTestState"), location);
+            Assert.IsTrue(location.StartsWith(_sammyReturnUrlPublic, StringComparison.OrdinalIgnoreCase));
+
+            var urlParams = location.Split("?", StringSplitOptions.RemoveEmptyEntries).LastOrDefault();
+            Assert.IsNotNull(urlParams);
+
+            var urlParam = urlParams.Split("&", StringSplitOptions.RemoveEmptyEntries).Where(s => s.Contains("code=")).FirstOrDefault();
+            Assert.IsNotNull(urlParam);
+            Assert.IsTrue(urlParam.Length > 5);
+
+            var code = urlParam.Remove(0, 5);
+            Assert.IsNotNull(code);
+
+            Code codeFromDb = null;
+            using (var context = new DaOAuthContext(_dbContextOptions))
+            {
+                codeFromDb = context.Codes.FirstOrDefault(c => c.CodeValue.Equals(code));
+            }
+            Assert.IsNotNull(codeFromDb);
+
+            Assert.IsTrue(codeFromDb.IsValid);
+            Assert.AreEqual(codeChallengeMethod, codeFromDb.CodeChallengeMethod);
+            Assert.AreEqual(hashAndEncodeCodeChallenge, codeFromDb.CodeChallengeValue);
+            Assert.AreEqual(_sammyUserClientIdPublic, codeFromDb.UserClientId);
         }
 
         [TestMethod]
@@ -148,10 +194,10 @@ namespace DaOAuthV2.OAuth.Api.Test
         {
             var formContent = BuildFormContent(
                _sammyClientPublicIdPublic,
-               String.Empty,
+               string.Empty,
                OAuthConvention.GrantTypeClientCredentials,
-               String.Empty,
-               String.Empty,
+               string.Empty,
+               string.Empty,
                _sammyReturnUrlPublic,
                _sammyScopeWording,
                _sammyUserName);
@@ -159,9 +205,10 @@ namespace DaOAuthV2.OAuth.Api.Test
             _client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             _client.DefaultRequestHeaders.Authorization = BuildAuthenticationHeaderValue(_sammyClientPublicIdPublic, _sammyClientSecretPublic);
 
-            var request = new HttpRequestMessage(HttpMethod.Post, "http://localhost/token");
-
-            request.Content = formContent;
+            var request = new HttpRequestMessage(HttpMethod.Post, "http://localhost/token")
+            {
+                Content = formContent
+            };
 
             var httpResponseMessage = await _client.SendAsync(request);
 
