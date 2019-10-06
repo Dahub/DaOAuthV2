@@ -360,4 +360,10 @@
   <data name="AuthorizeInvalidCodeChallengeRequest" xml:space="preserve">
     <value>Invalid code challenge request</value>
   </data>
+  <data name="AuthorizeInvalidCodeChallengeSize" xml:space="preserve">
+    <value>Invalid code challenge lenght</value>
+  </data>
+  <data name="AuthorizeUnknowCodeChallengeMethod" xml:space="preserve">
+    <value>Unknow code challenge method</value>
+  </data>
 </root>

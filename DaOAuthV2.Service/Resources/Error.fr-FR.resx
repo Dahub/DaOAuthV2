@@ -369,4 +369,10 @@
   <data name="AuthorizeInvalidCodeChallengeRequest" xml:space="preserve">
     <value>Requête de code challenge incorrecte</value>
   </data>
+  <data name="AuthorizeInvalidCodeChallengeSize" xml:space="preserve">
+    <value>Longueur de code challenge invalide</value>
+  </data>
+  <data name="AuthorizeUnknowCodeChallengeMethod" xml:space="preserve">
+    <value>Methode de code challenge inconnue</value>
+  </data>
 </root>

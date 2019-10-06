@@ -124,8 +124,8 @@ namespace DaOAuthV2.Service
             return (authorizeInfo.ResponseType, client.ClientTypeId, string.IsNullOrWhiteSpace(authorizeInfo.CodeChallenge)) switch
             {
                 (OAuthConvention.ResponseTypeCode, (int)EClientType.CONFIDENTIAL, true) => GenerateUriForCodeResponseType(authorizeInfo),
-                (OAuthConvention.ResponseTypeToken, (int)EClientType.PUBLIC, _) => GenerateUriForTokenResponseType(authorizeInfo),
-                (OAuthConvention.ResponseTypeCode, (int)EClientType.PUBLIC, false) => GenerateUriForCodeChallenge(authorizeInfo),
+                (OAuthConvention.ResponseTypeToken, (int)EClientType.PUBLIC, true) => GenerateUriForTokenResponseType(authorizeInfo),
+                (OAuthConvention.ResponseTypeCode, (int)EClientType.PUBLIC, false) => GenerateUriForCodeChallenge(authorizeInfo, errorLocal),
                 (OAuthConvention.ResponseTypeCode, (int)EClientType.PUBLIC, true) => throw new DaOAuthRedirectException()
                 {
                     RedirectUri = GenerateRedirectErrorMessage(
@@ -171,7 +171,7 @@ namespace DaOAuthV2.Service
 
         private Uri GenerateUriForCodeResponseType(AskAuthorizeDto authorizeInfo)
         {
-            var myCode = GenerateAndSaveCode(authorizeInfo.ClientPublicId, authorizeInfo.UserName, authorizeInfo.Scope);
+            var myCode = GenerateAndSaveCode(authorizeInfo.ClientPublicId, authorizeInfo.UserName, authorizeInfo.Scope, null, null);
             var codeLocation = string.Concat(authorizeInfo.RedirectUri, "?code=", myCode);
             if (!string.IsNullOrEmpty(authorizeInfo.State))
             {
@@ -181,10 +181,49 @@ namespace DaOAuthV2.Service
             return new Uri(codeLocation);
         }
 
-        private Uri GenerateUriForCodeChallenge(AskAuthorizeDto authorizeInfo)
+        private Uri GenerateUriForCodeChallenge(AskAuthorizeDto authorizeInfo, IStringLocalizer errorLocal)
         {
-            var myCode = GenerateAndSaveCode(authorizeInfo.ClientPublicId, authorizeInfo.UserName, authorizeInfo.Scope);
-            throw new NotImplementedException();
+            var codeChallengeMethod = String.IsNullOrWhiteSpace(authorizeInfo.CodeChallengeMethod) ? 
+                OAuthConvention.CodeChallengeMethodPlainText :
+                authorizeInfo.CodeChallengeMethod;
+
+            if (!codeChallengeMethod.Equals(OAuthConvention.CodeChallengeMethodSha256) &&
+                !codeChallengeMethod.Equals(OAuthConvention.CodeChallengeMethodPlainText))
+            {
+                throw new DaOAuthRedirectException()
+                {
+                    RedirectUri = GenerateRedirectErrorMessage(
+                        authorizeInfo.RedirectUri,
+                        OAuthConvention.ErrorNameUnsupportedResponseType,
+                        errorLocal["AuthorizeUnknowCodeChallengeMethod"],
+                        authorizeInfo.State)
+                };
+            }
+
+            if ((codeChallengeMethod.Equals(OAuthConvention.CodeChallengeMethodPlainText) && (authorizeInfo.CodeChallenge.Length < 43 || authorizeInfo.CodeChallenge.Length > 128))
+                || codeChallengeMethod.Equals(OAuthConvention.CodeChallengeMethodSha256) && authorizeInfo.CodeChallenge.Length != 88)
+            {
+                if (authorizeInfo.CodeChallenge.Length < 43 || authorizeInfo.CodeChallenge.Length > 128)
+                {
+                    throw new DaOAuthRedirectException()
+                    {
+                        RedirectUri = GenerateRedirectErrorMessage(
+                            authorizeInfo.RedirectUri,
+                            OAuthConvention.ErrorNameUnsupportedResponseType,
+                            errorLocal["AuthorizeInvalidCodeChallengeSize"],
+                            authorizeInfo.State)
+                    };
+                }
+            }
+
+            var myCode = GenerateAndSaveCode(authorizeInfo.ClientPublicId, authorizeInfo.UserName, authorizeInfo.Scope, authorizeInfo.CodeChallenge, codeChallengeMethod);
+            var codeLocation = string.Concat(authorizeInfo.RedirectUri, "?code=", myCode);
+            if (!string.IsNullOrEmpty(authorizeInfo.State))
+            {
+                codeLocation = string.Concat(codeLocation, "&state=", authorizeInfo.State);
+            }
+
+            return new Uri(codeLocation);
         }
 
         private Uri GenerateUriForTokenResponseType(AskAuthorizeDto authorizeInfo)
@@ -548,7 +587,7 @@ namespace DaOAuthV2.Service
             return toReturn;
         }
 
-        private string GenerateAndSaveCode(string clientPublicId, string userName, string scope)
+        private string GenerateAndSaveCode(string clientPublicId, string userName, string scope, string codeChallenge, string codeChallengeMethod)
         {
             var codeValue = RandomService.GenerateRandomString(CodeLength);
 
@@ -565,7 +604,9 @@ namespace DaOAuthV2.Service
                     ExpirationTimeStamp = new DateTimeOffset(DateTime.Now.AddSeconds(Configuration.CodeDurationInSeconds)).ToUnixTimeSeconds(),
                     IsValid = true,
                     Scope = scope,
-                    UserClientId = uc.Id
+                    UserClientId = uc.Id,
+                    CodeChallengeValue = codeChallenge,
+                    CodeChallengeMethod = codeChallengeMethod
                 });
 
                 context.Commit();

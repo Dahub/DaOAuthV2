@@ -766,8 +766,8 @@ namespace DaOAuthV2.Service.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(DaOAuthServiceException))]
-        public void Generate_Uri_For_Authorize_Should_Throw_DaOAuthServiceException_When_Ask_Token_With_Challenge_Code()
+        [ExpectedException(typeof(DaOAuthRedirectException))]
+        public void Generate_Uri_For_Authorize_Should_Throw_DaOAuthRedirectException_When_Ask_Token_With_Challenge_Code()
         {
             var codeChallenge = "azertyuiopqsdfghjklmwxcvbnazertyuiopqsddfghjklmwxcvbn";
 
