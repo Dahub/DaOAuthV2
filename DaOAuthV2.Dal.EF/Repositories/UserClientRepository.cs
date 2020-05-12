@@ -1,12 +1,12 @@
-﻿using DaOAuthV2.Dal.Interface;
-using DaOAuthV2.Domain;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-
-namespace DaOAuthV2.Dal.EF
+﻿namespace DaOAuthV2.Dal.EF
 {
+    using DaOAuthV2.Dal.Interface;
+    using DaOAuthV2.Domain;
+    using Microsoft.EntityFrameworkCore;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+
     internal class UserClientRepository : RepositoryBase<UserClient>, IUserClientRepository
     {    
         public UserClient GetUserClientByClientPublicIdAndUserName(string clientPublicId, string userName)

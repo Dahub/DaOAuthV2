@@ -1,12 +1,12 @@
-﻿using DaOAuthV2.Constants;
-using DaOAuthV2.Dal.Interface;
-using DaOAuthV2.Domain;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Threading.Tasks;
-
-namespace DaOAuthV2.Dal.EF
+﻿namespace DaOAuthV2.Dal.EF
 {
+    using DaOAuthV2.Constants;
+    using DaOAuthV2.Dal.Interface;
+    using DaOAuthV2.Domain;
+    using Microsoft.EntityFrameworkCore;
+    using System;
+    using System.Threading.Tasks;
+
     public class DaOAuthContext : DbContext, IContext
     {
         public DaOAuthContext(DbContextOptions options) : base(options) { }
@@ -66,6 +66,7 @@ namespace DaOAuthV2.Dal.EF
             modelBuilder.Entity<User>().Property(p => p.Password).HasColumnName("Password").HasColumnType("varbinary(50)").HasMaxLength(50);
             modelBuilder.Entity<User>().Property(p => p.UserName).HasColumnName("UserName").HasColumnType("nvarchar(32)").HasMaxLength(32).IsRequired();
             modelBuilder.Entity<User>().Property(p => p.ValidationToken).HasColumnName("ValidationToken").HasColumnType("nvarchar(256)").HasMaxLength(256);
+            modelBuilder.Entity<User>().Property(p => p.PublicId).HasColumnName("PublicId").HasColumnType("uniqueIdentifier").IsRequired();
             modelBuilder.Entity<User>().HasMany<UserClient>(p => p.UsersClients).WithOne(uc => uc.User);
             modelBuilder.Entity<User>().HasMany<UserRole>(u => u.UsersRoles).WithOne(uc => uc.User);
             modelBuilder.Entity<User>().HasIndex(u => u.UserName).IsUnique();

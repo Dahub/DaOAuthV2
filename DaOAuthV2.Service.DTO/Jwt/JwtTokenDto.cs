@@ -1,7 +1,7 @@
-﻿using DaOAuthV2.ApiTools;
-
-namespace DaOAuthV2.Service.DTO
+﻿namespace DaOAuthV2.Service.DTO
 {
+    using DaOAuthV2.ApiTools;
+
     public class JwtTokenDto : IDto
     {
         public string Token { get; set; }
@@ -15,6 +15,8 @@ namespace DaOAuthV2.Service.DTO
         public string ClientId { get; set; }
 
         public string UserName { get; set; }
+
+        public string UserPublicId { get; set; }
 
         public string InvalidationCause { get; set; }
     }

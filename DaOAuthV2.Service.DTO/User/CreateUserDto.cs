@@ -1,9 +1,9 @@
-﻿using DaOAuthV2.ApiTools;
-using System;
-using System.ComponentModel.DataAnnotations;
-
-namespace DaOAuthV2.Service.DTO
+﻿namespace DaOAuthV2.Service.DTO
 {
+    using DaOAuthV2.ApiTools;
+    using System;
+    using System.ComponentModel.DataAnnotations;
+
     public class CreateUserDto : IDto
     {
         [Required(ErrorMessage = "CreateUserDtoUserNameRequired")]
