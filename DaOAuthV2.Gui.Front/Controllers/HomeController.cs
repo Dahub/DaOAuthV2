@@ -1,14 +1,15 @@
-﻿namespace DaOAuthV2.Gui.Front.Controllers
-{
-    using DaOAuthV2.Constants;
-    using DaOAuthV2.Gui.Front.Tools;
-    using Microsoft.AspNetCore.Authorization;
-    using Microsoft.AspNetCore.Mvc;
-    using Microsoft.Extensions.Configuration;
-    using System;
-    using System.Linq;
-    using System.Threading.Tasks;
+﻿using DaOAuthV2.Constants;
+using DaOAuthV2.Gui.Front.Tools;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
+using System;
+using System.Linq;
+using System.Net.Http;
+using System.Threading.Tasks;
 
+namespace DaOAuthV2.Gui.Front.Controllers
+{
     [Authorize(Roles = RoleName.User)]
     public class HomeController : DaOauthFrontController
     {

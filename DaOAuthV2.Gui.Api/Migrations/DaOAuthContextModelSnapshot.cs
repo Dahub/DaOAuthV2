@@ -16,7 +16,7 @@ namespace DaOAuthV2.Gui.Api.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasDefaultSchema("auth")
-                .HasAnnotation("ProductVersion", "2.2.6-servicing-10079")
+                .HasAnnotation("ProductVersion", "2.1.4-rtm-31024")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
@@ -141,16 +141,9 @@ namespace DaOAuthV2.Gui.Api.Migrations
                     b.ToTable("ClientType");
 
                     b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Wording = "public"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Wording = "confidential"
-                        });
+                        new { Id = 1, Wording = "public" },
+                        new { Id = 2, Wording = "confidential" }
+                    );
                 });
 
             modelBuilder.Entity("DaOAuthV2.Domain.Code", b =>
@@ -258,16 +251,9 @@ namespace DaOAuthV2.Gui.Api.Migrations
                     b.ToTable("Role");
 
                     b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Wording = "User"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Wording = "Administrator"
-                        });
+                        new { Id = 1, Wording = "User" },
+                        new { Id = 2, Wording = "Administrator" }
+                    );
                 });
 
             modelBuilder.Entity("DaOAuthV2.Domain.Scope", b =>
@@ -332,10 +318,6 @@ namespace DaOAuthV2.Gui.Api.Migrations
                         .HasColumnName("Password")
                         .HasColumnType("varbinary(50)")
                         .HasMaxLength(50);
-
-                    b.Property<Guid>("PublicId")
-                        .HasColumnName("PublicId")
-                        .HasColumnType("uniqueIdentifier");
 
                     b.Property<string>("UserName")
                         .IsRequired()

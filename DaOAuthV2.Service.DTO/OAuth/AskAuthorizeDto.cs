@@ -1,9 +1,9 @@
-﻿namespace DaOAuthV2.Service.DTO
-{
-    using DaOAuthV2.ApiTools;
-    using System;
-    using System.ComponentModel.DataAnnotations;
+﻿using DaOAuthV2.ApiTools;
+using System;
+using System.ComponentModel.DataAnnotations;
 
+namespace DaOAuthV2.Service.DTO
+{
     public class AskAuthorizeDto : IDto
     {        
         public string ResponseType { get; set; }

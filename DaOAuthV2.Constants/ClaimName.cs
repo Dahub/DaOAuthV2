@@ -8,6 +8,5 @@
         public static string Name = "name";
         public static string Scope = "scope";
         public static string Expire = "exp";
-        public static string UserId = "user_id";
     }
 }

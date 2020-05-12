@@ -1,9 +1,9 @@
-﻿namespace DaOAuthV2.Domain
-{
-    using DaOAuthV2.Domain.Interface;
-    using System;
-    using System.Collections.Generic;
+﻿using DaOAuthV2.Domain.Interface;
+using System;
+using System.Collections.Generic;
 
+namespace DaOAuthV2.Domain
+{
     public class User : IDomainObject
     {
         public int Id { get; set; }
@@ -29,7 +29,5 @@
         public ICollection<Client> CreatedClients { get; set; }
 
         public string ValidationToken { get; set; }
-
-        public Guid PublicId { get; set; }
     }
 }

@@ -116,8 +116,7 @@ namespace DaOAuthV2.Service
                 IsValid = false,
                 ValidationToken = RandomService.GenerateRandomString(32),
                 Password = EncryptionService.Sha256Hash(string.Concat(Configuration.PasswordSalt, toCreate.Password)),
-                UserName = toCreate.UserName,
-                PublicId = Guid.NewGuid()
+                UserName = toCreate.UserName
             };
 
             using (var c = RepositoriesFactory.CreateContext())

@@ -1,18 +1,18 @@
-﻿namespace DaOAuthV2.Service
-{
-    using Microsoft.IdentityModel.Tokens;
-    using System;
-    using System.Collections.Generic;
-    using System.IdentityModel.Tokens.Jwt;
-    using System.Security.Claims;
-    using System.Text;
-    using System.Linq;
-    using System.Globalization;
-    using DaOAuthV2.Service.Interface;
-    using DaOAuthV2.Service.DTO;
-    using DaOAuthV2.Constants;
-    using Microsoft.Extensions.Logging;
+﻿using Microsoft.IdentityModel.Tokens;
+using System;
+using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
+using System.Linq;
+using System.Globalization;
+using DaOAuthV2.Service.Interface;
+using DaOAuthV2.Service.DTO;
+using DaOAuthV2.Constants;
+using Microsoft.Extensions.Logging;
 
+namespace DaOAuthV2.Service
+{
     public class JwtService : ServiceBase, IJwtService
     {
         private const int MAIL_TOKEN_LIFETIME_IN_SECONDS = 900;
@@ -31,8 +31,7 @@
             claims.Add(new Claim(ClaimName.Issued, utcNow.ToUnixTimeSeconds().ToString(CultureInfo.InvariantCulture)));         
             claims.Add(new Claim(ClaimName.Name, !String.IsNullOrEmpty(value.UserName) ? value.UserName : String.Empty));
             claims.Add(new Claim(ClaimName.Scope, !String.IsNullOrEmpty(value.Scope) ? value.Scope : String.Empty));
-            claims.Add(new Claim(ClaimName.UserId, !String.IsNullOrEmpty(value.UserPublicId) ? value.UserPublicId : String.Empty));
-
+           
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration.SecurityKey));
             var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
@@ -50,8 +49,7 @@
                 IsValid = true,
                 Scope = value.Scope,
                 Token = new JwtSecurityTokenHandler().WriteToken(token),
-                UserName = value.UserName,
-                UserPublicId = value.UserPublicId,
+                UserName = value.UserName
             };
 
             return toReturn;
@@ -109,7 +107,6 @@
             toReturn.Scope = GetValueFromClaim(pClaim.Claims, ClaimName.Scope);
             toReturn.ClientId = GetValueFromClaim(pClaim.Claims, ClaimName.ClientId);
             toReturn.UserName = GetValueFromClaim(pClaim.Claims, ClaimName.Name);
-            toReturn.UserPublicId = GetValueFromClaim(pClaim.Claims, ClaimName.UserId);
             toReturn.IsValid = true;
 
             return toReturn;

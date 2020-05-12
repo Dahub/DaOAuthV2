@@ -1,19 +1,19 @@
-﻿namespace DaOAuthV2.Service
-{
-    using DaOAuthV2.Constants;
-    using DaOAuthV2.Dal.Interface;
-    using DaOAuthV2.Domain;
-    using DaOAuthV2.Service.DTO;
-    using DaOAuthV2.Service.Interface;
-    using Microsoft.Extensions.Localization;
-    using Microsoft.Extensions.Logging;
-    using System;
-    using System.Collections.Generic;
-    using System.ComponentModel.DataAnnotations;
-    using System.Globalization;
-    using System.Linq;
-    using System.Text;
+﻿using DaOAuthV2.Constants;
+using DaOAuthV2.Dal.Interface;
+using DaOAuthV2.Domain;
+using DaOAuthV2.Service.DTO;
+using DaOAuthV2.Service.Interface;
+using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Globalization;
+using System.Linq;
+using System.Text;
 
+namespace DaOAuthV2.Service
+{
     public class OAuthService : ServiceBase, IOAuthService
     {
         private const int CodeLenght = 16;
@@ -134,7 +134,7 @@
             }
 
             switch (authorizeInfo.ResponseType)
-            {                
+            {
                 case OAuthConvention.ResponseTypeCode:
                     var myCode = GenerateAndSaveCode(authorizeInfo.ClientPublicId, authorizeInfo.UserName, authorizeInfo.Scope);
                     var codeLocation = String.Concat(authorizeInfo.RedirectUri, "?code=", myCode);
@@ -501,7 +501,7 @@
                     };
                 }
 
-                var accessToken = JwtService.GenerateToken(new CreateTokenDto()
+                var accesToken = JwtService.GenerateToken(new CreateTokenDto()
                 {
                     ClientPublicId = myClient.PublicId,
                     Scope = tokenInfo.Scope,
@@ -512,7 +512,7 @@
 
                 toReturn = new TokenInfoDto()
                 {
-                    AccessToken = accessToken.Token,
+                    AccessToken = accesToken.Token,
                     ExpireIn = Configuration.AccesTokenLifeTimeInSeconds,
                     Scope = tokenInfo.Scope,
                     TokenType = OAuthConvention.AccessToken
@@ -560,7 +560,7 @@
                 UserName = userName
             });
 
-            var accessToken = JwtService.GenerateToken(new CreateTokenDto()
+            var accesToken = JwtService.GenerateToken(new CreateTokenDto()
             {
                 ClientPublicId = tokenInfo.ClientPublicId,
                 Scope = tokenInfo.Scope,
@@ -576,7 +576,7 @@
 
             toReturn = new TokenInfoDto()
             {
-                AccessToken = accessToken.Token,
+                AccessToken = accesToken.Token,
                 ExpireIn = Configuration.AccesTokenLifeTimeInSeconds,
                 RefreshToken = newRefreshToken.Token,
                 Scope = tokenInfo.Scope,
